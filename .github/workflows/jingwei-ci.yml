@@ -1,0 +1,36 @@
+# 经纬织图：每次 PR 与合并到 main 时自动检查（构建＋语法降级校验＋核心回归）
+name: jingwei-ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      JW_WORK: ${{ github.workspace }}/_work
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: 安装依赖
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q fonts-noto-cjk
+          npm ci
+          pip install playwright websocket-client
+          python -m playwright install --with-deps chromium
+      - name: 构建网页版与桌面版界面（含 ES2019 降级校验）
+        run: python3 build/build_web.py --desk
+      - name: 准备测试环境（公开样例、可移植目录结构）
+        run: |
+          bash tests/fixtures/fetch_public.sh
+          bash tests/legacy_layout.sh
+      - name: 核心回归
+        run: bash tests/run_regression.sh
