@@ -1,0 +1,35 @@
+﻿经纬织图 V3.2.1（离线版）
+============================
+
+一、使用方法
+  双击 JingWeiZhiTu_v3.2.1.html，用浏览器打开即可使用。无需安装，无需联网。
+  建议使用 Chrome、Edge 或其他 Chromium 内核浏览器。
+  支持 Windows 7～11、银河麒麟 V10（x86／飞腾，已实测）。
+  浏览器要求：Chromium 内核 69 以上（奇安信可信浏览器、360 安全浏览器信创版等）或 Firefox 68 以上。
+
+二、文件清单
+  JingWeiZhiTu_v3.2.1.html  经纬织图主程序（单文件，全部组件已内置）
+  ReleaseNotes_v3.2.1.docx  V3.2.1 发布说明（Word）
+  ReleaseNotes_v3.2.1.pdf   V3.2.1 发布说明（PDF）
+  Brand_JingWeiZhiTu.jpg    名称与图标
+  icon\                     图标文件（.ico／.png／.svg），可设为桌面快捷方式图标
+
+三、上手三步
+  1. 文字成图（Ctrl+Shift+G）：粘贴一段文字或 Markdown，自动生成分层架构图。
+  2. 参照生成（Ctrl+Shift+L）：选一张好图作参照，填入新项目内容，生成同款新图。
+  3. 一键美化（Ctrl+Shift+F）：对齐、等距、连线从边中点出入。
+  按 F1 查看全部快捷键。
+
+四、常用功能
+  · 打开（Ctrl+O）：工程文件 .json，以及 PowerPoint（.pptx）、Visio（.vsdx）、draw.io（.drawio）。
+  · 保存（Ctrl+S）：保存为 .jingwei.json 工程文件；旧版 .hongtu.json 可直接打开。
+  · 格式转换（Ctrl+Shift+O）：Visio 转 PPT 原样还原字体字号；可批量转 PPT／Visio／draw.io／PNG。
+  · 报告插图：图面设置›排版选“报告版心”，导出“报告插图 PNG”，插入 Word 即为版心宽。
+  · 拖动吸附：拖动时自动对齐其他图形和画布中轴，按住 Alt 临时关闭。
+  · 单侧圆角矩形：基础形状中的“左圆角矩形”“右圆角矩形”，一侧圆角、一侧直角；导出 PPT／Visio／draw.io 保持原样。
+  · 连线避障：连线自动绕开中间的框，拐弯最少；开关在图面设置›连线避障。
+
+五、说明
+  · 软件名称沿革：鸿图体系绘图（V2）→ 经纬体系绘图（V3.0）→ 经纬织图（V3.1），工程文件全部兼容。
+  · 参照生成、文字成图的“大模型”功能需内网 OpenAI 兼容接口（如 DeepSeek），在对话框设置中填写。
+  · .ppt／.vsd 旧格式请先在 PowerPoint／Visio 中另存为 .pptx／.vsdx。

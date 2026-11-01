@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>鸿图 v2.5 方形海报</title>
+<link rel="stylesheet" href="v4.css">
+<style>
+.t{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 10px 14px;text-align:center}
+.t .lb{font-size:20px;font-weight:700;color:#FFFFFF;line-height:1.25}
+.t .sb{font-size:17px;color:var(--sub);line-height:1.3}
+</style>
+</head>
+<body>
+<div id="poster" style="width:1080px;height:1080px">
+  <div class="grid"></div>
+  <div class="glow" style="left:-120px;top:220px;width:700px;height:520px;background:rgba(30,90,170,.4)"></div>
+  <div class="glow" style="right:-160px;top:240px;width:640px;height:520px;background:rgba(43,212,196,.15)"></div>
+  <div class="tick" style="left:28px;top:28px;border-width:2px 0 0 2px;width:36px;height:36px"></div>
+  <div class="tick" style="right:28px;top:28px;border-width:2px 2px 0 0;width:36px;height:36px"></div>
+  <div class="tick" style="left:28px;bottom:28px;border-width:0 0 2px 2px;width:36px;height:36px"></div>
+  <div class="tick" style="right:28px;bottom:28px;border-width:0 2px 2px 0;width:36px;height:36px"></div>
+
+  <div style="position:absolute;left:64px;right:64px;top:52px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:14px"><span class="disp" style="font-size:44px;letter-spacing:.06em;color:#fff">鸿图体系绘图</span><span class="ver" style="font-size:22px">v2.5</span></div>
+    <span class="chip c-a" style="font-size:19px"><span class="newtag" style="font-size:14px;margin-right:6px;box-shadow:none">NEW</span>参照生成</span>
+  </div>
+  <div style="position:absolute;left:0;right:0;top:118px;text-align:center">
+    <div class="hl" style="font-size:88px;white-space:nowrap">照一张好图，出一套<em>新图</em></div>
+  </div>
+  <div style="position:absolute;left:0;right:0;top:222px;text-align:center;font-size:23px;color:var(--sub)">贴上新项目内容，内网大模型按原骨架改写，<b style="color:#FFD08A">主题、配色、标题栏一并继承</b></div>
+
+  <!-- hero -->
+  <div style="position:absolute;left:64px;top:282px;width:952px;height:430px">
+    <figure class="card before" style="position:absolute;left:0;top:62px;width:372px;transform:perspective(1200px) rotateY(10deg)">
+      <img src="a4/before.svg" alt="参照图：边海防无人化巡逻体系">
+      <div class="cap" style="bottom:-18px;font-size:18px">参照图 · 边海防巡逻体系</div>
+    </figure>
+    <svg style="position:absolute;left:368px;top:100px;width:150px;height:260px;overflow:visible" viewBox="0 0 150 260">
+      <defs>
+        <linearGradient id="bm" x1="0" x2="1"><stop offset="0" stop-color="#4CA8FF" stop-opacity=".1"/><stop offset=".55" stop-color="#7DFFF0"/><stop offset="1" stop-color="#FFB547"/></linearGradient>
+        <filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <polygon points="0,40 150,0 150,260 0,220" fill="url(#bm)" opacity=".16"/>
+      <g filter="url(#gl)"><rect x="6" y="122" width="104" height="16" rx="8" fill="url(#bm)"/><polygon points="104,100 148,130 104,160" fill="#FFB547"/></g>
+      <g fill="none" stroke="#7DFFF0" stroke-width="4" stroke-linecap="round"><polyline points="30,82 44,96 30,110" opacity=".35"/><polyline points="54,82 68,96 54,110" opacity=".6"/><polyline points="78,82 92,96 78,110"/></g>
+      <circle cx="20" cy="130" r="5" fill="#fff"/><circle cx="60" cy="130" r="3" fill="#fff" opacity=".8"/>
+    </svg>
+    <div style="position:absolute;left:356px;top:378px;width:170px;text-align:center;font-size:19px;line-height:1.35;color:#BFF5EE;font-weight:700">内网大模型<br><span style="color:var(--dim);font-weight:400;font-size:17px">同骨架改写</span></div>
+    <figure class="card after" style="position:absolute;right:0;top:0;width:340px">
+      <img src="a4/after.svg" alt="新图：海岛无人值守监视系统">
+      <div class="scan" style="top:62%"></div>
+      <div class="cap" style="bottom:-18px;font-size:18px">新图 · 海岛无人值守监视</div>
+    </figure>
+  </div>
+
+  <!-- tiles -->
+  <div style="position:absolute;left:56px;right:56px;top:752px;height:200px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+    <div class="fb hot t">
+      <div style="display:flex;gap:5px;margin-top:4px">
+        <span class="file f-ppt" style="width:50px;height:64px;font-size:12px;padding-bottom:7px;border-radius:5px 14px 5px 5px"><b style="font-size:24px;margin-bottom:2px">P</b>pptx</span>
+        <span class="file f-vsd" style="width:50px;height:64px;font-size:12px;padding-bottom:7px;border-radius:5px 14px 5px 5px"><b style="font-size:24px;margin-bottom:2px">V</b>vsdx</span>
+        <span class="file f-dio" style="width:50px;height:64px;font-size:12px;padding-bottom:7px;border-radius:5px 14px 5px 5px"><b style="font-size:24px;margin-bottom:2px">D</b>drawio</span>
+      </div>
+      <div><div class="lb">三格式互通 <span class="newtag" style="font-size:12px;padding:2px 6px">NEW</span></div><div class="sb">打开 · 导出可编辑</div></div>
+    </div>
+    <div class="fb t">
+      <div style="margin-top:8px;white-space:nowrap"><span class="key" style="font-size:14px">Ctrl</span> <span class="key" style="font-size:14px">Shift</span> <span class="key" style="font-size:14px">F</span></div>
+      <div style="width:100%;height:46px;border-radius:6px;border:1px solid rgba(43,212,196,.5);background:#0B1520 url(a4/layered.svg) 50% 50%/cover no-repeat"></div>
+      <div><div class="lb">文字成图</div><div class="sb">一键美化</div></div>
+    </div>
+    <div class="fb t">
+      <span class="big" style="font-size:84px;margin-top:2px">11</span>
+      <div><div class="lb">种规范视图</div><div class="sb">DoDAF／信息系统</div></div>
+    </div>
+    <div class="fb t">
+      <span class="big a" style="font-size:62px;margin-top:6px">300+</span>
+      <div style="display:flex;gap:4px"><img src="a4/ic_uav_ucav.svg" style="width:42px"><img src="a4/ic_usv_armed.svg" style="width:42px"><img src="a4/ic_cuas_radar_4face.svg" style="width:42px"></div>
+      <div class="lb">拟物图标</div>
+    </div>
+    <div class="fb t">
+      <span class="big c" style="font-size:84px;margin-top:2px">0</span>
+      <div><div class="lb">安装</div><div class="sb">100％离线 · 单文件</div></div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:0;right:0;top:972px;text-align:center;font-size:24px;font-weight:700;letter-spacing:.14em;white-space:nowrap">
+    <span style="color:#7DFFF0">绿色 · 离线 · 免费</span><span style="color:var(--dim)"> · </span><span style="color:#9FD0FF">高效 · 好用</span><span style="color:var(--dim)"> · </span><span style="color:#FFC56E">普惠</span>
+  </div>
+  <div style="position:absolute;left:0;right:0;top:1012px;text-align:center;font-size:19px;color:var(--sub)">支持 Windows 7–11 · 麒麟（x86／飞腾）　|　<b style="color:#fff">单文件　双击即用</b></div>
+</div>
+</body>
+</html>

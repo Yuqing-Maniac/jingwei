@@ -1,0 +1,8 @@
+{
+  "name": "jingwei-zhitu",
+  "productName": "经纬织图",
+  "version": "3.3.3",
+  "description": "经纬织图 · 体系架构绘图（桌面版）",
+  "main": "main.js",
+  "author": "经纬织图开发组"
+}
