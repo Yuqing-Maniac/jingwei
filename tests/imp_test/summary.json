@@ -1,0 +1,508 @@
+{
+ "a_layered": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "某体系总体架构图",
+    "links": 9,
+    "labels": 0,
+    "dirs": "onebothoneoneoneoneoneoneone",
+    "types": {
+     "text": 1,
+     "band": 4,
+     "rect": 19,
+     "group": 1,
+     "cylinder": 1
+    },
+    "title": "某体系总体架构图",
+    "bands": [
+     "应用层",
+     "服务层",
+     "数据层",
+     "基础设施层"
+    ],
+    "lanes": [],
+    "groups": [
+     "大数据平台"
+    ]
+   }
+  ]
+ },
+ "b_swimlane": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "目标处置流程（泳道图）",
+    "links": 7,
+    "labels": 2,
+    "dirs": "oneoneoneoneoneoneone",
+    "types": {
+     "text": 1,
+     "band": 3,
+     "terminator": 1,
+     "rect": 4,
+     "diamond": 1,
+     "round": 1
+    },
+    "title": "目标处置流程（泳道图）",
+    "bands": [
+     "侦察分队",
+     "指挥所",
+     "火力分队"
+    ],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "c_pic_table": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "装备组成与指标",
+    "links": 1,
+    "labels": 0,
+    "dirs": "both",
+    "types": {
+     "text": 1,
+     "equip": 4,
+     "note": 1
+    },
+    "title": "装备组成与指标",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "demo": {
+  "warnings": [
+   "第 1 页：4 条线段两端未连到两个不同图形（装饰线、分隔线或悬空箭头），已忽略"
+  ],
+  "pages": [
+   {
+    "id": "root",
+    "name": "边海防无人化巡逻体系",
+    "links": 17,
+    "labels": 14,
+    "dirs": "oneoneonebothbothbothbothbothoneoneonebothonebothoneoneone",
+    "types": {
+     "band": 6,
+     "lane": 4,
+     "group": 2,
+     "text": 2,
+     "rect": 5,
+     "round": 11,
+     "equip": 17,
+     "note": 1,
+     "legend": 1
+    },
+    "title": "边海防无人化巡逻体系",
+    "bands": [
+     "指挥控制",
+     "保障支撑",
+     "通信网络",
+     "空中巡逻",
+     "地面巡逻",
+     "水面巡逻"
+    ],
+    "lanes": [
+     "智能研判层",
+     "指挥决策层",
+     "数据资源层",
+     "运维保障层"
+    ],
+    "groups": [
+     "态势融合与智能研判",
+     "任务规划与调度"
+    ]
+   },
+   {
+    "id": "phygvdy8",
+    "name": "无人机机巢 · 内部构成",
+    "links": 10,
+    "labels": 9,
+    "dirs": "oneoneoneoneoneonebothbothbothboth",
+    "types": {
+     "band": 3,
+     "text": 2,
+     "equip": 12,
+     "legend": 1
+    },
+    "title": "无人机机巢 · 内部构成",
+    "bands": [
+     "机巢本体",
+     "控制与感知",
+     "对外链路"
+    ],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "demo_v": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "总图",
+    "links": 17,
+    "labels": 14,
+    "dirs": "oneoneonebothbothbothbothbothoneoneonebothonebothoneoneone",
+    "types": {
+     "band": 6,
+     "lane": 4,
+     "group": 2,
+     "text": 2,
+     "rect": 5,
+     "round": 11,
+     "equip": 17,
+     "note": 1,
+     "legend": 1
+    },
+    "title": "边海防无人化巡逻体系",
+    "bands": [
+     "指挥控制",
+     "保障支撑",
+     "通信网络",
+     "空中巡逻",
+     "地面巡逻",
+     "水面巡逻"
+    ],
+    "lanes": [
+     "智能研判层",
+     "指挥决策层",
+     "数据资源层",
+     "运维保障层"
+    ],
+    "groups": [
+     "态势融合与智能研判",
+     "任务规划与调度"
+    ]
+   },
+   {
+    "id": "pjd2t4j9",
+    "name": "无人机机巢 · 内部构成",
+    "links": 10,
+    "labels": 9,
+    "dirs": "oneoneoneoneoneonebothbothbothboth",
+    "types": {
+     "band": 3,
+     "text": 2,
+     "equip": 12,
+     "legend": 1
+    },
+    "title": "无人机机巢 · 内部构成",
+    "bands": [
+     "机巢本体",
+     "控制与感知",
+     "对外链路"
+    ],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test1": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 4
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   },
+   {
+    "id": "pizbsiz6",
+    "name": "Page-3",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test2": {
+  "warnings": [
+   "Visio 页 1：2 条线段两端未连到两个不同图形（装饰线、分隔线或悬空箭头），已忽略"
+  ],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "note": 1,
+     "group": 6,
+     "rect": 4,
+     "ellipse": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": [
+     "Group shape text",
+     "Shape Text",
+     "Shape to remove",
+     "Sub-shape to remove",
+     "Shape to copy",
+     ""
+    ]
+   },
+   {
+    "id": "p09t51mr",
+    "name": "Page-3",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "group": 2,
+     "rect": 1,
+     "ellipse": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": [
+     "Shape already here",
+     ""
+    ]
+   }
+  ]
+ },
+ "test4_connectors": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 2,
+    "labels": 0,
+    "dirs": "nonenone",
+    "types": {
+     "rect": 3
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   },
+   {
+    "id": "pw74wmbs",
+    "name": "Page-2",
+    "links": 2,
+    "labels": 2,
+    "dirs": "nonenone",
+    "types": {
+     "rect": 3
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   },
+   {
+    "id": "ph7a9iav",
+    "name": "Page-3",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 4
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test5_master": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page 1",
+    "links": 2,
+    "labels": 2,
+    "dirs": "oneone",
+    "types": {
+     "round": 2
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test7_with_connector": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 1,
+    "labels": 0,
+    "dirs": "none",
+    "types": {
+     "rect": 6
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   },
+   {
+    "id": "ppqkdd6s",
+    "name": "Page-3",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test8_simple_connector": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 2
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test9_rect_and_line": {
+  "warnings": [
+   "Visio 页 1：2 条线段两端未连到两个不同图形（装饰线、分隔线或悬空箭头），已忽略"
+  ],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test10_nested_shapes": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "group": 3,
+     "rect": 4,
+     "round": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": [
+     "Shape 1",
+     "Shape 1.1",
+     "Shape 1.2"
+    ]
+   }
+  ]
+ },
+ "test12_colors": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 3
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   },
+   {
+    "id": "pklk1g6w",
+    "name": "Page-2",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 3
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ },
+ "test_master_multiple_child_shapes": {
+  "warnings": [],
+  "pages": [
+   {
+    "id": "root",
+    "name": "Page-1",
+    "links": 0,
+    "labels": 0,
+    "dirs": "",
+    "types": {
+     "rect": 1
+    },
+    "title": "",
+    "bands": [],
+    "lanes": [],
+    "groups": []
+   }
+  ]
+ }
+}

@@ -1,0 +1,31 @@
+# 机构标识（本地私有，见 brand.example.json 与 CLAUDE.md“机构标识”）
+brand.local.json
+# 构建产物与大文件（可由脚本重建，见 CLAUDE.md 第 5 节）
+/node_modules/
+/dist/
+/_work/
+/_legacy/
+**/node_modules/
+*.zip
+*.deb
+*.exe
+*.asar
+# 视频与海报的中间产物、成片
+promo/**/*.mp4
+promo/**/*.wav
+promo/**/*.mp3
+promo/**/seg/
+promo/**/audio/
+promo/**/frames_*/
+promo/**/qa/
+promo/**/locks/
+promo/poster/*.jpg
+# 测试输出（tests/ 下运行时生成的截图与导出件）
+tests/out/*
+!tests/out/xlsx_harness.py
+tests/conv_ui/dl/
+tests/**/*.png
+tests/**/*.pdf
+__pycache__/
+*.pyc
+.DS_Store
