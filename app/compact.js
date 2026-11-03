@@ -269,7 +269,7 @@
   /* ---------- 覆盖一键美化 ---------- */
   const std = window.beautify;
   function beautifyC(p = P()) {
-    const c = adopt(cfg());
+    const c = cfg();
     if (c.mode === 'standard') return std(p);
     return pack(p, c);
   }
@@ -375,5 +375,6 @@
     const pg = q('#d-lay-page'); if (pg) pg.addEventListener('change', e => apply({ page: e.target.value }));
     const ft = q('#d-lay-font'); if (ft) ft.addEventListener('change', e => apply({ font: +e.target.value }));
   }
-  window.Compact = { PAGES, FONTS, cfg, targetW, fontAt, beautify: beautifyC, exportReportPNG, withDPI, panelHTML, bind, natural, flow };
+  function stamp() { return adopt(cfg()); }
+  window.Compact = { PAGES, FONTS, cfg, targetW, fontAt, beautify: beautifyC, stamp, exportReportPNG, withDPI, panelHTML, bind, natural, flow };
 })();

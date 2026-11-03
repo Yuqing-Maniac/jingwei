@@ -598,14 +598,9 @@
     }
     for (const { page } of built) {
       const had = doc.pages[page.id];
-      const hadLayout = Object.prototype.hasOwnProperty.call(doc, 'layout') ? doc.layout : undefined;
       doc.pages[page.id] = page;
       try { if (opts.uncross && typeof reduceCrossings === 'function') reduceCrossings(page); else beautify(page); }
-      finally {
-        if (had) doc.pages[page.id] = had; else delete doc.pages[page.id];
-        /* 美化会把排版写进当前文档。预览借的是这份文档，不能把这次写入留下。 */
-        if (hadLayout === undefined) delete doc.layout; else doc.layout = hadLayout;
-      }
+      finally { if (had) doc.pages[page.id] = had; else delete doc.pages[page.id]; }
       /* same-named boxes (e.g. three “应用 APP”): connect the closest pair */
       const byId = Object.fromEntries(page.nodes.map(n => [n.id, n]));
       const ctr = n => [n.x + n.w / 2, n.y + n.h / 2];

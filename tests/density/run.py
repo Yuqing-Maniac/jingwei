@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""一键美化 icon edge gaps. Drive the toolbar and the 排版 control."""
 import sys
 from playwright.sync_api import sync_playwright
 
