@@ -12,10 +12,10 @@ os.makedirs(DIST, exist_ok=True)
 rd = lambda p: open(os.path.join(APP, p), encoding='utf-8').read()
 body = rd('app_body.html')
 parts = [rd('icons.js')] + [rd(os.path.basename(p)) for p in sorted(glob.glob(os.path.join(APP, 'icons_*.js')))]
-MODS = ['app.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
+MODS = ['app.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
         'importers.js', 'vsdxraw.js', 'drawio.js', 'refgen.js', 'convert.js']
 mods = [rd(m) for m in MODS]
-own = "<script>\n" + "\n".join(parts) + "\n</script>\n<script>\n" + "\n".join(mods) + "\n" + rd('demo.js') + "\nloadDoc(buildDemo());\n</script>\n"
+own = "<script>\n" + "\n".join(parts) + "\n</script>\n<script>\n" + "\n".join(mods) + "\n" + rd('demo.js') + "\nloadDoc(buildDemo());\nif (!window.jwDesk) Backup.offer();\n</script>\n"
 cdn = ('<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>\n'
        '<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>\n'
        '<script src="https://cdn.jsdelivr.net/npm/milsymbol@2.2.0/dist/milsymbol.js"></script>\n')

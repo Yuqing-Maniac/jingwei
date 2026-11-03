@@ -940,6 +940,7 @@ function render(full = true) {
   world.innerHTML = `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG();
   applyView(); applyHover();
   if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
+  if (window.Backup) Backup.poke();
 }
 let linkNoted;
 function noteLinkSelection() {
@@ -1781,6 +1782,7 @@ function doBeautify() { checkpoint(); beautify(); render(); toast('已按层级�
 function doReduce() { checkpoint(); const [a, b] = reduceCrossings(); render(); toast(b < a ? `交叉 ${a} → ${b}` : `交叉 ${a} → ${b}（已是较优排布）`); }
 function iconable(n) { return n && !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type); }
 document.addEventListener('keydown', e => {
+  if (document.getElementById('jw-bak')) return;
   const saveas = $('#saveas');
   if (saveas && saveas.style.display === 'flex') {
     if (e.key === 'Escape') { e.preventDefault(); closeSaveAs(); return; }
@@ -2342,15 +2344,16 @@ async function saveFile(name, data) {
   if (window.claude && typeof window.claude.use === 'function') {
     try {
       const dl = await window.claude.use('downloads');
-      if (dl) { await dl.save({ filename: name, data: blob }); toast('已导出：' + name); return; }
+      if (dl) { await dl.save({ filename: name, data: blob }); toast('已导出：' + name); return true; }
     } catch (e) {
-      if (e && e.code === 'declined') { toast('已取消保存'); return; }
-      if (e && e.code === 'rejected_extension') { toast('在线预览不支持导出此格式，请在离线版中使用'); return; }
-      if (e && e.code === 'rate_limited') { toast('已有一个保存提示未处理'); return; }
+      if (e && e.code === 'declined') { toast('已取消保存'); return null; }
+      if (e && e.code === 'rejected_extension') { toast('在线预览不支持导出此格式，请在离线版中使用'); return null; }
+      if (e && e.code === 'rate_limited') { toast('已有一个保存提示未处理'); return null; }
     }
   }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); toast('已导出：' + name);
+  return true;
 }
 const fname = ext => `${(doc.pages.root.name && doc.pages.root.name !== '总图' ? doc.pages.root.name : (doc.name || '体系图'))}${cur !== 'root' ? '-' + P().name : ''}.${ext}`.replace(/[\\/:*?"<>|]/g, '_');
 function exportSVGString(p, bg) {
@@ -2623,13 +2626,16 @@ function projectFileName(raw) {
   return n;
 }
 function closeSaveAs() { const x = $('#saveas'); if (x) x.style.display = 'none'; }
+function afterProjectSave(p) {
+  Promise.resolve(p).then(function (ok) { if (ok && window.Backup) Backup.observeSave(); });
+}
 function confirmSaveAs() {
   const name = projectFileName($('#saveas-name') ? $('#saveas-name').value : '');
   if (!name) return;
   closeSaveAs();
-  saveFile(name, projectJSON());
+  afterProjectSave(saveFile(name, projectJSON()));
 }
-function saveProject() { saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), projectJSON()); }
+function saveProject() { afterProjectSave(saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), projectJSON())); }
 function saveProjectAs() {
   const box = $('#saveas'); if (!box) return;
   const inp = $('#saveas-name');
@@ -2739,4 +2745,4 @@ function friendlyErr(err) {
   return m;
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
-  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); }
+  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
