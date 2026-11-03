@@ -24,6 +24,7 @@
     dropBorder(marks);
     nest(marks, plate.sw);
     bindGlyphs(marks, plate.sw);
+    markHoles(marks);
     return emit(marks, plate);
   }
 
@@ -271,7 +272,46 @@
       marks.push({ kind: 'figure', shape: shape, x: fx, y: fy, w: fw, h: fh, contains: [] });
       markRing(plate, solid);
     }
+    mergeCaps(marks);
     plate.dt = null;
+  }
+
+  function mergeCaps(marks) {
+    var figs = figList(marks);
+    var drop = [];
+    var add = [];
+    var i, j;
+    for (i = 0; i < figs.length; i++) {
+      var e = figs[i];
+      if (drop[i]) continue;
+      if (e.shape !== 'ellipse' && e.shape !== 'round') continue;
+      for (j = 0; j < figs.length; j++) {
+        if (i === j || drop[j]) continue;
+        var r = figs[j];
+        if (r.shape !== 'rect') continue;
+        if (Math.abs(e.w - r.w) > Math.max(e.w, r.w) * 0.18) continue;
+        if (Math.abs((e.x + e.w / 2) - (r.x + r.w / 2)) > Math.max(e.w, r.w) * 0.15) continue;
+        var overlap = Math.min(e.y + e.h, r.y + r.h) - Math.max(e.y, r.y);
+        if (overlap < e.h * 0.25) continue;
+        if (e.y > r.y + r.h * 0.35) continue;
+        if (e.h > r.h) continue;
+        var x = Math.min(e.x, r.x), y = Math.min(e.y, r.y);
+        var x1 = Math.max(e.x + e.w, r.x + r.w), y1 = Math.max(e.y + e.h, r.y + r.h);
+        add.push({ kind: 'figure', shape: 'cylinder', x: x, y: y, w: x1 - x, h: y1 - y, contains: [] });
+        drop[i] = 1;
+        drop[j] = 1;
+        break;
+      }
+    }
+    if (!add.length) return;
+    var keep = [];
+    for (i = 0; i < marks.length; i++) {
+      if (marks[i].kind === 'figure' && drop[figs.indexOf(marks[i])]) continue;
+      keep.push(marks[i]);
+    }
+    for (i = 0; i < add.length; i++) keep.push(add[i]);
+    marks.length = 0;
+    for (i = 0; i < keep.length; i++) marks.push(keep[i]);
   }
 
   function solidify(lab, region, box, w, h, sw) {
@@ -502,12 +542,15 @@
       ['pentagon', [[ww / 2, 0], [ww, hh * 0.382], [ww * 0.809, hh], [ww * 0.191, hh], [0, hh * 0.382]]],
       ['octagon', [[chamfer, 0], [ww - chamfer, 0], [ww, chamfer], [ww, hh - chamfer], [ww - chamfer, hh], [chamfer, hh], [0, hh - chamfer], [0, chamfer]]]
     ];
+    var extra = specialOutlines(ww, hh);
+    for (var ei = 0; ei < extra.length; ei++) polys.push(extra[ei]);
     var polyBestErr = 1e9;
     for (var pi = 0; pi < polys.length; pi++) {
       polys[pi][2] = polyDist(polys[pi][1]);
       if (polys[pi][2] < polyBestErr) polyBestErr = polys[pi][2];
     }
-    if (maxR <= rectR && eRect < 0.075 * minSide && !(polyBestErr < 0.72 * Math.max(eRect, 0.001))) return 'rect';
+    var sideRound = (radii[0] <= 3 && radii[3] <= 3 && radii[1] > 8 && radii[2] > 8) || (radii[1] <= 3 && radii[2] <= 3 && radii[0] > 8 && radii[3] > 8);
+    if (!sideRound && maxR <= rectR && eRect < 0.075 * minSide && !(polyBestErr < 0.72 * Math.max(eRect, 0.001))) return 'rect';
     var cands = [];
     function agree(a, b) { return Math.abs(a - b) <= 0.30 * Math.max(a, b, 1); }
     function sideOk(a, b) {
@@ -518,11 +561,13 @@
       var eRound = meanDist(pts, function (p) { return distRound(p.x, p.y, w, h, r); });
       if (eRound < 0.12 * minSide) cands.push({ shape: 'round', err: eRound });
     }
-    if (sideOk(radii[0], radii[3]) && radii[1] <= 3 && radii[2] <= 3) {
+    var soft = Math.max(6, sw * 2);
+    var sideMin = Math.max(3, sw * 2);
+    if (radii[0] > sideMin && radii[3] > sideMin && agree(radii[0], radii[3]) && radii[0] <= 0.48 * minSide && radii[1] <= soft && radii[2] <= soft) {
       var rl = (radii[0] + radii[3]) / 2;
       cands.push({ shape: 'roundL', err: meanDist(pts, function (p) { return distSideRound(p.x, p.y, w, h, rl, true); }) });
     }
-    if (sideOk(radii[1], radii[2]) && radii[0] <= 3 && radii[3] <= 3) {
+    if (radii[1] > sideMin && radii[2] > sideMin && agree(radii[1], radii[2]) && radii[1] <= 0.48 * minSide && radii[0] <= soft && radii[3] <= soft) {
       var rr = (radii[1] + radii[2]) / 2;
       cands.push({ shape: 'roundR', err: meanDist(pts, function (p) { return distSideRound(p.x, p.y, w, h, rr, false); }) });
     }
@@ -553,7 +598,7 @@
     cands.sort(function (a, b) { return a.err - b.err; });
     if (!cands.length) return null;
     function isPoly(shape) {
-      return shape === 'triangle' || shape === 'trapezoid' || shape === 'parallelogram' || shape === 'hexagon' || shape === 'pentagon' || shape === 'octagon';
+      return shape === 'triangle' || shape === 'trapezoid' || shape === 'parallelogram' || shape === 'hexagon' || shape === 'pentagon' || shape === 'octagon' || shape === 'terminator' || shape === 'delay' || shape === 'display' || shape === 'chevron' || shape === 'arrowR' || shape === 'plus' || shape === 'star' || shape === 'cylinder' || shape === 'document' || shape === 'cloud';
     }
     function pick(list) {
       if (!list.length) return null;
@@ -566,11 +611,110 @@
     for (var ci = 0; ci < cands.length; ci++) if (!isPoly(cands[ci].shape)) plain.push(cands[ci]);
     var polyChoice = isPoly(cands[0].shape) ? pick(cands) : null;
     var plainChoice = pick(plain);
+    var choice = plainChoice;
     if (polyChoice && (!plainChoice || cands[0].err < 0.5 * Math.max(plain[0].err, 0.001))) {
-      if (!plainChoice && cands[0].err > 0.04 * minSide) return null;
-      return polyChoice;
+      if (!plainChoice && cands[0].err > 0.04 * minSide) choice = null;
+      else choice = polyChoice;
     }
-    return plainChoice;
+    function errOf(name) {
+      for (var i = 0; i < cands.length; i++) if (cands[i].shape === name) return cands[i].err;
+      return 1e9;
+    }
+    var term = errOf('terminator'), disp = errOf('display');
+    var sideErr = Math.min(errOf('round'), errOf('roundL'), errOf('roundR'));
+    var plainErr = plain.length ? plain[0].err : 1e9;
+    if (plain.length && term < 1.2 && term < 0.65 * plainErr && term <= cands[0].err + 0.05 && sideErr > term * 1.15) choice = 'terminator';
+    if (choice === 'terminator' && disp < 0.075 * minSide && disp < term * 1.45 && leftFill(mask, w, h) < 0.62) choice = 'display';
+    return choice;
+  }
+
+  function leftFill(mask, w, h) {
+    var band = Math.max(3, Math.round(w * 0.16));
+    var ink = 0, tot = 0;
+    for (var y = 0; y < h; y++) for (var x = 0; x < band; x++) {
+      tot++;
+      if (mask[y * w + x]) ink++;
+    }
+    return tot ? ink / tot : 1;
+  }
+
+  function arcSamples(cx, cy, rx, ry, a0, a1, n) {
+    var pts = [];
+    for (var i = 0; i <= n; i++) {
+      var a = (a0 + (a1 - a0) * (i / n)) * Math.PI / 180;
+      pts.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]);
+    }
+    return pts;
+  }
+
+  function bezSamples(p0, c1, c2, p1, n) {
+    var o = [];
+    for (var i = 1; i <= n; i++) {
+      var t = i / n, u = 1 - t;
+      o.push([
+        u * u * u * p0[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * p1[0],
+        u * u * u * p0[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * p1[1]
+      ]);
+    }
+    return o;
+  }
+
+  function specialOutlines(w, h) {
+    var m = Math.min(w, h);
+    var rx = Math.min(0.161 * w, 0.75 * h);
+    var cd = 0.25 * m;
+    var ch = Math.min(0.5 * m, w / 2);
+    var al = Math.min(0.5 * m, w);
+    var pa = 0.25 * m;
+    var ry = Math.min(0.125 * m * 1.4, h / 4);
+    var star = [];
+    var si;
+    for (si = 0; si < 10; si++) {
+      var ang = (-90 + si * 36) * Math.PI / 180;
+      var rad = si % 2 ? 0.382 : 1;
+      var sry = h / 1.809;
+      star.push([w / 2 + (w / 2 / 0.951) * rad * Math.cos(ang), sry + sry * rad * Math.sin(ang)]);
+    }
+    var cloud = cloudOutline(w, h);
+    return [
+      ['terminator', arcSamples(w - rx, h / 2, rx, h / 2, -90, 90, 6).concat(arcSamples(rx, h / 2, rx, h / 2, 90, 270, 6))],
+      ['delay', [[0, 0]].concat(arcSamples(w / 2, h / 2, w / 2, h / 2, -90, 90, 8)).concat([[0, h]])],
+      ['display', [[0, h / 2], [w / 6, 0]].concat(arcSamples(w * 5 / 6, h / 2, w / 6, h / 2, -90, 90, 6)).concat([[w / 6, h]])],
+      ['chevron', [[0, 0], [w - ch, 0], [w, h / 2], [w - ch, h], [0, h], [ch, h / 2]]],
+      ['arrowR', [[0, h * 0.25], [w - al, h * 0.25], [w - al, 0], [w, h / 2], [w - al, h], [w - al, h * 0.75], [0, h * 0.75]]],
+      ['plus', [[pa, 0], [w - pa, 0], [w - pa, pa], [w, pa], [w, h - pa], [w - pa, h - pa], [w - pa, h], [pa, h], [pa, h - pa], [0, h - pa], [0, pa], [pa, pa]]],
+      ['star', star],
+      ['cylinder', arcSamples(w / 2, ry, w / 2, ry, 180, 360, 6).concat(arcSamples(w / 2, h - ry, w / 2, ry, 0, 180, 6))],
+      ['document', [[0, 0], [w, 0], [w, h * 0.802]].concat(bezSamples([w, h * 0.802], [w * 0.5, h * 0.802], [w * 0.5, h * 1.1075], [0, h * 0.934], 6))],
+      ['cloud', cloud]
+    ];
+  }
+
+  function cloudOutline(w, h) {
+    var N = 9, raw = [], i;
+    function P(i) {
+      var a = (-100 + i * 360 / N) * Math.PI / 180;
+      return [0.5 + 0.40 * Math.cos(a) * (i % 2 ? 1 : 1.04), 0.5 + 0.32 * Math.sin(a) * (i % 3 ? 1 : 1.06)];
+    }
+    for (i = 0; i < N; i++) {
+      var a = P(i), b = P((i + 1) % N);
+      var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      var dx = mx - 0.5, dy = my - 0.5;
+      var L = Math.hypot(dx, dy) || 1;
+      var k = Math.hypot(b[0] - a[0], b[1] - a[1]) * 0.62;
+      raw.push([mx + dx / L * k, my + dy / L * k]);
+      raw.push(b);
+    }
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (i = 0; i < raw.length; i++) {
+      if (raw[i][0] < x0) x0 = raw[i][0];
+      if (raw[i][1] < y0) y0 = raw[i][1];
+      if (raw[i][0] > x1) x1 = raw[i][0];
+      if (raw[i][1] > y1) y1 = raw[i][1];
+    }
+    var sx = x1 - x0 || 1, sy = y1 - y0 || 1, out = [];
+    for (i = 0; i < raw.length; i++) out.push([(raw[i][0] - x0) / sx * w, (raw[i][1] - y0) / sy * h]);
+    return out;
   }
 
   function distRound(px, py, w, h, r) {
@@ -593,8 +737,9 @@
       return Math.min(py, h - 1 - py, Math.abs(px - (w - 1)));
     }
     if (px >= w - 1 - r) {
-      var lx = px - (w - 1 - 2 * r);
-      return distRound(lx, py, Math.max(w, r * 2), h, r);
+      var vw = Math.max(r * 2, r + 2);
+      var lx = px - (w - vw);
+      return distRound(lx, py, vw, h, r);
     }
     return Math.min(py, h - 1 - py, px);
   }
@@ -637,6 +782,7 @@
     for (var i = 0; i < pending.length; i++) {
       var item = pending[i];
       if (!item.linked && !item.bar && !(item.strokeLike && alone(item, pending, margin))) continue;
+      if (!item.linked && textStack(item, pending, sw)) continue;
       marks.push({
         kind: 'stroke', x: item.box.x, y: item.box.y, w: item.bw, h: item.bh,
         mask: crop(plate.bin, w, ink.lab, item.id, item.box), mw: item.bw, mh: item.bh
@@ -653,6 +799,201 @@
       if (!grid) continue;
       marks.push({ kind: 'glyph', x: cells[c].x, y: cells[c].y, w: cells[c].w, h: cells[c].h, grid: grid, ch: '', face: '', host: null });
     }
+    mergeCans(marks);
+    mergeCubes(marks);
+  }
+
+  function mergeCubes(marks) {
+    var figs = figList(marks);
+    var strokes = [];
+    var i, s;
+    for (i = 0; i < marks.length; i++) if (marks[i].kind === 'stroke' && marks[i].mask) strokes.push(marks[i]);
+    for (i = 0; i < figs.length; i++) {
+      var fr = figs[i];
+      if (fr.shape !== 'rect') continue;
+      for (s = 0; s < strokes.length; s++) {
+        var d = cubeDepth(strokes[s], fr);
+        if (d === null) continue;
+        clearCube(strokes[s], fr, d);
+        fr.shape = 'cube';
+        fr.y -= d;
+        fr.h += d;
+        fr.w += d;
+        break;
+      }
+    }
+  }
+
+  function cubeDepth(stroke, rect) {
+    var d = rect.y - stroke.y;
+    if (d < 10 || d > rect.h * 0.55) return null;
+    if (Math.abs(stroke.x - rect.x) > 6) return null;
+    if (stroke.y + stroke.h < rect.y + rect.h - 6) return null;
+    var right = Math.round(rect.x + rect.w + d - stroke.x);
+    var leftTop = Math.round(rect.x + d - stroke.x);
+    if (right <= leftTop + 8 || right >= stroke.mw) return null;
+    var topRows = Math.max(3, Math.round(d * 0.4));
+    var seenLeft = 0, seenRight = 0, past = 0;
+    var y, x;
+    for (y = 0; y < topRows && y < stroke.mh; y++) {
+      for (x = 0; x < stroke.mw; x++) {
+        if (!stroke.mask[y * stroke.mw + x]) continue;
+        if (Math.abs(x - leftTop) <= 5) seenLeft++;
+        if (Math.abs(x - right) <= 5) seenRight++;
+        if (x > right + 8) past++;
+      }
+    }
+    if (seenLeft < 1 || seenRight < 1 || past > 3) return null;
+    var y0 = Math.max(0, Math.round(rect.y - stroke.y));
+    var y1 = Math.min(stroke.mh - 1, Math.round(rect.y + rect.h - d * 0.25 - stroke.y));
+    var wall = 0, span = 0;
+    for (y = y0; y <= y1; y++) {
+      span++;
+      var hit = 0;
+      for (var k = -2; k <= 2; k++) {
+        x = right + k;
+        if (x >= 0 && x < stroke.mw && stroke.mask[y * stroke.mw + x]) hit = 1;
+      }
+      if (hit) wall++;
+    }
+    if (span < 8 || wall < span * 0.35) return null;
+    return d;
+  }
+
+  function clearCube(stroke, rect, d) {
+    var x1 = Math.round(rect.x + rect.w + d + 2 - stroke.x);
+    var y1 = Math.round(rect.y + rect.h + 2 - stroke.y);
+    if (x1 >= stroke.mw) x1 = stroke.mw - 1;
+    if (y1 >= stroke.mh) y1 = stroke.mh - 1;
+    for (var y = 0; y <= y1; y++) for (var x = 0; x <= x1; x++) stroke.mask[y * stroke.mw + x] = 0;
+  }
+
+  function mergeCans(marks) {
+    var figs = figList(marks);
+    var strokes = [];
+    var i, s;
+    for (i = 0; i < marks.length; i++) if (marks[i].kind === 'stroke') strokes.push(marks[i]);
+    for (i = 0; i < figs.length; i++) {
+      var e = figs[i];
+      if (e.shape !== 'ellipse' || e.h > e.w * 0.85) continue;
+      var left = null, right = null, bot = null;
+      for (s = 0; s < strokes.length; s++) {
+        var b = strokes[s];
+        if (b.drop) continue;
+        var vert = b.h > b.w * 2.2 && b.h > e.h * 0.45;
+        var horiz = b.w > b.h * 2.2 && b.w > e.w * 0.4;
+        var below = b.y < e.y + e.h + 4 && b.y + b.h > e.y + e.h * 0.5;
+        if (vert && below && Math.abs(b.x - e.x) < Math.max(10, e.w * 0.15)) left = b;
+        if (vert && below && Math.abs((b.x + b.w) - (e.x + e.w)) < Math.max(10, e.w * 0.15)) right = b;
+        if (horiz && b.y > e.y + e.h * 0.5 && Math.abs((b.x + b.w / 2) - (e.x + e.w / 2)) < e.w * 0.3) {
+          if (!bot || b.y > bot.y) bot = b;
+        }
+      }
+      var cut = null;
+      if (!left || !right || !bot) {
+        for (s = 0; s < strokes.length; s++) {
+          var body = strokes[s];
+          if (body.drop || !body.mask) continue;
+          var edge = canBottom(body, e);
+          if (edge === null) continue;
+          cut = { stroke: body, bot: edge };
+          break;
+        }
+      }
+      if (!cut && (!left || !right || !bot)) continue;
+      if (!cut && bot.y > Math.max(left.y + left.h, right.y + right.h) + Math.max(16, e.h * 0.45)) continue;
+      var x, x1, y1;
+      if (cut) {
+        x = e.x;
+        x1 = e.x + e.w;
+        y1 = cut.bot + 1;
+        clearCan(cut.stroke, e, cut.bot);
+      } else {
+        x = Math.min(e.x, left.x, right.x);
+        x1 = Math.max(e.x + e.w, left.x + left.w, right.x + right.w);
+        y1 = Math.max(left.y + left.h, right.y + right.h, bot.y + bot.h);
+        left.drop = 1;
+        right.drop = 1;
+        bot.drop = 1;
+      }
+      e.shape = 'cylinder';
+      e.x = x;
+      e.w = x1 - x;
+      e.h = y1 - e.y;
+    }
+    var keep = [];
+    for (i = 0; i < marks.length; i++) if (!marks[i].drop) keep.push(marks[i]);
+    if (keep.length === marks.length) return;
+    marks.length = 0;
+    for (i = 0; i < keep.length; i++) marks.push(keep[i]);
+  }
+
+  function canBottom(stroke, e) {
+    var mask = stroke.mask, mw = stroke.mw, mh = stroke.mh;
+    if (!mask || mw < 8 || mh < 8) return null;
+    var x0 = Math.round(e.x - stroke.x);
+    var x1 = Math.round(e.x + e.w - 1 - stroke.x);
+    if (x1 <= x0 + 6) return null;
+    if (x0 < -4 || x1 > mw + 4) return null;
+    if (x0 < 0) x0 = 0;
+    if (x1 >= mw) x1 = mw - 1;
+    if ((x1 - x0 + 1) / e.w < 0.72) return null;
+    var yStart = Math.max(0, Math.round(e.y + e.h * 0.35 - stroke.y));
+    var leftN = 0, rightN = 0, leftTop = 1e9, leftBot = -1, rightTop = 1e9, rightBot = -1;
+    var y, xi;
+    for (y = yStart; y < mh; y++) {
+      var lInk = mask[y * mw + x0] || (x0 + 1 < mw && mask[y * mw + x0 + 1]) || (x0 + 2 < mw && mask[y * mw + x0 + 2]);
+      var rInk = mask[y * mw + x1] || (x1 > 0 && mask[y * mw + x1 - 1]) || (x1 > 1 && mask[y * mw + x1 - 2]);
+      if (lInk) { leftN++; if (y < leftTop) leftTop = y; leftBot = y; }
+      if (rInk) { rightN++; if (y < rightTop) rightTop = y; rightBot = y; }
+    }
+    var wall = Math.max(8, e.h * 0.55);
+    if (leftN < wall * 0.35 || rightN < wall * 0.35 || leftBot - leftTop < wall * 0.45 || rightBot - rightTop < wall * 0.45) return null;
+    var span = x1 - x0 + 1;
+    var best = null;
+    for (y = 0; y < mh; y++) {
+      var gy = stroke.y + y;
+      if (gy < e.y + e.h * 0.5) continue;
+      if (gy > e.y + e.h + e.w * 0.9) break;
+      var any = 0;
+      for (xi = x0; xi <= x1; xi++) if (mask[y * mw + xi]) { any = 1; break; }
+      if (any) best = gy;
+    }
+    var need = e.y + e.h + Math.max(8, e.h * 0.45);
+    if (best === null || best < need) return null;
+    var xa = x0 + Math.round(span * 0.25), xb = x1 - Math.round(span * 0.25);
+    var tip = 0;
+    var yTip = Math.round(best - stroke.y);
+    for (y = yTip; y > yTip - 4 && y >= 0; y--) {
+      for (xi = xa; xi <= xb; xi++) if (mask[y * mw + xi]) tip = 1;
+    }
+    if (!tip) return null;
+    var hole = 0, holeTot = 0;
+    var y0i = Math.round(Math.max(stroke.y, e.y + e.h) - stroke.y);
+    var y1i = Math.round(best - stroke.y);
+    var inset = Math.max(3, Math.round(span * 0.12));
+    for (y = y0i + 2; y < y1i - 2; y++) {
+      if (y < 0 || y >= mh) continue;
+      for (xi = x0 + inset; xi <= x1 - inset; xi++) {
+        holeTot++;
+        if (mask[y * mw + xi]) hole++;
+      }
+    }
+    if (holeTot > 20 && hole / holeTot > 0.35) return null;
+    return best;
+  }
+
+  function clearCan(stroke, e, bot) {
+    var mask = stroke.mask, mw = stroke.mw, mh = stroke.mh;
+    var x0 = Math.round(e.x - stroke.x);
+    var x1 = Math.round(e.x + e.w - stroke.x);
+    if (x0 < 0) x0 = 0;
+    if (x1 >= mw) x1 = mw - 1;
+    var y0 = Math.round(e.y - stroke.y);
+    if (y0 < 0) y0 = 0;
+    var y1 = Math.round(bot + 2 - stroke.y);
+    if (y1 >= mh) y1 = mh - 1;
+    for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) mask[y * mw + x] = 0;
   }
 
   function axisEnds(pts) {
@@ -677,6 +1018,24 @@
     if (b.y > a.y + a.h) dy = b.y - (a.y + a.h);
     else if (a.y > b.y + b.h) dy = a.y - (b.y + b.h);
     return { dx: dx, dy: dy };
+  }
+
+  function textStack(item, pending, sw) {
+    var long = Math.max(item.bw, item.bh);
+    if (long > Math.max(34, sw * 12)) return false;
+    var n = 0;
+    for (var i = 0; i < pending.length; i++) {
+      var o = pending[i];
+      if (o === item) continue;
+      if (Math.max(o.bw, o.bh) > Math.max(34, sw * 12)) continue;
+      var gap = boxGap(item.box, o.box);
+      var overlapX = Math.min(item.box.x + item.bw, o.box.x + o.bw) - Math.max(item.box.x, o.box.x);
+      var overlapY = Math.min(item.box.y + item.bh, o.box.y + o.bh) - Math.max(item.box.y, o.box.y);
+      var stacked = (overlapX > Math.min(item.bw, o.bw) * 0.4 && gap.dy < Math.max(item.bh, o.bh, 8) * 3)
+        || (overlapY > Math.min(item.bh, o.bh) * 0.4 && gap.dx < Math.max(item.bw, o.bw, 8) * 3);
+      if (stacked) n++;
+    }
+    return n >= 2;
   }
 
   function alone(item, pending, margin) {
@@ -744,7 +1103,7 @@
   function groupBounds(comps) {
     var use = [];
     for (var i = 0; i < comps.length; i++) {
-      if (Math.min(comps[i].w, comps[i].h) > 3) use.push(comps[i]);
+      if (Math.min(comps[i].w, comps[i].h) > 3 || Math.max(comps[i].w, comps[i].h) >= 12) use.push(comps[i]);
     }
     if (!use.length) use = comps;
     var x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
@@ -762,6 +1121,7 @@
     var b = groupBounds(comps);
     var wide = b.x1 - b.x0 + 1, tall = b.y1 - b.y0 + 1;
     var n = Math.max(1, Math.round(wide / Math.max(1, tall)));
+    if (n === 1 && wide > tall * 1.35) n = 2;
     if (tall <= Math.max(8, sw * 3.4)) n = 1;
     var whole = tightBox(bin, imgW, b.x0, b.y0, b.x1 + 1, b.y1 + 1);
     if (!whole || n <= 1) return whole ? [whole] : [];
@@ -971,7 +1331,9 @@ function pixelsOf(bin, w, lab, id, box) {
       for (var k = 0; k < made.length; k++) polys.push(made[k]);
     }
     joinEnds(polys, sw);
+    joinCorners(polys, sw);
     attachHeads(polys, heads, sw);
+    polys = pairCrossings(polys, sw, figList(marks));
     for (var p = 0; p < polys.length; p++) {
       if (polyLen(polys[p].pts) < Math.max(6, sw * 2.5)) continue;
       keep.push({
@@ -1099,7 +1461,8 @@ function pixelsOf(bin, w, lab, id, box) {
   }
 
   function endFat(pts, fromEnd, dt, ox, oy, mw, mh, sw) {
-    var reach = Math.max(10, sw * 8);
+    var span = polyLen(pts);
+    var reach = Math.min(Math.max(10, sw * 8), Math.max(4, span * 0.45));
     var walked = 0, maxR = 0;
     var n = pts.length;
     var start = fromEnd ? n - 1 : 0;
@@ -1119,7 +1482,7 @@ function pixelsOf(bin, w, lab, id, box) {
     }
     var tip = fromEnd ? pts[n - 1] : pts[0];
     var ex = Math.round(tip.x - ox), ey = Math.round(tip.y - oy);
-    var rad = Math.max(14, sw * 5);
+    var rad = Math.min(Math.max(14, sw * 5), Math.max(4, span * 0.45));
     var yLo = Math.max(0, ey - rad), yHi = Math.min(mh - 1, ey + rad);
     var xLo = Math.max(0, ex - rad), xHi = Math.min(mw - 1, ex + rad);
     for (var yy = yLo; yy <= yHi; yy++) for (var xx = xLo; xx <= xHi; xx++) {
@@ -1181,6 +1544,300 @@ function pixelsOf(bin, w, lab, id, box) {
       polys.length = 0;
       for (var n = 0; n < next.length; n++) polys.push(next[n]);
     }
+  }
+
+  function joinCorners(polys, sw) {
+    var lim = Math.max(5, sw * 2);
+    var guard = polys.length * 3 + 4;
+    while (polys.length > 1 && guard--) {
+      var best = null, bestD = lim;
+      for (var i = 0; i < polys.length; i++) for (var j = i + 1; j < polys.length; j++) {
+        var A = polys[i], B = polys[j];
+        if (polyLen(A.pts) < 8 || polyLen(B.pts) < 8) continue;
+        var ends = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        for (var e = 0; e < 4; e++) {
+          var pa = ends[e][0] ? A.pts[A.pts.length - 1] : A.pts[0];
+          var pb = ends[e][1] ? B.pts[B.pts.length - 1] : B.pts[0];
+          var dist = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+          if (dist > bestD) continue;
+          var da = endDir(A.pts, !ends[e][0]);
+          var db = endDir(B.pts, !ends[e][1]);
+          var turn = angDiff(da, db);
+          if (turn < 1.05 || turn > 2.09) continue;
+          var mx = (pa.x + pb.x) / 2, my = (pa.y + pb.y) / 2;
+          if (thirdEnd(polys, i, j, mx, my, lim)) continue;
+          bestD = dist;
+          best = { i: i, j: j, aEnd: ends[e][0], bEnd: ends[e][1] };
+        }
+      }
+      if (!best) break;
+      var A2 = polys[best.i], B2 = polys[best.j];
+      var pa2 = best.aEnd ? A2.pts.slice() : A2.pts.slice().reverse();
+      var pb2 = best.bEnd ? B2.pts.slice().reverse() : B2.pts.slice();
+      var hA = best.aEnd ? A2.h0 : A2.h1;
+      var hB = best.bEnd ? B2.h0 : B2.h1;
+      if ((best.aEnd ? A2.h1 : A2.h0) && B2.pts.length < 20) hB = true;
+      if ((best.bEnd ? B2.h1 : B2.h0) && A2.pts.length < 20) hA = true;
+      var merged = { pts: pa2.concat(pb2), gaps: A2.gaps + B2.gaps, h0: hA, h1: hB };
+      var next = [];
+      for (var k = 0; k < polys.length; k++) if (k !== best.i && k !== best.j) next.push(polys[k]);
+      next.push(merged);
+      polys.length = 0;
+      for (var n = 0; n < next.length; n++) polys.push(next[n]);
+    }
+  }
+
+  function thirdEnd(polys, i, j, x, y, lim) {
+    for (var k = 0; k < polys.length; k++) {
+      if (k === i || k === j) continue;
+      var p = polys[k].pts;
+      if (Math.hypot(p[0].x - x, p[0].y - y) <= lim) return true;
+      if (Math.hypot(p[p.length - 1].x - x, p[p.length - 1].y - y) <= lim) return true;
+    }
+    return false;
+  }
+
+  function projectOnPoly(x, y, pts) {
+    var best = 1e9, at = 0, bx = x, by = y, acc = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var ax = pts[i - 1].x, ay = pts[i - 1].y, bx2 = pts[i].x, by2 = pts[i].y;
+      var dx = bx2 - ax, dy = by2 - ay, l2 = dx * dx + dy * dy;
+      var t = l2 ? ((x - ax) * dx + (y - ay) * dy) / l2 : 0;
+      if (t < 0) t = 0; else if (t > 1) t = 1;
+      var px = ax + t * dx, py = ay + t * dy;
+      var d = Math.hypot(x - px, y - py);
+      var seg = Math.sqrt(l2);
+      if (d < best) { best = d; at = acc + t * seg; bx = px; by = py; }
+      acc += seg;
+    }
+    return { d: best, at: at, x: bx, y: by, len: acc };
+  }
+
+  function splitPoly(poly, cuts) {
+    var pts = poly.pts;
+    var acc = [0];
+    for (var i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+    var total = acc[acc.length - 1];
+    var marks = [0];
+    for (var c = 0; c < cuts.length; c++) marks.push(cuts[c].at);
+    marks.push(total);
+    var last = marks.length - 2;
+    var out = [];
+    for (var s = 0; s <= last; s++) {
+      var a = marks[s], b = marks[s + 1];
+      if (b - a < 1.5) continue;
+      var seq = [];
+      if (s === 0) seq.push({ x: pts[0].x, y: pts[0].y });
+      else seq.push({ x: cuts[s - 1].x, y: cuts[s - 1].y });
+      for (var p = 1; p < pts.length - 1; p++) {
+        if (acc[p] > a + 0.5 && acc[p] < b - 0.5) seq.push(pts[p]);
+      }
+      if (s === last) seq.push({ x: pts[pts.length - 1].x, y: pts[pts.length - 1].y });
+      else seq.push({ x: cuts[s].x, y: cuts[s].y });
+      if (seq.length < 2) continue;
+      out.push({ pts: seq, gaps: 0, h0: s === 0 ? !!poly.h0 : false, h1: s === last ? !!poly.h1 : false });
+    }
+    return out.length ? out : [poly];
+  }
+
+  function cornerCount(pts) {
+    var s = rdp(pts, 3);
+    var n = 0;
+    for (var k = 1; k < s.length - 1; k++) {
+      var a1 = Math.atan2(s[k].y - s[k - 1].y, s[k].x - s[k - 1].x);
+      var a2 = Math.atan2(s[k + 1].y - s[k].y, s[k + 1].x - s[k].x);
+      var turn = angDiff(a1, a2);
+      if (turn > 0.7 && turn < 2.6) n++;
+    }
+    return n;
+  }
+
+  function pairCrossings(polys, sw, figs) {
+    var touch = Math.max(4, sw * 2);
+    var hits = [];
+    var i, j, e;
+    for (i = 0; i < polys.length; i++) {
+      if (polyLen(polys[i].pts) < Math.max(16, sw * 6)) continue;
+      var ends = [polys[i].pts[0], polys[i].pts[polys[i].pts.length - 1]];
+      for (e = 0; e < 2; e++) {
+        var best = null;
+        for (j = 0; j < polys.length; j++) {
+          if (j === i) continue;
+          var host = polys[j].pts;
+          if (Math.hypot(host[0].x - ends[e].x, host[0].y - ends[e].y) <= touch) continue;
+          if (Math.hypot(host[host.length - 1].x - ends[e].x, host[host.length - 1].y - ends[e].y) <= touch) continue;
+          var pr = projectOnPoly(ends[e].x, ends[e].y, host);
+          if (pr.d > touch || pr.at < touch || pr.len - pr.at < touch) continue;
+          if (!best || pr.d < best.d) best = { d: pr.d, host: j, at: pr.at, x: pr.x, y: pr.y };
+        }
+        if (best) { best.arm = i; hits.push(best); }
+      }
+    }
+    if (!hits.length) return polys;
+    var cuts = {};
+    for (i = 0; i < hits.length; i++) {
+      var hit = hits[i];
+      if (!cuts[hit.host]) cuts[hit.host] = [];
+      cuts[hit.host].push(hit);
+    }
+    var inCluster = {};
+    var edges = [];
+    for (i = 0; i < polys.length; i++) {
+      if (!cuts[i]) continue;
+      inCluster[i] = 1;
+      var list = cuts[i].slice().sort(function (a, b) { return a.at - b.at; });
+      var uniq = [];
+      for (j = 0; j < list.length; j++) {
+        if (!uniq.length || list[j].at - uniq[uniq.length - 1].at > touch) uniq.push(list[j]);
+      }
+      var parts = splitPoly(polys[i], uniq);
+      for (j = 0; j < parts.length; j++) edges.push(parts[j]);
+    }
+    for (i = 0; i < hits.length; i++) inCluster[hits[i].arm] = 1;
+    for (i = 0; i < polys.length; i++) if (inCluster[i] && !cuts[i]) edges.push(polys[i]);
+    var traced = traceCluster(edges, sw, figs);
+    if (!traced) return polys;
+    var keep = [];
+    for (i = 0; i < polys.length; i++) if (!inCluster[i]) keep.push(polys[i]);
+    for (i = 0; i < traced.length; i++) keep.push(traced[i]);
+    return keep;
+  }
+
+  function traceCluster(edges, sw, figs) {
+    var lim = Math.max(14, sw * 5);
+    var nodes = {};
+    function nk(x, y) { return (Math.round(x / 2) * 2) + ',' + (Math.round(y / 2) * 2); }
+    var i;
+    for (i = 0; i < edges.length; i++) {
+      var a = edges[i].pts[0], b = edges[i].pts[edges[i].pts.length - 1];
+      var ka = nk(a.x, a.y), kb = nk(b.x, b.y);
+      if (ka === kb) continue;
+      edges[i]._ka = ka;
+      edges[i]._kb = kb;
+      edges[i]._use = i;
+      if (!nodes[ka]) nodes[ka] = { x: a.x, y: a.y, edges: [] };
+      if (!nodes[kb]) nodes[kb] = { x: b.x, y: b.y, edges: [] };
+      nodes[ka].edges.push({ edge: i, end: 0 });
+      nodes[kb].edges.push({ edge: i, end: 1 });
+    }
+    var heads = [];
+    var block = {};
+    for (i = 0; i < edges.length; i++) {
+      if (!edges[i]._ka) continue;
+      var p0 = edges[i].pts[0], p1 = edges[i].pts[edges[i].pts.length - 1];
+      var f0 = snapFig(p0, figs, lim), f1 = snapFig(p1, figs, lim);
+      if (edges[i].h0 && f0 >= 0) { heads.push({ edge: i, fig: f0, key: edges[i]._ka }); block[f0] = 1; }
+      if (edges[i].h1 && f1 >= 0) { heads.push({ edge: i, fig: f1, key: edges[i]._kb }); block[f1] = 1; }
+    }
+    for (i = 0; i < heads.length; i++) heads[i].block = block;
+    if (!heads.length) return null;
+    for (i = 0; i < heads.length; i++) {
+      var opts = pathsFromHead(heads[i], edges, nodes, figs, lim);
+      opts.sort(function (a, b) { return a.turns - b.turns; });
+      var slim = [];
+      var seenFig = {};
+      for (var o = 0; o < opts.length && slim.length < 4; o++) {
+        if (seenFig[opts[o].fig]) continue;
+        seenFig[opts[o].fig] = 1;
+        slim.push(opts[o]);
+      }
+      heads[i].opts = slim;
+    }
+    var best = null;
+    function consider(matched, turns, chosen) {
+      if (!best || matched > best.matched || (matched === best.matched && turns < best.turns)) {
+        best = { matched: matched, turns: turns, chosen: chosen.slice() };
+      }
+    }
+    function rec(n, usedFig, turns, chosen) {
+      if (n === heads.length) { consider(chosen.length, turns, chosen); return; }
+      rec(n + 1, usedFig, turns, chosen);
+      var opts = heads[n].opts;
+      for (var o = 0; o < opts.length; o++) {
+        if (usedFig[opts[o].fig]) continue;
+        usedFig[opts[o].fig] = 1;
+        chosen.push(opts[o]);
+        rec(n + 1, usedFig, turns + opts[o].turns, chosen);
+        chosen.pop();
+        usedFig[opts[o].fig] = 0;
+      }
+    }
+    rec(0, {}, 0, []);
+    if (!best || !best.matched) return null;
+    var out = [];
+    var usedEdge = {};
+    for (i = 0; i < best.chosen.length; i++) {
+      var steps = best.chosen[i].steps;
+      var built = concatSteps(edges, steps);
+      built.pts.reverse();
+      var tmp = built.h0;
+      built.h0 = built.h1;
+      built.h1 = tmp;
+      out.push(built);
+      for (var s = 0; s < steps.length; s++) usedEdge[steps[s].edge] = 1;
+    }
+    for (i = 0; i < edges.length; i++) {
+      if (usedEdge[i] || !edges[i]._ka) continue;
+      var sa = snapFig(edges[i].pts[0], figs, lim);
+      var sb = snapFig(edges[i].pts[edges[i].pts.length - 1], figs, lim);
+      if (sa >= 0 && sb >= 0 && sa !== sb) out.push(edges[i]);
+    }
+    return out.length ? out : null;
+  }
+
+  function pathsFromHead(head, edges, nodes, figs, lim) {
+    var opts = [];
+    function walk(key, prevDir, turns, steps, used) {
+      if (steps.length > 6 || turns > 3) return;
+      var node = nodes[key];
+      if (!node) return;
+      if (steps.length) {
+        var fig = snapFig({ x: node.x, y: node.y }, figs, lim);
+        if (fig >= 0 && fig !== head.fig) {
+          if (!head.block || !head.block[fig]) opts.push({ fig: fig, turns: turns, steps: steps.slice() });
+          return;
+        }
+      }
+      for (var i = 0; i < node.edges.length; i++) {
+        var ref = node.edges[i];
+        if (used[ref.edge]) continue;
+        var poly = edges[ref.edge];
+        var fromStart = ref.end === 0;
+        var dir = endDir(poly.pts, fromStart) + Math.PI;
+        if (dir > Math.PI) dir -= 2 * Math.PI;
+        var extra = cornerCount(poly.pts);
+        var turn = 0;
+        if (prevDir !== null) {
+          var d = angDiff(prevDir, dir);
+          if (d > 0.6 && d < 2.6) turn = 1;
+        }
+        if (turns + turn + extra > 3) continue;
+        var nextKey = fromStart ? poly._kb : poly._ka;
+        var arrive = endDir(poly.pts, !fromStart);
+        used[ref.edge] = 1;
+        steps.push({ edge: ref.edge, fromKey: key, toKey: nextKey });
+        walk(nextKey, arrive, turns + turn + extra, steps, used);
+        steps.pop();
+        used[ref.edge] = 0;
+      }
+    }
+    walk(head.key, null, 0, [], {});
+    return opts;
+  }
+
+  function concatSteps(edges, steps) {
+    var pts = [];
+    var h0 = false, h1 = false;
+    for (var i = 0; i < steps.length; i++) {
+      var poly = edges[steps[i].edge];
+      var forward = steps[i].fromKey === poly._ka;
+      var seq = forward ? poly.pts : poly.pts.slice().reverse();
+      var start = i === 0 ? 0 : 1;
+      for (var p = start; p < seq.length; p++) pts.push({ x: seq[p].x, y: seq[p].y });
+      if (i === 0) h0 = forward ? !!poly.h0 : !!poly.h1;
+      if (i === steps.length - 1) h1 = forward ? !!poly.h1 : !!poly.h0;
+    }
+    return { pts: pts, gaps: 0, h0: h0, h1: h1 };
   }
 
   function attachHeads(polys, heads, sw) {
@@ -1437,11 +2094,12 @@ function pixelsOf(bin, w, lab, id, box) {
     for (var i = 0; i < marks.length; i++) if (marks[i].kind === 'glyph' && marks[i].ch === '\u25a1') squares++;
     for (var f = 0; f < figs.length; f++) {
       var fig = figs[f];
+      if (fig.skip) continue;
       var glyphs = glyphsOn(marks, fig);
       var styled = styleOf(glyphs, plate);
       var box = scaleBox(plate, fig);
       var spec = {
-        id: 'tmp', type: fig.contains.length ? 'group' : fig.shape,
+        id: 'tmp', type: fig.shape === 'donut' || fig.shape === 'frame' ? fig.shape : (fig.contains.length ? 'group' : fig.shape),
         x: box.x, y: box.y, w: box.w, h: box.h, text: styled.text
       };
       if (styled.size) spec.size = styled.size;
@@ -1487,6 +2145,44 @@ function pixelsOf(bin, w, lab, id, box) {
     if (linkRecs.dropped) notes.push('有' + linkRecs.dropped + '条笔画两端没有落到两个图形上，已略过。');
     if (squares) notes.push('有' + squares + '个字未识别，以□标出。');
     return { page: page, notes: notes };
+  }
+
+  function evenHole(parent, child) {
+    var l = child.x - parent.x;
+    var t = child.y - parent.y;
+    var r = (parent.x + parent.w) - (child.x + child.w);
+    var b = (parent.y + parent.h) - (child.y + child.h);
+    if (l < 2 || t < 2 || r < 2 || b < 2) return false;
+    var m = (l + t + r + b) / 4;
+    if (m < 3) return false;
+    if (Math.abs(l - m) > m * 0.45 || Math.abs(r - m) > m * 0.45) return false;
+    if (Math.abs(t - m) > m * 0.45 || Math.abs(b - m) > m * 0.45) return false;
+    var ratio = (child.w * child.h) / (parent.w * parent.h);
+    return ratio > 0.18 && ratio < 0.78;
+  }
+
+  function markHoles(marks) {
+    var figs = figList(marks);
+    for (var i = 0; i < figs.length; i++) {
+      var p = figs[i];
+      if (!p.contains || p.contains.length !== 1 || p.skip) continue;
+      if (hostedCount(marks, p)) continue;
+      var c = figs[p.contains[0]];
+      if (!c || c.skip || !evenHole(p, c)) continue;
+      var kind = '';
+      if ((p.shape === 'ellipse' || p.shape === 'round') && (c.shape === 'ellipse' || c.shape === 'round')) kind = 'donut';
+      else if ((p.shape === 'rect' || p.shape === 'round') && (c.shape === 'rect' || c.shape === 'round')) kind = 'frame';
+      if (!kind) continue;
+      p.shape = kind;
+      p.contains = [];
+      c.skip = 1;
+      for (var g = 0; g < marks.length; g++) {
+        var glyph = marks[g];
+        if (glyph.kind === 'glyph' && glyph.host && glyph.host.kind === 'figure' && glyph.host.fig === c) {
+          glyph.host = { kind: 'figure', fig: p };
+        }
+      }
+    }
   }
 
   function glyphsOn(marks, fig) {
@@ -1677,6 +2373,13 @@ function pixelsOf(bin, w, lab, id, box) {
       if (s.h0 && s.h1) dir = 'both';
       else if (s.h1) dir = 'one';
       else if (s.h0) { dir = 'one'; from = b; to = a; }
+      if (dir === 'both') {
+        var fa = figs[from], fb = figs[to];
+        var ax = fa.x + fa.w / 2, bx = fb.x + fb.w / 2;
+        if (bx < ax - 1 || (Math.abs(bx - ax) <= 1 && fb.y + fb.h / 2 < fa.y + fa.h / 2)) {
+          var swap = from; from = to; to = swap;
+        }
+      }
       var label = strokeLabel(marks, s);
       var mid = s.pts[(s.pts.length / 2) | 0];
       raw.push({
