@@ -249,16 +249,17 @@
     var w = plate.w, h = plate.h, sw = plate.sw;
     var paper = labelBinary(plate.bin, w, h, false);
     var minArea = Math.max(48, 12 * sw * sw);
+    var minSide = Math.max(28, sw * 10);
     for (var id = 1; id <= paper.n; id++) {
       if (paper.border[id]) continue;
       var box = paper.boxes[id];
       if (paper.areas[id] < minArea) continue;
-      if (Math.min(box.w, box.h) <= 6 * sw) continue;
+      if (Math.min(box.w, box.h) <= minSide) continue;
       var solid = solidify(paper.lab, id, box, w, h, sw);
       if (!solid) continue;
-      if (Math.min(solid.w, solid.h) <= 6 * sw) continue;
+      if (Math.min(solid.w, solid.h) <= minSide) continue;
       if (solid.w * solid.h < minArea) continue;
-      var shape = bestShape(solid.mask, solid.w, solid.h);
+      var shape = bestShape(solid.mask, solid.w, solid.h, sw);
       if (!shape) continue;
       if (ringScore(plate.bin, solid, w, h) < 0.42) continue;
       var e = sw * 0.5;
@@ -324,7 +325,28 @@
     for (var py = ay0; py <= ay1; py++) for (var px = ax0; px <= ax1; px++) {
       if (!seen[py * bw + px]) mask[(py - ay0) * swd + (px - ax0)] = 1;
     }
+    fillHoles(mask, swd, shd);
     return { mask: mask, x: x0 + ax0, y: y0 + ay0, w: swd, h: shd };
+  }
+
+  function fillHoles(mask, w, h) {
+    var seen = new Uint8Array(w * h);
+    var stack = [];
+    function push(x, y) {
+      if (x < 0 || y < 0 || x >= w || y >= h) return;
+      var i = y * w + x;
+      if (seen[i] || mask[i]) return;
+      seen[i] = 1;
+      stack.push(i);
+    }
+    for (var x = 0; x < w; x++) { push(x, 0); push(x, h - 1); }
+    for (var y = 0; y < h; y++) { push(0, y); push(w - 1, y); }
+    while (stack.length) {
+      var i = stack.pop();
+      var x = i % w, y = (i / w) | 0;
+      push(x + 1, y); push(x - 1, y); push(x, y + 1); push(x, y - 1);
+    }
+    for (var k = 0; k < mask.length; k++) if (!mask[k] && !seen[k]) mask[k] = 1;
   }
 
   function ringScore(bin, solid, imgW, imgH) {
@@ -375,11 +397,43 @@
     for (var i = 0; i < bin.length; i++) if (drop[i]) bin[i] = 0;
   }
 
-  function boundaryPoints(mask, w, h) {
+  function boundaryPoints(mask, w, h, sw) {
+    var rad = Math.max(2, Math.round(sw) || 2);
+    var dil = new Uint8Array(w * h);
+    for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
+      if (!mask[y * w + x]) continue;
+      var yLo = y - rad < 0 ? 0 : y - rad, yHi = y + rad >= h ? h - 1 : y + rad;
+      var xLo = x - rad < 0 ? 0 : x - rad, xHi = x + rad >= w ? w - 1 : x + rad;
+      for (var yy = yLo; yy <= yHi; yy++) for (var xx = xLo; xx <= xHi; xx++) dil[yy * w + xx] = 1;
+    }
+    var ext = new Uint8Array(w * h);
+    var stack = [];
+    function push(x, y) {
+      if (x < 0 || y < 0 || x >= w || y >= h) return;
+      var i = y * w + x;
+      if (ext[i] || dil[i]) return;
+      ext[i] = 1;
+      stack.push(i);
+    }
+    for (var x0 = 0; x0 < w; x0++) { push(x0, 0); push(x0, h - 1); }
+    for (var y0 = 0; y0 < h; y0++) { push(0, y0); push(w - 1, y0); }
+    while (stack.length) {
+      var i = stack.pop();
+      var x = i % w, y = (i / w) | 0;
+      push(x + 1, y); push(x - 1, y); push(x, y + 1); push(x, y - 1);
+    }
+    var reach = rad + 1;
     var pts = [];
     for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
       if (!mask[y * w + x]) continue;
-      if (x === 0 || y === 0 || x === w - 1 || y === h - 1 || !mask[y * w + x - 1] || !mask[y * w + x + 1] || !mask[(y - 1) * w + x] || !mask[(y + 1) * w + x]) pts.push({ x: x, y: y });
+      var local = x === 0 || y === 0 || x === w - 1 || y === h - 1 || !mask[y * w + x - 1] || !mask[y * w + x + 1] || !mask[(y - 1) * w + x] || !mask[(y + 1) * w + x];
+      if (!local) continue;
+      var near = false;
+      for (var yy = y - reach; yy <= y + reach && !near; yy++) for (var xx = x - reach; xx <= x + reach; xx++) {
+        var out = xx < 0 || yy < 0 || xx >= w || yy >= h || ext[yy * w + xx];
+        if (out) { near = true; break; }
+      }
+      if (near) pts.push({ x: x, y: y });
     }
     if (pts.length > 360) {
       var step = Math.ceil(pts.length / 360), slim = [];
@@ -419,18 +473,19 @@
     return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
   }
 
-  function bestShape(mask, w, h) {
-    var pts = boundaryPoints(mask, w, h);
+  function bestShape(mask, w, h, sw) {
+    var pts = boundaryPoints(mask, w, h, sw);
     if (pts.length < 8) return null;
     var minSide = Math.min(w, h);
     var radii = cornerRadii(mask, w, h);
     var maxR = Math.max(radii[0], radii[1], radii[2], radii[3]);
+    var rectR = Math.max(3, sw * 4);
     var eRect = meanDist(pts, function (p) { return Math.min(p.x, p.y, w - 1 - p.x, h - 1 - p.y); });
-    if (maxR <= 3 && eRect < 0.075 * minSide) return 'rect';
+    if (maxR <= rectR && eRect < 0.075 * minSide) return 'rect';
     var cands = [];
     function agree(a, b) { return Math.abs(a - b) <= 0.30 * Math.max(a, b, 1); }
     function sideOk(a, b) {
-      return a >= 4 && b >= 4 && a <= 0.40 * minSide && b <= 0.40 * minSide && agree(a, b);
+      return a > rectR && b > rectR && a <= 0.45 * minSide && b <= 0.45 * minSide && agree(a, b);
     }
     if (sideOk(radii[0], radii[1]) && sideOk(radii[1], radii[2]) && sideOk(radii[2], radii[3]) && agree(radii[0], radii[2])) {
       var r = (radii[0] + radii[1] + radii[2] + radii[3]) / 4;
@@ -467,12 +522,12 @@
         return best;
       })
     });
-    if (eRect < 0.12 * minSide && maxR <= 6) cands.push({ shape: 'rect', err: eRect });
+    if (eRect < 0.12 * minSide && maxR <= rectR + 2) cands.push({ shape: 'rect', err: eRect });
     cands.sort(function (a, b) { return a.err - b.err; });
     if (!cands.length) return null;
     var best = cands[0], second = cands[1];
     if (best.err < 0.075 * minSide && (!second || best.err < 0.72 * Math.max(second.err, 0.001))) return best.shape;
-    if (best.shape === 'rect' && best.err < 0.12 * minSide && maxR <= 4) return 'rect';
+    if (best.shape === 'rect' && best.err < 0.12 * minSide && maxR <= rectR + 2) return 'rect';
     return null;
   }
 
@@ -528,16 +583,18 @@
       var ends = axisEnds(pts);
       var a = ends ? snapFig(ends[0], figs, lim) : -1;
       var b = ends ? snapFig(ends[1], figs, lim) : -1;
+      var lineLike = thin || skinny || flat;
       pending.push({
         id: id, box: box, bw: bw, bh: bh,
-        strokeLike: thin || skinny || flat || upright,
+        strokeLike: lineLike || upright,
+        bar: lineLike && long >= Math.max(40, sw * 8),
         linked: a >= 0 && b >= 0 && a !== b
       });
     }
     var margin = Math.max(4, Math.round(sw));
     for (var i = 0; i < pending.length; i++) {
       var item = pending[i];
-      if (!item.linked && !(item.strokeLike && alone(item, pending, margin))) continue;
+      if (!item.linked && !item.bar && !(item.strokeLike && alone(item, pending, margin))) continue;
       marks.push({
         kind: 'stroke', x: item.box.x, y: item.box.y, w: item.bw, h: item.bh,
         mask: crop(plate.bin, w, ink.lab, item.id, item.box), mw: item.bw, mh: item.bh
@@ -643,9 +700,14 @@
   }
 
   function groupBounds(comps) {
-    var x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
+    var use = [];
     for (var i = 0; i < comps.length; i++) {
-      var c = comps[i];
+      if (Math.min(comps[i].w, comps[i].h) > 3) use.push(comps[i]);
+    }
+    if (!use.length) use = comps;
+    var x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
+    for (var j = 0; j < use.length; j++) {
+      var c = use[j];
       if (c.x < x0) x0 = c.x;
       if (c.y < y0) y0 = c.y;
       if (c.x + c.w - 1 > x1) x1 = c.x + c.w - 1;
@@ -995,7 +1057,7 @@ function pixelsOf(bin, w, lab, id, box) {
   }
 
   function endFat(pts, fromEnd, dt, ox, oy, mw, mh, sw) {
-    var reach = Math.max(28, sw * 10);
+    var reach = Math.max(10, sw * 8);
     var walked = 0, maxR = 0;
     var n = pts.length;
     var start = fromEnd ? n - 1 : 0;
@@ -1015,7 +1077,7 @@ function pixelsOf(bin, w, lab, id, box) {
     }
     var tip = fromEnd ? pts[n - 1] : pts[0];
     var ex = Math.round(tip.x - ox), ey = Math.round(tip.y - oy);
-    var rad = Math.max(22, sw * 6);
+    var rad = Math.max(14, sw * 5);
     var yLo = Math.max(0, ey - rad), yHi = Math.min(mh - 1, ey + rad);
     var xLo = Math.max(0, ex - rad), xHi = Math.min(mw - 1, ex + rad);
     for (var yy = yLo; yy <= yHi; yy++) for (var xx = xLo; xx <= xHi; xx++) {
@@ -1023,8 +1085,7 @@ function pixelsOf(bin, w, lab, id, box) {
       if (dt[yy * mw + xx] > maxR) maxR = dt[yy * mw + xx];
     }
     var mid = median(mids);
-    if (!(mid >= 0.4)) return false;
-    return maxR >= mid + 1.1 && maxR >= mid * 1.55;
+    return maxR > Math.max(sw * 1.05, mid * 1.55);
   }
 
   function endDir(pts, atStart) {
@@ -1065,13 +1126,13 @@ function pixelsOf(bin, w, lab, id, box) {
       var A2 = polys[best.i], B2 = polys[best.j];
       var pa2 = best.aEnd ? A2.pts.slice() : A2.pts.slice().reverse();
       var pb2 = best.bEnd ? B2.pts.slice().reverse() : B2.pts.slice();
-      var h0 = best.aEnd ? A2.h0 : A2.h1;
-      var h1 = best.bEnd ? B2.h0 : B2.h1;
-      if (best.aEnd ? A2.h1 : A2.h0) h1 = true;
-      if (best.bEnd ? B2.h1 : B2.h0) h0 = true;
+      var hA = best.aEnd ? A2.h0 : A2.h1;
+      var hB = best.bEnd ? B2.h0 : B2.h1;
+      if ((best.aEnd ? A2.h1 : A2.h0) && B2.pts.length < 20) hB = true;
+      if ((best.bEnd ? B2.h1 : B2.h0) && A2.pts.length < 20) hA = true;
       var gaps = A2.gaps + B2.gaps;
       if (best.dist >= 0.4 * sw && best.dist <= Math.max(3 * sw, 8)) gaps++;
-      var merged = { pts: pa2.concat(pb2), gaps: gaps, h0: h0, h1: h1 };
+      var merged = { pts: pa2.concat(pb2), gaps: gaps, h0: hA, h1: hB };
       var next = [];
       for (var k = 0; k < polys.length; k++) if (k !== best.i && k !== best.j) next.push(polys[k]);
       next.push(merged);
@@ -1081,7 +1142,7 @@ function pixelsOf(bin, w, lab, id, box) {
   }
 
   function attachHeads(polys, heads, sw) {
-    var lim = Math.max(22, sw * 7);
+    var lim = Math.max(14, sw * 4);
     for (var i = 0; i < heads.length; i++) {
       var head = heads[i];
       var best = null, bestD = lim;
@@ -1216,6 +1277,12 @@ function pixelsOf(bin, w, lab, id, box) {
     take(bucket);
     for (var bit = 0; bit < 12; bit++) take(bucket ^ (1 << bit));
     for (var b1 = 0; b1 < 12; b1++) for (var b2 = b1 + 1; b2 < 12; b2++) take(bucket ^ (1 << b1) ^ (1 << b2));
+    for (var c1 = 0; c1 < 12; c1++) for (var c2 = c1 + 1; c2 < 12; c2++) for (var c3 = c2 + 1; c3 < 12; c3++) {
+      take(bucket ^ (1 << c1) ^ (1 << c2) ^ (1 << c3));
+    }
+    for (var d1 = 0; d1 < 12; d1++) for (var d2 = d1 + 1; d2 < 12; d2++) for (var d3 = d2 + 1; d3 < 12; d3++) for (var d4 = d3 + 1; d4 < 12; d4++) {
+      take(bucket ^ (1 << d1) ^ (1 << d2) ^ (1 << d3) ^ (1 << d4));
+    }
     var gsum = 0;
     for (var g = 0; g < 256; g++) gsum += grid[g];
     var best = 1e9, second = 1e9, hit = null;
@@ -1591,9 +1658,17 @@ function pixelsOf(bin, w, lab, id, box) {
   }
 
   function snapFig(pt, figs, lim) {
-    var best = -1, bestD = lim;
+    var best = -1, bestD = lim, bestA = 1e15, inside = false;
     for (var i = 0; i < figs.length; i++) {
-      var d = distRectBoundary(pt.x, pt.y, figs[i]);
+      var r = figs[i];
+      var inR = pt.x >= r.x && pt.y >= r.y && pt.x <= r.x + r.w && pt.y <= r.y + r.h;
+      if (inR) {
+        var area = r.w * r.h;
+        if (!inside || area < bestA) { inside = true; bestA = area; best = i; }
+        continue;
+      }
+      if (inside) continue;
+      var d = distRectBoundary(pt.x, pt.y, r);
       if (d < bestD) { bestD = d; best = i; }
     }
     return best;

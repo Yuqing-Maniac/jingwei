@@ -128,7 +128,7 @@ DIAGRAMS = [
             {'id': 'a', 'type': 'rect', 'x': 30, 'y': 40, 'w': 140, 'h': 44, 'text': '巡逻', 'size': 14, 'font': 'noto'},
             {'id': 'b', 'type': 'rect', 'x': 210, 'y': 30, 'w': 160, 'h': 64, 'text': '巡逻', 'size': 22, 'font': 'noto', 'bold': True},
             {'id': 'c', 'type': 'round', 'x': 410, 'y': 36, 'w': 150, 'h': 52, 'text': '巡逻', 'size': 16, 'font': 'noto-serif'},
-            {'id': 'd', 'type': 'rect', 'x': 600, 'y': 34, 'w': 160, 'h': 56, 'text': '巡逻', 'size': 18, 'font': 'wqy'},
+            {'id': 'd', 'type': 'rect', 'x': 600, 'y': 28, 'w': 180, 'h': 68, 'text': '巡逻', 'size': 22, 'font': 'noto-serif'},
         ],
         'links': [
             {'id': 'l1', 'from': 'a', 'to': 'b'},
@@ -265,21 +265,22 @@ def score_variant(gt, pred, k):
             pairs.append((g, pred['nodes'][best_i]))
     shape_rec = len(pairs) / len(gnodes) if gnodes else 1
     shape_prec = len(pairs) / len(pred['nodes']) if pred['nodes'] else (1 if not gnodes else 0)
-    chars = edits = 0
+    accs = []
     for g, p in pairs:
-        chars += len(g['text'])
-        edits += edit_distance(g['text'], p['text'])
-    text_acc = 1.0 if not chars else max(0.0, chars - edits) / chars
+        gt_t = g['text'] or ''
+        pr_t = p['text'] or ''
+        longer = max(len(gt_t), len(pr_t))
+        if longer == 0:
+            accs.append(1.0)
+        else:
+            accs.append(max(0.0, 1.0 - edit_distance(gt_t, pr_t) / longer))
+    if accs:
+        text_acc = sum(accs) / len(accs)
+    elif any((g.get('text') or '') for g in gnodes):
+        text_acc = 0.0
+    else:
+        text_acc = 1.0
     g2p = {g['id']: p['id'] for g, p in pairs}
-    p_links = {(l['from'], l['to'], l['dir']) for l in pred['links']}
-    link_hit = 0
-    for l in gt['links']:
-        a, b = g2p.get(l['from']), g2p.get(l['to'])
-        if a and b and ((a, b, l['dir']) in p_links or (b, a, l['dir']) in p_links and l['dir'] == 'both'):
-            link_hit += 1
-        elif a and b and (a, b, l['dir']) in p_links:
-            link_hit += 1
-    # direction must match; a reversed arrow is not a hit
     link_hit = 0
     matched_pred = set()
     for l in gt['links']:
@@ -348,7 +349,7 @@ def main():
         page.goto(HTML)
         page.wait_for_timeout(500)
         font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
-        font = ImageFont.truetype(font_path, 22, index=0)
+        font = ImageFont.truetype(font_path, 22, index=2)
         for spec in DIAGRAMS:
             got = page.evaluate(RUN, spec)
             gt_path = OUT / (spec['key'] + '.json')
@@ -373,7 +374,7 @@ def main():
                     k = got['pred']['blur']['w'] / got['pred']['png']['w']
                 line[kind] = score_variant(got['gt'], got['pred'][kind], k)
             rows.append(line)
-            print(spec['key'], 'png nodes', got['pred']['png']['nodes'] and len(got['pred']['png']['nodes']), 'notes', got['pred']['png']['notes'])
+            print(spec['key'], 'png', [(n['type'], n['text']) for n in got['pred']['png']['nodes']], 'links', [(l['from'], l['to'], l['dir'], l['label']) for l in got['pred']['png']['links']], 'notes', got['pred']['png']['notes'])
         browser.close()
     headers = ('key', 'var', 'shape_rec', 'shape_prec', 'text', 'link_rec', 'link_prec', 'ms', 'pred_n', 'pred_l')
     print('\t'.join(headers))
