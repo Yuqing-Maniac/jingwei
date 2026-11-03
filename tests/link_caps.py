@@ -84,6 +84,7 @@ with sync_playwright() as pw:
     pg.fill('#p-back', '回执')
     pg.wait_for_timeout(80)
     pg.locator('#props').screenshot(path=SHOT)
+    pg.locator('#stage').screenshot(path='/tmp/link-canvas-bi.png')
     pg.keyboard.press('Escape')
     pg.wait_for_timeout(80)
     both = caps()

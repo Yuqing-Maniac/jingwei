@@ -929,8 +929,7 @@ function linkCanvasKeys() {
   return '选中连线后 ' + bits.join('，');
 }
 function linkPanelHint() {
-  const kind = LINK_KEYS[0];
-  return '<kbd>' + esc(kind.chord) + '</kbd> ' + esc(kind.label) + '<br>' + esc(linkSelToast());
+  return esc(linkSelToast()) + '<br><kbd>1</kbd>–<kbd>6</kbd> 切换链路类型';
 }
 function renderOverlay() { const o = $('#overlay'); if (o) o.outerHTML = overlaySVG(); }
 /* hover highlight (canvas only): links of the hovered node / the hovered link stay vivid, the rest dim */
@@ -1812,7 +1811,7 @@ $('#crumb').addEventListener('click', e => { const b = e.target.closest('[data-c
 const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏', band: '分组带', lane: '层（泳道）', group: '子容器' });
 const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
   ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate']]];
-function seg(id, opts, val) { return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}">${l}</button>`).join('')}</div>`; }
+function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
 function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
   if (selLink) {
@@ -1820,7 +1819,7 @@ function renderProps() {
     const a = nodeById(l.from), b = nodeById(l.to), both = linkDir(l) === 'both';
     h += `<div class="hint">${linkPanelHint()}</div>`;
     h += `<h3>连线 <span class="tag">${esc((a?.text || '').split('\n')[0])} → ${esc((b?.text || '').split('\n')[0])}</span></h3>`;
-    h += `<div class="row" title="快捷键 D"><label>箭头</label>${seg('p-dir', [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']], linkDir(l))}</div>`;
+    h += `<div class="row"><label title="快捷键 D">箭头</label>${seg('p-dir', [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']], linkDir(l), '快捷键 D')}</div>`;
     h += `<div class="row"><label></label><button id="p-swap" style="border-color:var(--line);justify-content:center">⇄ 调换方向</button></div>`;
     h += `<div class="row"><label>链路类型</label><select id="p-kind">${Object.entries(LINK_KINDS).map(([k, v]) => `<option value="${k}" ${k === l.kind ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
     if (both) {
@@ -1892,8 +1891,6 @@ function renderProps() {
 let propSnap = null;
 function bindProps() {
   const el = $('#props');
-  /* onfocusin 属性在当前 Chromium 里写了也不会调用，失焦那一次撤销就永远不记。 */
-  el.onfocusin = () => { propSnap = snapshot(); };
   if (!el._jwSnap) { el._jwSnap = true; el.addEventListener('focusin', () => { propSnap = snapshot(); }); }
   el.onchange = () => { if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); } propSnap = snapshot(); };
   const n = sel.size === 1 ? nodeById([...sel][0]) : null;
@@ -1925,8 +1922,8 @@ function bindProps() {
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
   on('#p-back', 'input', e => { setLabelBack(l, e.target.value); live(); });
   on('#p-route', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); l.route = b.dataset.v; render(); });
-  on('#d-dname', 'input', e => { doc.name = e.target.value; refreshDocTitle(); });
-  on('#d-pname', 'input', e => { P().name = e.target.value; renderCrumb(); refreshDocTitle(); });
+  on('#d-dname', 'input', e => { doc.name = e.target.value; refreshDocTitle(); if (typeof window.jwTouch === 'function') window.jwTouch(); });
+  on('#d-pname', 'input', e => { P().name = e.target.value; renderCrumb(); refreshDocTitle(); if (typeof window.jwTouch === 'function') window.jwTouch(); });
   on('#d-theme', 'change', e => setTheme(e.target.value));
   on('#d-jump', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.jumpStyle = b.dataset.v; render(); });
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
