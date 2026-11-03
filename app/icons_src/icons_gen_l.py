@@ -256,27 +256,18 @@ def band(b, x0, y0, x1, y1, half, fill, st, sw=1.1):
 
 @icon('air_phased_radar', '机载相控阵雷达', '感知通信')
 def _(b):
-    b.p('M58 26 L92 32 L92 70 L60 78 Z', 'air', AS, 1.15)
-    b.hl('M62 30 L90 35', 1.2, .8)
-    b.p('M66 28 C78 14 90 16 92 28 L90 36 C80 32 72 32 64 36 Z', 'canopy', '#1B2D40', .9)
-    glint(b, 78, 20, 3.6, 1.3)
-    b.p('M74 66 L92 62 L92 70 L76 74 Z', 'airdk', AS, .9)
-    b.p('M78 67 L90 64.2 L90 68.2 L79 71 Z', '#12161A')
-    b.p('M12 34 L20 26 L24 78 L14 74 Z', 'airdk', AS, 1.05)
-    b.p('M20 26 L56 14 L66 22 L70 78 L24 78 Z', 'metal2', MS, 1.15)
-    b.p('M24 30 L52 20 L60 26 L63 74 L28 74 Z', 'array', '#E7F3FF', 1.45)
-    for i in range(3):
-        t = (i + .5) / 3
-        for j in range(4):
-            u = (j + .5) / 4
-            xt, xb = 27 + 22 * t, 30 + 28 * t
-            yt, yb = 33 - 6 * t, 71
-            b.c(round(xt + (xb - xt) * u, 1), round(yt + (yb - yt) * u, 1), 2.4, '#F7FBFF')
-    b.p('M26 32 L38 26 L36 72 L28 72 Z', '#FFFFFF', op=.18)
-    b.ln('M7 26 Q3 52 9 78', '#0E2A4A', 5.2)
-    b.ln('M7 26 Q3 52 9 78', '#EAF6FF', 2.9)
-    b.ln('M14 34 Q11 52 16 70', '#0E2A4A', 4.2)
-    b.ln('M14 34 Q11 52 16 70', '#8FD0FF', 2.3)
+    b.p('M46 58 L78 68 L90 80 L54 68 Z', 'airdk', AS, 1.05)
+    b.hl('M52 62 L84 74', .9, .55)
+    b.p('M24 46 L62 30 L92 34 L92 62 L62 66 Z', 'air', AS, 1.2)
+    b.p('M64 32 C76 18 88 20 92 32 L90 42 C78 36 70 36 62 42 Z', 'canopy', '#1B2D40', .9)
+    glint(b, 78, 22, 3.6, 1.3)
+    b.p('M8 38 L28 26 L32 66 L12 56 Z', 'array', '#E7F3FF', 1.4)
+    plate_dots(b, 12, 34, 14, 24, 2, 3, 1.7)
+    b.hl('M28 34 L88 38', 1.15, .75)
+    b.ln('M2 26 Q0 48 4 70', '#0E2A4A', 4.8)
+    b.ln('M2 26 Q0 48 4 70', '#EAF6FF', 2.5)
+    b.ln('M8 34 Q6 48 10 62', '#0E2A4A', 3.6)
+    b.ln('M8 34 Q6 48 10 62', '#8FD0FF', 1.9)
 
 
 @icon('ship_mesh_datalink', '舰载自组网数据链', '感知通信')
@@ -298,24 +289,24 @@ def _(b):
 
 @icon('air_mesh_datalink', '机载自组网数据链', '感知通信')
 def _(b):
-    fus = 'M8 52 C14 38 32 36 52 36 L80 38 C90 40 94 48 92 56 C88 64 72 67 50 67 L22 65 C12 63 6 58 8 52 Z'
-    wing = 'M34 60 L56 54 L82 84 L44 86 Z'
-    tail = 'M10 50 L8 26 L22 28 L28 48 Z'
-    stab = 'M8 56 L24 54 L22 64 L10 66 Z'
+    fus = 'M4 50 L28 44 L70 44 L88 48 L86 58 L66 62 L24 62 L6 56 Z'
+    wing = 'M26 56 L52 50 L74 62 L34 66 Z'
+    tail = 'M72 46 L86 18 L94 22 L84 48 Z'
+    stab = 'M74 54 L94 50 L92 58 L76 60 Z'
     b.drop(wing, 2, 3, .16)
     b.drop(fus, 2, 3, .16)
     b.p(tail, 'airdk', AS, 1.1)
     b.p(stab, 'airdk', AS, 1)
     b.p(wing, 'air', AS, 1.15)
     b.p(fus, 'airV', AS, 1.25)
-    b.p('M72 40 C82 37 90 43 92 51 L70 51 Z', 'canopy', '#1B2D40', .85)
-    glint(b, 80, 43, 2.4, 1)
-    b.hl('M14 48 C30 41 52 38.6 78 41', 1.2, .82)
-    b.r(58, 65, 4.6, 15, 'metal3', MS, rx=1, sw=.9)
-    pts = ((40, 22), (54, 9), (68, 22))
+    b.p('M16 46 C28 40 42 42 48 48 L46 54 C34 50 22 50 14 54 Z', 'canopy', '#1B2D40', .85)
+    glint(b, 28, 44, 2.6, 1)
+    b.hl('M10 49 L70 46', 1.15, .8)
+    b.r(40, 62, 4.2, 14, 'metal3', MS, rx=1, sw=.9)
+    pts = ((30, 24), (46, 10), (62, 24))
     for x, y in pts:
-        b.ln(f'M{x} {y + 6} L{x} 37', '#5E6A78', 2.5)
-        b.ln(f'M{x} {y + 6} L{x} 37', '#E4EAF0', .95)
+        b.ln(f'M{x} {y + 6} L{x} 42', '#5E6A78', 2.5)
+        b.ln(f'M{x} {y + 6} L{x} 42', '#E4EAF0', .95)
     trio(b, pts, 5.5)
 
 
@@ -413,14 +404,12 @@ def _(b):
 @icon('eo_composite', '复合光电系统', '感知通信')
 def _(b):
     b.sh(40, 90, 28, 3.2)
-    b.e(36, 86, 18, 5.4, 'metal3', MS, 1)
-    b.e(36, 82, 12, 3.8, 'metal', MS, .9)
-    b.r(32, 72, 8, 10, 'cylM', MS, 1)
-    b.r(22, 12, 10, 62, 'metal2', MS, rx=2, sw=1.1)
-    b.hl('M24 14 L24 70', 1, .65)
-    hcyl(b, 32, 24, 44, 11, 'cylM', 'lens', '#05101C')
-    hcyl(b, 32, 48, 34, 7, 'cylM', '#E2B04A', '#8A5A14')
-    hcyl(b, 32, 67, 24, 3.2, 'dkm', '#14181C', '#0B0D10')
+    b.e(34, 88, 16, 4.6, 'metal3', MS, 1)
+    b.e(34, 84, 11, 3.2, 'metal', MS, .9)
+    b.r(30, 70, 8, 14, 'cylM', MS, 1)
+    hcyl(b, 28, 20, 52, 11, 'cylM', 'lens', '#05101C')
+    hcyl(b, 28, 46, 40, 8, 'cylM', '#E2B04A', '#8A5A14')
+    hcyl(b, 28, 68, 30, 5.5, 'dkm', '#14181C', '#0B0D10')
 
 
 @icon('compute_platform', '新架构算力平台', '信息技术')
