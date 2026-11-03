@@ -505,16 +505,19 @@
   function classifyRest(plate, marks) {
     var w = plate.w, h = plate.h, sw = plate.sw;
     var ink = labelBinary(plate.bin, w, h, true);
+    var figs = figList(marks);
+    var lim = Math.max(14, sw * 5);
+    var pending = [];
     for (var id = 1; id <= ink.n; id++) {
       var box = ink.boxes[id];
-      var area = ink.areas[id];
-      if (area < 6) continue;
+      if (ink.areas[id] < 6) continue;
       var bw = box.w, bh = box.h;
       var long = Math.max(bw, bh), short = Math.min(bw, bh);
-      var fill = area / (bw * bh);
+      var fill = ink.areas[id] / (bw * bh);
       var pts = pixelsOf(plate.bin, w, ink.lab, id, box);
       if (long < Math.max(36, sw * 14) && isTriangle(pts, sw)) {
         marks.push(triangleMark(pts));
+        clearLabel(plate.bin, w, ink.lab, id, box);
         continue;
       }
       var bands = busyBands(plate.bin, w, ink.lab, id, box);
@@ -522,17 +525,186 @@
       var skinny = fill < 0.28 && long > 6 * sw && long >= short * 2.4;
       var flat = bands.rows <= Math.max(6, sw * 2.6) && bw > Math.max(bh * 1.7, 6 * sw);
       var upright = bands.cols <= Math.max(6, sw * 2.6) && bh > Math.max(bw * 1.7, 6 * sw);
-      if (thin || skinny || flat || upright) {
-        marks.push({ kind: 'stroke', x: box.x, y: box.y, w: bw, h: bh, mask: crop(plate.bin, w, ink.lab, id, box), mw: bw, mh: bh });
-        continue;
-      }
-      var parts = splitWide(plate.bin, w, ink.lab, id, box, sw);
-      for (var p = 0; p < parts.length; p++) {
-        var g = rasterGrid(plate.bin, w, ink.lab, id, parts[p]);
-        if (!g) continue;
-        marks.push({ kind: 'glyph', x: parts[p].x, y: parts[p].y, w: parts[p].w, h: parts[p].h, grid: g, ch: '', face: '', host: null });
-      }
+      var ends = axisEnds(pts);
+      var a = ends ? snapFig(ends[0], figs, lim) : -1;
+      var b = ends ? snapFig(ends[1], figs, lim) : -1;
+      pending.push({
+        id: id, box: box, bw: bw, bh: bh,
+        strokeLike: thin || skinny || flat || upright,
+        linked: a >= 0 && b >= 0 && a !== b
+      });
     }
+    var margin = Math.max(4, Math.round(sw));
+    for (var i = 0; i < pending.length; i++) {
+      var item = pending[i];
+      if (!item.linked && !(item.strokeLike && alone(item, pending, margin))) continue;
+      marks.push({
+        kind: 'stroke', x: item.box.x, y: item.box.y, w: item.bw, h: item.bh,
+        mask: crop(plate.bin, w, ink.lab, item.id, item.box), mw: item.bw, mh: item.bh
+      });
+      clearLabel(plate.bin, w, ink.lab, item.id, item.box);
+      item.taken = 1;
+    }
+    var texts = [];
+    for (var t = 0; t < pending.length; t++) if (!pending[t].taken) texts.push(pending[t].box);
+    var cells = characterCells(plate.bin, w, texts, sw);
+    for (var c = 0; c < cells.length; c++) {
+      var grid = rasterGrid(plate.bin, w, null, 0, cells[c]);
+      if (!grid) continue;
+      marks.push({ kind: 'glyph', x: cells[c].x, y: cells[c].y, w: cells[c].w, h: cells[c].h, grid: grid, ch: '', face: '', host: null });
+    }
+  }
+
+  function axisEnds(pts) {
+    if (!pts.length) return null;
+    var left = pts[0], right = pts[0], top = pts[0], bot = pts[0];
+    for (var i = 1; i < pts.length; i++) {
+      var p = pts[i];
+      if (p.x < left.x || (p.x === left.x && p.y < left.y)) left = p;
+      if (p.x > right.x || (p.x === right.x && p.y > right.y)) right = p;
+      if (p.y < top.y || (p.y === top.y && p.x < top.x)) top = p;
+      if (p.y > bot.y || (p.y === bot.y && p.x > bot.x)) bot = p;
+    }
+    var horiz = Math.hypot(right.x - left.x, right.y - left.y);
+    var vert = Math.hypot(bot.x - top.x, bot.y - top.y);
+    return horiz >= vert ? [left, right] : [top, bot];
+  }
+
+  function boxGap(a, b) {
+    var dx = 0, dy = 0;
+    if (b.x > a.x + a.w) dx = b.x - (a.x + a.w);
+    else if (a.x > b.x + b.w) dx = a.x - (b.x + b.w);
+    if (b.y > a.y + a.h) dy = b.y - (a.y + a.h);
+    else if (a.y > b.y + b.h) dy = a.y - (b.y + b.h);
+    return { dx: dx, dy: dy };
+  }
+
+  function alone(item, pending, margin) {
+    for (var i = 0; i < pending.length; i++) {
+      if (pending[i] === item) continue;
+      var gap = boxGap(item.box, pending[i].box);
+      if (gap.dx <= margin && gap.dy <= margin) return false;
+    }
+    return true;
+  }
+
+  function clearLabel(bin, w, lab, id, box) {
+    for (var y = 0; y < box.h; y++) for (var x = 0; x < box.w; x++) {
+      if (lab[(box.y + y) * w + box.x + x] === id) bin[(box.y + y) * w + box.x + x] = 0;
+    }
+  }
+
+  function characterCells(bin, imgW, boxes, sw) {
+    var used = new Uint8Array(boxes.length);
+    var cells = [];
+    var join = Math.max(4, Math.round(sw));
+    for (var i = 0; i < boxes.length; i++) {
+      if (used[i]) continue;
+      var line = [boxes[i]];
+      used[i] = 1;
+      var grew = true;
+      while (grew) {
+        grew = false;
+        for (var j = 0; j < boxes.length; j++) {
+          if (used[j]) continue;
+          for (var k = 0; k < line.length; k++) {
+            var gap = boxGap(line[k], boxes[j]);
+            var overlapY = Math.min(line[k].y + line[k].h, boxes[j].y + boxes[j].h) - Math.max(line[k].y, boxes[j].y);
+            if (gap.dy <= join || overlapY > 0) { used[j] = 1; line.push(boxes[j]); grew = true; break; }
+          }
+        }
+      }
+      var sliced = sliceLine(bin, imgW, line, sw);
+      for (var s = 0; s < sliced.length; s++) cells.push(sliced[s]);
+    }
+    return cells;
+  }
+
+  function sliceLine(bin, imgW, comps, sw) {
+    var items = comps.slice().sort(function (a, b) { return a.x - b.x; });
+    var groups = [[items[0]]];
+    for (var i = 1; i < items.length; i++) {
+      var prev = groups[groups.length - 1];
+      var gx1 = prev[0].x + prev[0].w;
+      for (var p = 1; p < prev.length; p++) if (prev[p].x + prev[p].w > gx1) gx1 = prev[p].x + prev[p].w;
+      var gap = items[i].x - gx1;
+      var gh = 0;
+      for (var q = 0; q < prev.length; q++) if (prev[q].h > gh) gh = prev[q].h;
+      if (gap > Math.max(8, gh * 0.45)) groups.push([items[i]]);
+      else prev.push(items[i]);
+    }
+    var out = [];
+    for (var g = 0; g < groups.length; g++) {
+      var part = sliceGroup(bin, imgW, groups[g], sw);
+      for (var n = 0; n < part.length; n++) out.push(part[n]);
+    }
+    return out;
+  }
+
+  function groupBounds(comps) {
+    var x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
+    for (var i = 0; i < comps.length; i++) {
+      var c = comps[i];
+      if (c.x < x0) x0 = c.x;
+      if (c.y < y0) y0 = c.y;
+      if (c.x + c.w - 1 > x1) x1 = c.x + c.w - 1;
+      if (c.y + c.h - 1 > y1) y1 = c.y + c.h - 1;
+    }
+    return { x0: x0, y0: y0, x1: x1, y1: y1 };
+  }
+
+  function sliceGroup(bin, imgW, comps, sw) {
+    var b = groupBounds(comps);
+    var wide = b.x1 - b.x0 + 1, tall = b.y1 - b.y0 + 1;
+    var n = Math.max(1, Math.round(wide / Math.max(1, tall)));
+    if (tall <= Math.max(8, sw * 3.4)) n = 1;
+    var whole = tightBox(bin, imgW, b.x0, b.y0, b.x1 + 1, b.y1 + 1);
+    if (!whole || n <= 1) return whole ? [whole] : [];
+    var proj = new Uint16Array(wide);
+    for (var y = b.y0; y <= b.y1; y++) for (var x = b.x0; x <= b.x1; x++) {
+      if (bin[y * imgW + x]) proj[x - b.x0]++;
+    }
+    var inkCols = [];
+    for (var p = 0; p < wide; p++) if (proj[p]) inkCols.push(proj[p]);
+    var med = median(inkCols) || 1;
+    var cuts = [];
+    var cellW = wide / n;
+    for (var i = 1; i < n; i++) {
+      var ideal = Math.round(i * cellW);
+      var rad = Math.max(2, Math.round(cellW * 0.4));
+      var lo = Math.max(1, ideal - rad), hi = Math.min(wide - 2, ideal + rad);
+      var best = -1, bestV = 1e9;
+      for (var col = lo; col <= hi; col++) if (proj[col] < bestV) { bestV = proj[col]; best = col; }
+      if (best < 0 || bestV > med * 0.35) continue;
+      if (!cuts.length || best > cuts[cuts.length - 1] + 2) cuts.push(best);
+    }
+    if (!cuts.length) return [whole];
+    var bounds = [0].concat(cuts).concat([wide]);
+    var cells = [];
+    for (var k = 0; k < bounds.length - 1; k++) {
+      var cell = tightBox(bin, imgW, b.x0 + bounds[k], b.y0, b.x0 + bounds[k + 1], b.y1 + 1);
+      if (cell) cells.push(cell);
+    }
+    return cells.length ? cells : [whole];
+  }
+
+  function tightBox(bin, imgW, x0, y0, x1, y1) {
+    var a = 1e9, b = 1e9, c = -1, d = -1, any = 0;
+    var imgH = (bin.length / imgW) | 0;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > imgW) x1 = imgW;
+    if (y1 > imgH) y1 = imgH;
+    for (var y = y0; y < y1; y++) for (var x = x0; x < x1; x++) {
+      if (!bin[y * imgW + x]) continue;
+      any++;
+      if (x < a) a = x;
+      if (y < b) b = y;
+      if (x > c) c = x;
+      if (y > d) d = y;
+    }
+    if (!any) return null;
+    return { x: a, y: b, w: c - a + 1, h: d - b + 1 };
   }
 
   function busyBands(bin, w, lab, id, box) {
@@ -628,39 +800,6 @@ function pixelsOf(bin, w, lab, id, box) {
       tip: { x: simp[tip].x, y: simp[tip].y },
       base: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
     };
-  }
-
-  function splitWide(bin, w, lab, id, box, sw) {
-    if (box.w < box.h * 1.15) return [box];
-    var proj = new Uint16Array(box.w);
-    for (var y = 0; y < box.h; y++) for (var x = 0; x < box.w; x++) {
-      if (lab[(box.y + y) * w + box.x + x] === id) proj[x]++;
-    }
-    var valleys = [];
-    var minSlice = Math.max(3, Math.round(box.h * 0.45));
-    for (var x2 = 1; x2 < box.w - 1; x2++) {
-      var low = proj[x2] <= Math.max(1, box.h * 0.12);
-      if (!low || proj[x2] > proj[x2 - 1] || proj[x2] > proj[x2 + 1]) continue;
-      if (!valleys.length || x2 - valleys[valleys.length - 1] >= minSlice) valleys.push(x2);
-    }
-    if (!valleys.length) return [box];
-    var cuts = [0].concat(valleys).concat([box.w]);
-    var parts = [];
-    for (var i = 0; i < cuts.length - 1; i++) {
-      var x0 = cuts[i], x1 = cuts[i + 1];
-      if (x1 - x0 < 2) continue;
-      var y0 = box.h, y1 = -1, xa = box.w, xb = -1;
-      for (var yy = 0; yy < box.h; yy++) for (var xx = x0; xx < x1; xx++) {
-        if (lab[(box.y + yy) * w + box.x + xx] !== id) continue;
-        if (yy < y0) y0 = yy;
-        if (yy > y1) y1 = yy;
-        if (xx < xa) xa = xx;
-        if (xx > xb) xb = xx;
-      }
-      if (y1 < y0) continue;
-      parts.push({ x: box.x + xa, y: box.y + y0, w: xb - xa + 1, h: y1 - y0 + 1 });
-    }
-    return parts.length ? parts : [box];
   }
 
   function rasterGrid(bin, imgW, lab, id, box) {

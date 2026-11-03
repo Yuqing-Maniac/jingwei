@@ -12,7 +12,7 @@ os.makedirs(DIST, exist_ok=True)
 rd = lambda p: open(os.path.join(APP, p), encoding='utf-8').read()
 body = rd('app_body.html')
 parts = [rd('icons.js')] + [rd(os.path.basename(p)) for p in sorted(glob.glob(os.path.join(APP, 'icons_*.js')))]
-MODS = ['app.js', 'imgimport.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
+MODS = ['app.js', 'glyphbook.js', 'imgimport.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
         'importers.js', 'vsdxraw.js', 'drawio.js', 'refgen.js', 'convert.js']
 mods = [rd(m) for m in MODS]
 own = "<script>\n" + "\n".join(parts) + "\n</script>\n<script>\n" + "\n".join(mods) + "\n" + rd('demo.js') + "\nloadDoc(buildDemo());\nif (!window.jwDesk) Backup.offer();\n</script>\n"
