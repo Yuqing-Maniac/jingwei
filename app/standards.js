@@ -516,7 +516,7 @@
   }
   async function exportXlsx() {
     if (!window.StdXlsx || typeof StdXlsx.build !== 'function') { toast('规范表格导出模块未加载'); return; }
-    try { toast('正在生成规范表格…'); const blob = await StdXlsx.build(doc); await saveFile(fname('xlsx').replace(/\.xlsx$/, '-规范表格.xlsx'), blob); }
+    try { toast('正在生成规范表格…'); const blob = await StdXlsx.build(doc); await saveFile(projectBaseName() + '-规范表格.xlsx', blob); }
     catch (err) { console.error(err); toast('导出失败：' + (err.message || err)); }
   }
 

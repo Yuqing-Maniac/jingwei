@@ -37,6 +37,7 @@
   /* ---------- 文档状态 ---------- */
   let curPath = null, dirty = false;
   const base = p => p.split(/[\\/]/).pop();
+  window.jwProjectStem = function () { return curPath ? base(curPath) : ''; };
   const docTitle = () => curPath ? base(curPath) : ((typeof doc !== 'undefined' && doc && (doc.name || (doc.pages && doc.pages.root && doc.pages.root.name))) || '未命名');
   function upd() {
     const t = docTitle();
@@ -64,7 +65,7 @@
     } catch (e) { toast('保存失败：' + (e && e.message || e)); return null; }
   };
   async function saveProj(asNew) {
-    const name = fname('json').replace(/\.json$/, '.jingwei.json');
+    const name = projectFileDefault();
     const data = new TextEncoder().encode(projectJSON()).buffer;
     try {
       const p = await D.save(name, data, { path: asNew ? null : curPath, title: asNew ? '另存为' : '保存工程' });

@@ -113,6 +113,7 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
 .menu.open .dd{display:flex}
 .menu .dd button{justify-content:flex-start}
 .menu .dd small{color:var(--muted);margin-left:auto;font-size:11px}
+.menu .dd .cap{display:block;font-size:11px;color:var(--muted);padding:8px 8px 2px;margin-top:4px;border-top:1px solid var(--line)}
 @media (max-width:860px){
   main{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto}
   #palette{border-right:none;border-bottom:1px solid var(--line);max-height:132px;padding:8px max(16px,env(safe-area-inset-left,0px))}
@@ -158,6 +159,12 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
       <button data-exp="vsdx">Visio <small>.vsdx</small></button>
       <button data-exp="drawio">draw.io <small>.drawio 可编辑</small></button>
       <button data-exp="svg">SVG 矢量图</button>
+      <div class="cap">整体导出</div>
+      <button data-exp="allpptx">PowerPoint <small>每视图一页</small></button>
+      <button data-exp="allpng">PNG <small>每视图一个文件</small></button>
+      <button data-exp="allsvg">SVG <small>每视图一个文件</small></button>
+      <button data-exp="allvsdx">Visio <small>每视图一个文件</small></button>
+      <button data-exp="alldrawio">draw.io <small>每视图一个文件</small></button>
     </div>
   </div>
 </header>
