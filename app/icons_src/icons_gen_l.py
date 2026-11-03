@@ -1,53 +1,47 @@
-import json, math
+import math
 
-V = ('0.3', '0', '0.7', '1')    # top-left lit, mostly vertical
-D = ('0', '0', '1', '1')        # diagonal (planforms)
-H = ('0', '0', '1', '0')        # horizontal (vertical cylinders)
+VERT = ('0.3', '0', '0.7', '1')
+DIAG = ('0', '0', '1', '1')
+HORZ = ('0', '0', '1', '0')
 
 def L(d, *stops):
     return ('l', d, stops)
 
 GR = {
-    # air
-    'air': L(D, (0, '#F4F7FA'), (.5, '#C8D1DB'), (1, '#8D9BAC')),
-    'airV': L(V, (0, '#F4F7FA'), (.5, '#C8D1DB'), (1, '#8D9BAC')),
-    'airdk': L(V, (0, '#C2CCD7'), (1, '#7C8A9B')),
-    # sea
-    'sea': L(V, (0, '#E3E8EE'), (.55, '#B2BDC9'), (1, '#6F7E8E')),
-    'seadk': L(V, (0, '#A9B4C1'), (1, '#5D6B7A')),
-    'deck': L(V, (0, '#8C98A6'), (1, '#4F5B68')),
-    'boot': L(V, (0, '#8E3129'), (1, '#4A1612')),
-    'subm': L(V, (0, '#7A8693'), (.5, '#414C58'), (1, '#1C232A')),
+    'air': L(DIAG, (0, '#F4F7FA'), (.5, '#C8D1DB'), (1, '#8D9BAC')),
+    'airV': L(VERT, (0, '#F4F7FA'), (.5, '#C8D1DB'), (1, '#8D9BAC')),
+    'airdk': L(VERT, (0, '#C2CCD7'), (1, '#7C8A9B')),
+    'sea': L(VERT, (0, '#E3E8EE'), (.55, '#B2BDC9'), (1, '#6F7E8E')),
+    'seadk': L(VERT, (0, '#A9B4C1'), (1, '#5D6B7A')),
+    'deck': L(VERT, (0, '#8C98A6'), (1, '#4F5B68')),
+    'boot': L(VERT, (0, '#8E3129'), (1, '#4A1612')),
+    'subm': L(VERT, (0, '#7A8693'), (.5, '#414C58'), (1, '#1C232A')),
     'water': ('l', ('0', '0', '0', '1'), ((0, '#8EC3EC', .55), (1, '#3D7FC0', 0))),
-    # land
-    'land': L(V, (0, '#B6C78B'), (.5, '#81955A'), (1, '#4E5F35')),
-    'landdk': L(V, (0, '#86995D'), (1, '#3E4C29')),
-    'track': L(V, (0, '#454B53'), (1, '#15181C')),
-    'canvas': L(V, (0, '#A9B97F'), (.6, '#7A8C50'), (1, '#55663A')),
-    # missile / white
-    'white': L(V, (0, '#FFFFFF'), (.55, '#E1E6EC'), (1, '#A3AEBB')),
-    'whitedk': L(V, (0, '#D3DAE2'), (1, '#8F9BA9')),
-    'cylW': L(H, (0, '#BCC5D0'), (.3, '#FFFFFF'), (.65, '#DCE2E8'), (1, '#97A3B1')),
-    'red': L(V, (0, '#D9614F'), (1, '#9B3125')),
-    'orange': L(V, (0, '#F0B060'), (1, '#B8691F')),
-    # tech
-    'metal': L(V, (0, '#FBFCFD'), (.55, '#D6DCE3'), (1, '#98A4B1')),
-    'metal2': L(V, (0, '#C9D1DA'), (1, '#8794A3')),
-    'metal3': L(V, (0, '#A5B0BD'), (1, '#6A7685')),
-    'cylM': L(H, (0, '#AEB8C4'), (.3, '#F6F8FA'), (.7, '#CDD4DC'), (1, '#8794A3')),
-    'dkm': L(V, (0, '#6A7480'), (.5, '#434B55'), (1, '#262C33')),
-    'dkm2': L(V, (0, '#4A525C'), (1, '#1E2328')),
-    'glass': L(V, (0, '#BFE3FF'), (.5, '#78B6EE'), (1, '#3D86D6')),
-    'canopy': L(V, (0, '#86B7E0'), (.45, '#2E5D8B'), (1, '#0F2339')),
-    'scr': L(V, (0, '#2F6FB0'), (1, '#0E2A4A')),
-    'array': L(D, (0, '#7FA3C8'), (.5, '#3F6690'), (1, '#1E3550')),
-    'solar': L(D, (0, '#6E9BD0'), (.5, '#2F5D96'), (1, '#18365C')),
-    'gold': L(V, (0, '#F1D893'), (.5, '#C9A145'), (1, '#8A6A20')),
-    'skin': L(V, (0, '#E6C49C'), (1, '#A98560')),
-    'uniform': L(V, (0, '#8BA3BE'), (.5, '#56708F'), (1, '#33495F')),
-    'cloud': L(D, (0, '#FFFFFF'), (.5, '#D3E2F1'), (1, '#86A7CB')),
-    'appbg': L(D, (0, '#8FC6F5'), (.5, '#4C8FD6'), (1, '#24599A')),
-    # radials
+    'land': L(VERT, (0, '#B6C78B'), (.5, '#81955A'), (1, '#4E5F35')),
+    'landdk': L(VERT, (0, '#86995D'), (1, '#3E4C29')),
+    'track': L(VERT, (0, '#454B53'), (1, '#15181C')),
+    'canvas': L(VERT, (0, '#A9B97F'), (.6, '#7A8C50'), (1, '#55663A')),
+    'white': L(VERT, (0, '#FFFFFF'), (.55, '#E1E6EC'), (1, '#A3AEBB')),
+    'whitedk': L(VERT, (0, '#D3DAE2'), (1, '#8F9BA9')),
+    'cylW': L(HORZ, (0, '#BCC5D0'), (.3, '#FFFFFF'), (.65, '#DCE2E8'), (1, '#97A3B1')),
+    'red': L(VERT, (0, '#D9614F'), (1, '#9B3125')),
+    'orange': L(VERT, (0, '#F0B060'), (1, '#B8691F')),
+    'metal': L(VERT, (0, '#FBFCFD'), (.55, '#D6DCE3'), (1, '#98A4B1')),
+    'metal2': L(VERT, (0, '#C9D1DA'), (1, '#8794A3')),
+    'metal3': L(VERT, (0, '#A5B0BD'), (1, '#6A7685')),
+    'cylM': L(HORZ, (0, '#AEB8C4'), (.3, '#F6F8FA'), (.7, '#CDD4DC'), (1, '#8794A3')),
+    'dkm': L(VERT, (0, '#6A7480'), (.5, '#434B55'), (1, '#262C33')),
+    'dkm2': L(VERT, (0, '#4A525C'), (1, '#1E2328')),
+    'glass': L(VERT, (0, '#BFE3FF'), (.5, '#78B6EE'), (1, '#3D86D6')),
+    'canopy': L(VERT, (0, '#86B7E0'), (.45, '#2E5D8B'), (1, '#0F2339')),
+    'scr': L(VERT, (0, '#2F6FB0'), (1, '#0E2A4A')),
+    'array': L(DIAG, (0, '#7FA3C8'), (.5, '#3F6690'), (1, '#1E3550')),
+    'solar': L(DIAG, (0, '#6E9BD0'), (.5, '#2F5D96'), (1, '#18365C')),
+    'gold': L(VERT, (0, '#F1D893'), (.5, '#C9A145'), (1, '#8A6A20')),
+    'skin': L(VERT, (0, '#E6C49C'), (1, '#A98560')),
+    'uniform': L(VERT, (0, '#8BA3BE'), (.5, '#56708F'), (1, '#33495F')),
+    'cloud': L(DIAG, (0, '#FFFFFF'), (.5, '#D3E2F1'), (1, '#86A7CB')),
+    'appbg': L(DIAG, (0, '#8FC6F5'), (.5, '#4C8FD6'), (1, '#24599A')),
     'shadow': ('r', None, ((0, '#000000', .38), (1, '#000000', 0))),
     'prop': ('r', None, ((0, '#FFFFFF', .55), (.8, '#B9C6D3', .28), (1, '#8D9BAC', .1))),
     'hub': ('r', ('0.35', '0.3', '0.7'), ((0, '#A9AFB7'), (.6, '#5C636C'), (1, '#2C3136'))),
@@ -136,21 +130,6 @@ def icon(key, name, cat):
         ICONS.append((key, name, cat, fn)); return fn
     return deco
 
-def mirror(d):
-    """mirror path about x=48 (only absolute M/L/C/Q/Z with numbers)"""
-    import re
-    toks = re.findall(r'[A-Za-z]|-?[0-9.]+', d)
-    out = []; i = 0; xturn = True
-    for t in toks:
-        if t.isalpha():
-            out.append(t); xturn = True
-        else:
-            v = float(t)
-            if xturn: v = 96 - v
-            out.append(('%g' % v)); xturn = not xturn
-    return ' '.join(out)
-
-# ---------------- helpers ----------------
 def glint(b, x, y, w=3, h=1.2):
     b.e(x, y, w, h, '#FFFFFF', op=.85)
 

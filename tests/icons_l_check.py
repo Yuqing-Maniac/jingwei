@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Fail if batch l palette rows collide or drift from the nine equipment names."""
 import glob
 import json
 import os
