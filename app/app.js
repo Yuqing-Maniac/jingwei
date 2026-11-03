@@ -856,17 +856,31 @@ function markerDefs(t, pre) {
       `<marker id="${pre}s-${k}" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M10,1 L0,5 L10,9 Z" fill="${c}"/></marker>`;
   }).join('') + '</defs>';
 }
+function linkPaint(l, exp) {
+  const K = LINK_KINDS[l.kind] || LINK_KINDS.plain;
+  const theme = T().link[l.kind] || T().link.plain;
+  if (exp) return { color: theme, width: K.w || 1.6, dash: K.dash || '', ownMarker: false };
+  return { color: l.color || theme, width: l.sw || K.w || 1.6, dash: K.dash || '', ownMarker: !!l.color };
+}
+function ownMarkerDefs(l, pre, color) {
+  const id = pre + 'c' + l.id;
+  const head = (mid, d) => `<marker id="${mid}" viewBox="0 0 10 10" refX="${mid.endsWith('s') ? 1 : 9}" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="${d}" fill="${color}"/></marker>`;
+  let s = '<defs>' + head(id + 'e', 'M0,1 L10,5 L0,9 Z');
+  if (l.dir === 'both') s += head(id + 's', 'M10,1 L0,5 L10,9 Z');
+  return s + '</defs>';
+}
 function linkSVG(l, p, exp, pre, part) {
   const route = routesFor(p).get(l.id); if (!route) return '';
-  const pts = route.pts;
-  const t = T(), K = LINK_KINDS[l.kind] || LINK_KINDS.plain, c = t.link[l.kind] || t.link.plain;
+  const pts = route.pts, t = T(), paint = linkPaint(l, exp);
   const d = opsToD(linkOps(route)), dHit = 'M' + pts.map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' L');
-  const me = l.dir !== 'none' ? `marker-end="url(#${pre}e-${l.kind})"` : '';
-  const ms = l.dir === 'both' ? `marker-start="url(#${pre}s-${l.kind})"` : '';
-  let s = `<path class="lv" d="${d}" fill="none" stroke="${c}" stroke-width="${K.w || 1.6}" ${K.dash ? `stroke-dasharray="${K.dash}"` : ''} stroke-linejoin="round" ${me} ${ms}/>`;
   const pills = linkPills(l, p);
-  if (part === 'label') return pills.map(pill => pillMarkup(pill, t.bg, c)).join('');
-  if (pills.length && part !== 'line') s += pills.map(pill => pillMarkup(pill, t.bg, c)).join('');
+  if (part === 'label') return pills.map(pill => pillMarkup(pill, t.bg, paint.color)).join('');
+  const mid = pre + 'c' + l.id;
+  const me = l.dir === 'none' ? '' : paint.ownMarker ? `marker-end="url(#${mid}e)"` : `marker-end="url(#${pre}e-${l.kind})"`;
+  const ms = l.dir !== 'both' ? '' : paint.ownMarker ? `marker-start="url(#${mid}s)"` : `marker-start="url(#${pre}s-${l.kind})"`;
+  const own = paint.ownMarker && l.dir !== 'none' ? ownMarkerDefs(l, pre, paint.color) : '';
+  let s = `${own}<path class="lv" d="${d}" fill="none" stroke="${paint.color}" stroke-width="${paint.width}" ${paint.dash ? `stroke-dasharray="${paint.dash}"` : ''} stroke-linejoin="round" ${me} ${ms}/>`;
+  if (pills.length && part !== 'line') s += pills.map(pill => pillMarkup(pill, t.bg, paint.color)).join('');
   if (!exp) return `<g class="lk" data-lk="${l.id}" data-a="${l.from}" data-b="${l.to}"><path d="${dHit}" fill="none" stroke="transparent" stroke-width="12" data-link="${l.id}" style="cursor:pointer"/>${s}</g>`;
   return `<g>${s}</g>`;
 }
@@ -1948,21 +1962,227 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
+const FIELD_CAP = { status: '状态', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
+const SHARED_REJECT = {};
+const NODE_FIELDS = {
+  status: {
+    id: 'status', kind: 'seg',
+    show: function (items) {
+      if (items.length > 1) return true;
+      return ['text', 'note', 'legend', 'lane', 'tblock'].indexOf(items[0].type) < 0;
+    },
+    get: function (n) { return n.status || 'base'; },
+    set: function (n, v) { n.status = v; },
+    options: function () { return [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]]; }
+  },
+  size: {
+    id: 'size', kind: 'num', min: 8, max: 72,
+    show: function (items) {
+      if (items.length > 1) return true;
+      return !isCont(items[0]) && items[0].type !== 'legend' && items[0].type !== 'tblock';
+    },
+    get: function (n) { return n.size; },
+    set: function (n, v) { n.size = v; }
+  },
+  bold: {
+    id: 'bold', kind: 'check',
+    show: function (items) { return NODE_FIELDS.size.show(items); },
+    get: function (n) { return !!n.bold; },
+    set: function (n, v) { n.bold = !!v; }
+  },
+  noBox: {
+    id: 'noBox', kind: 'check',
+    show: function (items) { return items.length > 0 && items.every(function (n) { return !!n.icon; }); },
+    get: function (n) { return !!n.noBox; },
+    set: function (n, v) { n.noBox = !!v; }
+  },
+  fill: {
+    id: 'fill', kind: 'color', optional: true,
+    show: function (items) {
+      if (items.length > 1) return true;
+      return ['text', 'note', 'legend', 'tblock'].indexOf(items[0].type) < 0;
+    },
+    get: function (n) { return n.fill || null; },
+    set: function (n, v) { if (v) n.fill = v; else delete n.fill; }
+  },
+  stroke: {
+    id: 'stroke', kind: 'color', optional: true,
+    show: function (items) { return NODE_FIELDS.fill.show(items); },
+    get: function (n) { return n.stroke || null; },
+    set: function (n, v) { if (v) n.stroke = v; else delete n.stroke; }
+  }
+};
+const LINK_FIELDS = {
+  dir: {
+    id: 'dir', kind: 'seg',
+    get: function (l) { return linkDir(l); },
+    set: function (l, v) { setLinkDir(l, v); },
+    options: function () { return [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']]; }
+  },
+  kind: {
+    id: 'kind', kind: 'select',
+    get: function (l) { return l.kind; },
+    set: function (l, v) { l.kind = v; doc.lastKind = v; },
+    options: function () { return Object.keys(LINK_KINDS).map(function (k) { return [k, LINK_KINDS[k].name]; }); }
+  },
+  color: {
+    id: 'color', kind: 'color', optional: true,
+    get: function (l) { return l.color || null; },
+    set: function (l, v) { if (v) l.color = v; else delete l.color; }
+  },
+  sw: {
+    id: 'sw', kind: 'num', optional: true, min: 0.5, max: 12,
+    get: function (l) { return l.sw || null; },
+    set: function (l, v) { if (v) l.sw = v; else delete l.sw; }
+  }
+};
+function fieldState(items, field) {
+  if (!items.length) return { mixed: false, value: null };
+  const first = field.get(items[0]);
+  for (let i = 1; i < items.length; i++) if (!Object.is(field.get(items[i]), first)) return { mixed: true, value: null };
+  return { mixed: false, value: first };
+}
+function fieldHTML(items, field) {
+  if (field.show && !field.show(items)) return '';
+  const state = fieldState(items, field), cap = FIELD_CAP[field.id] || field.id, id = 'p-' + field.id;
+  if (field.kind === 'seg') {
+    const buttons = field.options().map(([v, lab]) => `<button type="button" data-v="${v}" class="${!state.mixed && v === state.value ? 'on' : ''}">${lab}</button>`).join('');
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><div class="seg" id="${id}" data-shared="${field.id}">${buttons}</div>${state.mixed ? '<span class="hint">多值</span>' : ''}</div>`;
+  }
+  if (field.kind === 'select') {
+    const mixed = state.mixed ? '<option value="" selected>多值</option>' : '';
+    const rest = field.options().map(([v, lab]) => `<option value="${v}"${!state.mixed && v === state.value ? ' selected' : ''}>${lab}</option>`).join('');
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><select id="${id}" data-shared="${field.id}">${mixed}${rest}</select></div>`;
+  }
+  if (field.kind === 'check') {
+    const label = state.mixed ? '多值' : cap;
+    return `<div class="row sh" data-shared="${field.id}"><label></label><label style="width:auto;display:flex;gap:6px;align-items:center;color:var(--fg)"><input type="checkbox" id="${id}" data-shared="${field.id}"${!state.mixed && state.value ? ' checked' : ''}> ${label}</label></div>`;
+  }
+  if (field.kind === 'num') {
+    const shown = state.mixed || state.value == null ? '' : state.value;
+    const ph = state.mixed ? ' placeholder="多值"' : '';
+    const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="number" id="${id}" data-shared="${field.id}" min="${field.min}" max="${field.max}" value="${shown}"${ph}>${hint}${clr}</div>`;
+  }
+  if (field.kind === 'color') {
+    const hex = !state.mixed && state.value ? state.value : '#ffffff';
+    const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="color" id="${id}" data-shared="${field.id}" value="${hex}">${hint}${clr}</div>`;
+  }
+  return '';
+}
+function fieldsHTML(items, table) {
+  return Object.keys(table).map(k => fieldHTML(items, table[k])).join('');
+}
+function selectedNodes() {
+  const out = [];
+  sel.forEach(id => { const n = nodeById(id); if (n) out.push(n); });
+  return out;
+}
+function parseShared(field, raw) {
+  if (raw === null) return null;
+  if (field.id === 'status' && ['base', 'new', 'key'].indexOf(raw) < 0) return SHARED_REJECT;
+  if (field.id === 'dir' && ['one', 'both', 'none'].indexOf(raw) < 0) return SHARED_REJECT;
+  if (field.id === 'kind' && !LINK_KINDS[raw]) return SHARED_REJECT;
+  if (field.kind === 'color') {
+    if (raw === '') return null;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(String(raw))) return SHARED_REJECT;
+    return String(raw);
+  }
+  if (field.kind === 'num') {
+    if (raw === '' || raw == null) return field.optional ? null : SHARED_REJECT;
+    const n = +raw;
+    if (!isFinite(n) || n < field.min || n > field.max) return SHARED_REJECT;
+    return n;
+  }
+  if (field.kind === 'check') return !!raw;
+  return raw;
+}
+let sharedArm = false, sharedFocusBound = false;
+function applyShared(items, write, live) {
+  if (!items.length) return;
+  const fresh = !sharedArm;
+  if (fresh) { checkpoint(); sharedArm = true; }
+  const before = fresh ? undoS[undoS.length - 1] : null;
+  items.forEach(write);
+  const now = snapshot();
+  /* 值没变就不留这个撤销步，否则点已选项也会多一步 */
+  if (fresh && before === now) { undoS.pop(); sharedArm = false; }
+  propSnap = now;
+  if (!live) { sharedArm = false; render(); }
+  else render(false);
+}
+function bindFields(items, fields) {
+  const el = $('#props');
+  if (!sharedFocusBound) {
+    sharedFocusBound = true;
+    el.addEventListener('focusout', () => { sharedArm = false; });
+  }
+  Object.keys(fields).forEach(id => {
+    const field = fields[id];
+    const row = el.querySelector('.sh[data-shared="' + field.id + '"]');
+    if (!row) return;
+    if (field.kind === 'check') {
+      const box = row.querySelector('input');
+      if (box) box.indeterminate = fieldState(items, field).mixed;
+      if (box) box.addEventListener('change', () => {
+        const v = parseShared(field, box.checked);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), false);
+      });
+    } else if (field.kind === 'seg') {
+      row.querySelectorAll('button[data-v]').forEach(b => b.addEventListener('click', () => {
+        const v = parseShared(field, b.dataset.v);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), false);
+      }));
+    } else if (field.kind === 'select') {
+      const box = row.querySelector('select');
+      if (!box) return;
+      box.addEventListener('change', () => {
+        if (box.value === '') return;
+        const v = parseShared(field, box.value);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), false);
+      });
+    } else if (field.kind === 'num' || field.kind === 'color') {
+      const input = row.querySelector('input');
+      if (!input) return;
+      input.addEventListener('input', () => {
+        const v = parseShared(field, input.value);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), true);
+      });
+      if (field.optional) {
+        input.addEventListener('blur', () => {
+          if (field.kind === 'num' && input.value === '') applyShared(items, it => field.set(it, null), false);
+        });
+        const clr = row.querySelector('[data-clear]');
+        if (clr) clr.addEventListener('click', () => applyShared(items, it => field.set(it, null), false));
+      }
+    }
+  });
+}
 function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
   const links = selectedLinks();
   if (linkSel.size && !links.length) { clearSel(); return renderProps(); }
   if (links.length > 1) {
     h += `<h3>已选 ${links.length} 条连线</h3>`;
+    h += fieldsHTML(links, LINK_FIELDS);
     h += `<hr><button id="p-del" type="button" style="color:var(--danger)">删除连线</button>`;
   } else if (links.length === 1) {
     const l = links[0];
     const a = nodeById(l.from), b = nodeById(l.to), both = linkDir(l) === 'both';
     h += `<div class="hint">${linkPanelHint()}</div>`;
     h += `<h3>连线 <span class="tag">${esc((a?.text || '').split('\n')[0])} → ${esc((b?.text || '').split('\n')[0])}</span></h3>`;
-    h += `<div class="row"><label title="快捷键 D">箭头</label>${seg('p-dir', [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']], linkDir(l), '快捷键 D')}</div>`;
+    h += fieldHTML(links, LINK_FIELDS.dir);
     h += `<div class="row"><label></label><button id="p-swap" style="border-color:var(--line);justify-content:center">⇄ 调换方向</button></div>`;
-    h += `<div class="row"><label>链路类型</label><select id="p-kind">${Object.entries(LINK_KINDS).map(([k, v]) => `<option value="${k}" ${k === l.kind ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
+    h += fieldHTML(links, LINK_FIELDS.kind);
+    h += fieldHTML(links, LINK_FIELDS.color);
+    h += fieldHTML(links, LINK_FIELDS.sw);
     if (both) {
       h += `<div class="row"><label style="width:auto">${esc(dirFieldLabel('去向', b))}</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：态势上报"></div>`;
       h += `<div class="row"><label style="width:auto">${esc(dirFieldLabel('回向', a))}</label><input type="text" id="p-back" value="${esc(l.labelBack || '')}" placeholder="如：指令回执"></div>`;
@@ -1972,9 +2192,10 @@ function renderProps() {
     h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
   } else if (sel.size > 1) {
+    const nodes = selectedNodes();
     h += `<h3>已选 ${sel.size} 个元素</h3><div class="hint">对齐与分布</div>`;
     h += `<div class="grid3">${[['l', '左对齐'], ['c', '水平居中'], ['r', '右对齐'], ['t', '顶对齐'], ['m', '垂直居中'], ['b', '底对齐'], ['dh', '水平等距'], ['dv', '垂直等距'], ['size', '等宽等高']].map(([k, n]) => `<button data-al="${k}">${n}</button>`).join('')}</div>`;
-    h += `<hr><div class="row"><label>状态</label>${seg('p-mstatus', [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]], '')}</div>`;
+    h += fieldsHTML(nodes, NODE_FIELDS);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
   } else if (sel.size === 1) {
@@ -1982,13 +2203,11 @@ function renderProps() {
     h += `<h3>${TYPE_NAME[n.type] || '元素'}</h3>`;
     if (n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>${isCont(n) ? '标题' : '文字'}</label><textarea id="p-text" rows="2">${esc(n.text)}</textarea></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) h += `<div class="row"><label>形状</label><select id="p-type">${SHAPE_GROUPS.map(([g, ts]) => `<optgroup label="${g}">${ts.map(t => `<option value="${t}" ${t === n.type ? 'selected' : ''}>${TYPE_NAME[t]}</option>`).join('')}</optgroup>`).join('')}</select></div>`;
-    if (!['text', 'note', 'legend', 'lane', 'tblock'].includes(n.type)) h += `<div class="row"><label>状态</label>${seg('p-status', [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]], n.status)}</div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) {
       const u = iconURI(n.icon);
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
-      if (n.icon) h += `<div class="row"><label></label><label style="width:auto;display:flex;gap:6px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-nobox" ${n.noBox ? 'checked' : ''}> 不画外框（纯装备图）</label></div>`;
     }
-    if (!isCont(n) && n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>字号</label><input type="number" id="p-size" min="8" max="72" value="${n.size}"><label style="width:auto;display:flex;gap:4px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-bold" ${n.bold ? 'checked' : ''}>加粗</label></div>`;
+    h += fieldsHTML([n], NODE_FIELDS);
     if (n.type === 'lane') h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="40" max="300" value="${laneTW(n)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
     if (window.Combo && iconable(n)) {
@@ -2035,23 +2254,24 @@ let propSnap = null;
 function bindProps() {
   const el = $('#props');
   if (!el._jwSnap) { el._jwSnap = true; el.addEventListener('focusin', () => { propSnap = snapshot(); }); }
-  el.onchange = () => { if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); } propSnap = snapshot(); };
+  el.onchange = ev => {
+    if (ev && ev.target && ev.target.closest && ev.target.closest('[data-shared]')) { propSnap = snapshot(); return; }
+    if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); }
+    propSnap = snapshot();
+  };
   const links = selectedLinks();
   const n = sel.size === 1 ? nodeById([...sel][0]) : null;
   const l = links.length === 1 ? links[0] : null;
   const live = () => render(false);
   const on = (id, ev, fn) => { const x = $(id); if (x) x.addEventListener(ev, fn); };
+  if (links.length) bindFields(links, LINK_FIELDS);
+  else if (sel.size) bindFields(selectedNodes(), NODE_FIELDS);
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
   on('#p-type', 'change', e => { checkpoint(); n.type = e.target.value; if (n.type === 'equip' && n.h < 72) { n.w = Math.max(n.w, 96); n.h = 96; } render(); });
-  on('#p-size', 'input', e => { n.size = clamp(+e.target.value || 13, 8, 72); live(); });
-  on('#p-bold', 'change', e => { checkpoint(); n.bold = e.target.checked; render(); });
-  on('#p-nobox', 'change', e => { checkpoint(); n.noBox = e.target.checked; render(); });
   on('#p-tw', 'input', e => { n.titleW = clamp(+e.target.value || 96, 40, 300); live(); });
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
-  on('#p-status', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); n.status = b.dataset.v; render(); });
-  on('#p-mstatus', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); for (const id of sel) { const x = nodeById(id); if (x && x.type !== 'lane') x.status = b.dataset.v; } render(); });
   on('#p-icon', 'click', () => openIconPicker(n));
   on('#p-noicon', 'click', () => { checkpoint(); n.icon = null; if (n.type === 'equip') n.type = 'round'; render(); });
   on('#p-sub', 'click', () => enterSub(n.id));
@@ -2061,9 +2281,7 @@ function bindProps() {
   on('#p-form', 'click', () => Combo.open(n));
   on('#p-del', 'click', deleteSel);
   on('#p-same', 'click', () => selectSame());
-  on('#p-dir', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); setLinkDir(l, b.dataset.v); render(); });
   on('#p-swap', 'click', () => { checkpoint(); swapLink(l); render(); });
-  on('#p-kind', 'change', e => { checkpoint(); l.kind = e.target.value; doc.lastKind = l.kind; render(); });
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
   on('#p-back', 'input', e => { setLabelBack(l, e.target.value); live(); });
   on('#p-route', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); l.route = b.dataset.v; render(); });
