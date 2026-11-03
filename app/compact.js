@@ -69,7 +69,7 @@
     let g = base;
     for (const l of p.links) {
       if (!((l.from === a.id && l.to === b.id) || (l.from === b.id && l.to === a.id))) continue;
-      const t = linkText(l, p); if (t) g = Math.max(g, measure(t, 11.5, false) + 10 + 14);
+      const w = linkLabelWidth(l, p); if (w) g = Math.max(g, w + 14);
     }
     return g;
   }
