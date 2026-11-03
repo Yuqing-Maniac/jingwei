@@ -677,22 +677,23 @@ const DIR_NAME = { one: '单向', both: '双向', none: '无' };
 const F2_PHRASE = 'F2 编辑文字';
 const PILL_IN = 28;
 function linkDir(l) { return DIR_NEXT[l.dir] ? l.dir : 'one'; }
-function cycleLinkDir(l) {
-  /* 缺省 dir 已经按单向画。第一次 D 必须落到双向，不能再写回 one。 */
-  l.dir = DIR_NEXT[l.dir] || 'both';
-}
+function cycleLinkDir(l) { l.dir = DIR_NEXT[linkDir(l)]; }
 function setLinkDir(l, dir) { if (!DIR_NAME[dir]) return; l.dir = dir; }
 function setLabelBack(l, raw) {
   const t = String(raw || '');
   if (t) l.labelBack = t; else delete l.labelBack;
 }
-function swapLink(l) {
+function swapLinkEnds(l) {
   const a = l.from; l.from = l.to; l.to = a;
-  /* 单向和无箭头只有一条可见文字。把 label 换成空的回向会让旧图按 R 之后变空白。 */
-  if (linkDir(l) !== 'both') return;
+}
+function swapLinkCaptions(l) {
   const fwd = l.label || '', rev = l.labelBack || '';
   l.label = rev;
   setLabelBack(l, fwd);
+}
+function swapLink(l) {
+  swapLinkEnds(l);
+  if (linkDir(l) === 'both') swapLinkCaptions(l);
 }
 const LINK_KEYS = [
   { id: 'kind', chord: '1 – 6', label: '关联／数据流／指令流／有线／无线／卫通',
@@ -732,7 +733,6 @@ function pillBox(text, pos) {
   const w = measure(text, 11.5, false) + 10;
   return { x: pos.x - w / 2, y: pos.y - 9, w: w, h: 18 };
 }
-/* 连线标签按页内顺序落位，后放的避开已放的。签名带上方向和两段文字，第二条不能复用第一条的缓存点。 */
 const labelMemo = new WeakMap();
 function placeLinkPills(l, p, taken) {
   const pts = linkPoints(l, p);
