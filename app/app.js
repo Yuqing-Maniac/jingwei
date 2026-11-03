@@ -202,10 +202,23 @@ function onlyLinkId() {
   if (linkSel.size !== 1) return null;
   return [...linkSel][0];
 }
-function newPage(name) { const id = 'p' + uid(); doc.pages[id] = { id, name, nodes: [], links: [], view: null }; return id; }
 function snapshot() { return JSON.stringify({ doc, cur, stack }); }
 function checkpoint() { undoS.push(snapshot()); if (undoS.length > 120) undoS.shift(); redoS = []; }
-function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; clearSel(); if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
+function restore(s) {
+  const o = JSON.parse(s);
+  const ms0 = msMode();
+  doc = o.doc;
+  cur = o.cur && doc.pages && doc.pages[o.cur] ? o.cur : 'root';
+  /* 不走 showPage，否则会把撤销前的视口写进刚恢复的页面。 */
+  stack = pathOf(cur);
+  clearSel();
+  const cam = P() && P().cam;
+  if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
+  else view = fitView(P());
+  if (ms0 !== msMode()) renderPalette();
+  render();
+  refreshDocTitle();
+}
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
 function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); }
 
@@ -1047,10 +1060,14 @@ function contentBBox(p = P()) {
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 function fit() {
-  const b = contentBBox(), r = svg.getBoundingClientRect();
-  const k = clamp(Math.min((r.width - 60) / b.w, (r.height - 80) / b.h), 0.15, 2);
-  view.k = k; view.x = b.x - (r.width / k - b.w) / 2; view.y = b.y - (r.height / k - b.h) / 2 + 10 / k;
+  const cam = fitView(P());
+  view.x = cam.x; view.y = cam.y; view.k = cam.k;
   applyView(); renderOverlay();
+}
+function fitView(p) {
+  const b = contentBBox(p || P()), r = svg.getBoundingClientRect();
+  const k = clamp(Math.min((r.width - 60) / b.w, (r.height - 80) / b.h), 0.15, 2);
+  return { x: b.x - (r.width / k - b.w) / 2, y: b.y - (r.height / k - b.h) / 2 + 10 / k, k: k };
 }
 function zoomAt(k2, cx, cy) {
   const w = clientToWorld(cx, cy), r = svg.getBoundingClientRect();
@@ -1967,21 +1984,287 @@ function paste() {
   render();
 }
 
-/* ---------- drill-down pages ---------- */
-function enterSub(id) {
-  const n = nodeById(id); if (!n) return;
-  if (!n.sub || !doc.pages[n.sub]) {
-    checkpoint(); n.sub = newPage(`${(n.text || '系统').split('\n')[0]} · 内部构成`);
-    const sp = doc.pages[n.sub];
-    sp.nodes.push(mkNode({ type: 'text', role: 'title', text: `${(n.text || '系统').split('\n')[0]} 内部构成`, size: 20, bold: true, x: 0, y: -50, w: 400, h: 32 }));
-    const b = mkNode({ type: 'band', text: '组成', x: 0, y: 0, w: 900, h: 140 }); sp.nodes.push(b);
-    ['组成单元一', '组成单元二', '组成单元三'].forEach((t, i) => sp.nodes.push(mkNode({ type: 'round', text: t, parent: b.id, x: 100 + i * 200, y: 40 })));
-    beautify(sp);
-  }
-  P().cam = { ...view }; stack.push(n.sub); cur = n.sub; clearSel();
-  render(); if (P().cam) { view = { ...P().cam }; applyView(); } else fit();
+/* ---------- page tree ---------- */
+function writeUp(page, up, ord) {
+  page.up = up;
+  page.ord = ord;
 }
-function goPage(i) { P().cam = { ...view }; stack = stack.slice(0, i + 1); cur = stack[i]; clearSel(); render(); if (P().cam) { view = { ...P().cam }; applyView(); renderOverlay(); } else fit(); }
+function byOrd(a, b) {
+  if (a.id === 'root') return -1;
+  if (b.id === 'root') return 1;
+  const ao = typeof a.ord === 'number' ? a.ord : 1e9;
+  const bo = typeof b.ord === 'number' ? b.ord : 1e9;
+  if (ao !== bo) return ao - bo;
+  if (a.id < b.id) return -1;
+  if (a.id > b.id) return 1;
+  return 0;
+}
+function blankPage(name) {
+  return { id: 'p' + uid(), name: name || '未命名页', nodes: [], links: [], view: null };
+}
+function setDoor(node, pageId) {
+  if (node && doc.pages[pageId]) node.sub = pageId;
+}
+function clearDoors(ids) {
+  const pages = Object.values(doc.pages);
+  for (let i = 0; i < pages.length; i++) {
+    const nodes = pages[i].nodes || [];
+    for (let k = 0; k < nodes.length; k++) if (nodes[k].sub && ids.has(nodes[k].sub)) nodes[k].sub = null;
+  }
+}
+function renumber(up) {
+  const list = [];
+  const pages = Object.values(doc.pages);
+  for (let i = 0; i < pages.length; i++) {
+    const p = pages[i];
+    if (p && ('up' in p) && p.up === up) list.push(p);
+  }
+  list.sort(byOrd);
+  for (let i = 0; i < list.length; i++) writeUp(list[i], up, i);
+}
+function pagesByUp(d) {
+  const m = new Map();
+  const pages = Object.values((d && d.pages) || {});
+  for (let i = 0; i < pages.length; i++) {
+    const p = pages[i];
+    if (!p || !('up' in p)) continue;
+    const k = p.up;
+    if (!m.has(k)) m.set(k, []);
+    m.get(k).push(p);
+  }
+  m.forEach(list => list.sort(byOrd));
+  return m;
+}
+function walkDoors(pages, topId, visit) {
+  const seen = new Set();
+  if (topId) seen.add(topId);
+  const walk = id => {
+    const page = pages[id];
+    if (!page) return;
+    const next = [];
+    let n = 0;
+    const nodes = page.nodes || [];
+    for (let i = 0; i < nodes.length; i++) {
+      const sub = nodes[i].sub;
+      if (!sub || !pages[sub] || seen.has(sub)) continue;
+      seen.add(sub);
+      visit(pages[sub], id, n);
+      n++;
+      next.push(sub);
+    }
+    for (let i = 0; i < next.length; i++) walk(next[i]);
+  };
+  walk(topId);
+  return seen;
+}
+function pageUnder(pages, pageId, ancestorId) {
+  const seen = {};
+  let c = pageId;
+  while (c != null && pages[c] && !seen[c]) {
+    if (c === ancestorId) return true;
+    seen[c] = 1;
+    c = pages[c].up;
+  }
+  return false;
+}
+function upEnds(pages, start) {
+  const seen = {};
+  let c = start;
+  while (c != null) {
+    if (!pages[c] || seen[c]) return false;
+    seen[c] = 1;
+    c = pages[c].up;
+  }
+  return true;
+}
+function doorHost(pages, id) {
+  const ids = Object.keys(pages);
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || p.id === id || pageUnder(pages, p.id, id)) continue;
+    const nodes = p.nodes || [];
+    for (let k = 0; k < nodes.length; k++) if (nodes[k].sub === id) return p.id;
+  }
+  return null;
+}
+function repair(d) {
+  if (!d || !d.pages || !d.pages.root) return;
+  const pages = d.pages;
+  writeUp(pages.root, null, 0);
+  const ids = Object.keys(pages);
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || p.id === 'root') continue;
+    const holds = ('up' in p) && (p.up === null || (typeof p.up === 'string' && pages[p.up])) && upEnds(pages, p.id);
+    if (holds) continue;
+    const host = doorHost(pages, p.id);
+    writeUp(p, host || null, 1e9);
+  }
+  const groups = new Map();
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || !('up' in p)) continue;
+    const k = p.up;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(p);
+  }
+  groups.forEach((list, up) => {
+    list.sort(byOrd);
+    for (let i = 0; i < list.length; i++) writeUp(list[i], up, i);
+  });
+}
+function adoptPages(d) {
+  if (!d || !d.pages || !d.pages.root) return d;
+  /* 根页面已有 up 就不再用 node.sub 重建。没有门的子页要留在原来的位置。 */
+  if (!('up' in d.pages.root)) {
+    const all = Object.values(d.pages);
+    for (let i = 0; i < all.length; i++) {
+      if (!all[i]) continue;
+      delete all[i].up;
+      delete all[i].ord;
+    }
+    writeUp(d.pages.root, null, 0);
+    const seen = walkDoors(d.pages, 'root', (page, up, i) => writeUp(page, up, i));
+    seen.add('root');
+    let n = 1;
+    const order = Array.isArray(d.pageOrder) ? d.pageOrder : Object.keys(d.pages);
+    for (let i = 0; i < order.length; i++) {
+      const id = order[i];
+      if (d.pages[id] && !seen.has(id)) { writeUp(d.pages[id], null, n++); seen.add(id); }
+    }
+    const keys = Object.keys(d.pages);
+    for (let i = 0; i < keys.length; i++) if (!seen.has(keys[i])) writeUp(d.pages[keys[i]], null, n++);
+  }
+  delete d.pageOrder;
+  repair(d);
+  return d;
+}
+function placePage(page, up, afterId) {
+  if (!page || !page.id || page.id === 'root') return;
+  if (up === page.id) return;
+  if (up !== null && !doc.pages[up]) return;
+  if (up !== null && pageUnder(doc.pages, up, page.id)) return;
+  const prev = doc.pages[page.id];
+  const oldUp = prev && ('up' in prev) ? prev.up : undefined;
+  doc.pages[page.id] = page;
+  const group = [];
+  const pages = Object.values(doc.pages);
+  for (let i = 0; i < pages.length; i++) {
+    const p = pages[i];
+    if (!p || p.id === page.id || !('up' in p) || p.up !== up) continue;
+    group.push(p);
+  }
+  group.sort(byOrd);
+  let idx = group.length;
+  if (afterId) {
+    const at = group.findIndex(p => p.id === afterId);
+    if (at >= 0) idx = at + 1;
+  }
+  if (up === null) {
+    const rootAt = group.findIndex(p => p.id === 'root');
+    if (rootAt >= 0 && idx <= rootAt) idx = rootAt + 1;
+  }
+  group.splice(idx, 0, page);
+  for (let i = 0; i < group.length; i++) writeUp(group[i], up, i);
+  if (oldUp !== undefined && oldUp !== up) renumber(oldUp);
+}
+function hangUnder(hostId, pages) {
+  const map = Object.assign({}, doc.pages, pages || {});
+  const placed = {};
+  walkDoors(map, hostId, (page, up) => {
+    const fresh = pages && pages[page.id];
+    if (!fresh || fresh.id === hostId) return;
+    placePage(fresh, up, null);
+    placed[fresh.id] = 1;
+  });
+  if (!pages) return;
+  const ids = Object.keys(pages);
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || p.id === hostId || placed[p.id] || p.id === 'root') continue;
+    placePage(p, hostId, null);
+  }
+}
+function hangPages(pages, topId, hostId) {
+  const top = pages && pages[topId];
+  if (!top) return;
+  placePage(top, hostId, null);
+  hangUnder(topId, pages);
+}
+function pathOf(id) {
+  if (!id || !doc || !doc.pages || !doc.pages[id]) return ['root'];
+  const path = [];
+  const seen = {};
+  let c = id;
+  while (c && doc.pages[c] && !seen[c]) {
+    seen[c] = 1;
+    path.push(c);
+    if (doc.pages[c].up == null) break;
+    c = doc.pages[c].up;
+  }
+  path.reverse();
+  return path.length ? path : ['root'];
+}
+function siblingPages(id) {
+  const p = doc.pages[id];
+  const up = p ? p.up : null;
+  return pagesByUp(doc).get(up) || [];
+}
+function childPages(id) {
+  return pagesByUp(doc).get(id) || [];
+}
+function titleNode(page) {
+  page.nodes.push(mkNode({ type: 'text', role: 'title', text: page.name, size: 20, bold: true, x: 0, y: -50, w: 400, h: 32 }));
+}
+function addSibling(name) {
+  checkpoint();
+  const page = blankPage(name || '未命名页');
+  const up = P() && ('up' in P()) ? P().up : null;
+  placePage(page, up, cur);
+  titleNode(page);
+  showPage(page.id);
+  return page.id;
+}
+function addChild(name) {
+  checkpoint();
+  const page = blankPage(name || '未命名子页');
+  placePage(page, cur, null);
+  titleNode(page);
+  showPage(page.id);
+  return page.id;
+}
+function showPage(id) {
+  if (!id || id === cur || !doc.pages[id]) return;
+  if (doc.pages[cur]) doc.pages[cur].cam = { x: view.x, y: view.y, k: view.k };
+  cur = id;
+  clearSel();
+  stack = pathOf(id);
+  const cam = doc.pages[id].cam;
+  /* render 会把 view 写进当前页的 cam，所以先放上目标页自己的视口。 */
+  if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
+  else view = fitView(doc.pages[id]);
+  render();
+}
+function goPage(i) {
+  const id = pathOf(cur)[i];
+  if (id && id !== cur) showPage(id);
+}
+function enterSub(nodeId) {
+  const n = nodeById(nodeId); if (!n) return;
+  if (!n.sub || !doc.pages[n.sub]) {
+    checkpoint();
+    const title = (n.text || '系统').split('\n')[0];
+    const page = blankPage(title + ' · 内部构成');
+    placePage(page, cur, null);
+    page.nodes.push(mkNode({ type: 'text', role: 'title', text: title + ' 内部构成', size: 20, bold: true, x: 0, y: -50, w: 400, h: 32 }));
+    const b = mkNode({ type: 'band', text: '组成', x: 0, y: 0, w: 900, h: 140 });
+    page.nodes.push(b);
+    ['组成单元一', '组成单元二', '组成单元三'].forEach((t, i) => page.nodes.push(mkNode({ type: 'round', text: t, parent: b.id, x: 100 + i * 200, y: 40 })));
+    beautify(page);
+    setDoor(n, page.id);
+  }
+  showPage(n.sub);
+}
 function renderCrumb() {
   $('#crumb').innerHTML = stack.map((id, i) => i === stack.length - 1 ? `<span class="cur">${esc(doc.pages[id]?.name || '')}</span>` : `<button data-crumb="${i}">${esc(doc.pages[id]?.name || '')}</button><span style="color:var(--muted)">›</span>`).join('');
 }
@@ -2475,17 +2758,18 @@ function iconPNG(uri, px = 256) {
   });
 }
 function hierarchyPages() {
-  const out = [], seen = new Set();
+  adoptPages(doc);
+  const out = [], seen = {};
   const walk = (id, chain) => {
-    if (seen.has(id) || !doc.pages[id]) return;
-    seen.add(id);
+    if (seen[id] || !doc.pages[id]) return;
+    seen[id] = 1;
     const p = doc.pages[id], name = p.name || '未命名', next = chain.concat(name);
     out.push({ page: p, depth: chain.length, chain: next });
-    for (const n of p.nodes) if (n.sub) walk(n.sub, next);
+    const kids = childPages(id);
+    for (let i = 0; i < kids.length; i++) walk(kids[i].id, next);
   };
-  walk('root', []);
-  /* 无入口的页面（格式转换时按原文件页序）也要导出 */
-  if (doc.pageOrder) doc.pageOrder.forEach(id => walk(id, []));
+  const tops = siblingPages('root');
+  for (let i = 0; i < tops.length; i++) walk(tops[i].id, []);
   return out;
 }
 function pagesInOrder() { return hierarchyPages().map(h => h.page); }
@@ -2920,7 +3204,8 @@ function friendlyErr(err) {
   return m;
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
-  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
+  adoptPages(d);
+  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); view = fitView(d.pages.root); render(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
 
 const SHELF_KEY = 'hongtu.shelf';
 let shelfId = null;
