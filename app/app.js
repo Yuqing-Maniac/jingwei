@@ -672,25 +672,119 @@ function labelPos(pts) {
   if (pts.length === 4) return { x: (pts[1].x + pts[2].x) / 2, y: (pts[1].y + pts[2].y) / 2 };
   return { x: (pts[0].x + pts[pts.length - 1].x) / 2, y: (pts[0].y + pts[pts.length - 1].y) / 2 };
 }
-/* 连线标签：同一页按连线顺序依次落位，后放的标签避开已放标签 */
+const DIR_NEXT = { one: 'both', both: 'none', none: 'one' };
+const DIR_NAME = { one: '单向', both: '双向', none: '无' };
+const F2_PHRASE = 'F2 编辑文字';
+const PILL_IN = 28;
+function linkDir(l) { return DIR_NEXT[l.dir] ? l.dir : 'one'; }
+function cycleLinkDir(l) {
+  /* 缺省 dir 已经按单向画。第一次 D 必须落到双向，不能再写回 one。 */
+  l.dir = DIR_NEXT[l.dir] || 'both';
+}
+function setLinkDir(l, dir) { if (!DIR_NAME[dir]) return; l.dir = dir; }
+function setLabelBack(l, raw) {
+  const t = String(raw || '');
+  if (t) l.labelBack = t; else delete l.labelBack;
+}
+function swapLink(l) {
+  const a = l.from; l.from = l.to; l.to = a;
+  /* 单向和无箭头只有一条可见文字。把 label 换成空的回向会让旧图按 R 之后变空白。 */
+  if (linkDir(l) !== 'both') return;
+  const fwd = l.label || '', rev = l.labelBack || '';
+  l.label = rev;
+  setLabelBack(l, fwd);
+}
+const LINK_KEYS = [
+  { id: 'kind', chord: '1 – 6', label: '关联／数据流／指令流／有线／无线／卫通',
+    match: function (e) { return /^[1-6]$/.test(e.key) && !e.repeat; },
+    apply: function (l, e) { const kinds = Object.keys(LINK_KINDS); l.kind = kinds[+e.key - 1]; doc.lastKind = l.kind; toast('链路类型：' + LINK_KINDS[l.kind].name); } },
+  { id: 'dir', chord: 'D', hint: 'D 切换箭头', label: '箭头：单向 → 双向 → 无',
+    match: function (e) { return (e.key || '').toLowerCase() === 'd' && !e.repeat; },
+    apply: function (l) { cycleLinkDir(l); toast('箭头：' + DIR_NAME[linkDir(l)]); } },
+  { id: 'turn', chord: 'R', hint: 'R 调换方向', label: '调换方向（双向时文字跟着走）',
+    match: function (e) { return (e.key || '').toLowerCase() === 'r' && !e.repeat; },
+    apply: function (l) { swapLink(l); toast('已调换方向'); } }
+];
+function linkSelToast() {
+  return LINK_KEYS.filter(function (k) { return k.hint; }).map(function (k) { return k.hint; }).concat([F2_PHRASE]).join(' · ');
+}
+function polyLen(pts) {
+  let n = 0;
+  for (let i = 1; i < pts.length; i++) n += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+  return n;
+}
+function pointAlong(pts, dist) {
+  const last = pts[pts.length - 1];
+  if (!last) return { x: 0, y: 0 };
+  if (pts.length < 2) return { x: last.x, y: last.y };
+  let left = dist;
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i].x - pts[i - 1].x, dy = pts[i].y - pts[i - 1].y, seg = Math.hypot(dx, dy);
+    if (left <= seg || i === pts.length - 1) {
+      const t = seg > 0 ? Math.min(1, Math.max(0, left / seg)) : 0;
+      return { x: pts[i - 1].x + dx * t, y: pts[i - 1].y + dy * t };
+    }
+    left -= seg;
+  }
+  return { x: last.x, y: last.y };
+}
+function pillBox(text, pos) {
+  const w = measure(text, 11.5, false) + 10;
+  return { x: pos.x - w / 2, y: pos.y - 9, w: w, h: 18 };
+}
+/* 连线标签按页内顺序落位，后放的避开已放的。签名带上方向和两段文字，第二条不能复用第一条的缓存点。 */
 const labelMemo = new WeakMap();
-function labelFor(l, p, pts, lab) {
-  const sig = routeSig(p) + '|' + p.links.map(x => x.id + ':' + linkText(x, p)).join(';');
+function placeLinkPills(l, p, taken) {
+  const pts = linkPoints(l, p);
+  if (!pts) return [];
+  const fwd = linkText(l, p), rev = l.labelBack || '', both = linkDir(l) === 'both';
+  if (both && fwd && rev) {
+    const total = polyLen(pts), short = total < PILL_IN * 2;
+    const posFwd = labelAt(pts, fwd, taken, pointAlong(pts, short ? total * 0.72 : Math.max(0, total - PILL_IN)));
+    const posRev = labelAt(pts, rev, taken.concat([pillBox(fwd, posFwd)]), pointAlong(pts, short ? total * 0.28 : Math.min(PILL_IN, total)));
+    return [{ side: 'to', text: fwd, pos: posFwd }, { side: 'from', text: rev, pos: posRev }];
+  }
+  if (fwd) return [{ side: 'mid', text: fwd, pos: labelAt(pts, fwd, taken) }];
+  if (both && rev) return [{ side: 'mid', text: rev, pos: labelAt(pts, rev, taken) }];
+  return [];
+}
+function labelLayout(p) {
+  const sig = routeSig(p) + '|' + p.links.map(x => x.id + ':' + linkDir(x) + ':' + linkText(x, p) + ':' + (x.labelBack || '')).join(';');
   let m = labelMemo.get(p);
   if (!m || m.sig !== sig) {
     const taken = [], map = new Map();
-    for (const x of p.links) { const q = linkPoints(x, p), t = linkText(x, p); if (!q || !t) continue; const pos = labelAt(q, t, taken); map.set(x.id, pos); taken.push({ x: pos.x - (measure(t, 11.5, false) + 10) / 2, y: pos.y - 9, w: measure(t, 11.5, false) + 10, h: 18 }); }
-    m = { sig, map }; labelMemo.set(p, m);
+    for (const x of p.links) {
+      const pills = placeLinkPills(x, p, taken);
+      map.set(x.id, pills);
+      for (let i = 0; i < pills.length; i++) taken.push(pillBox(pills[i].text, pills[i].pos));
+    }
+    m = { sig: sig, map: map };
+    labelMemo.set(p, m);
   }
-  return m.map.get(l.id) || labelAt(pts, lab);
+  return m.map;
 }
-function labelAt(pts, label, taken = []) {
-  const lp = labelPos(pts), w = measure(label, 11.5, false) + 10;
+function linkPills(l, p) {
+  if (!linkPoints(l, p)) return [];
+  return labelLayout(p).get(l.id) || [];
+}
+function labelFor(l, p, pts, lab) {
+  const pills = linkPills(l, p);
+  for (let i = 0; i < pills.length; i++) if (pills[i].text === lab) return pills[i].pos;
+  return pills.length ? pills[0].pos : labelAt(pts, lab);
+}
+function pillMarkup(pill, fill, color) {
+  const w = measure(pill.text, 11.5, false) + 10;
+  return `<g pointer-events="none"><rect x="${(pill.pos.x - w / 2).toFixed(1)}" y="${(pill.pos.y - 9).toFixed(1)}" width="${w.toFixed(1)}" height="18" rx="3" fill="${fill}" fill-opacity="0.92"/>${textBlock([pill.text], pill.pos.x, pill.pos.y, 11.5, false, color)}</g>`;
+}
+function labelAt(pts, label, taken = [], seed) {
+  const lp = seed || labelPos(pts), w = measure(label, 11.5, false) + 10;
   const [a, b] = pts.length === 4 ? [pts[1], pts[2]] : [pts[0], pts[pts.length - 1]];
   const len = Math.hypot(b.x - a.x, b.y - a.y), horiz = Math.abs(b.y - a.y) < Math.abs(b.x - a.x);
   let r0 = lp;
-  if (horiz && len < w + 16) r0 = { x: lp.x, y: lp.y - 14 };
-  else if (!horiz && len < 30) r0 = { x: lp.x + w / 2 + 6, y: lp.y };
+  if (!seed) {
+    if (horiz && len < w + 16) r0 = { x: lp.x, y: lp.y - 14 };
+    else if (!horiz && len < 30) r0 = { x: lp.x + w / 2 + 6, y: lp.y };
+  }
   /* 避让：默认位置压在框上时，沿折线另找不压框的位置 */
   let obs = null;
   try { const pg = P(); obs = pg.nodes.filter(n => !isCont(n) && n.type !== 'legend' && n.type !== 'tblock').map(n => ({ x: n.x - 2, y: n.y - 2, w: n.w + 4, h: n.h + 4 })).concat(pg.nodes.filter(n => n.type === 'group').map(n => ({ x: n.x, y: n.y, w: n.w, h: GROUP_TH }))); } catch (_) { }
@@ -723,16 +817,9 @@ function linkSVG(l, p, exp, pre, part) {
   const me = l.dir !== 'none' ? `marker-end="url(#${pre}e-${l.kind})"` : '';
   const ms = l.dir === 'both' ? `marker-start="url(#${pre}s-${l.kind})"` : '';
   let s = `<path class="lv" d="${d}" fill="none" stroke="${c}" stroke-width="${K.w || 1.6}" ${K.dash ? `stroke-dasharray="${K.dash}"` : ''} stroke-linejoin="round" ${me} ${ms}/>`;
-  const lab = linkText(l, p);
-  if (part === 'label') {
-    if (!lab) return '';
-    const lp = labelFor(l, p, pts, lab), w = measure(lab, 11.5, false) + 10;
-    return `<g pointer-events="none"><rect x="${(lp.x - w / 2).toFixed(1)}" y="${(lp.y - 9).toFixed(1)}" width="${w.toFixed(1)}" height="18" rx="3" fill="${t.bg}" fill-opacity="0.92"/>${textBlock([lab], lp.x, lp.y, 11.5, false, c)}</g>`;
-  }
-  if (lab && part !== 'line') {
-    const lp = labelFor(l, p, pts, lab), w = measure(lab, 11.5, false) + 10;
-    s += `<rect x="${(lp.x - w / 2).toFixed(1)}" y="${(lp.y - 9).toFixed(1)}" width="${w.toFixed(1)}" height="18" rx="3" fill="${t.bg}" fill-opacity="0.92"/>` + textBlock([lab], lp.x, lp.y, 11.5, false, c);
-  }
+  const pills = linkPills(l, p);
+  if (part === 'label') return pills.map(pill => pillMarkup(pill, t.bg, c)).join('');
+  if (pills.length && part !== 'line') s += pills.map(pill => pillMarkup(pill, t.bg, c)).join('');
   if (!exp) return `<g class="lk" data-lk="${l.id}" data-a="${l.from}" data-b="${l.to}"><path d="${dHit}" fill="none" stroke="transparent" stroke-width="12" data-link="${l.id}" style="cursor:pointer"/>${s}</g>`;
   return `<g>${s}</g>`;
 }
@@ -791,7 +878,52 @@ function render(full = true) {
   const pb = contentBBox(), pp = 28;
   world.innerHTML = `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG();
   applyView(); applyHover();
-  if (full) { renderProps(); renderCrumb(); }
+  if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
+}
+let linkNoted;
+function noteLinkSelection() {
+  const id = selLink || null;
+  if (id === linkNoted) return;
+  linkNoted = id;
+  if (id) toast(linkSelToast());
+}
+let linkHit = null;
+function noteLinkHit(id, cx, cy) {
+  const w = clientToWorld(cx, cy);
+  linkHit = { id: id, x: w.x, y: w.y };
+}
+function focusLinkCaption(l) {
+  if (!l) return;
+  render();
+  setTimeout(() => {
+    let field = '#p-label';
+    if (linkDir(l) === 'both' && linkHit && linkHit.id === l.id) {
+      const pts = linkPoints(l);
+      if (pts && pts.length) {
+        const a = pts[0], b = pts[pts.length - 1];
+        if (Math.hypot(linkHit.x - a.x, linkHit.y - a.y) < Math.hypot(linkHit.x - b.x, linkHit.y - b.y)) field = '#p-back';
+      }
+    }
+    const i = $(field) || $('#p-label');
+    if (i) { i.focus(); i.select(); }
+  }, 0);
+}
+function dirFieldLabel(word, node) {
+  const name = node && node.text ? String(node.text).split('\n')[0] : '';
+  return name ? word + ' → ' + name : word;
+}
+function linkCanvasKeys() {
+  const bits = LINK_KEYS.map(k => {
+    const chord = k.chord === '1 – 6' ? '<kbd>1</kbd>–<kbd>6</kbd>' : '<kbd>' + esc(k.chord) + '</kbd>';
+    const say = k.hint ? k.hint.replace(/^[A-Z]\s+/, '') : k.label;
+    return chord + ' ' + esc(say);
+  });
+  bits.push('<kbd>F2</kbd> ' + esc(F2_PHRASE.replace(/^F2\s+/, '')) + '（双向时点靠近的一端）');
+  return '选中连线后 ' + bits.join('，');
+}
+function linkPanelHint() {
+  const kind = LINK_KEYS[0];
+  return '<kbd>' + esc(kind.chord) + '</kbd> ' + esc(kind.label) + '<br>' + esc(linkSelToast());
 }
 function renderOverlay() { const o = $('#overlay'); if (o) o.outerHTML = overlaySVG(); }
 /* hover highlight (canvas only): links of the hovered node / the hovered link stay vivid, the rest dim */
@@ -811,7 +943,7 @@ function contentBBox(p = P()) {
     for (const l of p.links) {
       const q = linkPoints(l, p); if (!q) continue;
       for (const pt of q) { x0 = Math.min(x0, pt.x - 4); y0 = Math.min(y0, pt.y - 4); x1 = Math.max(x1, pt.x + 4); y1 = Math.max(y1, pt.y + 4); }
-      const t = linkText(l, p); if (t) { const lp = labelFor(l, p, q, t), w = measure(t, 11.5, false) + 10; x0 = Math.min(x0, lp.x - w / 2); x1 = Math.max(x1, lp.x + w / 2); y0 = Math.min(y0, lp.y - 9); y1 = Math.max(y1, lp.y + 9); }
+      for (const pill of linkPills(l, p)) { const b = pillBox(pill.text, pill.pos); x0 = Math.min(x0, b.x); x1 = Math.max(x1, b.x + b.w); y0 = Math.min(y0, b.y); y1 = Math.max(y1, b.y + b.h); }
     }
   } catch (_) { }
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
@@ -1366,16 +1498,16 @@ svg.addEventListener('pointerdown', e => {
     window.__lastDown = { k: hitKey, t: nowT, x: e.clientX, y: e.clientY };
     if (hitKey && e.button === 0 && last && last.k === hitKey && nowT - last.t < 420 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 6) {
       window.__lastDown = null; ui_drag = null;
-      if (hitKey[0] === 'L') { selLink = hitKey.slice(1); sel.clear(); render(); setTimeout(() => { const i = $('#p-label'); if (i) { i.focus(); i.select(); } }, 0); }
+      if (hitKey[0] === 'L') { const id = hitKey.slice(1); noteLinkHit(id, e.clientX, e.clientY); selLink = id; sel.clear(); focusLinkCaption(P().links.find(x => x.id === id)); }
       else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { sel = new Set([n.id]); render(); setTimeout(() => startEdit(n), 0); } }
       return;
     }
   }
   if (e.button === 1 || spaceDown || e.button === 2) { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; return; }
   if (t.dataset.h) { const n = nodeById([...sel][0]); ui_drag = { mode: 'resize', h: t.dataset.h, n, o: { ...n }, w0: w, snap: snapshot(), moved: false, kidsO: descendants(n.id).map(d => ({ d, x: d.x, y: d.y })) }; return; }
-  if (t.dataset.port) { const n = nodeById(t.dataset.port); ui_drag = { mode: 'link', from: n.id }; ui.temp = { x0: n.x + n.w / 2, y0: n.y + n.h / 2, x1: w.x, y1: w.y }; renderOverlay(); return; }
+  if (t.dataset.port) { const n = nodeById(t.dataset.port); ui_drag = { mode: 'link', from: n.id }; ui.temp = { x0: n.x + n.w / 2, y0: n.y + n.h / 2, x1: w.x, y1: w.y }; renderOverlay(); toast('拖到目标节点松开完成，Esc 取消'); return; }
   const lk = t.closest && t.closest('[data-link]');
-  if (lk) { selLink = lk.dataset.link; sel.clear(); render(); ui_drag = null; return; }
+  if (lk) { noteLinkHit(lk.dataset.link, e.clientX, e.clientY); selLink = lk.dataset.link; sel.clear(); render(); ui_drag = null; return; }
   const g = t.closest && t.closest('[data-id]');
   if (g) {
     const id = g.dataset.id;
@@ -1398,6 +1530,7 @@ svg.addEventListener('pointermove', e => {
     const g = e.target.closest && (e.target.closest('[data-id]') || e.target.closest('[data-port]'));
     const id = g ? (g.dataset.id || g.dataset.port) : null;
     const lk = !g && e.target.closest && e.target.closest('[data-link]'); const lid = lk ? lk.dataset.link : null;
+    if (lid) noteLinkHit(lid, e.clientX, e.clientY);
     if (id !== hoverId || lid !== hoverLink) { const ch = id !== hoverId; hoverId = id; hoverLink = lid; if (ch) renderOverlay(); applyHover(); }
     return;
   }
@@ -1467,7 +1600,7 @@ svg.addEventListener('dblclick', e => {
   /* pointerdown re-renders the canvas, so the event target may be detached: hit-test again */
   const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
   e = { target: (hit && hit.closest) ? hit : e.target, clientX: e.clientX, clientY: e.clientY };
-  const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); const v = l.label; selLink = l.id; render(); setTimeout(() => { const i = $('#p-label'); if (i) { i.focus(); i.select(); } }, 0); return; }
+  const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selLink = l.id; focusLinkCaption(l); return; }
   const g = e.target.closest('[data-id]'); if (!g) return;
   const n = nodeById(g.dataset.id); if (!n || n.type === 'legend' || n.type === 'tblock') return;
   startEdit(n);
@@ -1499,11 +1632,11 @@ $('#editor').addEventListener('blur', () => commitEdit());
 let clipboard = null;
 const SHORTCUTS = [
   ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
-  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线：改标签）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消选择／关闭面板']]],
+  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
   ['复合图标', [['Ctrl+G', '把所选元素组合为一个复合图标'], ['Ctrl+Shift+U', '拆分复合图标'], ['Ctrl+Shift+B', '编队生成器（同型装备按阵型合成）']]],
-  ['连线（选中连线时）', [['1 – 6', '关联／数据流／指令流／有线／无线／卫通'], ['D', '箭头：单向 → 双向 → 无'], ['R', '调换方向']]],
+  ['连线（选中连线时）', LINK_KEYS.map(k => [k.chord, k.label]).concat([['F2／双击', '连线改正向标签，双向时点靠近的一端']])],
   ['视图', [['Ctrl+0', '适配窗口'], ['Ctrl+= ／ Ctrl+-', '放大／缩小'], ['Ctrl+滚轮', '缩放'], ['空格+拖动', '平移画布'], ['F1／?', '快捷键一览']]],
 ];
 function openHelp() {
@@ -1524,7 +1657,11 @@ document.addEventListener('keydown', e => {
   const ctrl = e.ctrlKey || e.metaKey, k = (e.key || '').toLowerCase(), sh = e.shiftKey;
   const go = fn => { e.preventDefault(); fn(); };
   if (e.key === 'F1' || (e.key === '?' && !ctrl)) return go(() => $('#help').style.display === 'flex' ? closeHelp() : openHelp());
-  if (e.key === 'Escape') { if (closePanels()) return; sel.clear(); selLink = null; render(); return; }
+  if (e.key === 'Escape') {
+    if (closePanels()) return;
+    if (ui_drag && ui_drag.mode === 'link') { ui_drag = null; ui.temp = null; render(); return; }
+    sel.clear(); selLink = null; render(); return;
+  }
   if ($('#modal').style.display === 'flex' || $('#help').style.display === 'flex') return;
   if (document.getElementById('cb-dlg')?.style.display === 'flex') return;
   if (document.getElementById('std-dlg')?.style.display === 'flex') return;
@@ -1560,13 +1697,11 @@ document.addEventListener('keydown', e => {
   }
   if (ctrl || e.altKey) return;
   if (e.key === 'Delete' || e.key === 'Backspace') return go(deleteSel);
-  if (e.key === 'F2') return go(() => { if (sel.size === 1) startEdit(nodeById([...sel][0])); else if (selLink) { const i = $('#p-label'); if (i) { i.focus(); i.select(); } } });
+  if (e.key === 'F2') return go(() => { if (sel.size === 1) startEdit(nodeById([...sel][0])); else if (selLink) focusLinkCaption(P().links.find(x => x.id === selLink)); });
   const l = selLink && P().links.find(x => x.id === selLink);
   if (l) {
-    const kinds = Object.keys(LINK_KINDS), d = /^[1-9]$/.test(e.key) ? +e.key : 0;
-    if (d && d <= kinds.length) return go(() => { checkpoint(); l.kind = kinds[d - 1]; doc.lastKind = l.kind; render(); toast('链路类型：' + LINK_KINDS[l.kind].name); });
-    if (k === 'd') return go(() => { checkpoint(); l.dir = { one: 'both', both: 'none', none: 'one' }[l.dir] || 'one'; render(); toast('箭头：' + { one: '单向', both: '双向', none: '无' }[l.dir]); });
-    if (k === 'r') return go(() => { checkpoint(); [l.from, l.to] = [l.to, l.from]; render(); toast('已调换方向'); });
+    const linkBind = LINK_KEYS.filter(b => b.match(e))[0];
+    if (linkBind) return go(() => { checkpoint(); linkBind.apply(l, e); render(); });
   }
   const ar = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
   if (ar && sel.size) {
@@ -1667,12 +1802,16 @@ function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
   if (selLink) {
     const l = p.links.find(x => x.id === selLink); if (!l) { selLink = null; return renderProps(); }
-    const a = nodeById(l.from), b = nodeById(l.to);
+    const a = nodeById(l.from), b = nodeById(l.to), both = linkDir(l) === 'both';
+    h += `<div class="hint">${linkPanelHint()}</div>`;
     h += `<h3>连线 <span class="tag">${esc((a?.text || '').split('\n')[0])} → ${esc((b?.text || '').split('\n')[0])}</span></h3>`;
-    h += `<div class="row"><label>箭头</label>${seg('p-dir', [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']], l.dir)}</div>`;
+    h += `<div class="row" title="快捷键 D"><label>箭头</label>${seg('p-dir', [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']], linkDir(l))}</div>`;
     h += `<div class="row"><label></label><button id="p-swap" style="border-color:var(--line);justify-content:center">⇄ 调换方向</button></div>`;
     h += `<div class="row"><label>链路类型</label><select id="p-kind">${Object.entries(LINK_KINDS).map(([k, v]) => `<option value="${k}" ${k === l.kind ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
-    h += `<div class="row"><label>标签</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：数据链、MCP 调用"></div>`;
+    if (both) {
+      h += `<div class="row"><label style="width:auto">${esc(dirFieldLabel('去向', b))}</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：态势上报"></div>`;
+      h += `<div class="row"><label style="width:auto">${esc(dirFieldLabel('回向', a))}</label><input type="text" id="p-back" value="${esc(l.labelBack || '')}" placeholder="如：指令回执"></div>`;
+    } else h += `<div class="row"><label>标签</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：数据链、MCP 调用"></div>`;
     h += `<div class="row"><label>走线</label>${seg('p-route', [['ortho', '直角'], ['straight', '直线']], l.route)}</div>`;
     if (window.Std) h += Std.propsHTML('link', l, p);
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
@@ -1726,7 +1865,7 @@ function renderProps() {
       · <b>减少交叉</b> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>：按连线关系重排层内顺序后美化<br>
       · 同侧多条连线自动<b>分散端点</b>、并行线自动错开；交叉处画<b>跨线弧</b>（上方可改为断开／无）<br>
       · 悬停元素或连线，相关连线<b>高亮</b>、其余变淡<br>
-      · 选中连线后按 <kbd>1</kbd>–<kbd>6</kbd> 换链路类型，<kbd>D</kbd> 切换箭头，<kbd>R</kbd> 调换方向<br>
+      · ${linkCanvasKeys()}<br>
       · <kbd>双击</kbd>／<kbd>F2</kbd> 改字 · <kbd>Ctrl</kbd>+<kbd>K</kbd> 选图标 · <kbd>Delete</kbd> 删除 · <kbd>Ctrl</kbd>+<kbd>Z</kbd> 撤销 · <kbd>Ctrl</kbd>+<kbd>D</kbd> 复制<br>
       · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> 文字成图 · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> 模板 · <kbd>Ctrl</kbd>+<kbd>E</kbd> 导出<br>
       · 滚轮平移 · <kbd>Ctrl</kbd>+滚轮缩放 · 按住<kbd>空格</kbd>拖动画布<br>
@@ -1762,10 +1901,11 @@ function bindProps() {
   on('#p-cbedit', 'click', () => Combo.open(n));
   on('#p-form', 'click', () => Combo.open(n));
   on('#p-del', 'click', deleteSel);
-  on('#p-dir', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); l.dir = b.dataset.v; render(); });
-  on('#p-swap', 'click', () => { checkpoint(); [l.from, l.to] = [l.to, l.from]; render(); });
+  on('#p-dir', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); setLinkDir(l, b.dataset.v); render(); });
+  on('#p-swap', 'click', () => { checkpoint(); swapLink(l); render(); });
   on('#p-kind', 'change', e => { checkpoint(); l.kind = e.target.value; doc.lastKind = l.kind; render(); });
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
+  on('#p-back', 'input', e => { setLabelBack(l, e.target.value); live(); });
   on('#p-route', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); l.route = b.dataset.v; render(); });
   on('#d-pname', 'input', e => { P().name = e.target.value; renderCrumb(); });
   on('#d-theme', 'change', e => setTheme(e.target.value));
