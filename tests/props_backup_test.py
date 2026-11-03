@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Shared properties, 选中同类, card border, and the rolling backup."""
+import os
 import pathlib
 import sys
 from playwright.sync_api import sync_playwright
@@ -7,7 +8,6 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HTML = (ROOT / 'dist' / 'offline.html').resolve().as_uri()
 SHOT = pathlib.Path('/opt/cursor/artifacts/screenshots')
-CHROME = '/opt/google/chrome/chrome'
 DOC = """{
   name: '试验', theme: 'report', custom: {},
   statusLabels: { base: '延续', new: '本步新增／重构', key: '重点关注' },
@@ -23,7 +23,16 @@ def check(name, cond, detail=''):
 
 
 def launch(pw):
-    return pw.chromium.launch(executable_path=CHROME, args=['--no-sandbox'])
+    exe = os.environ.get('JW_CHROME')
+    if not exe:
+        for cand in ('/opt/google/chrome/chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'):
+            if os.path.exists(cand):
+                exe = cand
+                break
+    kw = {'args': ['--no-sandbox']}
+    if exe:
+        kw['executable_path'] = exe
+    return pw.chromium.launch(**kw)
 
 
 def new_page(browser):

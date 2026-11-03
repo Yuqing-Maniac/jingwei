@@ -12,7 +12,16 @@ def check(name, cond, detail=''):
         fails.append(name + (' ' + detail if detail else ''))
 
 with sync_playwright() as pw:
-    b = pw.chromium.launch(executable_path='/opt/google/chrome/chrome', args=['--no-sandbox'])
+    exe = os.environ.get('JW_CHROME')
+    if not exe:
+        for cand in ('/opt/google/chrome/chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'):
+            if os.path.exists(cand):
+                exe = cand
+                break
+    kw = {'args': ['--no-sandbox']}
+    if exe:
+        kw['executable_path'] = exe
+    b = pw.chromium.launch(**kw)
     pg = b.new_page(viewport={'width': 1600, 'height': 1000}, accept_downloads=True)
     errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:300]))

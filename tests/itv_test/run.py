@@ -39,7 +39,7 @@ with sync_playwright() as p:
         print('   beautify maxShift:', bt['maxShift'], bt['who'], 'errors after:', bt['post'])
         if bt['maxShift'] > 0: pg.screenshot(path=f'{OUT}/{tid}-beautified.png')
     # properties panel: view selector with optgroups
-    pg.evaluate("()=>{sel=new Set(); selLink=null; render();}"); pg.wait_for_timeout(200)
+    pg.evaluate("()=>{clearSel(); render();}"); pg.wait_for_timeout(200)
     og = pg.evaluate("()=>[...document.querySelectorAll('#std-view optgroup')].map(g=>g.label+':'+g.children.length)")
     print('view optgroups:', og)
     pg.screenshot(path=f'{OUT}/props.png', clip={'x': 1650, 'y': 40, 'width': 270, 'height': 600})
