@@ -12,7 +12,16 @@ def check(name, cond, detail=''):
         fails.append(name + (' ' + detail if detail else ''))
 
 with sync_playwright() as pw:
-    b = pw.chromium.launch()
+    exe = os.environ.get('JW_CHROME')
+    if not exe:
+        for cand in ('/opt/google/chrome/chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'):
+            if os.path.exists(cand):
+                exe = cand
+                break
+    kw = {'args': ['--no-sandbox']}
+    if exe:
+        kw['executable_path'] = exe
+    b = pw.chromium.launch(**kw)
     pg = b.new_page(viewport={'width': 1600, 'height': 1000}, accept_downloads=True)
     errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:300]))
@@ -36,7 +45,7 @@ with sync_playwright() as pw:
         pages: { root: { id: 'root', name: '总图', nodes: [a, c], links: [{ id: 'lk1', from: a.id, to: c.id, kind: 'data', route: 'ortho', label: '上报' }] } }
       });
       window.__toasts.length = 0;
-      selLink = 'lk1'; sel.clear(); render();
+      selectLinks(['lk1']); render();
     }""")
     pg.wait_for_timeout(200)
     toasts = pg.evaluate("() => window.__toasts.slice()")
@@ -148,7 +157,7 @@ with sync_playwright() as pw:
     pg.keyboard.press('Escape')
     pg.wait_for_timeout(80)
 
-    pg.evaluate("() => { const l = P().links[0]; selLink = l.id; sel.clear(); render(); }")
+    pg.evaluate("() => { const l = P().links[0]; selectLinks([l.id]); render(); }")
     pg.wait_for_timeout(80)
     before = pg.evaluate("() => P().links[0].label")
     pg.click('#b-saveas')
@@ -181,7 +190,7 @@ with sync_playwright() as pw:
     pg.wait_for_timeout(50)
     check('esc closes save-as', pg.evaluate("() => document.getElementById('saveas').style.display") == 'none', '')
 
-    pg.evaluate("() => { sel.clear(); selLink = null; render(); }")
+    pg.evaluate("() => { clearSel(); render(); }")
     pg.wait_for_timeout(80)
     pg.fill('#d-dname', '新文档名')
     pg.evaluate("""() => {
@@ -196,7 +205,7 @@ with sync_playwright() as pw:
     pg.wait_for_timeout(120)
     back = pg.evaluate("() => ({ name: doc.name, title: document.title })")
     check('undo restores the document name and title', back['name'] == '旧图' and back['title'] == '旧图 - 经纬织图', str(back))
-    pg.evaluate("() => { sel.clear(); selLink = null; render(); }")
+    pg.evaluate("() => { clearSel(); render(); }")
     pg.fill('#d-pname', '首页')
     pg.wait_for_timeout(80)
     page = pg.evaluate("() => ({ page: P().name, title: document.title, crumb: document.getElementById('crumb').textContent })")

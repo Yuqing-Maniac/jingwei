@@ -58,7 +58,7 @@ def setup(r):
         r.frames.sort(key=lambda f: f[0]); return _enc(path, end_time, fps)
     r.encode = _encode
     pg.on('download', lambda d: None)
-    pg.evaluate("()=>{sel.clear();selLink=null;fit();render()}")
+    pg.evaluate("()=>{clearSel();fit();render()}")
     pg.mouse.move(960, 600); r.mx, r.my = 960, 600
     import base64
     u = lambda f: 'data:image/png;base64,' + base64.b64encode(open(f, 'rb').read()).decode()

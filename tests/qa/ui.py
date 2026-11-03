@@ -50,7 +50,7 @@ with sync_playwright() as pw:
   step('Ctrl+D duplicate', lambda: (pg.keyboard.press('Control+d'), N())[-1])
   # property panel edits
   def props():
-    pg.evaluate("()=>{const n=P().nodes.find(n=>n.text==='联合值班席');sel=new Set([n.id]);selLink=null;render()}")
+    pg.evaluate("()=>{const n=P().nodes.find(n=>n.text==='联合值班席');selectNodes([n.id]);render()}")
     out=[]
     for t in ['roundL','roundR','diamond','ellipse','hexagon','rect']:
       pg.select_option('#p-type', t); pg.wait_for_timeout(60)
@@ -89,9 +89,9 @@ with sync_playwright() as pw:
   step('save .jingwei.json + reopen', save_reopen)
   # links: select a link and press keys
   def linkkeys():
-    pg.evaluate("()=>{sel.clear();selLink=P().links[0].id;render()}")
+    pg.evaluate("()=>{selectLinks([P().links[0].id]);render()}")
     for k in ['1','2','3','4','5','6','d','r']: pg.keyboard.press(k)
-    return pg.evaluate("()=>{const l=P().links.find(l=>l.id===selLink);return [l.kind,l.dir]}")
+    return pg.evaluate("()=>{const l=P().links.find(l=>l.id===onlyLinkId());return [l.kind,l.dir]}")
   step('link keys 1-6 d r', linkkeys)
   # textgen
   def textgen(src):

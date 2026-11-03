@@ -394,7 +394,7 @@
       const b = contentBBox(p);
       a = mkNode({ type: 'round', text: t.name, x: snapv(b.x), y: snapv(b.y + b.h + 40), w: 200, h: 40 }); p.nodes.push(a);
     }
-    a.sub = idMap.root; sel = new Set([a.id]); selLink = null; render();
+    a.sub = idMap.root; selectNodes([a.id]); render();
     toast('已插入“' + t.name + '”：点击节点右上角 ⊕ 进入该页');
   }
   window.openTemplates = function () {

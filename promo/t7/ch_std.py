@@ -26,7 +26,7 @@ def setup(r):
         r.frames.sort(key=lambda f: f[0]); return _enc(path, end_time, fps)
     r.encode = _encode
     pg.on('download', lambda d: None)
-    pg.evaluate("()=>{sel.clear();selLink=null;fit();render()}")
+    pg.evaluate("()=>{clearSel();fit();render()}")
     pg.keyboard.press('Control+Shift+M'); pg.wait_for_timeout(2500)
     pg.evaluate("()=>{const e=document.getElementById('tpl-ov');if(e)e.remove()}")
     pg.mouse.move(1180, 640); r.mx, r.my = 1180, 640
@@ -61,7 +61,7 @@ def a_p12(r):
     if time.time()-t0 > 5.0:
         print('p12 used', time.time()-t0); return
     r.move(1180, 700, 0.15)
-    pg.evaluate("()=>{sel.clear();selLink=null;render()}")
+    pg.evaluate("()=>{clearSel();render()}")
     hover(r, '#std-view', 0.2)
     shot(r, 'c4')
     ring(r)
@@ -82,7 +82,7 @@ def a_p13(r):
     r.move(xy[0], xy[1], 0.2); clickat(r)
     r.wait(0.15); shot(r, 'd2'); print('  T d2', round(time.time()-t0,2))
     pg.keyboard.press('Delete'); r.wait(0.2); shot(r, 'd3'); print('  T','d3',round(time.time()-t0,2))
-    pg.evaluate("()=>{sel.clear();selLink=null;render()}")
+    pg.evaluate("()=>{clearSel();render()}")
     tb = pg.evaluate("()=>{const n=P().nodes.find(n=>n.type==='tblock');return [n.x+n.w*0.5,n.y+n.h*0.5]}")
     if time.time()-t0 < 3.4: zoomto(r, tb[0] - 150, tb[1] - 60, 1.5, 0.45)
     shot(r, 'd4'); print('  T','d4',round(time.time()-t0,2))

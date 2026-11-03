@@ -70,7 +70,9 @@
     try {
       const p = await D.save(name, data, { path: asNew ? null : curPath, title: asNew ? '另存为' : '保存工程' });
       if (!p) { toast('已取消保存'); return null; }
-      curPath = p; dirty = false; upd(); toast('已保存：' + p); return p;
+      curPath = p; dirty = false; upd();
+      if (window.Backup) Backup.observeSave();
+      toast('已保存：' + p); return p;
     } catch (e) { toast('保存失败：' + (e && e.message || e)); return null; }
   }
   window.saveProject = saveProject = () => saveProj(false);
@@ -103,7 +105,11 @@
       if (/\.json$/i.test(r.name)) {
         const o = JSON.parse(new TextDecoder().decode(r.data)); const d = o.doc || o;
         if (!d.pages || !d.pages.root) throw new Error('不是经纬织图工程文件');
-        _cp(); loadDoc(d); curPath = r.path; dirty = false; upd(); toast('已打开：' + r.name);
+        _cp(); loadDoc(d);
+        var official = /^(.*)\.bak[\\/]bak-([1-5])\.json$/i.exec(r.path);
+        if (official) { curPath = official[1]; dirty = true; }
+        else { curPath = r.path; dirty = false; }
+        upd(); toast('已打开：' + r.name);
       } else {
         await openForeign(new File([r.data], r.name)); upd();
       }
@@ -214,5 +220,16 @@
   const nb = $('#b-new'), _nb = nb.onclick; nb.onclick = function () { const r = _nb.apply(this, arguments); curPath = null; dirty = false; upd(); return r; };
 
   upd();
-  D.pending().then(list => { if (list && list.length) openPath(list[0]); else showStart(); });
+  if (window.Backup) Backup.install({
+    currentPath: function () { return curPath; },
+    list: function (scope) { return D.backupList(scope, scope === 'current' ? curPath : null); },
+    write: function (slot, frozen, backedAt) { return D.backupWrite(curPath, slot, frozen, backedAt); },
+    drop: function (projectPath, slot) { return D.backupDrop(projectPath, slot); },
+    noteSave: function () { return Promise.resolve(); }
+  }, { adoptPath: function (p) { curPath = p || null; dirty = true; upd(); } });
+  D.pending().then(list => {
+    var opened = list && list.length;
+    if (opened) openPath(list[0]); else showStart();
+    if (!opened && window.Backup) Backup.offer();
+  });
 })();

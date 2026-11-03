@@ -172,7 +172,7 @@ function iconName(key) {
 
 /* ---------- document model ---------- */
 let doc, cur = 'root', stack = ['root'];
-let sel = new Set(), selLink = null, hoverId = null, hoverLink = null;
+let sel = new Set(), linkSel = new Set(), hoverId = null, hoverLink = null;
 let undoS = [], redoS = [];
 const P = () => doc.pages[cur];
 const T = () => THEMES[doc.theme] || THEMES.report;
@@ -182,10 +182,30 @@ function descendants(id, p = P(), acc = []) { for (const k of kids(id, p)) { acc
 function mkNode(o) {
   return Object.assign({ id: uid(), type: 'rect', x: 0, y: 0, w: 120, h: 40, text: '', status: 'base', parent: null, size: 13, bold: false, align: 'center', icon: null, noBox: false, sub: null }, o);
 }
+function selectNodes(ids) {
+  const next = new Set();
+  for (let i = 0; i < ids.length; i++) if (ids[i]) next.add(ids[i]);
+  sel = next;
+  linkSel = new Set();
+}
+function selectLinks(ids) {
+  const next = new Set();
+  for (let i = 0; i < ids.length; i++) if (ids[i]) next.add(ids[i]);
+  linkSel = next;
+  sel = new Set();
+}
+function clearSel() {
+  sel = new Set();
+  linkSel = new Set();
+}
+function onlyLinkId() {
+  if (linkSel.size !== 1) return null;
+  return [...linkSel][0];
+}
 function newPage(name) { const id = 'p' + uid(); doc.pages[id] = { id, name, nodes: [], links: [], view: null }; return id; }
 function snapshot() { return JSON.stringify({ doc, cur, stack }); }
 function checkpoint() { undoS.push(snapshot()); if (undoS.length > 120) undoS.shift(); redoS = []; }
-function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; sel.clear(); selLink = null; if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
+function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; clearSel(); if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
 function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); }
 
@@ -714,7 +734,7 @@ const DIR_NAME = { one: '单向', both: '双向', none: '无' };
 const F2_PHRASE = 'F2 编辑文字';
 const PILL_IN = 28;
 function linkDir(l) { return DIR_NEXT[l.dir] ? l.dir : 'one'; }
-function cycleLinkDir(l) { l.dir = DIR_NEXT[linkDir(l)]; }
+function cycleLinkDir(l) { setLinkDir(l, DIR_NEXT[linkDir(l)]); }
 function setLinkDir(l, dir) { if (!DIR_NAME[dir]) return; l.dir = dir; }
 function setLabelBack(l, raw) {
   const t = String(raw || '');
@@ -745,6 +765,26 @@ const LINK_KEYS = [
 ];
 function linkSelToast() {
   return LINK_KEYS.filter(function (k) { return k.hint; }).map(function (k) { return k.hint; }).concat([F2_PHRASE]).join(' · ');
+}
+function applyLinkChord(links, bind, e) {
+  if (!links.length) return;
+  if (bind.id === 'kind') {
+    const knd = Object.keys(LINK_KINDS)[+e.key - 1];
+    if (!knd) return;
+    links.forEach(l => { l.kind = knd; });
+    doc.lastKind = knd;
+    toast('链路类型：' + LINK_KINDS[knd].name);
+    return;
+  }
+  if (bind.id === 'dir') {
+    links.forEach(cycleLinkDir);
+    toast('箭头：' + DIR_NAME[linkDir(links[0])]);
+    return;
+  }
+  if (bind.id === 'turn') {
+    links.forEach(swapLink);
+    toast('已调换方向');
+  }
 }
 function polyLen(pts) {
   let n = 0;
@@ -853,17 +893,31 @@ function markerDefs(t, pre) {
       `<marker id="${pre}s-${k}" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M10,1 L0,5 L10,9 Z" fill="${c}"/></marker>`;
   }).join('') + '</defs>';
 }
+function linkPaint(l, exp) {
+  const K = LINK_KINDS[l.kind] || LINK_KINDS.plain;
+  const theme = T().link[l.kind] || T().link.plain;
+  if (exp) return { color: theme, width: K.w || 1.6, dash: K.dash || '', ownMarker: false };
+  return { color: l.color || theme, width: l.sw || K.w || 1.6, dash: K.dash || '', ownMarker: !!l.color };
+}
+function ownMarkerDefs(l, pre, color) {
+  const id = pre + 'c' + l.id;
+  const head = (mid, d) => `<marker id="${mid}" viewBox="0 0 10 10" refX="${mid.endsWith('s') ? 1 : 9}" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="${d}" fill="${color}"/></marker>`;
+  let s = '<defs>' + head(id + 'e', 'M0,1 L10,5 L0,9 Z');
+  if (l.dir === 'both') s += head(id + 's', 'M10,1 L0,5 L10,9 Z');
+  return s + '</defs>';
+}
 function linkSVG(l, p, exp, pre, part) {
   const route = routesFor(p).get(l.id); if (!route) return '';
-  const pts = route.pts;
-  const t = T(), K = LINK_KINDS[l.kind] || LINK_KINDS.plain, c = t.link[l.kind] || t.link.plain;
+  const pts = route.pts, t = T(), paint = linkPaint(l, exp);
   const d = opsToD(linkOps(route)), dHit = 'M' + pts.map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' L');
-  const me = l.dir !== 'none' ? `marker-end="url(#${pre}e-${l.kind})"` : '';
-  const ms = l.dir === 'both' ? `marker-start="url(#${pre}s-${l.kind})"` : '';
-  let s = `<path class="lv" d="${d}" fill="none" stroke="${c}" stroke-width="${K.w || 1.6}" ${K.dash ? `stroke-dasharray="${K.dash}"` : ''} stroke-linejoin="round" ${me} ${ms}/>`;
   const pills = linkPills(l, p);
-  if (part === 'label') return pills.map(pill => pillMarkup(pill, t.bg, c)).join('');
-  if (pills.length && part !== 'line') s += pills.map(pill => pillMarkup(pill, t.bg, c)).join('');
+  if (part === 'label') return pills.map(pill => pillMarkup(pill, t.bg, paint.color)).join('');
+  const mid = pre + 'c' + l.id;
+  const me = l.dir === 'none' ? '' : paint.ownMarker ? `marker-end="url(#${mid}e)"` : `marker-end="url(#${pre}e-${l.kind})"`;
+  const ms = l.dir !== 'both' ? '' : paint.ownMarker ? `marker-start="url(#${mid}s)"` : `marker-start="url(#${pre}s-${l.kind})"`;
+  const own = paint.ownMarker && l.dir !== 'none' ? ownMarkerDefs(l, pre, paint.color) : '';
+  let s = `${own}<path class="lv" d="${d}" fill="none" stroke="${paint.color}" stroke-width="${paint.width}" ${paint.dash ? `stroke-dasharray="${paint.dash}"` : ''} stroke-linejoin="round" ${me} ${ms}/>`;
+  if (pills.length && part !== 'line') s += pills.map(pill => pillMarkup(pill, t.bg, paint.color)).join('');
   if (!exp) return `<g class="lk" data-lk="${l.id}" data-a="${l.from}" data-b="${l.to}"><path d="${dHit}" fill="none" stroke="transparent" stroke-width="12" data-link="${l.id}" style="cursor:pointer"/>${s}</g>`;
   return `<g>${s}</g>`;
 }
@@ -893,10 +947,10 @@ function applyView() {
 function overlaySVG() {
   const A = '#2F80ED'; let s = '';
   const p = P();
-  if (selLink) {
-    const l = p.links.find(x => x.id === selLink); const pts = l && linkPoints(l);
+  linkSel.forEach(id => {
+    const l = p.links.find(x => x.id === id); const pts = l && linkPoints(l);
     if (pts) s += `<path d="M${pts.map(q => q.x + ',' + q.y).join(' L')}" fill="none" stroke="${A}" stroke-opacity=".35" stroke-width="7" pointer-events="none"/>`;
-  }
+  });
   for (const id of sel) {
     const n = nodeById(id); if (!n) continue;
     s += `<rect x="${n.x - 3}" y="${n.y - 3}" width="${n.w + 6}" height="${n.h + 6}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
@@ -923,10 +977,11 @@ function render(full = true) {
   world.innerHTML = `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG();
   applyView(); applyHover();
   if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
+  if (window.Backup) Backup.poke();
 }
 let linkNoted;
 function noteLinkSelection() {
-  const id = selLink || null;
+  const id = onlyLinkId();
   if (id === linkNoted) return;
   linkNoted = id;
   if (id) toast(linkSelToast());
@@ -1412,6 +1467,9 @@ function iconSections() {
   return PAL_ORDER.filter(c => m.has(c)).concat([...m.keys()].filter(c => !PAL_ORDER.includes(c))).map(c => [c, m.get(c)]);
 }
 const openSecs = new Set(['基础形状', '无人']);
+function iconPlaceSpec(icon, name, w, h) {
+  return { type: 'equip', w: w, h: h, text: name, icon: icon };
+}
 function renderPalette() {
   const q = ($('#pal-q')?.value || '').trim();
   let h = `<input class="search" id="pal-q" type="text" placeholder="搜索元素：舰、雷达、无人机…" value="${esc(q)}">`;
@@ -1422,10 +1480,10 @@ function renderPalette() {
   const m = s => !q || s.includes(q);
   for (const g of ['基础形状', '流程与标注', '箭头']) h += sec(g, SHAPES.filter(s => s.grp === g && (m(s.name) || m(g))).map(s => pitem(s.name, s.spec, s.svg)));
   h += sec('容器与层级', CONTS.filter(s => m(s.name)).map(s => pitem(s.name, s.spec, s.svg)));
-  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c)).map(i => pitem(i.name, { type: 'equip', w: 96, h: 96, text: i.name, icon: 'lib:' + i.key, noBox: true }, iconURI('lib:' + i.key), true)));
-  if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], { type: 'equip', w: 96, h: 92, text: x[1], icon: 'ms:' + x[0], noBox: true }, iconURI('ms:' + x[0]), true)));
+  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c)).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key), true)));
+  if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
-  h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, { type: 'equip', w: 96, h: 96, text: v.name, icon: 'cu:' + id, noBox: true }, v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
+  h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
   $('#palette').innerHTML = h;
   const qi = $('#pal-q'); qi.oninput = () => { const pos = qi.selectionStart; renderPalette(); const n = $('#pal-q'); n.focus(); n.setSelectionRange(pos, pos); };
   const pf = $('#pal-form'); if (pf) pf.onclick = () => window.Combo ? Combo.open(null) : toast('复合图标模块未加载');
@@ -1448,7 +1506,7 @@ function addNode(spec, wx, wy) {
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
-  sel = new Set([n.id]); selLink = null; render();
+  selectNodes([n.id]); render();
 }
 
 /* ---------- 拖动磁吸：对齐其他图形的边／中线、画布中轴、父容器中线，等间距提示 ---------- */
@@ -1522,6 +1580,60 @@ function guidesSVG() {
     return '';
   }).join('');
 }
+function hitTarget(el) {
+  if (!el || !el.closest) return null;
+  const lk = el.closest('[data-link]');
+  if (lk && lk.dataset.link) return { kind: 'link', id: lk.dataset.link };
+  const nd = el.closest('[data-id]');
+  if (nd && nd.dataset.id) return { kind: 'node', id: nd.dataset.id };
+  return null;
+}
+function ensureCtx() {
+  let m = document.getElementById('ctx');
+  if (m) return m;
+  m = document.createElement('div');
+  m.id = 'ctx';
+  m.innerHTML = '<button type="button" id="ctx-same">选中同类</button>';
+  document.body.appendChild(m);
+  m.querySelector('#ctx-same').addEventListener('click', () => {
+    const hit = m._hit;
+    m.style.display = 'none';
+    if (hit) selectSame(hit);
+  });
+  return m;
+}
+function openSameMenu(hit, x, y) {
+  const keep = hit.kind === 'node' ? sel.has(hit.id) && sel.size > 1 : linkSel.has(hit.id) && linkSel.size > 1;
+  if (!keep) {
+    if (hit.kind === 'node') selectNodes([hit.id]);
+    else selectLinks([hit.id]);
+  }
+  const m = ensureCtx();
+  m._hit = hit;
+  m.style.left = x + 'px';
+  m.style.top = y + 'px';
+  m.style.display = 'block';
+  render();
+}
+function selectSame(anchor) {
+  const page = P();
+  if (!anchor) {
+    if (sel.size === 1 && !linkSel.size) anchor = { kind: 'node', id: [...sel][0] };
+    else if (onlyLinkId()) anchor = { kind: 'link', id: onlyLinkId() };
+    else { toast('请先选中一个元素或一条连线'); return; }
+  }
+  if (anchor.kind === 'node') {
+    const n = nodeById(anchor.id, page);
+    if (!n) return;
+    const ids = n.icon ? page.nodes.filter(x => x.icon === n.icon).map(x => x.id) : page.nodes.filter(x => x.type === n.type).map(x => x.id);
+    selectNodes(ids);
+  } else {
+    const l = page.links.find(x => x.id === anchor.id);
+    if (!l) return;
+    selectLinks(page.links.filter(x => x.kind === l.kind).map(x => x.id));
+  }
+  render();
+}
 /* ---------- pointer interaction ---------- */
 let spaceDown = false;
 let ui_drag = null;
@@ -1541,22 +1653,28 @@ svg.addEventListener('pointerdown', e => {
     window.__lastDown = { k: hitKey, t: nowT, x: e.clientX, y: e.clientY };
     if (hitKey && e.button === 0 && last && last.k === hitKey && nowT - last.t < 420 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 6) {
       window.__lastDown = null; ui_drag = null;
-      if (hitKey[0] === 'L') { const id = hitKey.slice(1); noteLinkHit(id, e.clientX, e.clientY); selLink = id; sel.clear(); focusLinkCaption(P().links.find(x => x.id === id)); }
-      else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { sel = new Set([n.id]); render(); setTimeout(() => startEdit(n), 0); } }
+      if (hitKey[0] === 'L') { const id = hitKey.slice(1); noteLinkHit(id, e.clientX, e.clientY); selectLinks([id]); focusLinkCaption(P().links.find(x => x.id === id)); }
+      else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { selectNodes([n.id]); render(); setTimeout(() => startEdit(n), 0); } }
       return;
     }
   }
+  if (e.button === 2) { const hit = hitTarget(t); if (hit) { openSameMenu(hit, e.clientX, e.clientY); return; } }
   if (e.button === 1 || spaceDown || e.button === 2) { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; return; }
   if (t.dataset.h) { const n = nodeById([...sel][0]); ui_drag = { mode: 'resize', h: t.dataset.h, n, o: { ...n }, w0: w, snap: snapshot(), moved: false, kidsO: descendants(n.id).map(d => ({ d, x: d.x, y: d.y })) }; return; }
   if (t.dataset.port) { const n = nodeById(t.dataset.port); ui_drag = { mode: 'link', from: n.id }; ui.temp = { x0: n.x + n.w / 2, y0: n.y + n.h / 2, x1: w.x, y1: w.y }; renderOverlay(); toast('拖到目标节点松开完成，Esc 取消'); return; }
   const lk = t.closest && t.closest('[data-link]');
-  if (lk) { noteLinkHit(lk.dataset.link, e.clientX, e.clientY); selLink = lk.dataset.link; sel.clear(); render(); ui_drag = null; return; }
+  if (lk) { noteLinkHit(lk.dataset.link, e.clientX, e.clientY); selectLinks([lk.dataset.link]); render(); ui_drag = null; return; }
   const g = t.closest && t.closest('[data-id]');
   if (g) {
     const id = g.dataset.id;
-    if (e.shiftKey || e.ctrlKey || e.metaKey) { sel.has(id) ? sel.delete(id) : sel.add(id); }
-    else if (!sel.has(id)) sel = new Set([id]);
-    selLink = null;
+    let ids;
+    if (e.shiftKey || e.ctrlKey || e.metaKey) {
+      ids = [...sel];
+      const at = ids.indexOf(id);
+      if (at >= 0) ids.splice(at, 1); else ids.push(id);
+    } else if (sel.has(id) && !linkSel.size) ids = [...sel];
+    else ids = [id];
+    selectNodes(ids);
     const set = new Map();
     for (const sid of sel) { const n = nodeById(sid); if (!n) continue; set.set(n.id, n); for (const d of descendants(n.id)) set.set(d.id, d); }
     ui_drag = { mode: 'move', w0: w, items: [...set.values()].map(n => ({ n, x: n.x, y: n.y })), snap: snapshot(), moved: false };
@@ -1564,7 +1682,11 @@ svg.addEventListener('pointerdown', e => {
     render(); return;
   }
   if (e.pointerType === 'touch') { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; }
-  else { if (!e.shiftKey) sel.clear(); selLink = null; ui_drag = { mode: 'marquee', base: new Set(sel) }; ui.marquee = { x0: w.x, y0: w.y, x1: w.x, y1: w.y }; }
+  else {
+    if (!e.shiftKey) clearSel();
+    else if (linkSel.size) selectNodes([...sel]);
+    ui_drag = { mode: 'marquee', base: new Set(sel) }; ui.marquee = { x0: w.x, y0: w.y, x1: w.x, y1: w.y };
+  }
   render();
 });
 svg.addEventListener('pointermove', e => {
@@ -1611,7 +1733,9 @@ svg.addEventListener('pointermove', e => {
   if (d.mode === 'marquee') {
     const m = ui.marquee; m.x1 = w.x; m.y1 = w.y;
     const x0 = Math.min(m.x0, m.x1), x1 = Math.max(m.x0, m.x1), y0 = Math.min(m.y0, m.y1), y1 = Math.max(m.y0, m.y1);
-    sel = new Set(d.base); for (const n of P().nodes) if (n.x >= x0 && n.y >= y0 && n.x + n.w <= x1 && n.y + n.h <= y1) sel.add(n.id);
+    const ids = [...d.base];
+    for (const n of P().nodes) if (n.x >= x0 && n.y >= y0 && n.x + n.w <= x1 && n.y + n.h <= y1 && ids.indexOf(n.id) < 0) ids.push(n.id);
+    selectNodes(ids);
     renderOverlay();
   }
 });
@@ -1626,7 +1750,7 @@ function endDrag(e) {
   if (d.mode === 'link') {
     const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
-    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selLink = l.id; sel.clear(); }
+    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selectLinks([l.id]); }
   }
   if (d.mode === 'marquee') ui.marquee = null;
   render();
@@ -1643,7 +1767,7 @@ svg.addEventListener('dblclick', e => {
   /* pointerdown re-renders the canvas, so the event target may be detached: hit-test again */
   const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
   e = { target: (hit && hit.closest) ? hit : e.target, clientX: e.clientX, clientY: e.clientY };
-  const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selLink = l.id; focusLinkCaption(l); return; }
+  const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selectLinks([l.id]); focusLinkCaption(l); return; }
   const g = e.target.closest('[data-id]'); if (!g) return;
   const n = nodeById(g.dataset.id); if (!n || n.type === 'legend' || n.type === 'tblock') return;
   startEdit(n);
@@ -1675,7 +1799,7 @@ $('#editor').addEventListener('blur', () => commitEdit());
 let clipboard = null;
 const SHORTCUTS = [
   ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
-  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
+  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
   ['复合图标', [['Ctrl+G', '把所选元素组合为一个复合图标'], ['Ctrl+Shift+U', '拆分复合图标'], ['Ctrl+Shift+B', '编队生成器（同型装备按阵型合成）']]],
@@ -1695,6 +1819,7 @@ function doBeautify() { checkpoint(); beautify(); render(); toast('已按层级�
 function doReduce() { checkpoint(); const [a, b] = reduceCrossings(); render(); toast(b < a ? `交叉 ${a} → ${b}` : `交叉 ${a} → ${b}（已是较优排布）`); }
 function iconable(n) { return n && !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type); }
 document.addEventListener('keydown', e => {
+  if (document.getElementById('jw-bak')) return;
   const saveas = $('#saveas');
   if (saveas && saveas.style.display === 'flex') {
     if (e.key === 'Escape') { e.preventDefault(); closeSaveAs(); return; }
@@ -1710,13 +1835,14 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if (closePanels()) return;
     if (ui_drag && ui_drag.mode === 'link') { ui_drag = null; ui.temp = null; render(); return; }
-    sel.clear(); selLink = null; render(); return;
+    clearSel(); render(); return;
   }
   if ($('#modal').style.display === 'flex' || $('#help').style.display === 'flex') return;
   if (document.getElementById('cb-dlg')?.style.display === 'flex') return;
   if (document.getElementById('std-dlg')?.style.display === 'flex') return;
   if (e.code === 'Space') { spaceDown = true; svg.style.cursor = 'grab'; e.preventDefault(); return; }
   if (ctrl && sh) {
+    if (k === 'a') return go(selectSame);
     if (k === 's') return go(saveProjectAs);
     if (k === 'f') return go(doBeautify);
     if (k === 'x') return go(doReduce);
@@ -1734,7 +1860,7 @@ document.addEventListener('keydown', e => {
     if (k === 'z') return go(undo);
     if (k === 'g') return go(() => window.Combo ? Combo.groupSelection() : toast('复合图标模块未加载'));
     if (k === 'y') return go(redo);
-    if (k === 'a') return go(() => { sel = new Set(P().nodes.map(n => n.id)); selLink = null; render(); });
+    if (k === 'a') return go(() => { selectNodes(P().nodes.map(n => n.id)); render(); });
     if (k === 'c') return copySel();
     if (k === 'v') return paste();
     if (k === 'd') return go(() => { copySel(); paste(); });
@@ -1748,11 +1874,21 @@ document.addEventListener('keydown', e => {
   }
   if (ctrl || e.altKey) return;
   if (e.key === 'Delete' || e.key === 'Backspace') return go(deleteSel);
-  if (e.key === 'F2') return go(() => { if (sel.size === 1) startEdit(nodeById([...sel][0])); else if (selLink) focusLinkCaption(P().links.find(x => x.id === selLink)); });
-  const l = selLink && P().links.find(x => x.id === selLink);
-  if (l) {
-    const linkBind = LINK_KEYS.filter(b => b.match(e))[0];
-    if (linkBind) return go(() => { checkpoint(); linkBind.apply(l, e); render(); });
+  if (e.key === 'F2') return go(() => {
+    if (sel.size === 1) startEdit(nodeById([...sel][0]));
+    else if (onlyLinkId()) focusLinkCaption(P().links.find(x => x.id === onlyLinkId()));
+  });
+  const linkBind = LINK_KEYS.filter(b => b.match(e))[0];
+  if (linkBind && linkSel.size) {
+    return go(() => {
+      const chosen = [];
+      linkSel.forEach(id => { const x = P().links.find(q => q.id === id); if (x) chosen.push(x); });
+      if (!chosen.length) return;
+      if (chosen.length === 1) { checkpoint(); linkBind.apply(chosen[0], e); render(); return; }
+      checkpoint();
+      applyLinkChord(chosen, linkBind, e);
+      render();
+    });
   }
   const ar = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
   if (ar && sel.size) {
@@ -1803,11 +1939,18 @@ function reduceCrossings(p = P()) {
 }
 function deleteSel() {
   const p = P();
-  if (selLink) { checkpoint(); p.links = p.links.filter(l => l.id !== selLink); selLink = null; render(); return; }
+  if (linkSel.size) {
+    checkpoint();
+    const drop = new Set(linkSel);
+    p.links = p.links.filter(l => !drop.has(l.id));
+    clearSel();
+    render();
+    return;
+  }
   if (!sel.size) return; checkpoint();
   const kill = new Set(); for (const id of sel) { kill.add(id); descendants(id).forEach(d => kill.add(d.id)); }
   p.nodes = p.nodes.filter(n => !kill.has(n.id)); p.links = p.links.filter(l => !kill.has(l.from) && !kill.has(l.to));
-  sel.clear(); render();
+  clearSel(); render();
 }
 function copySel() {
   if (!sel.size) return; const ids = new Set(); for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
@@ -1819,7 +1962,7 @@ function paste() {
   clipboard.nodes.forEach(n => map[n.id] = uid());
   const ns = clipboard.nodes.map(n => ({ ...n, id: map[n.id], parent: map[n.parent] || n.parent, x: n.x + 24, y: n.y + 24, sub: null }));
   P().nodes.push(...ns); P().links.push(...clipboard.links.map(l => ({ ...l, id: uid(), from: map[l.from], to: map[l.to] })));
-  sel = new Set(ns.filter(n => !map[clipboard.nodes.find(o => map[o.id] === n.id)?.parent]).map(n => n.id));
+  selectNodes(ns.filter(n => !map[clipboard.nodes.find(o => map[o.id] === n.id)?.parent]).map(n => n.id));
   clipboard = { nodes: ns.map(n => ({ ...n })), links: [] };
   render();
 }
@@ -1835,10 +1978,10 @@ function enterSub(id) {
     ['组成单元一', '组成单元二', '组成单元三'].forEach((t, i) => sp.nodes.push(mkNode({ type: 'round', text: t, parent: b.id, x: 100 + i * 200, y: 40 })));
     beautify(sp);
   }
-  P().cam = { ...view }; stack.push(n.sub); cur = n.sub; sel.clear(); selLink = null;
+  P().cam = { ...view }; stack.push(n.sub); cur = n.sub; clearSel();
   render(); if (P().cam) { view = { ...P().cam }; applyView(); } else fit();
 }
-function goPage(i) { P().cam = { ...view }; stack = stack.slice(0, i + 1); cur = stack[i]; sel.clear(); selLink = null; render(); if (P().cam) { view = { ...P().cam }; applyView(); renderOverlay(); } else fit(); }
+function goPage(i) { P().cam = { ...view }; stack = stack.slice(0, i + 1); cur = stack[i]; clearSel(); render(); if (P().cam) { view = { ...P().cam }; applyView(); renderOverlay(); } else fit(); }
 function renderCrumb() {
   $('#crumb').innerHTML = stack.map((id, i) => i === stack.length - 1 ? `<span class="cur">${esc(doc.pages[id]?.name || '')}</span>` : `<button data-crumb="${i}">${esc(doc.pages[id]?.name || '')}</button><span style="color:var(--muted)">›</span>`).join('');
 }
@@ -1849,44 +1992,285 @@ const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map((
 const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
   ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate']]];
 function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
+function selectedLinks() {
+  const p = P(), out = [];
+  linkSel.forEach(id => { const l = p.links.find(x => x.id === id); if (l) out.push(l); });
+  return out;
+}
+function sameButton() {
+  if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
+  return '';
+}
+const FIELD_CAP = { status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
+const SHARED_REJECT = {};
+const NODE_FIELDS = {
+  status: {
+    id: 'status', kind: 'seg',
+    show: function (items) {
+      if (items.length > 1) return true;
+      return ['text', 'note', 'legend', 'lane', 'tblock'].indexOf(items[0].type) < 0;
+    },
+    get: function (n) { return n.status || 'base'; },
+    set: function (n, v) { n.status = v; },
+    options: function () { return [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]]; }
+  },
+  font: {
+    id: 'font', kind: 'select',
+    show: function (items) { return NODE_FIELDS.size.show(items); },
+    get: function (n) { return n.font || ''; },
+    set: function (n, v) { n.font = v || ''; },
+    options: function () { return FONT_CHOICES.map(function (f) { return [f.id, f.name, f.css]; }); }
+  },
+  size: {
+    id: 'size', kind: 'size',
+    show: function (items) {
+      if (items.length > 1) return true;
+      return !isCont(items[0]) && items[0].type !== 'legend' && items[0].type !== 'tblock';
+    },
+    get: function (n) { return n.size; },
+    set: function (n, v) { n.size = v; }
+  },
+  bold: {
+    id: 'bold', kind: 'check',
+    show: function (items) { return NODE_FIELDS.size.show(items); },
+    get: function (n) { return !!n.bold; },
+    set: function (n, v) { n.bold = !!v; }
+  },
+  noBox: {
+    id: 'noBox', kind: 'check',
+    show: function (items) { return items.length > 0 && items.every(function (n) { return !!n.icon; }); },
+    get: function (n) { return !!n.noBox; },
+    set: function (n, v) { n.noBox = !!v; }
+  },
+  fill: {
+    id: 'fill', kind: 'color', optional: true,
+    show: function (items) {
+      if (items.length > 1) return true;
+      return ['text', 'note', 'legend', 'tblock'].indexOf(items[0].type) < 0;
+    },
+    get: function (n) { return n.fill || null; },
+    set: function (n, v) { if (v) n.fill = v; else delete n.fill; }
+  },
+  stroke: {
+    id: 'stroke', kind: 'color', optional: true,
+    show: function (items) { return NODE_FIELDS.fill.show(items); },
+    get: function (n) { return n.stroke || null; },
+    set: function (n, v) { if (v) n.stroke = v; else delete n.stroke; }
+  }
+};
+const LINK_FIELDS = {
+  dir: {
+    id: 'dir', kind: 'seg',
+    get: function (l) { return linkDir(l); },
+    set: function (l, v) { setLinkDir(l, v); },
+    options: function () { return [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']]; }
+  },
+  kind: {
+    id: 'kind', kind: 'select',
+    get: function (l) { return l.kind; },
+    set: function (l, v) { l.kind = v; doc.lastKind = v; },
+    options: function () { return Object.keys(LINK_KINDS).map(function (k) { return [k, LINK_KINDS[k].name]; }); }
+  },
+  color: {
+    id: 'color', kind: 'color', optional: true,
+    get: function (l) { return l.color || null; },
+    set: function (l, v) { if (v) l.color = v; else delete l.color; }
+  },
+  sw: {
+    id: 'sw', kind: 'num', optional: true, min: 0.5, max: 12,
+    get: function (l) { return l.sw || null; },
+    set: function (l, v) { if (v) l.sw = v; else delete l.sw; }
+  }
+};
+function fieldState(items, field) {
+  if (!items.length) return { mixed: false, value: null };
+  const first = field.get(items[0]);
+  for (let i = 1; i < items.length; i++) if (!Object.is(field.get(items[i]), first)) return { mixed: true, value: null };
+  return { mixed: false, value: first };
+}
+function fieldHTML(items, field) {
+  if (field.show && !field.show(items)) return '';
+  const state = fieldState(items, field), cap = FIELD_CAP[field.id] || field.id, id = 'p-' + field.id;
+  if (field.kind === 'seg') {
+    const buttons = field.options().map(([v, lab]) => `<button type="button" data-v="${v}" class="${!state.mixed && v === state.value ? 'on' : ''}">${lab}</button>`).join('');
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><div class="seg" id="${id}" data-shared="${field.id}">${buttons}</div>${state.mixed ? '<span class="hint">多值</span>' : ''}</div>`;
+  }
+  if (field.kind === 'select') {
+    const mixed = state.mixed ? '<option value="__mixed__" selected>多值</option>' : '';
+    const rest = field.options().map(opt => {
+      const v = opt[0], lab = opt[1], css = opt[2];
+      const on = !state.mixed && v === state.value ? ' selected' : '';
+      const style = css ? ` style="font-family:${css}"` : '';
+      return `<option value="${v}"${on}${style}>${lab}</option>`;
+    }).join('');
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><select id="${id}" data-shared="${field.id}">${mixed}${rest}</select></div>`;
+  }
+  if (field.kind === 'size') {
+    const shown = state.mixed || state.value == null ? '' : sizeLabel(state.value);
+    const ph = state.mixed ? ' placeholder="多值"' : '';
+    const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const list = CN_SIZES.map(s => `<option value="${s.name}"></option>`).join('');
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="text" id="${id}" data-shared="${field.id}" list="${id}-list" autocomplete="off" value="${esc(shown)}"${ph}><datalist id="${id}-list">${list}</datalist>${hint}</div>`;
+  }
+  if (field.kind === 'check') {
+    const label = state.mixed ? '多值' : cap;
+    return `<div class="row sh" data-shared="${field.id}"><label></label><label style="width:auto;display:flex;gap:6px;align-items:center;color:var(--fg)"><input type="checkbox" id="${id}" data-shared="${field.id}"${!state.mixed && state.value ? ' checked' : ''}> ${label}</label></div>`;
+  }
+  if (field.kind === 'num') {
+    const shown = state.mixed || state.value == null ? '' : state.value;
+    const ph = state.mixed ? ' placeholder="多值"' : '';
+    const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="number" id="${id}" data-shared="${field.id}" min="${field.min}" max="${field.max}" value="${shown}"${ph}>${hint}${clr}</div>`;
+  }
+  if (field.kind === 'color') {
+    const hex = !state.mixed && state.value ? state.value : '#ffffff';
+    const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="color" id="${id}" data-shared="${field.id}" value="${hex}">${hint}${clr}</div>`;
+  }
+  return '';
+}
+function fieldsHTML(items, table) {
+  return Object.keys(table).map(k => fieldHTML(items, table[k])).join('');
+}
+function selectedNodes() {
+  const out = [];
+  sel.forEach(id => { const n = nodeById(id); if (n) out.push(n); });
+  return out;
+}
+function parseShared(field, raw) {
+  if (raw === null) return null;
+  if (raw === '__mixed__') return SHARED_REJECT;
+  if (field.id === 'status' && ['base', 'new', 'key'].indexOf(raw) < 0) return SHARED_REJECT;
+  if (field.id === 'dir' && ['one', 'both', 'none'].indexOf(raw) < 0) return SHARED_REJECT;
+  if (field.id === 'kind' && !LINK_KINDS[raw]) return SHARED_REJECT;
+  if (field.kind === 'color') {
+    if (raw === '') return null;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(String(raw))) return SHARED_REJECT;
+    return String(raw);
+  }
+  if (field.kind === 'size') {
+    const n = parseSize(raw);
+    if (n == null) return SHARED_REJECT;
+    return n;
+  }
+  if (field.kind === 'num') {
+    if (raw === '' || raw == null) return field.optional ? null : SHARED_REJECT;
+    const n = +raw;
+    if (!isFinite(n) || n < field.min || n > field.max) return SHARED_REJECT;
+    return n;
+  }
+  if (field.kind === 'check') return !!raw;
+  return raw;
+}
+let sharedArm = false, sharedFocusBound = false;
+function applyShared(items, write, live) {
+  if (!items.length) return;
+  const fresh = !sharedArm;
+  if (fresh) { checkpoint(); sharedArm = true; }
+  const before = fresh ? undoS[undoS.length - 1] : null;
+  items.forEach(write);
+  const now = snapshot();
+  if (fresh && before === now) { undoS.pop(); sharedArm = false; }
+  propSnap = now;
+  if (!live) { sharedArm = false; render(); }
+  else render(false);
+}
+function bindFields(items, fields) {
+  const el = $('#props');
+  if (!sharedFocusBound) {
+    sharedFocusBound = true;
+    el.addEventListener('focusout', () => { sharedArm = false; });
+  }
+  Object.keys(fields).forEach(id => {
+    const field = fields[id];
+    const row = el.querySelector('.sh[data-shared="' + field.id + '"]');
+    if (!row) return;
+    if (field.kind === 'check') {
+      const box = row.querySelector('input');
+      if (box) box.indeterminate = fieldState(items, field).mixed;
+      if (box) box.addEventListener('change', () => {
+        const v = parseShared(field, box.checked);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), false);
+      });
+    } else if (field.kind === 'seg') {
+      row.querySelectorAll('button[data-v]').forEach(b => b.addEventListener('click', () => {
+        const v = parseShared(field, b.dataset.v);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), false);
+      }));
+    } else if (field.kind === 'select') {
+      const box = row.querySelector('select');
+      if (!box) return;
+      box.addEventListener('change', () => {
+        if (box.value === '__mixed__') return;
+        const v = parseShared(field, box.value);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), false);
+      });
+    } else if (field.kind === 'num' || field.kind === 'color' || field.kind === 'size') {
+      const input = row.querySelector('input');
+      if (!input) return;
+      input.addEventListener('input', () => {
+        const v = parseShared(field, input.value);
+        if (v === SHARED_REJECT) return;
+        applyShared(items, it => field.set(it, v), true);
+      });
+      if (field.optional) {
+        input.addEventListener('blur', () => {
+          if (field.kind === 'num' && input.value === '') applyShared(items, it => field.set(it, null), false);
+        });
+        const clr = row.querySelector('[data-clear]');
+        if (clr) clr.addEventListener('click', () => applyShared(items, it => field.set(it, null), false));
+      }
+    }
+  });
+}
 function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
-  if (selLink) {
-    const l = p.links.find(x => x.id === selLink); if (!l) { selLink = null; return renderProps(); }
+  const links = selectedLinks();
+  if (linkSel.size && !links.length) { clearSel(); return renderProps(); }
+  if (links.length > 1) {
+    h += `<h3>已选 ${links.length} 条连线</h3>`;
+    h += fieldsHTML(links, LINK_FIELDS);
+    h += `<hr><button id="p-del" type="button" style="color:var(--danger)">删除连线</button>`;
+  } else if (links.length === 1) {
+    const l = links[0];
     const a = nodeById(l.from), b = nodeById(l.to), both = linkDir(l) === 'both';
     h += `<div class="hint">${linkPanelHint()}</div>`;
     h += `<h3>连线 <span class="tag">${esc((a?.text || '').split('\n')[0])} → ${esc((b?.text || '').split('\n')[0])}</span></h3>`;
-    h += `<div class="row"><label title="快捷键 D">箭头</label>${seg('p-dir', [['one', '→ 单向'], ['both', '↔ 双向'], ['none', '— 无']], linkDir(l), '快捷键 D')}</div>`;
+    h += fieldHTML(links, LINK_FIELDS.dir);
     h += `<div class="row"><label></label><button id="p-swap" style="border-color:var(--line);justify-content:center">⇄ 调换方向</button></div>`;
-    h += `<div class="row"><label>链路类型</label><select id="p-kind">${Object.entries(LINK_KINDS).map(([k, v]) => `<option value="${k}" ${k === l.kind ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
+    h += fieldHTML(links, LINK_FIELDS.kind);
+    h += fieldHTML(links, LINK_FIELDS.color);
+    h += fieldHTML(links, LINK_FIELDS.sw);
     if (both) {
       h += `<div class="row"><label style="width:auto">${esc(dirFieldLabel('去向', b))}</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：态势上报"></div>`;
       h += `<div class="row"><label style="width:auto">${esc(dirFieldLabel('回向', a))}</label><input type="text" id="p-back" value="${esc(l.labelBack || '')}" placeholder="如：指令回执"></div>`;
     } else h += `<div class="row"><label>标签</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：数据链、MCP 调用"></div>`;
     h += `<div class="row"><label>走线</label>${seg('p-route', [['ortho', '直角'], ['straight', '直线']], l.route)}</div>`;
     if (window.Std) h += Std.propsHTML('link', l, p);
+    h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
   } else if (sel.size > 1) {
+    const nodes = selectedNodes();
     h += `<h3>已选 ${sel.size} 个元素</h3><div class="hint">对齐与分布</div>`;
     h += `<div class="grid3">${[['l', '左对齐'], ['c', '水平居中'], ['r', '右对齐'], ['t', '顶对齐'], ['m', '垂直居中'], ['b', '底对齐'], ['dh', '水平等距'], ['dv', '垂直等距'], ['size', '等宽等高']].map(([k, n]) => `<button data-al="${k}">${n}</button>`).join('')}</div>`;
-    h += `<hr><div class="row"><label>状态</label>${seg('p-mstatus', [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]], '')}</div>`;
+    h += fieldsHTML(nodes, NODE_FIELDS);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
   } else if (sel.size === 1) {
-    const n = nodeById([...sel][0]); if (!n) { sel.clear(); return renderProps(); }
+    const n = nodeById([...sel][0]); if (!n) { clearSel(); return renderProps(); }
     h += `<h3>${TYPE_NAME[n.type] || '元素'}</h3>`;
     if (n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>${isCont(n) ? '标题' : '文字'}</label><textarea id="p-text" rows="2">${esc(n.text)}</textarea></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) h += `<div class="row"><label>形状</label><select id="p-type">${SHAPE_GROUPS.map(([g, ts]) => `<optgroup label="${g}">${ts.map(t => `<option value="${t}" ${t === n.type ? 'selected' : ''}>${TYPE_NAME[t]}</option>`).join('')}</optgroup>`).join('')}</select></div>`;
-    if (!['text', 'note', 'legend', 'lane', 'tblock'].includes(n.type)) h += `<div class="row"><label>状态</label>${seg('p-status', [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]], n.status)}</div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) {
       const u = iconURI(n.icon);
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
-      if (n.icon) h += `<div class="row"><label></label><label style="width:auto;display:flex;gap:6px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-nobox" ${n.noBox ? 'checked' : ''}> 不画外框（纯装备图）</label></div>`;
     }
-    if (!isCont(n) && n.type !== 'legend' && n.type !== 'tblock') {
-      h += `<div class="row"><label>字体</label><select id="p-font">${FONT_CHOICES.map(f => `<option value="${f.id}"${(n.font || '') === f.id ? ' selected' : ''} style="font-family:${f.css}">${esc(f.name)}</option>`).join('')}</select></div>`;
-      h += `<div class="row"><label>字号</label><input type="text" id="p-size" list="p-size-list" autocomplete="off" value="${esc(sizeLabel(n.size))}"><datalist id="p-size-list">${CN_SIZES.map(s => `<option value="${s.name}"></option>`).join('')}</datalist><label style="width:auto;display:flex;gap:4px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-bold" ${n.bold ? 'checked' : ''}>加粗</label></div>`;
-    }
+    h += fieldsHTML([n], NODE_FIELDS);
     if (n.type === 'lane') h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="40" max="300" value="${laneTW(n)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
     if (window.Combo && iconable(n)) {
@@ -1896,6 +2280,7 @@ function renderProps() {
     }
     if (window.Std) h += Std.propsHTML('node', n, p);
     if (!['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)) h += `<hr><div class="hint">内部结构：双击进入后可继续画该系统的组成。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
+    h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
     const st = legendEntries(p);
@@ -1932,23 +2317,24 @@ let propSnap = null;
 function bindProps() {
   const el = $('#props');
   if (!el._jwSnap) { el._jwSnap = true; el.addEventListener('focusin', () => { propSnap = snapshot(); }); }
-  el.onchange = () => { if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); } propSnap = snapshot(); };
+  el.onchange = ev => {
+    if (ev && ev.target && ev.target.closest && ev.target.closest('[data-shared]')) { propSnap = snapshot(); return; }
+    if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); }
+    propSnap = snapshot();
+  };
+  const links = selectedLinks();
   const n = sel.size === 1 ? nodeById([...sel][0]) : null;
-  const l = selLink ? P().links.find(x => x.id === selLink) : null;
+  const l = links.length === 1 ? links[0] : null;
   const live = () => render(false);
   const on = (id, ev, fn) => { const x = $(id); if (x) x.addEventListener(ev, fn); };
+  if (links.length) bindFields(links, LINK_FIELDS);
+  else if (sel.size) bindFields(selectedNodes(), NODE_FIELDS);
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
   on('#p-type', 'change', e => { checkpoint(); n.type = e.target.value; if (n.type === 'equip' && n.h < 72) { n.w = Math.max(n.w, 96); n.h = 96; } render(); });
-  on('#p-size', 'input', e => { const v = parseSize(e.target.value); if (v == null) return; n.size = v; live(); });
-  on('#p-font', 'change', e => { checkpoint(); n.font = e.target.value; render(); });
-  on('#p-bold', 'change', e => { checkpoint(); n.bold = e.target.checked; render(); });
-  on('#p-nobox', 'change', e => { checkpoint(); n.noBox = e.target.checked; render(); });
   on('#p-tw', 'input', e => { n.titleW = clamp(+e.target.value || 96, 40, 300); live(); });
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
-  on('#p-status', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); n.status = b.dataset.v; render(); });
-  on('#p-mstatus', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); for (const id of sel) { const x = nodeById(id); if (x && x.type !== 'lane') x.status = b.dataset.v; } render(); });
   on('#p-icon', 'click', () => openIconPicker(n));
   on('#p-noicon', 'click', () => { checkpoint(); n.icon = null; if (n.type === 'equip') n.type = 'round'; render(); });
   on('#p-sub', 'click', () => enterSub(n.id));
@@ -1957,9 +2343,8 @@ function bindProps() {
   on('#p-cbedit', 'click', () => Combo.open(n));
   on('#p-form', 'click', () => Combo.open(n));
   on('#p-del', 'click', deleteSel);
-  on('#p-dir', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); setLinkDir(l, b.dataset.v); render(); });
+  on('#p-same', 'click', () => selectSame());
   on('#p-swap', 'click', () => { checkpoint(); swapLink(l); render(); });
-  on('#p-kind', 'change', e => { checkpoint(); l.kind = e.target.value; doc.lastKind = l.kind; render(); });
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
   on('#p-back', 'input', e => { setLabelBack(l, e.target.value); live(); });
   on('#p-route', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); l.route = b.dataset.v; render(); });
@@ -1969,8 +2354,8 @@ function bindProps() {
   on('#d-jump', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.jumpStyle = b.dataset.v; render(); });
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
   on('#d-snapon', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; try { localStorage.setItem('hongtu.snap', b.dataset.v); } catch (_) { } render(); });
-  if (window.Compact && !l && !n) Compact.bind($('#props'));
-  if (window.Std) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
+  if (window.Compact && !l && !n && !links.length) Compact.bind($('#props'));
+  if (window.Std && links.length < 2) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
   on('#d-ms', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.msColor = b.dataset.v; renderPalette(); render(); if ($('#modal').style.display === 'flex') renderPicker(); });
 }
 function setTheme(k) { checkpoint(); doc.theme = k; $('#b-theme').value = k; render(); }
@@ -2020,15 +2405,16 @@ async function saveFile(name, data) {
   if (window.claude && typeof window.claude.use === 'function') {
     try {
       const dl = await window.claude.use('downloads');
-      if (dl) { await dl.save({ filename: name, data: blob }); toast('已导出：' + name); return; }
+      if (dl) { await dl.save({ filename: name, data: blob }); toast('已导出：' + name); return true; }
     } catch (e) {
-      if (e && e.code === 'declined') { toast('已取消保存'); return; }
-      if (e && e.code === 'rejected_extension') { toast('在线预览不支持导出此格式，请在离线版中使用'); return; }
-      if (e && e.code === 'rate_limited') { toast('已有一个保存提示未处理'); return; }
+      if (e && e.code === 'declined') { toast('已取消保存'); return null; }
+      if (e && e.code === 'rejected_extension') { toast('在线预览不支持导出此格式，请在离线版中使用'); return null; }
+      if (e && e.code === 'rate_limited') { toast('已有一个保存提示未处理'); return null; }
     }
   }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); toast('已导出：' + name);
+  return true;
 }
 function projectBaseName() {
   let stem = '';
@@ -2410,14 +2796,17 @@ function projectFileName(raw) {
   return n;
 }
 function closeSaveAs() { const x = $('#saveas'); if (x) x.style.display = 'none'; }
+function afterProjectSave(p) {
+  Promise.resolve(p).then(function (ok) { if (ok && window.Backup) Backup.observeSave(); });
+}
 function confirmSaveAs() {
   const name = projectFileName($('#saveas-name') ? $('#saveas-name').value : '');
   if (!name) return;
   closeSaveAs();
   rememberShelf(name);
-  saveFile(name, projectJSON());
+  afterProjectSave(saveFile(name, projectJSON()));
 }
-function saveProject() { rememberShelf(); saveFile(projectFileDefault(), projectJSON()); }
+function saveProject() { rememberShelf(); afterProjectSave(saveFile(projectFileDefault(), projectJSON())); }
 function saveProjectAs() {
   const box = $('#saveas'); if (!box) return;
   const inp = $('#saveas-name');
@@ -2430,7 +2819,11 @@ function refreshDocTitle() {
   document.title = (doc && doc.name) ? doc.name + ' - 经纬织图' : '经纬织图';
 }
 /* ---------- header wiring ---------- */
-function closeMenus() { document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open')); }
+function closeMenus() {
+  document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open'));
+  const ctx = document.getElementById('ctx');
+  if (ctx) ctx.style.display = 'none';
+}
 $('#b-export').onclick = e => { e.stopPropagation(); $('#m-export').classList.toggle('open'); };
 document.addEventListener('click', e => { if (!e.target.closest('.menu')) closeMenus(); });
 $('#m-export .dd').addEventListener('click', async e => {
@@ -2527,7 +2920,7 @@ function friendlyErr(err) {
   return m;
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
-  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; sel.clear(); selLink = null; $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); }
+  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
 
 const SHELF_KEY = 'hongtu.shelf';
 let shelfId = null;

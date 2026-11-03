@@ -31,7 +31,7 @@ def center_of(r, sel):
 
 def setup(r):
     install(r)
-    r.page.evaluate("()=>{fit();sel.clear();selLink=null;render()}")
+    r.page.evaluate("()=>{fit();clearSel();render()}")
     r.page.mouse.move(960, 600); r.mx, r.my = 960, 600
     u = lambda f: 'data:image/png;base64,' + base64.b64encode(open(f, 'rb').read()).decode()
     r.page.evaluate("""([a,b])=>{window.__cmp=[a,b];
@@ -86,7 +86,7 @@ def a035c(r):
     pg = r.page
     pg.evaluate("()=>{const d=document.getElementById('cmpov');if(d){d.classList.remove('on');setTimeout(()=>d.remove(),400)}}")
     pg.evaluate("()=>{Convert.close()}"); r.wait(0.35)
-    pg.evaluate("()=>{loadDoc(buildDemo());sel.clear();selLink=null;render();fit()}"); r.wait(0.3)
+    pg.evaluate("()=>{loadDoc(buildDemo());clearSel();render();fit()}"); r.wait(0.3)
     r.keys('报告版心　插进 Word 即为版心宽', 1.6)
     try:
         r.click('#d-lay [data-v=report]', dur=0.4, after=0.6)

@@ -165,6 +165,122 @@ ipcMain.on('jw:win', (_e, op) => {
 ipcMain.on('jw:title', (_e, t) => win && win.setTitle(t));
 ipcMain.on('jw:reveal', (_e, p) => p && shell.showItemInFolder(p));
 
+function backupNop() { return { suppressed: true, projects: [] }; }
+function canonDoc(d) {
+  const copy = JSON.parse(JSON.stringify(d));
+  const pages = (copy && copy.pages) || {};
+  for (const id of Object.keys(pages)) delete pages[id].cam;
+  return copy;
+}
+function backupDirOf(projectPath) {
+  if (projectPath == null) return path.join(app.getPath('userData'), 'backups', 'untitled');
+  return projectPath + '.bak';
+}
+function assertSlot(slot) {
+  if (typeof slot !== 'number' || !isFinite(slot) || slot < 1 || slot > 5 || Math.floor(slot) !== slot) throw new Error('slot');
+}
+function slotFile(projectPath, slot) {
+  assertSlot(slot);
+  const dir = path.resolve(backupDirOf(projectPath));
+  const name = 'bak-' + slot + '.json';
+  const file = path.join(dir, name);
+  if (path.basename(file) !== name || path.resolve(file) !== path.join(dir, name)) throw new Error('target');
+  return { dir, file, name };
+}
+function resolveProject(projectPath) {
+  if (projectPath == null) return null;
+  if (typeof projectPath !== 'string' || !projectPath) throw new Error('path');
+  const resolved = path.resolve(projectPath);
+  let st;
+  try { st = fs.statSync(resolved); }
+  catch (e) { if (e.code === 'ENOENT') return resolved; throw e; }
+  if (st.isDirectory()) throw new Error('path');
+  return resolved;
+}
+function readSlotFile(file, n) {
+  let raw;
+  try { raw = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { return null; }
+  if (!raw || !raw.doc || !raw.doc.pages || !raw.doc.pages.root) return null;
+  const at = raw.backup && raw.backup.backedAt;
+  const slot = raw.backup && raw.backup.slot;
+  if (typeof at !== 'number' || !isFinite(at) || at <= 0) return null;
+  if (slot !== n || n < 1 || n > 5) return null;
+  return { slot: n, backedAt: at, doc: raw.doc };
+}
+function slotsIn(dir) {
+  const out = [];
+  for (let n = 1; n <= 5; n++) {
+    const file = path.join(dir, 'bak-' + n + '.json');
+    let st;
+    try { st = fs.statSync(file); } catch (e) { continue; }
+    if (!st.isFile()) continue;
+    const slot = readSlotFile(file, n);
+    if (slot) out.push(slot);
+  }
+  return out;
+}
+function saveInfo(projectPath) {
+  if (!projectPath) return { saveTime: 0, saveText: null };
+  let st;
+  try { st = fs.statSync(projectPath); } catch (e) { return { saveTime: 0, saveText: null }; }
+  if (!st.isFile()) return { saveTime: 0, saveText: null };
+  let text = null;
+  try {
+    const o = JSON.parse(fs.readFileSync(projectPath, 'utf8'));
+    const d = o && o.doc && o.doc.pages ? o.doc : o;
+    if (d && d.pages && d.pages.root) text = JSON.stringify(canonDoc(d));
+  } catch (e) { text = null; }
+  return { saveTime: st.mtimeMs || 0, saveText: text };
+}
+function backupProject(projectPath) {
+  const info = saveInfo(projectPath);
+  return { projectPath: projectPath, saveTime: info.saveTime, saveText: info.saveText, slots: slotsIn(backupDirOf(projectPath)) };
+}
+function replaceFile(tmp, dest) {
+  try { fs.renameSync(tmp, dest); }
+  catch (e) {
+    try { fs.unlinkSync(dest); fs.renameSync(tmp, dest); }
+    catch (e2) { try { fs.unlinkSync(tmp); } catch (_) { } throw e2; }
+  }
+}
+ipcMain.handle('jw:backup-list', async (_e, arg) => {
+  if (T) return backupNop();
+  const scope = arg && arg.scope;
+  if (scope === 'all') {
+    const projects = [];
+    for (const p of store.recent) if (/\.json$/i.test(p)) projects.push(backupProject(p));
+    projects.push(backupProject(null));
+    return { suppressed: false, projects };
+  }
+  if (scope === 'untitled') return { suppressed: false, projects: [backupProject(null)] };
+  const projectPath = resolveProject(arg && arg.projectPath);
+  return { suppressed: false, projects: [backupProject(projectPath)] };
+});
+ipcMain.handle('jw:backup-write', async (_e, arg) => {
+  if (T) return null;
+  const projectPath = resolveProject(arg && arg.projectPath);
+  const slot = arg && arg.slot;
+  const doc = arg && arg.doc;
+  const backedAt = arg && arg.backedAt;
+  assertSlot(slot);
+  if (!doc || typeof doc !== 'object' || !doc.pages || !doc.pages.root) throw new Error('doc');
+  if (typeof backedAt !== 'number' || !isFinite(backedAt) || backedAt <= 0) throw new Error('time');
+  const loc = slotFile(projectPath, slot);
+  fs.mkdirSync(loc.dir, { recursive: true });
+  const tmp = path.join(loc.dir, loc.name + '.tmp');
+  const body = JSON.stringify({ format: 'hongtu', version: 1, backup: { backedAt: backedAt, slot: slot }, doc: doc });
+  fs.writeFileSync(tmp, body);
+  replaceFile(tmp, loc.file);
+  return true;
+});
+ipcMain.handle('jw:backup-drop', async (_e, arg) => {
+  if (T) return null;
+  const projectPath = resolveProject(arg && arg.projectPath);
+  const loc = slotFile(projectPath, arg && arg.slot);
+  try { fs.unlinkSync(loc.file); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+  return true;
+});
+
 /* ---------------- lifecycle ---------------- */
 pendingOpen = fileArgs(process.argv);
 app.on('open-file', (e, p) => { e.preventDefault(); if (win) win.webContents.send('jw:open-path', p); else pendingOpen.push(p); });

@@ -111,7 +111,7 @@
     const cid = saveCombo(spec, label);
     const x0 = Math.min(...ns.map(n => n.x)), y0 = Math.min(...ns.map(n => n.y)), x1 = Math.max(...ns.map(n => n.x + n.w)), y1 = Math.max(...ns.map(n => n.y + n.h));
     const sz = sizeFor(doc.custom[cid].aspect, Math.min(220, Math.max(140, Math.sqrt((x1 - x0) * (y1 - y0)) * 0.7)));
-    const cn = mkNode({ type: 'equip', noBox: true, icon: 'cu:' + cid, text: label, size: 12, w: sz.w, h: sz.h, x: snapv((x0 + x1) / 2 - sz.w / 2), y: snapv((y0 + y1) / 2 - sz.h / 2), parent: ns[0].parent });
+    const cn = mkNode({ type: 'equip', icon: 'cu:' + cid, text: label, size: 12, w: sz.w, h: sz.h, x: snapv((x0 + x1) / 2 - sz.w / 2), y: snapv((y0 + y1) / 2 - sz.h / 2), parent: ns[0].parent });
     const ids = new Set(ns.map(n => n.id));
     p.links = p.links.filter(l => !(ids.has(l.from) && ids.has(l.to)));
     for (const l of p.links) { if (ids.has(l.from)) l.from = cn.id; if (ids.has(l.to)) l.to = cn.id; }
@@ -119,7 +119,7 @@
     const seen = new Set(); p.links = p.links.filter(l => { const k = l.from + '>' + l.to + '|' + l.kind; if (seen.has(k)) return false; seen.add(k); return true; });
     p.nodes = p.nodes.filter(n => !ids.has(n.id)); p.nodes.push(cn);
     cn.parent = findParent(cn);
-    sel = new Set([cn.id]); selLink = null; renderPalette(); render();
+    selectNodes([cn.id]); renderPalette(); render();
     toast(`已组合为复合图标：${label}（Ctrl+Shift+U 可拆分）`);
   }
 
@@ -146,7 +146,7 @@
     const p = P(); p.nodes = p.nodes.filter(x => x.id !== n.id); p.nodes.push(...out);
     /* links attach to the first member */
     for (const l of p.links) { if (l.from === n.id) l.from = out[0].id; if (l.to === n.id) l.to = out[0].id; }
-    sel = new Set(out.map(o => o.id)); render(); toast(`已拆分为 ${out.length} 个元素`);
+    selectNodes(out.map(o => o.id)); render(); toast(`已拆分为 ${out.length} 个元素`);
   }
 
   /* ---------- 2. formation dialog ---------- */
@@ -244,8 +244,8 @@
     } else {
       const id = saveCombo(spec, name), sz = sizeFor(doc.custom[id].aspect);
       const r = svg.getBoundingClientRect(), c = clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
-      const n = mkNode({ type: 'equip', noBox: true, icon: 'cu:' + id, text: name, size: 12, w: sz.w, h: sz.h, x: snapv(c.x - sz.w / 2), y: snapv(c.y - sz.h / 2) });
-      P().nodes.push(n); n.parent = findParent(n); sel = new Set([n.id]); selLink = null;
+      const n = mkNode({ type: 'equip', icon: 'cu:' + id, text: name, size: 12, w: sz.w, h: sz.h, x: snapv(c.x - sz.w / 2), y: snapv(c.y - sz.h / 2) });
+      P().nodes.push(n); n.parent = findParent(n); selectNodes([n.id]);
     }
     close(); renderPalette(); render(); toast(editNode ? '编队已更新' : '已插入编队，可拖入任意层，也可连线');
   }

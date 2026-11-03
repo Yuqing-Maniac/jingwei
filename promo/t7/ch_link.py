@@ -45,7 +45,7 @@ def install(r):
 
 def setup(r):
     install(r)
-    r.page.evaluate("()=>{fit();sel.clear();selLink=null;render()}")
+    r.page.evaluate("()=>{fit();clearSel();render()}")
     r.page.mouse.move(960, 600); r.mx, r.my = 960, 600
 
 
@@ -68,7 +68,7 @@ def a07(r):
 def a08(r):
     """拖动吸附：拖偏一个框再拖回，参考线出现、吸住"""
     pg = r.page
-    pg.keyboard.press('Escape'); pg.evaluate('()=>{sel.clear();selLink=null;render()}')
+    pg.keyboard.press('Escape'); pg.evaluate('()=>{clearSel();render()}')
     info = pg.evaluate("""()=>{const L=P().nodes.filter(n=>!isCont(n)&&!['text','note','legend','tblock'].includes(n.type)&&n.w<260);
       let best=null;for(const a of L)for(const b of L){if(a===b)continue;const dy=Math.abs((a.y+a.h/2)-(b.y+b.h/2)),dx=b.x-(a.x+a.w);if(dy<2&&dx>40&&dx<260&&(!best||dx<best.dx))best={a:a.text.split('\\n')[0],b:b.text.split('\\n')[0],dx,cx:(a.x+b.x+b.w)/2,cy:a.y+a.h/2}}return best}""")
     print('snap pair', info)

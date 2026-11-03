@@ -91,4 +91,4 @@ body.desk.jw-max header{border-radius:0}
 #jw-drop div{padding:28px 44px;border:2px dashed #8cc4ff;border-radius:18px;background:rgba(10,34,76,.9);color:#fff;font-size:20px;letter-spacing:.1em}
 @media (max-width:1150px){#jw-start h1{font-size:56px}#jw-start .cards{grid-template-columns:repeat(2,1fr)}}
 /* 对话框遮罩从标题栏下方开始，窗口按钮始终可用 */
-body.desk #cb-dlg,body.desk #cv,body.desk #rg,body.desk #std-dlg,body.desk #tg,body.desk .tpl-ov,body.desk .mdl,body.desk #help{top:46px!important}
+body.desk #cb-dlg,body.desk #cv,body.desk #rg,body.desk #std-dlg,body.desk #tg,body.desk .tpl-ov,body.desk .mdl,body.desk #help,body.desk #jw-bak{top:46px!important}
