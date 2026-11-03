@@ -111,7 +111,7 @@
     const cid = saveCombo(spec, label);
     const x0 = Math.min(...ns.map(n => n.x)), y0 = Math.min(...ns.map(n => n.y)), x1 = Math.max(...ns.map(n => n.x + n.w)), y1 = Math.max(...ns.map(n => n.y + n.h));
     const sz = sizeFor(doc.custom[cid].aspect, Math.min(220, Math.max(140, Math.sqrt((x1 - x0) * (y1 - y0)) * 0.7)));
-    const cn = mkNode({ type: 'equip', noBox: true, icon: 'cu:' + cid, text: label, size: 12, w: sz.w, h: sz.h, x: snapv((x0 + x1) / 2 - sz.w / 2), y: snapv((y0 + y1) / 2 - sz.h / 2), parent: ns[0].parent });
+    const cn = mkNode({ type: 'equip', icon: 'cu:' + cid, text: label, size: 12, w: sz.w, h: sz.h, x: snapv((x0 + x1) / 2 - sz.w / 2), y: snapv((y0 + y1) / 2 - sz.h / 2), parent: ns[0].parent });
     const ids = new Set(ns.map(n => n.id));
     p.links = p.links.filter(l => !(ids.has(l.from) && ids.has(l.to)));
     for (const l of p.links) { if (ids.has(l.from)) l.from = cn.id; if (ids.has(l.to)) l.to = cn.id; }
@@ -244,7 +244,7 @@
     } else {
       const id = saveCombo(spec, name), sz = sizeFor(doc.custom[id].aspect);
       const r = svg.getBoundingClientRect(), c = clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
-      const n = mkNode({ type: 'equip', noBox: true, icon: 'cu:' + id, text: name, size: 12, w: sz.w, h: sz.h, x: snapv(c.x - sz.w / 2), y: snapv(c.y - sz.h / 2) });
+      const n = mkNode({ type: 'equip', icon: 'cu:' + id, text: name, size: 12, w: sz.w, h: sz.h, x: snapv(c.x - sz.w / 2), y: snapv(c.y - sz.h / 2) });
       P().nodes.push(n); n.parent = findParent(n); sel = new Set([n.id]); selLink = null;
     }
     close(); renderPalette(); render(); toast(editNode ? '编队已更新' : '已插入编队，可拖入任意层，也可连线');

@@ -1375,6 +1375,9 @@ function iconSections() {
   return PAL_ORDER.filter(c => m.has(c)).concat([...m.keys()].filter(c => !PAL_ORDER.includes(c))).map(c => [c, m.get(c)]);
 }
 const openSecs = new Set(['基础形状', '无人']);
+function iconPlaceSpec(icon, name, w, h) {
+  return { type: 'equip', w: w, h: h, text: name, icon: icon };
+}
 function renderPalette() {
   const q = ($('#pal-q')?.value || '').trim();
   let h = `<input class="search" id="pal-q" type="text" placeholder="搜索元素：舰、雷达、无人机…" value="${esc(q)}">`;
@@ -1385,10 +1388,10 @@ function renderPalette() {
   const m = s => !q || s.includes(q);
   for (const g of ['基础形状', '流程与标注', '箭头']) h += sec(g, SHAPES.filter(s => s.grp === g && (m(s.name) || m(g))).map(s => pitem(s.name, s.spec, s.svg)));
   h += sec('容器与层级', CONTS.filter(s => m(s.name)).map(s => pitem(s.name, s.spec, s.svg)));
-  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c)).map(i => pitem(i.name, { type: 'equip', w: 96, h: 96, text: i.name, icon: 'lib:' + i.key, noBox: true }, iconURI('lib:' + i.key), true)));
-  if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], { type: 'equip', w: 96, h: 92, text: x[1], icon: 'ms:' + x[0], noBox: true }, iconURI('ms:' + x[0]), true)));
+  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c)).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key), true)));
+  if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
-  h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, { type: 'equip', w: 96, h: 96, text: v.name, icon: 'cu:' + id, noBox: true }, v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
+  h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
   $('#palette').innerHTML = h;
   const qi = $('#pal-q'); qi.oninput = () => { const pos = qi.selectionStart; renderPalette(); const n = $('#pal-q'); n.focus(); n.setSelectionRange(pos, pos); };
   const pf = $('#pal-form'); if (pf) pf.onclick = () => window.Combo ? Combo.open(null) : toast('复合图标模块未加载');
