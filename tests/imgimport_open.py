@@ -56,9 +56,18 @@ with sync_playwright() as pw:
       name: doc.name,
       n: P().nodes.length,
       undo: (typeof undoS !== 'undefined') ? undoS.length : -1,
-      toast: document.getElementById('toast').textContent
+      toast: document.getElementById('toast').textContent,
+      review: document.getElementById('img-review').style.display
     })""")
     page.set_input_files('#f-open', str(TMP / 'shore.png'))
+    page.wait_for_function("() => document.getElementById('img-review').style.display === 'flex'", timeout=8000)
+    held = page.evaluate("""() => ({
+      name: doc.name,
+      n: P().nodes.length,
+      undo: (typeof undoS !== 'undefined') ? undoS.length : -1,
+      review: document.getElementById('img-review').style.display
+    })""")
+    page.click('#ir-ok')
     page.wait_for_function("() => (document.getElementById('toast').textContent || '').indexOf('已导入') === 0", timeout=8000)
     after = page.evaluate("""() => ({
       name: doc.name,
@@ -73,6 +82,8 @@ check('no page errors', not errs, str(errs[:2]))
 check('blank picture does not replace the document', after_blank['name'] == before['name'] and after_blank['n'] == before['n'], str(after_blank))
 check('blank picture does not checkpoint', after_blank['undo'] == before['undo'], 'undo %s -> %s' % (before['undo'], after_blank['undo']))
 check('blank picture says nothing was found', '没有识别到可编辑的框图' in after_blank['toast'], after_blank['toast'])
+check('blank picture does not open the review', after_blank['review'] != 'flex', after_blank['review'])
+check('review opens before the canvas changes', held['review'] == 'flex' and held['name'] == before['name'] and held['n'] == before['n'] and held['undo'] == before['undo'], str(held))
 check('imported toast starts with 已导入', after['toast'].startswith('已导入'), after['toast'])
 check('imported picture becomes the document', after['name'] == 'shore' and after['n'] >= 1 and 'rect' in after['types'], str(after))
 check('open dialog accepts png and jpeg', '.png' in after['accept'] and '.jpg' in after['accept'] and '.jpeg' in after['accept'], after['accept'])
