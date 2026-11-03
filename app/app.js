@@ -148,7 +148,7 @@ function mkNode(o) {
 function newPage(name) { const id = 'p' + uid(); doc.pages[id] = { id, name, nodes: [], links: [], view: null }; return id; }
 function snapshot() { return JSON.stringify({ doc, cur, stack }); }
 function checkpoint() { undoS.push(snapshot()); if (undoS.length > 120) undoS.shift(); redoS = []; }
-function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; sel.clear(); selLink = null; if (ms0 !== msMode()) renderPalette(); render(); }
+function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; sel.clear(); selLink = null; if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
 function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); }
 
@@ -1638,7 +1638,7 @@ $('#editor').addEventListener('blur', () => commitEdit());
 /* ---------- keyboard ---------- */
 let clipboard = null;
 const SHORTCUTS = [
-  ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
+  ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
   ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
@@ -1652,13 +1652,20 @@ function openHelp() {
   $('#help').style.display = 'flex';
 }
 const closeHelp = () => { $('#help').style.display = 'none'; };
-function closePanels() { let c = false; for (const id of ['#modal', '#help', '#std-dlg']) { const x = $(id); if (x && x.style.display === 'flex') { x.style.display = 'none'; c = true; } } if (document.querySelector('.menu.open')) { closeMenus(); c = true; } return c; }
+function closePanels() { let c = false; for (const id of ['#modal', '#help', '#std-dlg', '#saveas']) { const x = $(id); if (x && x.style.display === 'flex') { x.style.display = 'none'; c = true; } } if (document.querySelector('.menu.open')) { closeMenus(); c = true; } return c; }
 const callMod = (fn, nm) => { if (typeof window[fn] === 'function') window[fn](); else toast(nm + '模块未加载'); };
 const zoomBy = f => { const r = svg.getBoundingClientRect(); zoomAt(view.k * f, r.left + r.width / 2, r.top + r.height / 2); };
 function doBeautify() { checkpoint(); beautify(); render(); toast('已按层级对齐、等距排布'); }
 function doReduce() { checkpoint(); const [a, b] = reduceCrossings(); render(); toast(b < a ? `交叉 ${a} → ${b}` : `交叉 ${a} → ${b}（已是较优排布）`); }
 function iconable(n) { return n && !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type); }
 document.addEventListener('keydown', e => {
+  const saveas = $('#saveas');
+  if (saveas && saveas.style.display === 'flex') {
+    if (e.key === 'Escape') { e.preventDefault(); closeSaveAs(); return; }
+    if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); confirmSaveAs(); return; }
+    if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault();
+    return;
+  }
   const tag = (document.activeElement?.tagName || '').toLowerCase();
   if (['input', 'textarea', 'select'].includes(tag)) { if (e.key === 'Escape' && document.activeElement.id !== 'editor') { if (!closePanels()) document.activeElement.blur(); } return; }
   const ctrl = e.ctrlKey || e.metaKey, k = (e.key || '').toLowerCase(), sh = e.shiftKey;
@@ -1674,6 +1681,7 @@ document.addEventListener('keydown', e => {
   if (document.getElementById('std-dlg')?.style.display === 'flex') return;
   if (e.code === 'Space') { spaceDown = true; svg.style.cursor = 'grab'; e.preventDefault(); return; }
   if (ctrl && sh) {
+    if (k === 's') return go(saveProjectAs);
     if (k === 'f') return go(doBeautify);
     if (k === 'x') return go(doReduce);
     if (k === 'g') return go(() => callMod('openTextGen', '文字成图'));
@@ -1853,6 +1861,7 @@ function renderProps() {
   } else {
     const st = legendEntries(p);
     h += `<h3>图面设置</h3>`;
+    h += `<div class="row"><label>文档名</label><input id="d-dname" type="text" placeholder="未命名" value="${esc(doc.name || '')}"></div>`;
     h += `<div class="row"><label>页面名</label><input type="text" id="d-pname" value="${esc(p.name)}"></div>`;
     h += `<div class="row"><label>主题</label><select id="d-theme">${Object.entries(THEMES).map(([k, v]) => `<option value="${k}" ${k === doc.theme ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
     h += `<div class="row"><label>跨线</label>${seg('d-jump', [['arc', '⌒ 跨线弧'], ['gap', '断开'], ['none', '无']], doc.jumpStyle || 'arc')}</div>`;
@@ -1883,8 +1892,10 @@ function renderProps() {
 let propSnap = null;
 function bindProps() {
   const el = $('#props');
+  /* onfocusin 属性在当前 Chromium 里写了也不会调用，失焦那一次撤销就永远不记。 */
   el.onfocusin = () => { propSnap = snapshot(); };
-  el.onchange = () => { if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; } propSnap = snapshot(); };
+  if (!el._jwSnap) { el._jwSnap = true; el.addEventListener('focusin', () => { propSnap = snapshot(); }); }
+  el.onchange = () => { if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); } propSnap = snapshot(); };
   const n = sel.size === 1 ? nodeById([...sel][0]) : null;
   const l = selLink ? P().links.find(x => x.id === selLink) : null;
   const live = () => render(false);
@@ -1914,7 +1925,8 @@ function bindProps() {
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
   on('#p-back', 'input', e => { setLabelBack(l, e.target.value); live(); });
   on('#p-route', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); l.route = b.dataset.v; render(); });
-  on('#d-pname', 'input', e => { P().name = e.target.value; renderCrumb(); });
+  on('#d-dname', 'input', e => { doc.name = e.target.value; refreshDocTitle(); });
+  on('#d-pname', 'input', e => { P().name = e.target.value; renderCrumb(); refreshDocTitle(); });
   on('#d-theme', 'change', e => setTheme(e.target.value));
   on('#d-jump', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.jumpStyle = b.dataset.v; render(); });
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
@@ -2243,7 +2255,32 @@ async function exportVSDX() {
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/vnd.ms-visio.drawing' });
   saveFile(fname('vsdx'), blob);
 }
-function saveProject() { saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), JSON.stringify({ format: 'hongtu', version: 1, doc }, null, 0)); }
+function projectJSON() { return JSON.stringify({ format: 'hongtu', version: 1, doc }, null, 0); }
+function projectFileName(raw) {
+  let n = String(raw || '').replace(/[\\/:*?"<>|]/g, '').trim();
+  if (!n) return '';
+  if (!/\.jingwei\.json$/i.test(n)) n = /\.json$/i.test(n) ? n.replace(/\.json$/i, '.jingwei.json') : n + '.jingwei.json';
+  return n;
+}
+function closeSaveAs() { const x = $('#saveas'); if (x) x.style.display = 'none'; }
+function confirmSaveAs() {
+  const name = projectFileName($('#saveas-name') ? $('#saveas-name').value : '');
+  if (!name) return;
+  closeSaveAs();
+  saveFile(name, projectJSON());
+}
+function saveProject() { saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), projectJSON()); }
+function saveProjectAs() {
+  const box = $('#saveas'); if (!box) return;
+  const inp = $('#saveas-name');
+  if (inp) inp.value = fname('json').replace(/\.json$/, '.jingwei.json');
+  box.style.display = 'flex';
+  setTimeout(() => { if (inp) { inp.focus(); inp.select(); } }, 0);
+}
+function refreshDocTitle() {
+  if (typeof window.jwRefreshTitle === 'function') { window.jwRefreshTitle(); return; }
+  document.title = (doc && doc.name) ? doc.name + ' - 经纬织图' : '经纬织图';
+}
 
 /* ---------- header wiring ---------- */
 function closeMenus() { document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open')); }
@@ -2278,6 +2315,11 @@ $('#help').addEventListener('click', e => { if (e.target.id === 'help') closeHel
 $('#b-theme').innerHTML = Object.entries(THEMES).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
 $('#b-theme').onchange = e => setTheme(e.target.value);
 $('#b-save').onclick = saveProject;
+$('#b-saveas').onclick = saveProjectAs;
+$('#saveas-ok').onclick = confirmSaveAs;
+$('#saveas-cancel').onclick = closeSaveAs;
+$('#saveas-x').onclick = closeSaveAs;
+$('#saveas').addEventListener('click', e => { if (e.target.id === 'saveas') closeSaveAs(); });
 $('#b-open').onclick = () => $('#f-open').click();
 $('#f-open').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
@@ -2333,4 +2375,4 @@ function friendlyErr(err) {
   return m;
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
-  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; sel.clear(); selLink = null; $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); }
+  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; sel.clear(); selLink = null; $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); }

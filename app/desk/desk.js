@@ -44,6 +44,9 @@
     fileChip.classList.toggle('dirty', dirty);
     document.title = (dirty ? '● ' : '') + t + ' - 经纬织图'; D.title(document.title);
   }
+  window.jwRefreshTitle = upd;
+  /* 文档名、页面名在失焦时记撤销，不走 checkpoint，这里补未保存标记。 */
+  window.jwTouch = function () { if (!dirty) { dirty = true; upd(); } };
   const _cp = window.checkpoint;
   window.checkpoint = checkpoint = function () { if (!dirty) { dirty = true; upd(); } return _cp.apply(this, arguments); };
   const _ld = window.loadDoc;
@@ -63,7 +66,7 @@
   };
   async function saveProj(asNew) {
     const name = fname('json').replace(/\.json$/, '.jingwei.json');
-    const data = new TextEncoder().encode(JSON.stringify({ format: 'hongtu', version: 1, doc })).buffer;
+    const data = new TextEncoder().encode(projectJSON()).buffer;
     try {
       const p = await D.save(name, data, { path: asNew ? null : curPath, title: asNew ? '另存为' : '保存工程' });
       if (!p) { toast('已取消保存'); return null; }
@@ -71,7 +74,9 @@
     } catch (e) { toast('保存失败：' + (e && e.message || e)); return null; }
   }
   window.saveProject = saveProject = () => saveProj(false);
+  window.saveProjectAs = saveProjectAs = function () { return saveProj(true); };
   $('#b-save').onclick = () => saveProj(false);
+  $('#b-saveas').onclick = () => saveProj(true);
   $('#b-save').title = '保存工程（.jingwei.json）　Ctrl+S；另存为 Ctrl+Shift+S';
   document.addEventListener('keydown', e => {
     const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
