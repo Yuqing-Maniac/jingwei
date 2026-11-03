@@ -1594,7 +1594,6 @@ function sideOf(n) {
 function thickness(n, row) {
   const th = row.thick, side = sideOf(n);
   if (th.mode === 'fixed') return th.px;
-  /* 层的左右栏用 titleW。上下改成 28，短层才留得下内容行，栏宽也不会被当成栏高。 */
   if ((side === 't' || side === 'b') && th.bar != null) return th.bar;
   return n[th.key] || th.fallback;
 }
@@ -1681,20 +1680,18 @@ function contBadge(n, p, pill) {
   if (row.badge === 'in' && f.title.w < pill.w + 8) { x = f.content.x + row.badgePad; y = f.content.y + row.badgePad; }
   else if (row.badge === 'out') {
     x = f.content.x + row.badgePad; y = f.content.y + row.badgePad;
-    /* 带内还有容器时，编号骑在上边框外，避免被层挡住 */
     if (row.badgeLift && p && p.nodes && p.nodes.some(k => k.parent === n.id && isCont(k))) y = n.y - 7;
   } else if (row.badgeAlign === 'center') { x = f.title.x + row.badgePad; y = f.title.y + (f.title.h - pill.h) / 2; }
   else { x = f.title.x + row.badgePad; y = f.title.y + row.badgePad; }
   return { x, y, w: pill.w, h: pill.h };
 }
-/* 0.65 贴着外框描边的内沿。顶栏厚 26、圆角 6 时，这条路径与原来的子容器顶栏字符串相同。 */
-function slabPath(n, slab, side, rx) {
-  const x = n.x, y = n.y, w = n.w, h = n.h, k = (side === 't' || side === 'b') ? slab.h : slab.w;
-  if (side === 't') return `M${x + 0.65},${y + k} V${y + rx} Q${x + 0.65},${y + 0.65} ${x + rx},${y + 0.65} H${x + w - rx} Q${x + w - 0.65},${y + 0.65} ${x + w - 0.65},${y + rx} V${y + k} Z`;
-  if (side === 'b') { const yb = y + h; return `M${x + 0.65},${yb - k} V${yb - rx} Q${x + 0.65},${yb - 0.65} ${x + rx},${yb - 0.65} H${x + w - rx} Q${x + w - 0.65},${yb - 0.65} ${x + w - 0.65},${yb - rx} V${yb - k} Z`; }
-  if (side === 'l') return `M${x + k},${y + 0.65} H${x + rx} Q${x + 0.65},${y + 0.65} ${x + 0.65},${y + rx} V${y + h - rx} Q${x + 0.65},${y + h - 0.65} ${x + rx},${y + h - 0.65} H${x + k} Z`;
+function slabPath(n, slab, side, rx, sw) {
+  const x = n.x, y = n.y, w = n.w, h = n.h, k = (side === 't' || side === 'b') ? slab.h : slab.w, i = sw / 2;
+  if (side === 't') return `M${x + i},${y + k} V${y + rx} Q${x + i},${y + i} ${x + rx},${y + i} H${x + w - rx} Q${x + w - i},${y + i} ${x + w - i},${y + rx} V${y + k} Z`;
+  if (side === 'b') { const yb = y + h; return `M${x + i},${yb - k} V${yb - rx} Q${x + i},${yb - i} ${x + rx},${yb - i} H${x + w - rx} Q${x + w - i},${yb - i} ${x + w - i},${yb - rx} V${yb - k} Z`; }
+  if (side === 'l') return `M${x + k},${y + i} H${x + rx} Q${x + i},${y + i} ${x + i},${y + rx} V${y + h - rx} Q${x + i},${y + h - i} ${x + rx},${y + h - i} H${x + k} Z`;
   const xr = x + w;
-  return `M${xr - k},${y + 0.65} H${xr - rx} Q${xr - 0.65},${y + 0.65} ${xr - 0.65},${y + rx} V${y + h - rx} Q${xr - 0.65},${y + h - 0.65} ${xr - rx},${y + h - 0.65} H${xr - k} Z`;
+  return `M${xr - k},${y + i} H${xr - rx} Q${xr - i},${y + i} ${xr - i},${y + rx} V${y + h - rx} Q${xr - i},${y + h - i} ${xr - rx},${y + h - i} H${xr - k} Z`;
 }
 function paintCont(n, p) {
   const row = contRow(n), f = contFrame(n), side = sideOf(n), b = f.body;
@@ -1704,7 +1701,7 @@ function paintCont(n, p) {
   if (b.dash) s += ` stroke-dasharray="${b.dash}"`;
   s += '/>';
   if (f.title.fill) {
-    if (b.rx) s += `<path d="${slabPath(n, f.title, side, b.rx)}" fill="${f.title.fill}"/>`;
+    if (b.rx) s += `<path d="${slabPath(n, f.title, side, b.rx, b.sw)}" fill="${f.title.fill}"/>`;
     else s += `<rect x="${f.title.x}" y="${f.title.y}" width="${f.title.w}" height="${f.title.h}" fill="${f.title.fill}"/>`;
   }
   if (f.rule) s += `<line x1="${f.rule.x1}" y1="${f.rule.y1}" x2="${f.rule.x2}" y2="${f.rule.y2}" stroke="${f.rule.stroke}" stroke-width="1"/>`;
@@ -1716,7 +1713,6 @@ function paintCont(n, p) {
     if (row.script === 'line') lines = lines.slice(0, 1);
     if (!lines.length) lines = [''];
     const tw0 = measure(lines[0] || '', row.size, row.bold);
-    /* 编号牌占住标题左端时右移，避免叠字 */
     if (tg && cx - tw0 / 2 < L0) cx = Math.min(L0 + tw0 / 2, f.title.x + f.title.w - 6 - tw0 / 2);
   }
   s += textBlock(lines, cx, f.text.cy, f.text.size, f.text.bold, f.text.color);

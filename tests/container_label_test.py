@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Container title slab. Positions are checked against the frame, the SVG, and Office output."""
 import os
 import pathlib
 import sys
