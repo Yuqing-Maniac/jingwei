@@ -2,6 +2,33 @@
 /* ============ 经纬织图 · 核心 ============ */
 const FONT = "'Noto Sans SC','Microsoft YaHei','PingFang SC','Source Han Sans SC','WenQuanYi Micro Hei',sans-serif";
 const PPT_FONT = 'Microsoft YaHei';
+const FONT_CHOICES = [
+  { id: '', name: '默认', face: 'Microsoft YaHei', css: FONT },
+  { id: 'song', name: '宋体', face: 'SimSun', css: "SimSun,'Noto Serif CJK SC','Noto Serif SC','Source Han Serif SC','STSong','Songti SC',serif" },
+  { id: 'hei', name: '黑体', face: 'SimHei', css: "SimHei,'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','STHeiti','Heiti SC',sans-serif" },
+  { id: 'fangsong', name: '仿宋', face: 'FangSong', css: "FangSong,'FangSong_GB2312','STFangsong','FZFangSong-Z02',serif" },
+  { id: 'kai', name: '楷体', face: 'KaiTi', css: "KaiTi,'KaiTi_GB2312','STKaiti','AR PL UKai CN',serif" },
+  { id: 'yahei', name: '微软雅黑', face: 'Microsoft YaHei', css: "'Microsoft YaHei','Noto Sans CJK SC','PingFang SC','Noto Sans SC',sans-serif" },
+  { id: 'noto', name: '思源黑体', face: 'Noto Sans CJK SC', css: "'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','WenQuanYi Micro Hei',sans-serif" },
+  { id: 'noto-serif', name: '思源宋体', face: 'Noto Serif CJK SC', css: "'Noto Serif CJK SC','Noto Serif SC','Source Han Serif SC',serif" },
+  { id: 'wqy', name: '文泉驿微米黑', face: 'WenQuanYi Micro Hei', css: "'WenQuanYi Micro Hei','WenQuanYi Zen Hei','Noto Sans CJK SC',sans-serif" },
+  { id: 'uming', name: '文鼎明体', face: 'AR PL UMing CN', css: "'AR PL UMing CN','AR PL UMing HK',SimSun,serif" },
+  { id: 'ukai', name: '文鼎楷体', face: 'AR PL UKai CN', css: "'AR PL UKai CN','AR PL UKai HK',KaiTi,serif" },
+];
+const CN_SIZES = [['初号', 42], ['小初', 36], ['一号', 26], ['小一', 24], ['二号', 22], ['小二', 18], ['三号', 16], ['小三', 15], ['四号', 14], ['小四', 12], ['五号', 10.5], ['小五', 9], ['六号', 7.5], ['小六', 6.5], ['七号', 5.5], ['八号', 5]].map(([name, pt]) => ({ name, pt }));
+function fontChoice(n) { const id = (n && n.font) || ''; return FONT_CHOICES.find(f => f.id === id) || FONT_CHOICES[0]; }
+function fontCSS(n) { return fontChoice(n).css; }
+function fontFace(n) { return fontChoice(n).face; }
+function sizeLabel(v) { const n = +v; const hit = CN_SIZES.find(s => Math.abs(s.pt - n) < 0.05); return hit ? hit.name : String(v == null || v === '' ? 13 : v); }
+function parseSize(raw) {
+  const s = String(raw == null ? '' : raw).trim();
+  if (!s) return null;
+  const hit = CN_SIZES.find(x => x.name === s);
+  if (hit) return hit.pt;
+  const n = Number(s);
+  if (!isFinite(n)) return null;
+  return clamp(Math.round(n * 10) / 10, 5, 72);
+}
 const GRID = 4;
 const CONT = { band: 0, lane: 1, group: 2 };
 const isCont = n => n && n.type in CONT;
@@ -73,13 +100,14 @@ const snapv = v => Math.round(v / GRID) * GRID;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const mctx = document.createElement('canvas').getContext('2d');
 const mcache = new Map();
-function measure(str, size, bold) {
-  const k = size + '|' + (bold ? 1 : 0) + '|' + str;
+function measure(str, size, bold, family) {
+  const fam = family || FONT;
+  const k = size + '|' + (bold ? 1 : 0) + '|' + fam + '|' + str;
   let v = mcache.get(k);
-  if (v === undefined) { mctx.font = `${bold ? 700 : 400} ${size}px ${FONT}`; v = mctx.measureText(str).width; mcache.set(k, v); }
+  if (v === undefined) { mctx.font = `${bold ? 700 : 400} ${size}px ${fam}`; v = mctx.measureText(str).width; mcache.set(k, v); }
   return v;
 }
-function wrap(text, maxW, size, bold) {
+function wrap(text, maxW, size, bold, family) {
   const out = [];
   String(text ?? '').split('\n').forEach(para => {
     const toks = para.match(/[A-Za-z0-9.\-_/%+:#@]+|\s+|./gu) || [''];
@@ -87,10 +115,10 @@ function wrap(text, maxW, size, bold) {
     for (const t of toks) {
       const cand = line + t;
       /* 行首禁则：句读与右括号不落到下一行行首，悬挂在本行末尾 */
-      if (measure(cand, size, bold) <= maxW || !line.trim() || /^[，。、；：！？）」』”’》〉…,.;:!?)\]]+$/.test(t)) line = cand;
+      if (measure(cand, size, bold, family) <= maxW || !line.trim() || /^[，。、；：！？）」』”’》〉…,.;:!?)\]]+$/.test(t)) line = cand;
       else { out.push(line.trimEnd()); line = t.trimStart(); }
-      while (measure(line, size, bold) > maxW && line.length > 1 && !(line.length >= 2 && /^[，。、；：！？）」』”’》〉…,.;:!?)\]]$/.test(line.slice(-1)) && measure(line.slice(0, -1), size, bold) <= maxW)) {
-        let i = line.length - 1; while (i > 1 && measure(line.slice(0, i), size, bold) > maxW) i--;
+      while (measure(line, size, bold, family) > maxW && line.length > 1 && !(line.length >= 2 && /^[，。、；：！？）」』”’》〉…,.;:!?)\]]$/.test(line.slice(-1)) && measure(line.slice(0, -1), size, bold, family) <= maxW)) {
+        let i = line.length - 1; while (i > 1 && measure(line.slice(0, i), size, bold, family) > maxW) i--;
         out.push(line.slice(0, i)); line = line.slice(i);
       }
     }
@@ -158,23 +186,23 @@ function stStyle(n, t) {
   const basis = n.type === 'group' ? t.group : t.box;
   return { fill: n.fill || (s ? s.fill : basis.fill), stroke: n.stroke || (s ? s.stroke : basis.stroke), title: s ? s.title : t.group.titleFill };
 }
-function textBlock(lines, x, cy, size, bold, color, anchor = 'middle') {
+function textBlock(lines, x, cy, size, bold, color, anchor = 'middle', family) {
   const lh = Math.round(size * 1.38);
   const y0 = cy - (lines.length * lh) / 2 + lh / 2 + size * 0.35;
-  return `<text font-family="${FONT}" font-size="${size}" font-weight="${bold ? 700 : 400}" fill="${color}" text-anchor="${anchor}">` +
+  return `<text font-family="${esc(family || FONT)}" font-size="${size}" font-weight="${bold ? 700 : 400}" fill="${color}" text-anchor="${anchor}">` +
     lines.map((l, i) => `<tspan x="${x}" y="${(y0 + i * lh).toFixed(1)}">${esc(l)}</tspan>`).join('') + '</text>';
 }
 /* geometry of a node's inner parts — shared by SVG, PPTX and VSDX writers */
 function iconAspect(key) { if (!key || !key.startsWith('cu:')) return 1; const c = doc.custom[key.slice(3)]; return (c && c.aspect) ? c.aspect : 1; }
 function nodeLayout(n) {
-  const t = T(), size = n.size || 13, lh = Math.round(size * 1.38);
+  const t = T(), size = n.size || 13, lh = Math.round(size * 1.38), family = fontCSS(n);
   const L = { icon: null, text: null };
   const color = n.color === 'muted' ? t.muted : (n.color || (n.type === 'text' ? t.text : t.box.text));
   if (n.type === 'text' || n.type === 'note') {
     const pad = n.type === 'note' ? 10 : 2;
-    const lines = wrap(n.text, n.w - pad * 2, size, n.bold);
+    const lines = wrap(n.text, n.w - pad * 2, size, n.bold, family);
     const left = n.align === 'left' || n.type === 'note';
-    L.text = { lines, x: left ? n.x + pad : n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: left ? 'start' : 'middle', box: [n.x + pad, n.y, n.w - pad * 2, n.h] };
+    L.text = { lines, x: left ? n.x + pad : n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: left ? 'start' : 'middle', family, box: [n.x + pad, n.y, n.w - pad * 2, n.h] };
     return L;
   }
   const uri = iconURI(n.icon);
@@ -182,7 +210,7 @@ function nodeLayout(n) {
   if (ib) n = Object.assign({}, n, ib);
   const top = uri && (n.type === 'equip' || (n.h >= 64 && n.h >= n.w * 0.6));
   if (uri && top) {
-    const lines = n.text ? wrap(n.text, n.w - 8, size, n.bold) : [];
+    const lines = n.text ? wrap(n.text, n.w - 8, size, n.bold, family) : [];
     const th = lines.length * lh;
     const asp = iconAspect(n.icon);
     let iw, ih;
@@ -191,17 +219,17 @@ function nodeLayout(n) {
     const isz = ih;
     const iy = n.y + (n.h - isz - th - (th ? 4 : 0)) / 2;
     L.icon = { uri, x: n.x + (n.w - iw) / 2, y: iy, s: Math.max(iw, ih), w: iw, h: ih };
-    if (lines.length) L.text = { lines, x: n.x + n.w / 2, cy: iy + isz + 4 + th / 2, size, bold: n.bold, color, anchor: 'middle', box: [n.x + 4, iy + isz + 4, n.w - 8, th] };
+    if (lines.length) L.text = { lines, x: n.x + n.w / 2, cy: iy + isz + 4 + th / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [n.x + 4, iy + isz + 4, n.w - 8, th] };
   } else if (uri) {
     const isz = clamp(n.h - 10, 14, 44);
     const ix = n.x + 8;
     L.icon = { uri, x: ix, y: n.y + (n.h - isz) / 2, s: isz, w: isz, h: isz };
     const tx0 = ix + isz + 4, tw = n.x + n.w - 6 - tx0;
-    const lines = wrap(n.text, Math.max(20, tw), size, n.bold);
-    L.text = { lines, x: tx0 + tw / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', box: [tx0, n.y, tw, n.h] };
+    const lines = wrap(n.text, Math.max(20, tw), size, n.bold, family);
+    L.text = { lines, x: tx0 + tw / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [tx0, n.y, tw, n.h] };
   } else {
-    const lines = wrap(n.text, n.w - pd * 2, size, n.bold);
-    L.text = { lines, x: n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', box: [n.x + pd, n.y, n.w - pd * 2, n.h] };
+    const lines = wrap(n.text, n.w - pd * 2, size, n.bold, family);
+    L.text = { lines, x: n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [n.x + pd, n.y, n.w - pd * 2, n.h] };
   }
   return L;
 }
@@ -365,7 +393,7 @@ function nodeSVG(n, p, exp) {
     else if (n.type === 'equip' && n.noBox && n.status !== 'base') { const st = stStyle(n, t); s += shapeMarkup('equip', n.x, n.y, n.w, n.h, st.fill, st.stroke, 1); }
     const L = nodeLayout(n);
     if (L.icon) s += `<image href="${L.icon.uri}" x="${L.icon.x.toFixed(1)}" y="${L.icon.y.toFixed(1)}" width="${(L.icon.w || L.icon.s).toFixed(1)}" height="${(L.icon.h || L.icon.s).toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
-    if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor);
+    if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
   }
   if (window.Std) s += Std.codeTagSVG(n, p);
   if (!exp && n.sub) s += `<g data-enter="${n.id}" style="cursor:pointer"><title>进入内部结构</title><circle cx="${n.x + n.w - 2}" cy="${n.y + 2}" r="8" fill="#2F80ED"/><path d="M${n.x + n.w - 6},${n.y + 2} h8 M${n.x + n.w - 2},${n.y - 2} v8" stroke="#fff" stroke-width="1.8"/></g>`;
@@ -1481,7 +1509,7 @@ function startEdit(n) {
   if (n.type === 'band') { w = Math.max(160, BAND_TW); h = 60; }
   if (n.type === 'lane') { w = laneTW(n); }
   if (n.type === 'group') { h = GROUP_TH + 30; }
-  Object.assign(ed.style, { display: 'block', left: ((x - view.x) * view.k + r.left - sr.left) + 'px', top: ((y - view.y) * view.k + r.top - sr.top) + 'px', width: Math.max(120, w * view.k) + 'px', height: Math.max(40, h * view.k) + 'px', fontSize: Math.max(12, (n.size || 13) * view.k) + 'px' });
+  Object.assign(ed.style, { display: 'block', left: ((x - view.x) * view.k + r.left - sr.left) + 'px', top: ((y - view.y) * view.k + r.top - sr.top) + 'px', width: Math.max(120, w * view.k) + 'px', height: Math.max(40, h * view.k) + 'px', fontSize: Math.max(12, (n.size || 13) * view.k) + 'px', fontFamily: fontCSS(n) });
   ed.value = n.text || ''; ed.focus(); ed.select();
 }
 function commitEdit(cancel) {
@@ -1693,7 +1721,10 @@ function renderProps() {
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
       if (n.icon) h += `<div class="row"><label></label><label style="width:auto;display:flex;gap:6px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-nobox" ${n.noBox ? 'checked' : ''}> 不画外框（纯装备图）</label></div>`;
     }
-    if (!isCont(n) && n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>字号</label><input type="number" id="p-size" min="8" max="72" value="${n.size}"><label style="width:auto;display:flex;gap:4px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-bold" ${n.bold ? 'checked' : ''}>加粗</label></div>`;
+    if (!isCont(n) && n.type !== 'legend' && n.type !== 'tblock') {
+      h += `<div class="row"><label>字体</label><select id="p-font">${FONT_CHOICES.map(f => `<option value="${f.id}"${(n.font || '') === f.id ? ' selected' : ''} style="font-family:${f.css}">${esc(f.name)}</option>`).join('')}</select></div>`;
+      h += `<div class="row"><label>字号</label><input type="text" id="p-size" list="p-size-list" autocomplete="off" value="${esc(sizeLabel(n.size))}"><datalist id="p-size-list">${CN_SIZES.map(s => `<option value="${s.name}"></option>`).join('')}</datalist><label style="width:auto;display:flex;gap:4px;align-items:center;color:var(--fg)"><input type="checkbox" id="p-bold" ${n.bold ? 'checked' : ''}>加粗</label></div>`;
+    }
     if (n.type === 'lane') h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="40" max="300" value="${laneTW(n)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
     if (window.Combo && iconable(n)) {
@@ -1745,7 +1776,8 @@ function bindProps() {
   const on = (id, ev, fn) => { const x = $(id); if (x) x.addEventListener(ev, fn); };
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
   on('#p-type', 'change', e => { checkpoint(); n.type = e.target.value; if (n.type === 'equip' && n.h < 72) { n.w = Math.max(n.w, 96); n.h = 96; } render(); });
-  on('#p-size', 'input', e => { n.size = clamp(+e.target.value || 13, 8, 72); live(); });
+  on('#p-size', 'input', e => { const v = parseSize(e.target.value); if (v == null) return; n.size = v; live(); });
+  on('#p-font', 'change', e => { checkpoint(); n.font = e.target.value; render(); });
   on('#p-bold', 'change', e => { checkpoint(); n.bold = e.target.checked; render(); });
   on('#p-nobox', 'change', e => { checkpoint(); n.noBox = e.target.checked; render(); });
   on('#p-tw', 'input', e => { n.titleW = clamp(+e.target.value || 96, 40, 300); live(); });
@@ -2098,7 +2130,7 @@ async function exportVSDX() {
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/vnd.ms-visio.drawing' });
   saveFile(fname('vsdx'), blob);
 }
-function saveProject() { saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), JSON.stringify({ format: 'hongtu', version: 1, doc }, null, 0)); }
+function saveProject() { rememberShelf(); saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), JSON.stringify({ format: 'hongtu', version: 1, doc }, null, 0)); }
 
 /* ---------- header wiring ---------- */
 function closeMenus() { document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open')); }
@@ -2138,7 +2170,7 @@ $('#f-open').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   e.target.value = '';
   if (/\.(pptx|vsdx|ppt|vsd|drawio|xml)$/i.test(f.name)) { openForeign(f); return; }
-  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
+  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
 /* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
@@ -2189,3 +2221,73 @@ function friendlyErr(err) {
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
   doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; sel.clear(); selLink = null; $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); }
+
+const SHELF_KEY = 'hongtu.shelf';
+let shelfId = null;
+function readShelf() { try { const a = JSON.parse(localStorage.getItem(SHELF_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (_) { return []; } }
+function writeShelf(a) { try { localStorage.setItem(SHELF_KEY, JSON.stringify(a.slice(0, 8))); } catch (_) { } }
+function rememberShelf(nameHint) {
+  if (window.jwDesk || !doc || !doc.pages) return;
+  const raw = String(nameHint || doc.name || (doc.pages.root && doc.pages.root.name) || '未命名');
+  const name = raw.replace(/\.jingwei\.json$/i, '').replace(/\.json$/i, '') || '未命名';
+  const item = { id: shelfId || ('s' + uid()), name, path: '浏览器本地存储', t: Date.now(), doc: JSON.parse(JSON.stringify(doc)) };
+  shelfId = item.id;
+  writeShelf([item, ...readShelf().filter(x => x.id !== item.id && x.name !== name)]);
+}
+function fmtWhen(t) { const d = new Date(t), p = x => String(x).padStart(2, '0'); return isNaN(d.getTime()) ? '' : `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function editInline(host, value, onCommit) {
+  const input = document.createElement('input');
+  input.type = 'text'; input.value = value;
+  input.addEventListener('click', e => e.stopPropagation());
+  input.addEventListener('mousedown', e => e.stopPropagation());
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    else if (e.key === 'Escape') { e.preventDefault(); input.dataset.cancel = '1'; input.blur(); }
+  });
+  let done = false;
+  input.addEventListener('blur', () => {
+    if (done) return; done = true;
+    onCommit(input.dataset.cancel || input.value.trim() === value ? null : input.value.trim());
+  });
+  host.textContent = ''; host.appendChild(input); input.focus(); input.select();
+}
+function hideWebHist() { const el = $('#jw-webhist'); if (el) el.hidden = true; }
+function renderWebHist() {
+  if (window.jwDesk) return;
+  let el = $('#jw-webhist');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'jw-webhist'; el.hidden = true;
+    el.innerHTML = '<div class="box"><h2>最近工程</h2><div class="list" id="jw-webhist-list"></div><button type="button" id="jw-webhist-go">进入画布</button></div>';
+    document.body.appendChild(el);
+    el.querySelector('#jw-webhist-go').onclick = hideWebHist;
+  }
+  const list = readShelf().filter(it => it && it.doc && it.doc.pages && it.doc.pages.root);
+  const box = el.querySelector('.list');
+  if (!list.length) { el.hidden = true; box.innerHTML = ''; return; }
+  el.hidden = false; box.innerHTML = '';
+  for (const it of list) {
+    const row = document.createElement('div');
+    row.className = 'ri'; row.tabIndex = 0;
+    row.innerHTML = '<div class="meta"><div class="nm" title="单击改名"></div><div class="dir"></div></div><div class="tm"></div>';
+    row.querySelector('.nm').textContent = it.name;
+    row.querySelector('.dir').textContent = it.path;
+    row.querySelector('.tm').textContent = fmtWhen(it.t);
+    row.addEventListener('click', e => {
+      if (e.target.closest('.nm') || e.target.closest('input')) return;
+      const cur = readShelf().find(x => x.id === it.id);
+      if (!cur || !cur.doc) return;
+      checkpoint(); shelfId = cur.id; loadDoc(JSON.parse(JSON.stringify(cur.doc))); hideWebHist();
+    });
+    row.querySelector('.nm').addEventListener('click', e => {
+      e.stopPropagation();
+      editInline(e.currentTarget, it.name, name => {
+        if (!name) { renderWebHist(); return; }
+        const a = readShelf(); const hit = a.find(x => x.id === it.id);
+        if (hit) { hit.name = name; if (hit.doc) hit.doc.name = name; hit.t = Date.now(); writeShelf(a); if (shelfId === it.id) doc.name = name; }
+        renderWebHist();
+      });
+    });
+    box.appendChild(row);
+  }
+}
+renderWebHist();
