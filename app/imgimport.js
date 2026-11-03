@@ -515,8 +515,8 @@
       var long = Math.max(bw, bh), short = Math.min(bw, bh);
       var fill = ink.areas[id] / (bw * bh);
       var pts = pixelsOf(plate.bin, w, ink.lab, id, box);
-      if (long < Math.max(36, sw * 14) && isTriangle(pts, sw)) {
-        marks.push(triangleMark(pts));
+      if (fill >= 0.42 && long <= Math.max(26, sw * 9) && short <= Math.max(22, sw * 8) && isTriangle(pts, sw)) {
+        marks.push(triangleMark(pts, sw));
         clearLabel(plate.bin, w, ink.lab, id, box);
         continue;
       }
@@ -549,6 +549,7 @@
     for (var t = 0; t < pending.length; t++) if (!pending[t].taken) texts.push(pending[t].box);
     var cells = characterCells(plate.bin, w, texts, sw);
     for (var c = 0; c < cells.length; c++) {
+      if (Math.min(cells[c].w, cells[c].h) <= 3) continue;
       var grid = rasterGrid(plate.bin, w, null, 0, cells[c]);
       if (!grid) continue;
       marks.push({ kind: 'glyph', x: cells[c].x, y: cells[c].y, w: cells[c].w, h: cells[c].h, grid: grid, ch: '', face: '', host: null });
@@ -753,23 +754,51 @@ function pixelsOf(bin, w, lab, id, box) {
     return lo.concat(hi);
   }
 
+  function simplifyHull(hull, sw) {
+    var tol = Math.max(1.75, sw * 0.65);
+    var simp = [];
+    for (var i = 0; i < hull.length; i++) simp.push(hull[i]);
+    var guard = simp.length;
+    while (simp.length > 3 && guard--) {
+      var drop = -1, dropD = tol;
+      for (var i = 0; i < simp.length; i++) {
+        var p = simp[(i + simp.length - 1) % simp.length];
+        var c = simp[i];
+        var n = simp[(i + 1) % simp.length];
+        var d = distSeg(c.x, c.y, p.x, p.y, n.x, n.y);
+        if (d <= dropD) { dropD = d; drop = i; }
+      }
+      if (drop < 0) break;
+      var next = [];
+      for (var k = 0; k < simp.length; k++) if (k !== drop) next.push(simp[k]);
+      simp = next;
+    }
+    return simp;
+  }
+
   function isTriangle(pts, sw) {
     if (pts.length < 6) return false;
     var hull = convexHull(pts);
-    var simp = [];
-    for (var i = 0; i < hull.length; i++) {
-      var p = hull[(i + hull.length - 1) % hull.length], c = hull[i], n = hull[(i + 1) % hull.length];
-      if (Math.abs(cross(p, c, n)) > 3) simp.push(c);
-    }
+    if (hull.length < 3) return false;
+    var simp = simplifyHull(hull, sw);
     if (simp.length !== 3) return false;
-    var sharp = 1e9, tip = 0;
+    var sharp = 1e9;
     for (var k = 0; k < 3; k++) {
-      var a = simp[(k + 2) % 3], b = simp[k], c = simp[(k + 1) % 3];
-      var ang = vertexAngle(a, b, c);
-      if (ang < sharp) { sharp = ang; tip = k; }
+      var ang = vertexAngle(simp[(k + 2) % 3], simp[k], simp[(k + 1) % 3]);
+      if (ang < sharp) sharp = ang;
     }
-    if (sharp > 70 * Math.PI / 180) return false;
+    if (sharp > 78 * Math.PI / 180) return false;
     var area = Math.abs(cross(simp[0], simp[1], simp[2])) / 2;
+    var bw = 0, bh = 0, minX = simp[0].x, maxX = simp[0].x, minY = simp[0].y, maxY = simp[0].y;
+    for (var b = 1; b < 3; b++) {
+      if (simp[b].x < minX) minX = simp[b].x;
+      if (simp[b].x > maxX) maxX = simp[b].x;
+      if (simp[b].y < minY) minY = simp[b].y;
+      if (simp[b].y > maxY) maxY = simp[b].y;
+    }
+    bw = maxX - minX; bh = maxY - minY;
+    if (bw < 4 || bh < 4) return false;
+    if (area < Math.max(bw, bh) * Math.min(bw, bh) * 0.28) return false;
     return area > Math.max(4, 0.6 * sw * sw);
   }
 
@@ -781,13 +810,9 @@ function pixelsOf(bin, w, lab, id, box) {
     return d;
   }
 
-  function triangleMark(pts) {
+  function triangleMark(pts, sw) {
     var hull = convexHull(pts);
-    var simp = [];
-    for (var i = 0; i < hull.length; i++) {
-      var p = hull[(i + hull.length - 1) % hull.length], c = hull[i], n = hull[(i + 1) % hull.length];
-      if (Math.abs(cross(p, c, n)) > 3) simp.push(c);
-    }
+    var simp = simplifyHull(hull, sw);
     if (simp.length < 3) simp = hull;
     var sharp = 1e9, tip = 0;
     for (var k = 0; k < simp.length; k++) {
@@ -970,7 +995,7 @@ function pixelsOf(bin, w, lab, id, box) {
   }
 
   function endFat(pts, fromEnd, dt, ox, oy, mw, mh, sw) {
-    var reach = Math.max(10, sw * 8);
+    var reach = Math.max(28, sw * 10);
     var walked = 0, maxR = 0;
     var n = pts.length;
     var start = fromEnd ? n - 1 : 0;
@@ -990,7 +1015,7 @@ function pixelsOf(bin, w, lab, id, box) {
     }
     var tip = fromEnd ? pts[n - 1] : pts[0];
     var ex = Math.round(tip.x - ox), ey = Math.round(tip.y - oy);
-    var rad = Math.max(8, sw * 3.5);
+    var rad = Math.max(22, sw * 6);
     var yLo = Math.max(0, ey - rad), yHi = Math.min(mh - 1, ey + rad);
     var xLo = Math.max(0, ex - rad), xHi = Math.min(mw - 1, ex + rad);
     for (var yy = yLo; yy <= yHi; yy++) for (var xx = xLo; xx <= xHi; xx++) {
@@ -998,7 +1023,8 @@ function pixelsOf(bin, w, lab, id, box) {
       if (dt[yy * mw + xx] > maxR) maxR = dt[yy * mw + xx];
     }
     var mid = median(mids);
-    return maxR > Math.max(sw * 1.05, mid * 1.55);
+    if (!(mid >= 0.4)) return false;
+    return maxR >= mid + 1.1 && maxR >= mid * 1.55;
   }
 
   function endDir(pts, atStart) {
@@ -1039,11 +1065,13 @@ function pixelsOf(bin, w, lab, id, box) {
       var A2 = polys[best.i], B2 = polys[best.j];
       var pa2 = best.aEnd ? A2.pts.slice() : A2.pts.slice().reverse();
       var pb2 = best.bEnd ? B2.pts.slice().reverse() : B2.pts.slice();
-      var hA = best.aEnd ? A2.h0 : A2.h1;
-      var hB = best.bEnd ? B2.h0 : B2.h1;
+      var h0 = best.aEnd ? A2.h0 : A2.h1;
+      var h1 = best.bEnd ? B2.h0 : B2.h1;
+      if (best.aEnd ? A2.h1 : A2.h0) h1 = true;
+      if (best.bEnd ? B2.h1 : B2.h0) h0 = true;
       var gaps = A2.gaps + B2.gaps;
       if (best.dist >= 0.4 * sw && best.dist <= Math.max(3 * sw, 8)) gaps++;
-      var merged = { pts: pa2.concat(pb2), gaps: gaps, h0: hA, h1: hB };
+      var merged = { pts: pa2.concat(pb2), gaps: gaps, h0: h0, h1: h1 };
       var next = [];
       for (var k = 0; k < polys.length; k++) if (k !== best.i && k !== best.j) next.push(polys[k]);
       next.push(merged);
@@ -1053,7 +1081,7 @@ function pixelsOf(bin, w, lab, id, box) {
   }
 
   function attachHeads(polys, heads, sw) {
-    var lim = Math.max(8, sw * 2.5);
+    var lim = Math.max(22, sw * 7);
     for (var i = 0; i < heads.length; i++) {
       var head = heads[i];
       var best = null, bestD = lim;
@@ -1186,7 +1214,8 @@ function pixelsOf(bin, w, lab, id, box) {
       }
     }
     take(bucket);
-    for (var bit = 0; bit < 12; bit++) take(bucket ^ (1 << (11 - bit)));
+    for (var bit = 0; bit < 12; bit++) take(bucket ^ (1 << bit));
+    for (var b1 = 0; b1 < 12; b1++) for (var b2 = b1 + 1; b2 < 12; b2++) take(bucket ^ (1 << b1) ^ (1 << b2));
     var gsum = 0;
     for (var g = 0; g < 256; g++) gsum += grid[g];
     var best = 1e9, second = 1e9, hit = null;
@@ -1196,8 +1225,8 @@ function pixelsOf(bin, w, lab, id, box) {
       if (s < best) { second = best; best = s; hit = list[c]; }
       else if (s <= second) second = s;
     }
-    if (hit && best <= 880 && best * 5 <= second * 4) return { ch: hit.ch, face: hit.face };
-    return { ch: '\u25a1', face: '' };
+    var ok = hit && ((best <= 880 && best * 10 <= second * 9) || best <= 620);
+    return { ch: ok ? hit.ch : '\u25a1', face: ok ? hit.face : '' };
   }
 
   function recognizeGlyphs(marks) {
