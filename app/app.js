@@ -1989,7 +1989,20 @@ async function saveFile(name, data) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); toast('已导出：' + name);
 }
-const fname = ext => `${(doc.pages.root.name && doc.pages.root.name !== '总图' ? doc.pages.root.name : (doc.name || '体系图'))}${cur !== 'root' ? '-' + P().name : ''}.${ext}`.replace(/[\\/:*?"<>|]/g, '_');
+function projectBaseName() {
+  let stem = '';
+  if (typeof window.jwProjectStem === 'function') { try { stem = window.jwProjectStem() || ''; } catch (e) { stem = ''; } }
+  if (!stem && doc && doc.name) stem = doc.name;
+  if (!stem && doc && doc.pages && doc.pages.root && doc.pages.root.name && doc.pages.root.name !== '总图') stem = doc.pages.root.name;
+  stem = String(stem || '体系图').replace(/\.jingwei\.json$/i, '').replace(/\.json$/i, '').trim();
+  return stem.replace(/[\\/:*?"<>|]/g, '_').trim() || '体系图';
+}
+function docExportName(ext) { return projectBaseName() + '.' + ext; }
+function projectFileDefault() { return projectBaseName() + '.jingwei.json'; }
+const fname = ext => {
+  const leaf = cur !== 'root' && P() && P().name ? '-' + String(P().name).replace(/[\\/:*?"<>|]/g, '_') : '';
+  return projectBaseName() + leaf + '.' + ext;
+};
 function exportSVGString(p, bg) {
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
@@ -2003,12 +2016,108 @@ function rasterize(svgStr, w, h, scale) {
   });
 }
 async function exportPNG(scale, bg) { const { str, w, h } = exportSVGString(P(), bg); saveFile(fname('png'), await rasterize(str, w, h, scale)); }
-async function iconPNG(uri, px = 256) {
+const ICON_PNG_MS = 2500;
+function iconPNG(uri, px = 256) {
   let asp = 1; const mm = /#a([\d.]+)$/.exec(uri); if (mm) { asp = +mm[1]; uri = uri.slice(0, mm.index); }
-  const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / asp);
-  return new Promise(res => { const img = new Image(); img.onload = () => { const c = document.createElement('canvas'); c.width = pw; c.height = ph; const g = c.getContext('2d'); const r = Math.min(pw / (img.width || pw), ph / (img.height || ph)); const w = (img.width || pw) * r, h = (img.height || ph) * r; g.drawImage(img, (pw - w) / 2, (ph - h) / 2, w, h); res(c.toDataURL('image/png')); }; img.onerror = () => res(null); img.src = uri; });
+  if (!isFinite(asp) || asp <= 0) asp = 1;
+  const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / Math.max(asp, 0.25));
+  const cw = Math.max(1, Math.min(pw, 1024)), ch = Math.max(1, Math.min(ph, 1024));
+  return new Promise(res => {
+    let done = false, timer;
+    const img = new Image();
+    const finish = v => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      img.onload = null; img.onerror = null;
+      try { img.src = ''; } catch (e) { }
+      res(v);
+    };
+    timer = setTimeout(() => finish(null), ICON_PNG_MS);
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+        const g = c.getContext('2d'); if (!g) { finish(null); return; }
+        const iw = img.width || cw, ih = img.height || ch, r = Math.min(cw / iw, ch / ih), w = iw * r, h = ih * r;
+        g.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+        finish(c.toDataURL('image/png'));
+      } catch (e) { finish(null); }
+    };
+    img.onerror = () => { try { finish(null); } catch (e) { res(null); } };
+    try { img.src = uri; } catch (e) { finish(null); }
+  });
 }
-function pagesInOrder() { const out = [], seen = new Set(); const walk = id => { if (seen.has(id) || !doc.pages[id]) return; seen.add(id); out.push(doc.pages[id]); for (const n of doc.pages[id].nodes) if (n.sub) walk(n.sub); }; walk('root'); /* 无入口的页面（格式转换时按原文件页序）也要导出 */ if (doc.pageOrder) doc.pageOrder.forEach(walk); return out; }
+function hierarchyPages() {
+  const out = [], seen = new Set();
+  const walk = (id, chain) => {
+    if (seen.has(id) || !doc.pages[id]) return;
+    seen.add(id);
+    const p = doc.pages[id], name = p.name || '未命名', next = chain.concat(name);
+    out.push({ page: p, depth: chain.length, chain: next });
+    for (const n of p.nodes) if (n.sub) walk(n.sub, next);
+  };
+  walk('root', []);
+  /* 无入口的页面（格式转换时按原文件页序）也要导出 */
+  if (doc.pageOrder) doc.pageOrder.forEach(id => walk(id, []));
+  return out;
+}
+function pagesInOrder() { return hierarchyPages().map(h => h.page); }
+function hierarchyFileName(item, index, ext) {
+  const label = item.chain.map(s => String(s || '').replace(/[\\/:*?"<>|]/g, '_').trim()).filter(Boolean).join('-') || '页面';
+  return projectBaseName() + '-' + String(index + 1).padStart(2, '0') + '-' + label + '.' + ext;
+}
+async function captureExport(fn) {
+  const got = [], prev = saveFile;
+  saveFile = async (name, data) => { got.push({ name, data }); };
+  try { await fn(); }
+  finally { saveFile = prev; }
+  return got;
+}
+async function saveMany(stem, files) {
+  const D = window.jwDesk;
+  if (D && typeof D.pickDir === 'function' && typeof D.writeIn === 'function') {
+    const dir = await D.pickDir('选择整体导出的保存文件夹');
+    if (!dir) { toast('已取消保存'); return; }
+    for (const f of files) {
+      const buf = f.data instanceof Blob ? await f.data.arrayBuffer() : (typeof f.data === 'string' ? new TextEncoder().encode(f.data).buffer : f.data);
+      await D.writeIn(dir, f.name, buf);
+    }
+    toast('已保存 ' + files.length + ' 个文件到所选文件夹');
+    return;
+  }
+  if (typeof JSZip === 'undefined') { toast('压缩组件未加载'); return; }
+  const zip = new JSZip();
+  for (const f of files) zip.file(f.name, f.data instanceof Blob ? await f.data.arrayBuffer() : f.data);
+  await saveFile((projectBaseName() || stem) + '.zip', await zip.generateAsync({ type: 'blob' }));
+}
+async function exportHierarchy(kind) {
+  const items = hierarchyPages();
+  if (!items.length) { toast('没有可导出的视图'); return; }
+  toast('正在整体导出…');
+  const saved = cur, files = [];
+  try {
+    for (let i = 0; i < items.length; i++) {
+      const p = items[i].page;
+      cur = p.id;
+      const ext = kind === 'drawio' ? 'drawio' : kind;
+      const name = hierarchyFileName(items[i], i, ext);
+      if (kind === 'png') {
+        const o = exportSVGString(p, false);
+        files.push({ name, data: await rasterize(o.str, o.w, o.h, 2) });
+      } else if (kind === 'svg') files.push({ name, data: exportSVGString(p, false).str });
+      else if (kind === 'vsdx') {
+        const got = await captureExport(() => exportVSDX([p]));
+        if (got[0]) files.push({ name, data: got[0].data });
+      } else if (kind === 'drawio') {
+        if (!window.DrawIO) { toast('draw.io 模块未加载'); return; }
+        const got = await captureExport(() => DrawIO.exportFile([p]));
+        if (got[0]) files.push({ name, data: got[0].data });
+      }
+    }
+  } finally { cur = saved; }
+  if (!files.length) { toast('没有可导出的文件'); return; }
+  await saveMany(projectBaseName(), files);
+}
 const hex = c => String(c || '#000000').replace('#', '').slice(0, 6).toUpperCase();
 
 /* PowerPoint: native editable shapes, one slide per page (总图 + 各系统展开页) */
@@ -2111,15 +2220,15 @@ async function exportPPTX() {
     cur = saved;
   }
   const blob = await pptx.write({ outputType: 'blob' });
-  saveFile(fname('pptx'), blob);
+  saveFile(docExportName('pptx'), blob);
 }
 
 /* Visio (.vsdx, Visio 2013+): shapes with geometry, text, fills; links as polylines with arrowheads; icons embedded as PNG */
-async function exportVSDX() {
+async function exportVSDX(pageList) {
   if (typeof JSZip === 'undefined') { toast('压缩组件未加载'); return; }
   toast('正在生成 Visio…');
   const t = T(), zip = new JSZip(), NS = 'http://schemas.microsoft.com/office/visio/2012/main', RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-  const pages = pagesInOrder(); let imgN = 0; const iconCache = new Map();
+  const pages = pageList || pagesInOrder(); let imgN = 0; const iconCache = new Map();
   const xs = s => esc(s).replace(/\n/g, '&#10;');
   const cell = (n, v, u) => `<Cell N='${n}' V='${v}'${u ? ` U='${u}'` : ''}/>`;
   const num = v => (+v).toFixed(6);
@@ -2250,7 +2359,7 @@ async function exportVSDX() {
     if (pageRels[i].length) zip.file(`visio/pages/_rels/page${i + 1}.xml.rels`, `<?xml version='1.0' encoding='utf-8' ?>\n<Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'>${pageRels[i].join('')}</Relationships>`);
   });
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/vnd.ms-visio.drawing' });
-  saveFile(fname('vsdx'), blob);
+  saveFile(docExportName('vsdx'), blob);
 }
 function projectJSON() { return JSON.stringify({ format: 'hongtu', version: 1, doc }, null, 0); }
 function projectFileName(raw) {
@@ -2266,11 +2375,11 @@ function confirmSaveAs() {
   closeSaveAs();
   saveFile(name, projectJSON());
 }
-function saveProject() { saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), projectJSON()); }
+function saveProject() { saveFile(projectFileDefault(), projectJSON()); }
 function saveProjectAs() {
   const box = $('#saveas'); if (!box) return;
   const inp = $('#saveas-name');
-  if (inp) inp.value = fname('json').replace(/\.json$/, '.jingwei.json');
+  if (inp) inp.value = projectFileDefault();
   box.style.display = 'flex';
   setTimeout(() => { if (inp) { inp.focus(); inp.select(); } }, 0);
 }
@@ -2295,6 +2404,11 @@ $('#m-export .dd').addEventListener('click', async e => {
     if (k === 'pptx') await exportPPTX();
     if (k === 'vsdx') await exportVSDX();
     if (k === 'drawio') { if (window.DrawIO) await DrawIO.exportFile(); else toast('draw.io 模块未加载'); }
+    if (k === 'allpptx') await exportPPTX();
+    if (k === 'allpng') await exportHierarchy('png');
+    if (k === 'allsvg') await exportHierarchy('svg');
+    if (k === 'allvsdx') await exportHierarchy('vsdx');
+    if (k === 'alldrawio') await exportHierarchy('drawio');
   } catch (err) { console.error(err); toast('导出失败：' + (err.message || err)); }
 });
 $('#b-undo').onclick = undo; $('#b-redo').onclick = redo;
