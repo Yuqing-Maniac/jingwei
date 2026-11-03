@@ -1,6 +1,8 @@
 """导出文件名跟随工程名；整体导出按层级出文件；嵌套分视图的 PPTX 在时限内完成。"""
 import pathlib
+import threading
 import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -130,6 +132,91 @@ async () => {
 """
 
 
+PNG_BYTES = bytes.fromhex(
+    '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489'
+    '0000000a49444154789c63000100000500010d0a2db40000000049454e44ae426082'
+)
+
+
+class IconHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path.startswith('/slow'):
+            time.sleep(30)
+            return
+        body = PNG_BYTES
+        self.send_response(200)
+        self.send_header('Content-Type', 'image/png')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, fmt, *args):
+        return
+
+
+class IconServer(ThreadingHTTPServer):
+    def process_request(self, request, client_address):
+        threading.Thread(target=self.process_request_thread, args=(request, client_address), daemon=True).start()
+
+
+def icon_server():
+    srv = IconServer(('127.0.0.1', 0), IconHandler)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv
+
+
+BAD = r"""
+async (port) => {
+  window.__saved = [];
+  window.saveFile = saveFile = async (name, data) => { window.__saved.push({ name, data }); };
+  const svg = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="#246"/></svg>');
+  const bad = mkNode({ type: 'equip', icon: 'cu:bad', text: '坏图标', x: 40, y: 40, w: 120, h: 100 });
+  const slow = mkNode({ type: 'equip', icon: 'cu:slow', text: '慢图标', x: 180, y: 40, w: 120, h: 100 });
+  const good = mkNode({ type: 'equip', icon: 'cu:good', text: 'MARK-BAD', x: 320, y: 40, w: 140, h: 100 });
+  const rootN = mkNode({ type: 'round', text: '总图入口', x: 40, y: 40, w: 140, h: 48 });
+  rootN.sub = 'pleaf';
+  loadDoc({
+    name: '坏图标工程', theme: 'report',
+    statusLabels: { base: '延续', new: '本步新增／重构', key: '重点关注' },
+    custom: {
+      bad: { name: '坏', uri: 'http://127.0.0.1:' + port + '/icon.png', aspect: 1 },
+      slow: { name: '慢', uri: 'http://127.0.0.1:' + port + '/slow.png', aspect: 1 },
+      good: { name: '好', uri: svg, aspect: 1 }
+    },
+    pages: {
+      root: { id: 'root', name: '总图', nodes: [rootN], links: [] },
+      pleaf: { id: 'pleaf', name: '分视图', nodes: [bad, slow, good], links: [] }
+    }
+  });
+  const tBreak = performance.now();
+  const broken = await iconPNG('http://127.0.0.1:' + port + '/icon.png');
+  const brokenMs = Math.round(performance.now() - tBreak);
+  window.__saved = [];
+  const t0 = performance.now();
+  await exportPPTX();
+  const ms = Math.round(performance.now() - t0);
+  const blob = window.__saved[0] && window.__saved[0].data;
+  let slides = 0, hit = false, images = 0;
+  if (blob) {
+    const z = await JSZip.loadAsync(await blob.arrayBuffer());
+    const names = Object.keys(z.files);
+    slides = names.filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n)).length;
+    images = names.filter(n => /^ppt\/media\/.+\.png$/.test(n)).length;
+    for (const n of names) {
+      if (!/^ppt\/slides\/slide\d+\.xml$/.test(n)) continue;
+      const xml = await z.files[n].async('string');
+      if (xml.indexOf('MARK-BAD') >= 0) hit = true;
+    }
+  }
+  return {
+    broken: broken == null ? 'null' : 'png', brokenMs, ms, slides, hit, images,
+    name: window.__saved[0] && window.__saved[0].name,
+    order: pagesInOrder().map(p => p.name)
+  };
+}
+"""
+
+
 def main():
     SHOT.parent.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as pw:
@@ -189,6 +276,13 @@ def main():
         except Exception as e:
             desk = {'error': str(e)[:300]}
         print('DESK', desk)
+
+        try:
+            pg.set_default_timeout(12000)
+            bad = pg.evaluate(BAD, icon_server().server_address[1])
+        except Exception as e:
+            bad = {'error': str(e)[:300]}
+        print('BAD', bad)
         print('PAGEERR', errs[:5])
         b.close()
 
@@ -207,6 +301,8 @@ def main():
     ]
     check('svg zip per view', isinstance(svg, dict) and svg.get('zip') == '巡逻工程.zip' and svg.get('files') == want and svg.get('ms', 10**9) < BOUND_MS, str(svg))
     check('desktop folder per view', isinstance(desk, dict) and desk.get('saved') == [] and [w.get('name') for w in desk.get('written') or []] == want and all(w.get('dir') == '/tmp/jw-export' and w.get('n', 0) > 0 for w in desk.get('written') or []), str(desk))
+    check('broken icon settles', isinstance(bad, dict) and bad.get('broken') == 'null' and bad.get('brokenMs', 10**9) < 1000, str(bad))
+    check('nested bad and slow icons still export', isinstance(bad, dict) and bad.get('ms', 10**9) < BOUND_MS and bad.get('slides') == 2 and bad.get('hit') is True and bad.get('images') == 1 and bad.get('order') == ['总图', '分视图'] and bad.get('name') == '坏图标工程.pptx', str(bad))
     check('no page error', not errs, str(errs[:3]))
     if fails:
         print('FAILED', len(fails))

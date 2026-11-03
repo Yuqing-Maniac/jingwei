@@ -2016,10 +2016,36 @@ function rasterize(svgStr, w, h, scale) {
   });
 }
 async function exportPNG(scale, bg) { const { str, w, h } = exportSVGString(P(), bg); saveFile(fname('png'), await rasterize(str, w, h, scale)); }
-async function iconPNG(uri, px = 256) {
+const ICON_PNG_MS = 2500;
+function iconPNG(uri, px = 256) {
   let asp = 1; const mm = /#a([\d.]+)$/.exec(uri); if (mm) { asp = +mm[1]; uri = uri.slice(0, mm.index); }
-  const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / asp);
-  return new Promise(res => { const img = new Image(); img.onload = () => { const c = document.createElement('canvas'); c.width = pw; c.height = ph; const g = c.getContext('2d'); const r = Math.min(pw / (img.width || pw), ph / (img.height || ph)); const w = (img.width || pw) * r, h = (img.height || ph) * r; g.drawImage(img, (pw - w) / 2, (ph - h) / 2, w, h); res(c.toDataURL('image/png')); }; img.onerror = () => res(null); img.src = uri; });
+  if (!isFinite(asp) || asp <= 0) asp = 1;
+  const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / Math.max(asp, 0.25));
+  const cw = Math.max(1, Math.min(pw, 1024)), ch = Math.max(1, Math.min(ph, 1024));
+  return new Promise(res => {
+    let done = false, timer;
+    const img = new Image();
+    const finish = v => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      img.onload = null; img.onerror = null;
+      try { img.src = ''; } catch (e) { }
+      res(v);
+    };
+    timer = setTimeout(() => finish(null), ICON_PNG_MS);
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+        const g = c.getContext('2d'); if (!g) { finish(null); return; }
+        const iw = img.width || cw, ih = img.height || ch, r = Math.min(cw / iw, ch / ih), w = iw * r, h = ih * r;
+        g.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+        finish(c.toDataURL('image/png'));
+      } catch (e) { finish(null); }
+    };
+    img.onerror = () => { try { finish(null); } catch (e) { res(null); } };
+    try { img.src = uri; } catch (e) { finish(null); }
+  });
 }
 function hierarchyPages() {
   const out = [], seen = new Set();
