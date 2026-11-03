@@ -1798,7 +1798,7 @@ $('#editor').addEventListener('blur', () => commitEdit());
 /* ---------- keyboard ---------- */
 let clipboard = null;
 const SHORTCUTS = [
-  ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
+  ['文件', [['Ctrl+O', '打开工程／图片／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
   ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
@@ -2869,10 +2869,56 @@ $('#b-open').onclick = () => $('#f-open').click();
 $('#f-open').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   e.target.value = '';
+  if (/\.(png|jpe?g)$/i.test(f.name)) { openImageFile(f); return; }
   if (/\.(pptx|vsdx|ppt|vsd|drawio|xml)$/i.test(f.name)) { openForeign(f); return; }
-  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
+  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、框图图片（.png／.jpg）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
+function decodeImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!/\.(png|jpe?g)$/i.test(file.name || '')) { reject(new Error('不是图片')); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      URL.revokeObjectURL(url);
+      if (!w || !h) { reject(new Error('无法读取该图片')); return; }
+      if (w * h > 8000000) { reject(new Error('图片过大，请缩到 800 万像素以内再导入')); return; }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0);
+      resolve(g.getImageData(0, 0, w, h));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('无法读取该图片')); };
+    img.src = url;
+  });
+}
+async function openImageFile(file) {
+  if (!window.ImgImport) { toast('识图模块未加载'); return false; }
+  toast('正在识别 ' + file.name + ' …');
+  await new Promise(r => setTimeout(r, 30));
+  let image;
+  try { image = await decodeImageFile(file); }
+  catch (e) { toast((e && e.message) || '无法读取该图片'); return false; }
+  let draft;
+  try { draft = ImgImport.read(image); }
+  catch (e) { toast('导入失败：' + ((e && e.message) || e)); return false; }
+  if (!draft.page || !draft.page.nodes.length) { toast('没有识别到可编辑的框图'); return false; }
+  checkpoint();
+  const d = {
+    name: file.name.replace(/\.[^.]+$/, ''),
+    theme: doc.theme,
+    statusLabels: Object.assign({}, doc.statusLabels),
+    custom: {},
+    lastKind: 'data',
+    pages: { root: draft.page }
+  };
+  loadDoc(d);
+  toast('已导入 ' + file.name + '：' + draft.page.nodes.length + ' 个图形，' + draft.page.links.length + ' 条连线。位置按图片保留，一键美化会改框的大小。');
+  if (draft.notes && draft.notes.length) console.info('识图提示', draft.notes);
+  return true;
+}
 /* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
 async function openForeign(f) {
   const dio = /\.(drawio|xml)$/i.test(f.name);
