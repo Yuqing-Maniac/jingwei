@@ -2110,7 +2110,6 @@ function applyShared(items, write, live) {
   const before = fresh ? undoS[undoS.length - 1] : null;
   items.forEach(write);
   const now = snapshot();
-  /* 值没变就不留这个撤销步，否则点已选项也会多一步 */
   if (fresh && before === now) { undoS.pop(); sharedArm = false; }
   propSnap = now;
   if (!live) { sharedArm = false; render(); }

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Shared properties, 选中同类, card border, and the rolling backup."""
 import os
 import pathlib
 import sys

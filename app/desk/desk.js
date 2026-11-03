@@ -105,7 +105,6 @@
         const o = JSON.parse(new TextDecoder().decode(r.data)); const d = o.doc || o;
         if (!d.pages || !d.pages.root) throw new Error('不是经纬织图工程文件');
         _cp(); loadDoc(d);
-        /* 打开的是 bak-N.json 时，下次保存写回正式文件，不写进备份槽。 */
         var official = /^(.*)\.bak[\\/]bak-([1-5])\.json$/i.exec(r.path);
         if (official) { curPath = official[1]; dirty = true; }
         else { curPath = r.path; dirty = false; }

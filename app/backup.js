@@ -1,4 +1,3 @@
-/* 滚动备份：正式文件只由用户保存写入。这里只写备份槽。 */
 (function () {
   'use strict';
   var BACKUP_SLOTS = 5;
@@ -14,7 +13,6 @@
   var busy = false;
   var queued = false;
 
-  /* 视口 cam 每次平移都会变，不计入“图有没有改过”。page.view 是规范视图类型，保留。 */
   function canonDoc(d) {
     var copy = JSON.parse(JSON.stringify(d));
     var pages = (copy && copy.pages) || {};

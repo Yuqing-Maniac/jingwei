@@ -146,7 +146,6 @@ ipcMain.on('jw:win', (_e, op) => {
 ipcMain.on('jw:title', (_e, t) => win && win.setTitle(t));
 ipcMain.on('jw:reveal', (_e, p) => p && shell.showItemInFolder(p));
 
-/* 测试模式不写备份、不建目录，避免回归测试在正式文件旁边留下 .bak。 */
 function backupNop() { return { suppressed: true, projects: [] }; }
 function canonDoc(d) {
   const copy = JSON.parse(JSON.stringify(d));
