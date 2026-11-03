@@ -1,5 +1,6 @@
 /* ============ 织图 · 紧凑排版与报告版心（排版密度） ============
  * doc.layout = { mode:'standard'|'compact'|'report', page:'a4p'|'a4l'|'ppt', font:10.5 }
+ * 缺省 mode 为 compact。文件里已有的 mode 优先；没有时用 localStorage 的 hongtu.layout。
  *  · standard：原有一键美化（铺满整幅宽度）。
  *  · compact ：条目按自然宽度紧挨排列、装备卡缩小、层标题收窄，图宽随内容收缩。
  *  · report  ：在紧凑基础上，按“报告版心宽度 × 目标字号”反推图宽，条目自动折行；

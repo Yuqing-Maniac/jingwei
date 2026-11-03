@@ -28,18 +28,24 @@ INSTALL = r"""(layout) => {
 MEASURE = r"""() => {
   const p = P();
   const band = p.nodes.find(n => n.type === 'band' && !n.parent);
-  const nodes = p.nodes.filter(n => n.type === 'equip').sort((a, b) => a.x - b.x || a.y - b.y);
-  const gaps = [];
-  for (let i = 1; i < nodes.length; i++) {
-    const prev = nodes[i - 1], next = nodes[i];
-    gaps.push(next.x - (prev.x + prev.w));
+  const nodes = p.nodes.filter(n => n.type === 'equip');
+  const rows = [];
+  const sorted = nodes.slice().sort((a, b) => a.y - b.y || a.x - b.x);
+  for (const n of sorted) {
+    const row = rows[rows.length - 1];
+    if (row && Math.abs((n.y + n.h / 2) - (row[0].y + row[0].h / 2)) <= 36) row.push(n);
+    else rows.push([n]);
+  }
+  const raw = [];
+  for (const row of rows) {
+    row.sort((a, b) => a.x - b.x);
+    for (let i = 1; i < row.length; i++) raw.push(row[i].x - (row[i - 1].x + row[i - 1].w));
   }
   return {
     n: nodes.length,
-    gaps: gaps.map(g => Math.round(g * 10) / 10),
-    raw: gaps,
-    band: band ? band.w : null,
-    xs: nodes.map(n => n.x)
+    gaps: raw.map(g => Math.round(g * 10) / 10),
+    raw: raw,
+    band: band ? band.w : null
   };
 }"""
 
@@ -70,7 +76,7 @@ def measure(page):
 
 
 def tight(m):
-    return m['n'] == 6 and all(g <= 24 for g in m['raw'])
+    return m['n'] == 6 and len(m['raw']) >= 1 and all(0 <= g <= 24 for g in m['raw'])
 
 
 def wide(m):
