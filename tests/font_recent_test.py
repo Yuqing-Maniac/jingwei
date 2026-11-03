@@ -16,6 +16,12 @@ EXPECT = {
 def launch(pw):
     return pw.chromium.launch(executable_path=CHROME, args=['--no-sandbox'])
 
+def dismiss_bak(pg):
+    bak = pg.locator('#jw-bak')
+    if bak.count() and bak.is_visible():
+        pg.click('#jw-bak-ignore')
+        pg.wait_for_timeout(150)
+
 def main():
     offline = os.path.join(DIST, 'offline.html')
     desk = os.path.join(DIST, 'desk.html')
@@ -102,6 +108,7 @@ def main():
         }""")
         pg.reload()
         pg.wait_for_timeout(400)
+        dismiss_bak(pg)
         assert pg.locator('#jw-webhist').is_visible()
         assert '巡逻甲' in pg.locator('#jw-webhist .nm').inner_text()
         assert '浏览器本地存储' in pg.locator('#jw-webhist .dir').inner_text()
@@ -116,6 +123,7 @@ def main():
         pg.evaluate("() => localStorage.removeItem('hongtu.shelf')")
         pg.reload()
         pg.wait_for_timeout(300)
+        dismiss_bak(pg)
         assert not pg.locator('#jw-webhist').is_visible()
         assert not errs, errs[:3]
         pg.close()

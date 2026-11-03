@@ -45,7 +45,7 @@ def install(r):
 
 def setup(r):
     install(r)
-    r.page.evaluate("()=>{fit();sel.clear();selLink=null;render()}")
+    r.page.evaluate("()=>{fit();clearSel();render()}")
     r.page.mouse.move(960, 600); r.mx, r.my = 960, 600
 
 def a022(r):
@@ -67,7 +67,7 @@ def a022(r):
         pg.mouse.move(a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e)
         if t >= 1: break
     r.mx, r.my = b; r.wait(0.1); pg.mouse.up(); r.wait(0.3)
-    print('selLink', pg.evaluate("()=>!!selLink"))
+    print('link', pg.evaluate("()=>!!onlyLinkId()"))
 
 def a023(r):
     pg = r.page
@@ -78,7 +78,7 @@ def a023(r):
 
 def a024(r):
     pg = r.page
-    pg.keyboard.press('Escape'); pg.evaluate('()=>{sel.clear();selLink=null;render()}')
+    pg.keyboard.press('Escape'); pg.evaluate('()=>{clearSel();render()}')
     refit(r, 0.4)
     pg.evaluate("""()=>{const g=t=>P().nodes.find(n=>(n.text||'').split('\\n')[0]===t);
       const a=g('无人值守传感器'),b=g('高速无人拦截艇'),c=g('巡逻无人车');a.x+=160;a.y-=70;b.x-=200;b.y+=90;c.x+=80;c.y-=90;render()}""")
@@ -123,7 +123,7 @@ def a027(r):
 def a023b(r):
     """拖动吸附：把一个框慢慢拖向另一个框的中线对齐位置，粉色参考线出现时停住"""
     pg = r.page
-    pg.keyboard.press('Escape'); pg.evaluate('()=>{sel.clear();selLink=null;render()}')
+    pg.keyboard.press('Escape'); pg.evaluate('()=>{clearSel();render()}')
     # 选一对同层的相邻框：拖动右边一个，让它与左边框中线对齐（先拖偏，再拖回吸附）
     info = pg.evaluate("""()=>{const L=P().nodes.filter(n=>!isCont(n)&&n.type!=='text'&&n.type!=='note'&&n.type!=='legend'&&n.type!=='tblock'&&n.w<260);
       let best=null;for(const a of L)for(const b of L){if(a===b)continue;const dy=Math.abs((a.y+a.h/2)-(b.y+b.h/2)),dx=b.x-(a.x+a.w);if(dy<2&&dx>40&&dx<260&&(!best||dx<best.dx))best={a:a.text.split('\\n')[0],b:b.text.split('\\n')[0],dx,cx:(a.x+b.x+b.w)/2,cy:a.y+a.h/2}}return best}""")
@@ -150,7 +150,7 @@ def a023b(r):
 def a025b(r):
     """连线避障：同一层隔着中间框的两个框之间连两条线，自动从上下两侧绕开"""
     pg = r.page
-    pg.keyboard.press('Escape'); pg.evaluate('()=>{sel.clear();selLink=null;render()}')
+    pg.keyboard.press('Escape'); pg.evaluate('()=>{clearSel();render()}')
     info = pg.evaluate("""()=>{const L=P().nodes.filter(n=>!isCont(n)&&n.type!=='text'&&n.type!=='note'&&n.type!=='legend'&&n.type!=='tblock');
       const rows={};for(const n of L){const k=Math.round((n.y+n.h/2)/10);(rows[k]=rows[k]||[]).push(n)}
       let pick=null,bs=-1;for(const r of Object.values(rows)){if(r.length<3)continue;if(r.some(n=>n.parent&&P().nodes.find(q=>q.id===n.parent)?.type==='group'))continue;r.sort((a,b)=>a.x-b.x);const g=Math.min(r[1].x-(r[0].x+r[0].w),r[2].x-(r[1].x+r[1].w));if(g>bs){bs=g;pick=r}}

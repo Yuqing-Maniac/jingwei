@@ -47,7 +47,7 @@ def setup(r):
     import types
     r.move = types.MethodType(_tmove, r)
     import os; os.makedirs(SH, exist_ok=True)
-    r.page.evaluate("()=>{fit();sel.clear();selLink=null;render()}")
+    r.page.evaluate("()=>{fit();clearSel();render()}")
     r.mx, r.my = 960, 600
 
 def a036(r):
@@ -150,7 +150,7 @@ def a040(r):
 def a041(r):
     begin('041')
     pg = r.page
-    pg.evaluate("()=>{try{window.__ov&&window.__ov.remove()}catch(e){};sel.clear();selLink=null;render();fit()}")
+    pg.evaluate("()=>{try{window.__ov&&window.__ov.remove()}catch(e){};clearSel();render();fit()}")
     r.move(1500, 1000, 0.2)
     pg.evaluate("""()=>{const d=document.createElement('div');d.id='chips';d.style.cssText='position:fixed;left:0;right:0;bottom:70px;display:flex;justify-content:center;gap:22px;z-index:99999;pointer-events:none';
       ['绿色','离线','免费','高效','好用','普惠'].forEach(t=>{const c=document.createElement('div');c.textContent=t;c.style.cssText='font:700 44px "Noto Sans CJK SC",sans-serif;color:#eaffef;padding:12px 30px;border-radius:14px;background:rgba(10,40,24,.78);border:2px solid #4cff9a;box-shadow:0 0 28px #28e07a,0 0 6px #7dffbd inset;opacity:0;transform:translateY(24px) scale(.8);transition:all .35s cubic-bezier(.2,1.4,.4,1)';d.appendChild(c)});document.body.appendChild(d)}""")

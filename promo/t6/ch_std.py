@@ -117,7 +117,7 @@ def setup(r):
       doc.showCodes=true;
       Object.assign(Std.ensureMeta(),{project:'边海防无人化巡逻体系',drawingNo:'BHF-SV1-001',version:'V1.0',classification:'内部',
         author:'总体设计组',reviewer:'体系总师',approver:'技术负责人',date:'2026-10-15',org:'[单位名称]'});
-      sel.clear();selLink=null;fit();render();
+      clearSel();fit();render();
       // start slightly zoomed in for the zoom-out overview of 028
       const s=document.getElementById('svg').getBoundingClientRect();
       const cx=view.x+s.width/2/view.k, cy=view.y+s.height/2/view.k; view.k*=1.6;
@@ -230,7 +230,7 @@ def a030(r):
 def a031(r):
     pg = r.page
     t0 = time.time()
-    pg.evaluate("()=>{sel.clear();selLink=null;render()}")
+    pg.evaluate("()=>{clearSel();render()}")
     mark(r, 'K031'); keys_low(r, True); r.press('Control+Shift+K', 'Ctrl + Shift + K　规范检查')
     r.wait(0.1)
     r.click('#std-fix', dur=0.3, after=0.5)
@@ -289,7 +289,7 @@ def a033(r):
     zoomto(r, cx, cy, kk, 0.35, wait=False)
     r.move(*tscreen(r, info['wx'], info['wy'], cx, cy, kk), 0.35)
     pg.mouse.down(); pg.wait_for_timeout(50); pg.mouse.up()
-    pg.evaluate("(id)=>{if(selLink!==id){sel.clear();selLink=id;render()}}", info['id'])
+    pg.evaluate("(id)=>{selectLinks([id]);render()}", info['id'])
     r.wait(0.05)
     if DEBUG: print('T sel', round(time.time() - T0, 2))
     boxes = pg.evaluate("()=>Object.fromEntries(['protocol','medium','freq','latency'].map(k=>{const b=document.getElementById('std-a-'+k).getBoundingClientRect();return [k,[b.x+b.width*0.45,b.y+b.height/2]]}))")
@@ -322,7 +322,7 @@ def a035(r):
     pg = r.page
     t0 = time.time()
     r.click('#std-close', dur=0.3, after=0.05)
-    pg.evaluate("()=>{sel.clear();selLink=null;render()}")
+    pg.evaluate("()=>{clearSel();render()}")
     refit(r, 0.6)
     hover(r, '#std-xlsx', 0.45); r.wait(0.2)
     with pg.expect_download() as d:

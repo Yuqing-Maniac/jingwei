@@ -31,7 +31,7 @@ def sh(r,n):
 
 def setup(r):
     pg = r.page
-    pg.evaluate("()=>{openSecs.clear();openSecs.add('基础形状');sel.clear();selLink=null;renderPalette();render();fit()}")
+    pg.evaluate("()=>{openSecs.clear();openSecs.add('基础形状');clearSel();renderPalette();render();fit()}")
     pg.evaluate("()=>{document.getElementById('palette').scrollTop=0}")
     pg.mouse.move(1000, 700); r.mx, r.my = 1000, 700
     P0.install(r)
