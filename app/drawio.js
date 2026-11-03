@@ -116,8 +116,12 @@
       const end = l.dir === 'none' ? 'endArrow=none' : 'endArrow=block;endFill=1;endSize=7', start = l.dir === 'both' ? 'startArrow=block;startFill=1;startSize=7' : 'startArrow=none';
       const pts = (typeof linkPoints === 'function' ? linkPoints(l, p) : null) || [];
       const way = pts.length > 2 ? `<Array as="points">${pts.slice(1, -1).map(q => `<mxPoint x="${r1(q.x)}" y="${r1(q.y)}"/>`).join('')}</Array>` : '';
-      const label = (typeof linkText === 'function' ? linkText(l, p) : l.label) || '';
+      let label = (typeof linkText === 'function' ? linkText(l, p) : l.label) || '';
       const ht = { ht_kind: l.kind, ht_dir: l.dir, ht_code: l.code, ht_attrs: l.attrs && Object.keys(l.attrs).length ? l.attrs : '' };
+      if ((typeof linkDir === 'function' ? linkDir(l) : l.dir) === 'both' && l.labelBack) {
+        ht.ht_labelBack = l.labelBack;
+        label = label ? label + ' ⇄ ' + l.labelBack : l.labelBack;
+      }
       const style = `edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;fontFamily=Microsoft YaHei;labelBackgroundColor=${t.bg};${end};${start};strokeColor=${c};fontColor=${c};strokeWidth=${K.w || 1.6};${DASH[K.dash] || ''}`;
       out.push(`<UserObject label="${xa(label)}" id="e${l.id}"${meta(ht)}><mxCell style="${xa(style)}" edge="1" parent="1" source="${cid(l.from)}" target="${cid(l.to)}"><mxGeometry relative="1" as="geometry">${way}</mxGeometry></mxCell></UserObject>`);
     }
@@ -328,8 +332,16 @@
         let from = a, to = b, dir = he && hs ? 'both' : (he || hs) ? 'one' : 'none';
         if (!he && hs) { from = b; to = a; }
         let kind = D.ht_kind || (st.dashed === '1' ? (/^\s*[1-3]\s/.test(st.dashPattern || '') ? 'radio' : 'ctrl') : (+st.strokeWidth >= 2.2 ? 'wired' : 'data'));
-        const lab = htmlText(c.label, st.html === '1') || edgeLabels.get(c.id) || '';
+        let lab = htmlText(c.label, st.html === '1') || edgeLabels.get(c.id) || '';
+        let labelBack = '';
+        if (D.ht_labelBack) {
+          labelBack = String(D.ht_labelBack);
+          const suf = ' ⇄ ' + labelBack;
+          if (lab.endsWith(suf)) lab = lab.slice(0, lab.length - suf.length);
+          else if (lab === labelBack) lab = '';
+        }
         const lk = { id: uid(), from: from.id, to: to.id, dir: D.ht_dir || dir, kind, route: 'ortho', label: lab };
+        if (labelBack) lk.labelBack = labelBack;
         if (D.ht_code) { lk.code = D.ht_code; if (lk.label.startsWith(D.ht_code)) lk.label = lk.label.slice(D.ht_code.length).replace(/^[\s　]+/, ''); }
         if (D.ht_attrs) try { lk.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
         page.links.push(lk);
