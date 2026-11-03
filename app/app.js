@@ -1,7 +1,43 @@
 'use strict';
 /* ============ 经纬织图 · 核心 ============ */
 const FONT = "'Noto Sans SC','Microsoft YaHei','PingFang SC','Source Han Sans SC','WenQuanYi Micro Hei',sans-serif";
-const PPT_FONT = 'Microsoft YaHei';
+const FONT_CHOICES = [
+  { id: '', name: '默认', face: 'Microsoft YaHei', css: FONT },
+  { id: 'song', name: '宋体', face: 'SimSun', css: "SimSun,'Noto Serif CJK SC','Noto Serif SC','Source Han Serif SC','STSong','Songti SC',serif" },
+  { id: 'hei', name: '黑体', face: 'SimHei', css: "SimHei,'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','STHeiti','Heiti SC',sans-serif" },
+  { id: 'fangsong', name: '仿宋', face: 'FangSong', css: "FangSong,'FangSong_GB2312','STFangsong','FZFangSong-Z02',serif" },
+  { id: 'kai', name: '楷体', face: 'KaiTi', css: "KaiTi,'KaiTi_GB2312','STKaiti','AR PL UKai CN',serif" },
+  { id: 'yahei', name: '微软雅黑', face: 'Microsoft YaHei', css: "'Microsoft YaHei','Noto Sans CJK SC','PingFang SC','Noto Sans SC',sans-serif" },
+  { id: 'noto', name: '思源黑体', face: 'Noto Sans CJK SC', css: "'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','WenQuanYi Micro Hei',sans-serif" },
+  { id: 'noto-serif', name: '思源宋体', face: 'Noto Serif CJK SC', css: "'Noto Serif CJK SC','Noto Serif SC','Source Han Serif SC',serif" },
+  { id: 'wqy', name: '文泉驿微米黑', face: 'WenQuanYi Micro Hei', css: "'WenQuanYi Micro Hei','WenQuanYi Zen Hei','Noto Sans CJK SC',sans-serif" },
+  { id: 'uming', name: '文鼎明体', face: 'AR PL UMing CN', css: "'AR PL UMing CN','AR PL UMing HK',SimSun,serif" },
+  { id: 'ukai', name: '文鼎楷体', face: 'AR PL UKai CN', css: "'AR PL UKai CN','AR PL UKai HK',KaiTi,serif" },
+];
+const CN_SIZES = [['初号', 42], ['小初', 36], ['一号', 26], ['小一', 24], ['二号', 22], ['小二', 18], ['三号', 16], ['小三', 15], ['四号', 14], ['小四', 12], ['五号', 10.5], ['小五', 9], ['六号', 7.5], ['小六', 6.5], ['七号', 5.5], ['八号', 5]].map(([name, pt]) => ({ name, pt }));
+function fontChoice(n) { const id = (n && n.font) || ''; return FONT_CHOICES.find(f => f.id === id) || FONT_CHOICES[0]; }
+function fontCSS(n) { return fontChoice(n).css; }
+function fontFace(n) { return fontChoice(n).face; }
+function faceNamesXml() {
+  const seen = {};
+  let s = '';
+  for (const f of FONT_CHOICES) {
+    if (seen[f.face]) continue;
+    seen[f.face] = 1;
+    s += `<FaceName NameU='${f.face}' UnicodeRanges='-1 -369098753 63 0' CharSets='1074266271 0' Panose='2 11 5 3 2 2 4 2 2 4' Flags='325'/>`;
+  }
+  return s;
+}
+function sizeLabel(v) { const n = +v; const hit = CN_SIZES.find(s => Math.abs(s.pt - n) < 0.05); return hit ? hit.name : String(v == null || v === '' ? 13 : v); }
+function parseSize(raw) {
+  const s = String(raw == null ? '' : raw).trim();
+  if (!s) return null;
+  const hit = CN_SIZES.find(x => x.name === s);
+  if (hit) return hit.pt;
+  const n = Number(s);
+  if (!isFinite(n)) return null;
+  return clamp(Math.round(n * 10) / 10, 5, 72);
+}
 const GRID = 4;
 const CONT = { band: 0, lane: 1, group: 2 };
 const isCont = n => n && n.type in CONT;
@@ -73,13 +109,14 @@ const snapv = v => Math.round(v / GRID) * GRID;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const mctx = document.createElement('canvas').getContext('2d');
 const mcache = new Map();
-function measure(str, size, bold) {
-  const k = size + '|' + (bold ? 1 : 0) + '|' + str;
+function measure(str, size, bold, family) {
+  const fam = family || FONT;
+  const k = size + '|' + (bold ? 1 : 0) + '|' + fam + '|' + str;
   let v = mcache.get(k);
-  if (v === undefined) { mctx.font = `${bold ? 700 : 400} ${size}px ${FONT}`; v = mctx.measureText(str).width; mcache.set(k, v); }
+  if (v === undefined) { mctx.font = `${bold ? 700 : 400} ${size}px ${fam}`; v = mctx.measureText(str).width; mcache.set(k, v); }
   return v;
 }
-function wrap(text, maxW, size, bold) {
+function wrap(text, maxW, size, bold, family) {
   const out = [];
   String(text ?? '').split('\n').forEach(para => {
     const toks = para.match(/[A-Za-z0-9.\-_/%+:#@]+|\s+|./gu) || [''];
@@ -87,10 +124,10 @@ function wrap(text, maxW, size, bold) {
     for (const t of toks) {
       const cand = line + t;
       /* 行首禁则：句读与右括号不落到下一行行首，悬挂在本行末尾 */
-      if (measure(cand, size, bold) <= maxW || !line.trim() || /^[，。、；：！？）」』”’》〉…,.;:!?)\]]+$/.test(t)) line = cand;
+      if (measure(cand, size, bold, family) <= maxW || !line.trim() || /^[，。、；：！？）」』”’》〉…,.;:!?)\]]+$/.test(t)) line = cand;
       else { out.push(line.trimEnd()); line = t.trimStart(); }
-      while (measure(line, size, bold) > maxW && line.length > 1 && !(line.length >= 2 && /^[，。、；：！？）」』”’》〉…,.;:!?)\]]$/.test(line.slice(-1)) && measure(line.slice(0, -1), size, bold) <= maxW)) {
-        let i = line.length - 1; while (i > 1 && measure(line.slice(0, i), size, bold) > maxW) i--;
+      while (measure(line, size, bold, family) > maxW && line.length > 1 && !(line.length >= 2 && /^[，。、；：！？）」』”’》〉…,.;:!?)\]]$/.test(line.slice(-1)) && measure(line.slice(0, -1), size, bold, family) <= maxW)) {
+        let i = line.length - 1; while (i > 1 && measure(line.slice(0, i), size, bold, family) > maxW) i--;
         out.push(line.slice(0, i)); line = line.slice(i);
       }
     }
@@ -178,23 +215,23 @@ function stStyle(n, t) {
   const basis = n.type === 'group' ? t.group : t.box;
   return { fill: n.fill || (s ? s.fill : basis.fill), stroke: n.stroke || (s ? s.stroke : basis.stroke), title: s ? s.title : t.group.titleFill };
 }
-function textBlock(lines, x, cy, size, bold, color, anchor = 'middle') {
+function textBlock(lines, x, cy, size, bold, color, anchor = 'middle', family) {
   const lh = Math.round(size * 1.38);
   const y0 = cy - (lines.length * lh) / 2 + lh / 2 + size * 0.35;
-  return `<text font-family="${FONT}" font-size="${size}" font-weight="${bold ? 700 : 400}" fill="${color}" text-anchor="${anchor}">` +
+  return `<text font-family="${esc(family || FONT)}" font-size="${size}" font-weight="${bold ? 700 : 400}" fill="${color}" text-anchor="${anchor}">` +
     lines.map((l, i) => `<tspan x="${x}" y="${(y0 + i * lh).toFixed(1)}">${esc(l)}</tspan>`).join('') + '</text>';
 }
 /* geometry of a node's inner parts — shared by SVG, PPTX and VSDX writers */
 function iconAspect(key) { if (!key || !key.startsWith('cu:')) return 1; const c = doc.custom[key.slice(3)]; return (c && c.aspect) ? c.aspect : 1; }
 function nodeLayout(n) {
-  const t = T(), size = n.size || 13, lh = Math.round(size * 1.38);
+  const t = T(), size = n.size || 13, lh = Math.round(size * 1.38), family = fontCSS(n);
   const L = { icon: null, text: null };
   const color = n.color === 'muted' ? t.muted : (n.color || (n.type === 'text' ? t.text : t.box.text));
   if (n.type === 'text' || n.type === 'note') {
     const pad = n.type === 'note' ? 10 : 2;
-    const lines = wrap(n.text, n.w - pad * 2, size, n.bold);
+    const lines = wrap(n.text, n.w - pad * 2, size, n.bold, family);
     const left = n.align === 'left' || n.type === 'note';
-    L.text = { lines, x: left ? n.x + pad : n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: left ? 'start' : 'middle', box: [n.x + pad, n.y, n.w - pad * 2, n.h] };
+    L.text = { lines, x: left ? n.x + pad : n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: left ? 'start' : 'middle', family, box: [n.x + pad, n.y, n.w - pad * 2, n.h] };
     return L;
   }
   const uri = iconURI(n.icon);
@@ -202,7 +239,7 @@ function nodeLayout(n) {
   if (ib) n = Object.assign({}, n, ib);
   const top = uri && (n.type === 'equip' || (n.h >= 64 && n.h >= n.w * 0.6));
   if (uri && top) {
-    const lines = n.text ? wrap(n.text, n.w - 8, size, n.bold) : [];
+    const lines = n.text ? wrap(n.text, n.w - 8, size, n.bold, family) : [];
     const th = lines.length * lh;
     const asp = iconAspect(n.icon);
     let iw, ih;
@@ -211,17 +248,17 @@ function nodeLayout(n) {
     const isz = ih;
     const iy = n.y + (n.h - isz - th - (th ? 4 : 0)) / 2;
     L.icon = { uri, x: n.x + (n.w - iw) / 2, y: iy, s: Math.max(iw, ih), w: iw, h: ih };
-    if (lines.length) L.text = { lines, x: n.x + n.w / 2, cy: iy + isz + 4 + th / 2, size, bold: n.bold, color, anchor: 'middle', box: [n.x + 4, iy + isz + 4, n.w - 8, th] };
+    if (lines.length) L.text = { lines, x: n.x + n.w / 2, cy: iy + isz + 4 + th / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [n.x + 4, iy + isz + 4, n.w - 8, th] };
   } else if (uri) {
     const isz = clamp(n.h - 10, 14, 44);
     const ix = n.x + 8;
     L.icon = { uri, x: ix, y: n.y + (n.h - isz) / 2, s: isz, w: isz, h: isz };
     const tx0 = ix + isz + 4, tw = n.x + n.w - 6 - tx0;
-    const lines = wrap(n.text, Math.max(20, tw), size, n.bold);
-    L.text = { lines, x: tx0 + tw / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', box: [tx0, n.y, tw, n.h] };
+    const lines = wrap(n.text, Math.max(20, tw), size, n.bold, family);
+    L.text = { lines, x: tx0 + tw / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [tx0, n.y, tw, n.h] };
   } else {
-    const lines = wrap(n.text, n.w - pd * 2, size, n.bold);
-    L.text = { lines, x: n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', box: [n.x + pd, n.y, n.w - pd * 2, n.h] };
+    const lines = wrap(n.text, n.w - pd * 2, size, n.bold, family);
+    L.text = { lines, x: n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [n.x + pd, n.y, n.w - pd * 2, n.h] };
   }
   return L;
 }
@@ -385,7 +422,7 @@ function nodeSVG(n, p, exp) {
     else if (n.type === 'equip' && n.noBox && n.status !== 'base') { const st = stStyle(n, t); s += shapeMarkup('equip', n.x, n.y, n.w, n.h, st.fill, st.stroke, 1); }
     const L = nodeLayout(n);
     if (L.icon) s += `<image href="${L.icon.uri}" x="${L.icon.x.toFixed(1)}" y="${L.icon.y.toFixed(1)}" width="${(L.icon.w || L.icon.s).toFixed(1)}" height="${(L.icon.h || L.icon.s).toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
-    if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor);
+    if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
   }
   if (window.Std) s += Std.codeTagSVG(n, p);
   if (!exp && n.sub) s += `<g data-enter="${n.id}" style="cursor:pointer"><title>进入内部结构</title><circle cx="${n.x + n.w - 2}" cy="${n.y + 2}" r="8" fill="#2F80ED"/><path d="M${n.x + n.w - 6},${n.y + 2} h8 M${n.x + n.w - 2},${n.y - 2} v8" stroke="#fff" stroke-width="1.8"/></g>`;
@@ -1744,7 +1781,7 @@ function startEdit(n) {
   if (n.type === 'band') { w = Math.max(160, BAND_TW); h = 60; }
   if (n.type === 'lane') { w = laneTW(n); }
   if (n.type === 'group') { h = GROUP_TH + 30; }
-  Object.assign(ed.style, { display: 'block', left: ((x - view.x) * view.k + r.left - sr.left) + 'px', top: ((y - view.y) * view.k + r.top - sr.top) + 'px', width: Math.max(120, w * view.k) + 'px', height: Math.max(40, h * view.k) + 'px', fontSize: Math.max(12, (n.size || 13) * view.k) + 'px' });
+  Object.assign(ed.style, { display: 'block', left: ((x - view.x) * view.k + r.left - sr.left) + 'px', top: ((y - view.y) * view.k + r.top - sr.top) + 'px', width: Math.max(120, w * view.k) + 'px', height: Math.max(40, h * view.k) + 'px', fontSize: Math.max(12, (n.size || 13) * view.k) + 'px', fontFamily: fontCSS(n) });
   ed.value = n.text || ''; ed.focus(); ed.select();
 }
 function commitEdit(cancel) {
@@ -1964,7 +2001,7 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
-const FIELD_CAP = { status: '状态', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
+const FIELD_CAP = { status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
 const SHARED_REJECT = {};
 const NODE_FIELDS = {
   status: {
@@ -1977,8 +2014,15 @@ const NODE_FIELDS = {
     set: function (n, v) { n.status = v; },
     options: function () { return [['base', doc.statusLabels.base], ['new', doc.statusLabels.new], ['key', doc.statusLabels.key]]; }
   },
+  font: {
+    id: 'font', kind: 'select',
+    show: function (items) { return NODE_FIELDS.size.show(items); },
+    get: function (n) { return n.font || ''; },
+    set: function (n, v) { n.font = v || ''; },
+    options: function () { return FONT_CHOICES.map(function (f) { return [f.id, f.name, f.css]; }); }
+  },
   size: {
-    id: 'size', kind: 'num', min: 8, max: 72,
+    id: 'size', kind: 'size',
     show: function (items) {
       if (items.length > 1) return true;
       return !isCont(items[0]) && items[0].type !== 'legend' && items[0].type !== 'tblock';
@@ -2052,9 +2096,21 @@ function fieldHTML(items, field) {
     return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><div class="seg" id="${id}" data-shared="${field.id}">${buttons}</div>${state.mixed ? '<span class="hint">多值</span>' : ''}</div>`;
   }
   if (field.kind === 'select') {
-    const mixed = state.mixed ? '<option value="" selected>多值</option>' : '';
-    const rest = field.options().map(([v, lab]) => `<option value="${v}"${!state.mixed && v === state.value ? ' selected' : ''}>${lab}</option>`).join('');
+    const mixed = state.mixed ? '<option value="__mixed__" selected>多值</option>' : '';
+    const rest = field.options().map(opt => {
+      const v = opt[0], lab = opt[1], css = opt[2];
+      const on = !state.mixed && v === state.value ? ' selected' : '';
+      const style = css ? ` style="font-family:${css}"` : '';
+      return `<option value="${v}"${on}${style}>${lab}</option>`;
+    }).join('');
     return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><select id="${id}" data-shared="${field.id}">${mixed}${rest}</select></div>`;
+  }
+  if (field.kind === 'size') {
+    const shown = state.mixed || state.value == null ? '' : sizeLabel(state.value);
+    const ph = state.mixed ? ' placeholder="多值"' : '';
+    const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const list = CN_SIZES.map(s => `<option value="${s.name}"></option>`).join('');
+    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="text" id="${id}" data-shared="${field.id}" list="${id}-list" autocomplete="off" value="${esc(shown)}"${ph}><datalist id="${id}-list">${list}</datalist>${hint}</div>`;
   }
   if (field.kind === 'check') {
     const label = state.mixed ? '多值' : cap;
@@ -2085,6 +2141,7 @@ function selectedNodes() {
 }
 function parseShared(field, raw) {
   if (raw === null) return null;
+  if (raw === '__mixed__') return SHARED_REJECT;
   if (field.id === 'status' && ['base', 'new', 'key'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'dir' && ['one', 'both', 'none'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'kind' && !LINK_KINDS[raw]) return SHARED_REJECT;
@@ -2092,6 +2149,11 @@ function parseShared(field, raw) {
     if (raw === '') return null;
     if (!/^#[0-9A-Fa-f]{6}$/.test(String(raw))) return SHARED_REJECT;
     return String(raw);
+  }
+  if (field.kind === 'size') {
+    const n = parseSize(raw);
+    if (n == null) return SHARED_REJECT;
+    return n;
   }
   if (field.kind === 'num') {
     if (raw === '' || raw == null) return field.optional ? null : SHARED_REJECT;
@@ -2143,12 +2205,12 @@ function bindFields(items, fields) {
       const box = row.querySelector('select');
       if (!box) return;
       box.addEventListener('change', () => {
-        if (box.value === '') return;
+        if (box.value === '__mixed__') return;
         const v = parseShared(field, box.value);
         if (v === SHARED_REJECT) return;
         applyShared(items, it => field.set(it, v), false);
       });
-    } else if (field.kind === 'num' || field.kind === 'color') {
+    } else if (field.kind === 'num' || field.kind === 'color' || field.kind === 'size') {
       const input = row.querySelector('input');
       if (!input) return;
       input.addEventListener('input', () => {
@@ -2354,7 +2416,20 @@ async function saveFile(name, data) {
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); toast('已导出：' + name);
   return true;
 }
-const fname = ext => `${(doc.pages.root.name && doc.pages.root.name !== '总图' ? doc.pages.root.name : (doc.name || '体系图'))}${cur !== 'root' ? '-' + P().name : ''}.${ext}`.replace(/[\\/:*?"<>|]/g, '_');
+function projectBaseName() {
+  let stem = '';
+  if (typeof window.jwProjectStem === 'function') { try { stem = window.jwProjectStem() || ''; } catch (e) { stem = ''; } }
+  if (!stem && doc && doc.name) stem = doc.name;
+  if (!stem && doc && doc.pages && doc.pages.root && doc.pages.root.name && doc.pages.root.name !== '总图') stem = doc.pages.root.name;
+  stem = String(stem || '体系图').replace(/\.jingwei\.json$/i, '').replace(/\.json$/i, '').trim();
+  return stem.replace(/[\\/:*?"<>|]/g, '_').trim() || '体系图';
+}
+function docExportName(ext) { return projectBaseName() + '.' + ext; }
+function projectFileDefault() { return projectBaseName() + '.jingwei.json'; }
+const fname = ext => {
+  const leaf = cur !== 'root' && P() && P().name ? '-' + String(P().name).replace(/[\\/:*?"<>|]/g, '_') : '';
+  return projectBaseName() + leaf + '.' + ext;
+};
 function exportSVGString(p, bg) {
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
@@ -2368,12 +2443,108 @@ function rasterize(svgStr, w, h, scale) {
   });
 }
 async function exportPNG(scale, bg) { const { str, w, h } = exportSVGString(P(), bg); saveFile(fname('png'), await rasterize(str, w, h, scale)); }
-async function iconPNG(uri, px = 256) {
+const ICON_PNG_MS = 2500;
+function iconPNG(uri, px = 256) {
   let asp = 1; const mm = /#a([\d.]+)$/.exec(uri); if (mm) { asp = +mm[1]; uri = uri.slice(0, mm.index); }
-  const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / asp);
-  return new Promise(res => { const img = new Image(); img.onload = () => { const c = document.createElement('canvas'); c.width = pw; c.height = ph; const g = c.getContext('2d'); const r = Math.min(pw / (img.width || pw), ph / (img.height || ph)); const w = (img.width || pw) * r, h = (img.height || ph) * r; g.drawImage(img, (pw - w) / 2, (ph - h) / 2, w, h); res(c.toDataURL('image/png')); }; img.onerror = () => res(null); img.src = uri; });
+  if (!isFinite(asp) || asp <= 0) asp = 1;
+  const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / Math.max(asp, 0.25));
+  const cw = Math.max(1, Math.min(pw, 1024)), ch = Math.max(1, Math.min(ph, 1024));
+  return new Promise(res => {
+    let done = false, timer;
+    const img = new Image();
+    const finish = v => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      img.onload = null; img.onerror = null;
+      try { img.src = ''; } catch (e) { }
+      res(v);
+    };
+    timer = setTimeout(() => finish(null), ICON_PNG_MS);
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+        const g = c.getContext('2d'); if (!g) { finish(null); return; }
+        const iw = img.width || cw, ih = img.height || ch, r = Math.min(cw / iw, ch / ih), w = iw * r, h = ih * r;
+        g.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+        finish(c.toDataURL('image/png'));
+      } catch (e) { finish(null); }
+    };
+    img.onerror = () => { try { finish(null); } catch (e) { res(null); } };
+    try { img.src = uri; } catch (e) { finish(null); }
+  });
 }
-function pagesInOrder() { const out = [], seen = new Set(); const walk = id => { if (seen.has(id) || !doc.pages[id]) return; seen.add(id); out.push(doc.pages[id]); for (const n of doc.pages[id].nodes) if (n.sub) walk(n.sub); }; walk('root'); /* 无入口的页面（格式转换时按原文件页序）也要导出 */ if (doc.pageOrder) doc.pageOrder.forEach(walk); return out; }
+function hierarchyPages() {
+  const out = [], seen = new Set();
+  const walk = (id, chain) => {
+    if (seen.has(id) || !doc.pages[id]) return;
+    seen.add(id);
+    const p = doc.pages[id], name = p.name || '未命名', next = chain.concat(name);
+    out.push({ page: p, depth: chain.length, chain: next });
+    for (const n of p.nodes) if (n.sub) walk(n.sub, next);
+  };
+  walk('root', []);
+  /* 无入口的页面（格式转换时按原文件页序）也要导出 */
+  if (doc.pageOrder) doc.pageOrder.forEach(id => walk(id, []));
+  return out;
+}
+function pagesInOrder() { return hierarchyPages().map(h => h.page); }
+function hierarchyFileName(item, index, ext) {
+  const label = item.chain.map(s => String(s || '').replace(/[\\/:*?"<>|]/g, '_').trim()).filter(Boolean).join('-') || '页面';
+  return projectBaseName() + '-' + String(index + 1).padStart(2, '0') + '-' + label + '.' + ext;
+}
+async function captureExport(fn) {
+  const got = [], prev = saveFile;
+  saveFile = async (name, data) => { got.push({ name, data }); };
+  try { await fn(); }
+  finally { saveFile = prev; }
+  return got;
+}
+async function saveMany(stem, files) {
+  const D = window.jwDesk;
+  if (D && typeof D.pickDir === 'function' && typeof D.writeIn === 'function') {
+    const dir = await D.pickDir('选择整体导出的保存文件夹');
+    if (!dir) { toast('已取消保存'); return; }
+    for (const f of files) {
+      const buf = f.data instanceof Blob ? await f.data.arrayBuffer() : (typeof f.data === 'string' ? new TextEncoder().encode(f.data).buffer : f.data);
+      await D.writeIn(dir, f.name, buf);
+    }
+    toast('已保存 ' + files.length + ' 个文件到所选文件夹');
+    return;
+  }
+  if (typeof JSZip === 'undefined') { toast('压缩组件未加载'); return; }
+  const zip = new JSZip();
+  for (const f of files) zip.file(f.name, f.data instanceof Blob ? await f.data.arrayBuffer() : f.data);
+  await saveFile((projectBaseName() || stem) + '.zip', await zip.generateAsync({ type: 'blob' }));
+}
+async function exportHierarchy(kind) {
+  const items = hierarchyPages();
+  if (!items.length) { toast('没有可导出的视图'); return; }
+  toast('正在整体导出…');
+  const saved = cur, files = [];
+  try {
+    for (let i = 0; i < items.length; i++) {
+      const p = items[i].page;
+      cur = p.id;
+      const ext = kind === 'drawio' ? 'drawio' : kind;
+      const name = hierarchyFileName(items[i], i, ext);
+      if (kind === 'png') {
+        const o = exportSVGString(p, false);
+        files.push({ name, data: await rasterize(o.str, o.w, o.h, 2) });
+      } else if (kind === 'svg') files.push({ name, data: exportSVGString(p, false).str });
+      else if (kind === 'vsdx') {
+        const got = await captureExport(() => exportVSDX([p]));
+        if (got[0]) files.push({ name, data: got[0].data });
+      } else if (kind === 'drawio') {
+        if (!window.DrawIO) { toast('draw.io 模块未加载'); return; }
+        const got = await captureExport(() => DrawIO.exportFile([p]));
+        if (got[0]) files.push({ name, data: got[0].data });
+      }
+    }
+  } finally { cur = saved; }
+  if (!files.length) { toast('没有可导出的文件'); return; }
+  await saveMany(projectBaseName(), files);
+}
 const hex = c => String(c || '#000000').replace('#', '').slice(0, 6).toUpperCase();
 
 /* PowerPoint: native editable shapes, one slide per page (总图 + 各系统展开页) */
@@ -2397,20 +2568,20 @@ async function exportPPTX() {
       if (n.type === 'band') {
         const st = stStyle(n, t);
         slide.addShape(pptx.ShapeType.rect, { ...base, fill: { color: hex(n.fill || t.band.fill) }, line: { color: hex(t.band.stroke), width: LW(1.5) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(BAND_TW), h: S(n.h), fill: { color: hex(n.status === 'base' ? t.band.titleFill : st.stroke) }, color: hex(t.band.titleText), fontFace: PPT_FONT, fontSize: PT(15), bold: true, align: 'center', valign: 'middle', vert: 'eaVert', margin: 0 });
+        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(BAND_TW), h: S(n.h), fill: { color: hex(n.status === 'base' ? t.band.titleFill : st.stroke) }, color: hex(t.band.titleText), fontFace: fontFace(n), fontSize: PT(15), bold: true, align: 'center', valign: 'middle', vert: 'eaVert', margin: 0 });
       } else if (n.type === 'lane') {
         const tw = laneTW(n);
         slide.addShape(pptx.ShapeType.rect, { ...base, fill: { color: hex(n.fill || t.lane.fill) }, line: { color: hex(t.lane.stroke), width: LW(1) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(tw), h: S(n.h), color: hex(t.lane.titleText), fontFace: PPT_FONT, fontSize: PT(13.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
+        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(tw), h: S(n.h), color: hex(t.lane.titleText), fontFace: fontFace(n), fontSize: PT(13.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
         slide.addShape(pptx.ShapeType.line, { x: X(n.x + tw), y: Y(n.y + 6), w: 0, h: S(n.h - 12), line: { color: hex(t.lane.stroke), width: LW(1) } });
       } else if (n.type === 'group') {
         const st = stStyle(n, t);
         slide.addShape(pptx.ShapeType.roundRect, { ...base, rectRadius: S(6), fill: { color: hex(st.fill === t.box.fill ? t.group.fill : st.fill) }, line: { color: hex(st.stroke === t.box.stroke ? t.group.stroke : st.stroke), width: LW(1.3) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(GROUP_TH), fill: { color: hex(n.status === 'base' ? t.group.titleFill : st.title) }, color: hex(t.group.titleText), fontFace: PPT_FONT, fontSize: PT(12.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
+        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(GROUP_TH), fill: { color: hex(n.status === 'base' ? t.group.titleFill : st.title) }, color: hex(t.group.titleText), fontFace: fontFace(n), fontSize: PT(12.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) {
           const o = { x: X(c.x), y: Y(c.y), w: S(c.w), h: S(c.h), line: { color: hex(c.stroke), width: LW(c.lw) }, ...(c.fill ? { fill: { color: hex(c.fill) } } : {}) };
-          if (c.text) addT(slide, c.text, { ...o, shape: pptx.ShapeType.rect, color: hex(c.color), fontFace: PPT_FONT, fontSize: PT(c.size), bold: c.bold, align: c.align === 'left' ? 'left' : 'center', valign: 'middle', margin: 0, wrap: false });
+          if (c.text) addT(slide, c.text, { ...o, shape: pptx.ShapeType.rect, color: hex(c.color), fontFace: fontFace(n), fontSize: PT(c.size), bold: c.bold, align: c.align === 'left' ? 'left' : 'center', valign: 'middle', margin: 0, wrap: false });
           else slide.addShape(pptx.ShapeType.rect, o);
         }
       } else if (n.type === 'legend') {
@@ -2419,11 +2590,11 @@ async function exportPPTX() {
         for (const it of items) {
           if (it.kind === 'st') { const ss = it.s === 'base' ? t.box : t.st[it.s]; slide.addShape(pptx.ShapeType.rect, { x: X(it.x), y: Y(it.y + 3), w: S(26), h: S(14), fill: { color: hex(ss.fill) }, line: { color: hex(ss.stroke), width: LW(1) } }); }
           else { const K = LINK_KINDS[it.k]; slide.addShape(pptx.ShapeType.line, { x: X(it.x), y: Y(it.y + 10), w: S(27), h: 0, line: { color: hex(t.link[it.k]), width: LW(K.w || 1.6), dashType: PPT_DASH[K.dash] || 'solid', endArrowType: 'triangle' } }); }
-          addT(slide, it.label, { x: X(it.x + 32), y: Y(it.y), w: S(112), h: S(20), color: hex(t.text), fontFace: PPT_FONT, fontSize: PT(12), valign: 'middle', margin: 0 });
+          addT(slide, it.label, { x: X(it.x + 32), y: Y(it.y), w: S(112), h: S(20), color: hex(t.text), fontFace: fontFace(n), fontSize: PT(12), valign: 'middle', margin: 0 });
         }
       } else {
         const L = nodeLayout(n);
-        const textOpt = L.text ? { color: hex(L.text.color), fontFace: PPT_FONT, fontSize: PT(L.text.size), bold: !!L.text.bold, align: L.text.anchor === 'start' ? 'left' : 'center', valign: 'middle', margin: 1 } : null;
+        const textOpt = L.text ? { color: hex(L.text.color), fontFace: fontFace(n), fontSize: PT(L.text.size), bold: !!L.text.bold, align: L.text.anchor === 'start' ? 'left' : 'center', valign: 'middle', margin: 1 } : null;
         const shp = n.type === 'equip' ? pptx.ShapeType.roundRect : SHP_DEF[n.type] ? (pptx.ShapeType[SHP_DEF[n.type].ppt] || SHP_DEF[n.type].ppt) : null;
         const st = stStyle(n, t);
         const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : {};
@@ -2441,7 +2612,7 @@ async function exportPPTX() {
         }
       }
       const tg = codeTagOf(n, p);
-      if (tg) addT(slide, tg.text, { x: X(tg.x), y: Y(tg.y), w: S(tg.w), h: S(tg.h), shape: pptx.ShapeType.roundRect, rectRadius: 0.02, fill: { color: hex(tg.fill) }, line: { color: hex(tg.stroke), width: LW(0.7) }, color: hex(tg.color), fontFace: PPT_FONT, fontSize: PT(tg.size), bold: true, align: 'center', valign: 'middle', margin: 0, wrap: false });
+      if (tg) addT(slide, tg.text, { x: X(tg.x), y: Y(tg.y), w: S(tg.w), h: S(tg.h), shape: pptx.ShapeType.roundRect, rectRadius: 0.02, fill: { color: hex(tg.fill) }, line: { color: hex(tg.stroke), width: LW(0.7) }, color: hex(tg.color), fontFace: fontFace(n), fontSize: PT(tg.size), bold: true, align: 'center', valign: 'middle', margin: 0, wrap: false });
     }
     for (const l of p.links) {
       const pts = linkPoints(l, p); if (!pts) continue;
@@ -2471,20 +2642,20 @@ async function exportPPTX() {
           slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: S(Math.abs(z.x - a.x)), h: S(Math.abs(z.y - a.y)), flipH: z.x < a.x, flipV: z.y < a.y, line: ln });
         }
       }
-      for (const pill of linkPills(l, p)) { const w = measure(pill.text, 11.5) + 10; addT(slide, pill.text, { x: X(pill.pos.x - w / 2), y: Y(pill.pos.y - 9), w: S(w), h: S(18), fill: { color: hex(t.bg) }, color: c, fontFace: PPT_FONT, fontSize: PT(11.5), align: 'center', valign: 'middle', margin: 0, wrap: false }); }
+      for (const pill of linkPills(l, p)) { const w = measure(pill.text, 11.5) + 10; addT(slide, pill.text, { x: X(pill.pos.x - w / 2), y: Y(pill.pos.y - 9), w: S(w), h: S(18), fill: { color: hex(t.bg) }, color: c, fontFace: fontFace(null), fontSize: PT(11.5), align: 'center', valign: 'middle', margin: 0, wrap: false }); }
     }
     cur = saved;
   }
   const blob = await pptx.write({ outputType: 'blob' });
-  saveFile(fname('pptx'), blob);
+  saveFile(docExportName('pptx'), blob);
 }
 
 /* Visio (.vsdx, Visio 2013+): shapes with geometry, text, fills; links as polylines with arrowheads; icons embedded as PNG */
-async function exportVSDX() {
+async function exportVSDX(pageList) {
   if (typeof JSZip === 'undefined') { toast('压缩组件未加载'); return; }
   toast('正在生成 Visio…');
   const t = T(), zip = new JSZip(), NS = 'http://schemas.microsoft.com/office/visio/2012/main', RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-  const pages = pagesInOrder(); let imgN = 0; const iconCache = new Map();
+  const pages = pageList || pagesInOrder(); let imgN = 0; const iconCache = new Map();
   const xs = s => esc(s).replace(/\n/g, '&#10;');
   const cell = (n, v, u) => `<Cell N='${n}' V='${v}'${u ? ` U='${u}'` : ''}/>`;
   const num = v => (+v).toFixed(6);
@@ -2494,7 +2665,7 @@ async function exportVSDX() {
     const b = contentBBox(p), pad = 20, f = 1 / 96, PW = (b.w + pad * 2) * f, PH = (b.h + pad * 2) * f;
     const X = v => (v - b.x + pad) * f, Y = v => PH - (v - b.y + pad) * f;
     let sid = 1; const shapes = []; const rels = [];
-    const charSec = (size, color, bold) => `<Section N='Character'><Row IX='0'>${cell('Font', PPT_FONT)}${cell('Color', color)}${cell('Size', num(size * 0.75 / 72), 'PT')}${cell('Style', bold ? 1 : 0)}</Row></Section>`;
+    const charSec = (size, color, bold, face) => `<Section N='Character'><Row IX='0'>${cell('Font', face || fontFace(null))}${cell('Color', color)}${cell('Size', num(size * 0.75 / 72), 'PT')}${cell('Style', bold ? 1 : 0)}</Row></Section>`;
     const paraSec = al => `<Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', al === 'left' ? 0 : 1)}</Row></Section>`;
     const rectGeom = (w, h) => `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(w))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section>`;
     const geomFor = (type, w, h) => {
@@ -2523,7 +2694,7 @@ async function exportVSDX() {
         s += cell('TxtPinX', num((ib[0] + ib[2] / 2) * f)) + cell('TxtPinY', num(H - (ib[1] + ib[3] / 2) * f)) + cell('TxtWidth', num(TW)) + cell('TxtHeight', num(TH)) + cell('TxtLocPinX', num(TW / 2)) + cell('TxtLocPinY', num(TH / 2)) + cell('TxtAngle', 0);
       }
       if (o.vert) s += `<Section N='TextBlock'>${cell('TextDirection', 1)}</Section>`;
-      if (o.text != null) s += charSec(o.size || 13, o.color || '#000000', o.bold) + paraSec(o.align);
+      if (o.text != null) s += charSec(o.size || 13, o.color || '#000000', o.bold, o.face) + paraSec(o.align);
       s += geomFor(o.type || 'rect', W, H);
       if (o.text != null) s += `<Text>${xs(o.text)}</Text>`;
       return s + '</Shape>';
@@ -2532,29 +2703,29 @@ async function exportVSDX() {
       if (n.type === 'band') {
         const st = stStyle(n, t);
         shapes.push(box(n.x, n.y, n.w, n.h, { fill: n.fill || t.band.fill, line: t.band.stroke, lw: 1.5 }));
-        shapes.push(box(n.x, n.y, BAND_TW, n.h, { fill: n.status === 'base' ? t.band.titleFill : st.stroke, text: n.text, size: 15, bold: true, color: t.band.titleText, vert: true }));
+        shapes.push(box(n.x, n.y, BAND_TW, n.h, { fill: n.status === 'base' ? t.band.titleFill : st.stroke, text: n.text, size: 15, bold: true, color: t.band.titleText, vert: true, face: fontFace(n) }));
       } else if (n.type === 'lane') {
         shapes.push(box(n.x, n.y, n.w, n.h, { fill: n.fill || t.lane.fill, line: t.lane.stroke }));
-        shapes.push(box(n.x, n.y, laneTW(n), n.h, { text: n.text, size: 13.5, bold: true, color: t.lane.titleText }));
+        shapes.push(box(n.x, n.y, laneTW(n), n.h, { text: n.text, size: 13.5, bold: true, color: t.lane.titleText, face: fontFace(n) }));
       } else if (n.type === 'group') {
         const st = stStyle(n, t);
         shapes.push(box(n.x, n.y, n.w, n.h, { fill: st.fill === t.box.fill ? t.group.fill : st.fill, line: st.stroke === t.box.stroke ? t.group.stroke : st.stroke, lw: 1.3, round: 6 }));
-        shapes.push(box(n.x, n.y, n.w, GROUP_TH, { fill: n.status === 'base' ? t.group.titleFill : st.title, text: n.text, size: 12.5, bold: true, color: t.group.titleText }));
+        shapes.push(box(n.x, n.y, n.w, GROUP_TH, { fill: n.status === 'base' ? t.group.titleFill : st.title, text: n.text, size: 12.5, bold: true, color: t.group.titleText, face: fontFace(n) }));
       } else if (n.type === 'tblock') {
-        if (window.Std) for (const c of Std.tblockCells(n, p)) shapes.push(box(c.x, c.y, c.w, c.h, { fill: c.fill || null, line: c.stroke, lw: c.lw, ...(c.text ? { text: c.text, size: c.size, bold: c.bold, color: c.color, align: c.align } : {}) }));
+        if (window.Std) for (const c of Std.tblockCells(n, p)) shapes.push(box(c.x, c.y, c.w, c.h, { fill: c.fill || null, line: c.stroke, lw: c.lw, ...(c.text ? { text: c.text, size: c.size, bold: c.bold, color: c.color, align: c.align, face: fontFace(n) } : {}) }));
       } else if (n.type === 'legend') {
         const items = legendLayout(n, p);
         shapes.push(box(n.x, n.y, n.w, n.h, { fill: t.note.fill, line: t.note.stroke }));
         for (const it of items) {
           if (it.kind === 'st') { const ss = it.s === 'base' ? t.box : t.st[it.s]; shapes.push(box(it.x, it.y + 3, 26, 14, { fill: ss.fill, line: ss.stroke })); }
           else shapes.push(polyShape([{ x: it.x, y: it.y + 10 }, { x: it.x + 27, y: it.y + 10 }], t.link[it.k], LINK_KINDS[it.k], 'one'));
-          shapes.push(box(it.x + 32, it.y, 112, 20, { text: it.label, size: 12, color: t.text, align: 'left' }));
+          shapes.push(box(it.x + 32, it.y, 112, 20, { text: it.label, size: 12, color: t.text, align: 'left', face: fontFace(n) }));
         }
       } else {
         const L = nodeLayout(n), st = stStyle(n, t);
         const drawBox = n.type === 'note' || (n.type !== 'text' && (!n.noBox || n.status !== 'base'));
         const bs = n.type === 'note' ? { fill: t.note.fill, line: t.note.stroke } : drawBox ? { fill: st.fill, line: st.stroke, lw: 1.2, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type } : {};
-        if (!L.icon && L.text) shapes.push(box(n.x, n.y, n.w, n.h, { ...bs, text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, align: L.text.anchor === 'start' ? 'left' : 'center' }));
+        if (!L.icon && L.text) shapes.push(box(n.x, n.y, n.w, n.h, { ...bs, text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, align: L.text.anchor === 'start' ? 'left' : 'center', face: fontFace(n) }));
         else {
           if (drawBox) shapes.push(box(n.x, n.y, n.w, n.h, bs));
           if (L.icon) {
@@ -2567,11 +2738,11 @@ async function exportVSDX() {
               shapes.push(`<Shape ID='${sid++}' Type='Foreign' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(L.icon.x) + W / 2))}${cell('PinY', num(Y(L.icon.y) - HH / 2))}${cell('Width', num(W))}${cell('Height', num(HH))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(HH / 2))}${cell('ImgOffsetX', 0)}${cell('ImgOffsetY', 0)}${cell('ImgWidth', num(W))}${cell('ImgHeight', num(HH))}${cell('LinePattern', 0)}${cell('FillPattern', 0)}<Section N='Geometry' IX='0'>${cell('NoFill', 1)}${cell('NoLine', 1)}${cell('NoShow', 1)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(W))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(W))}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section><ForeignData ForeignType='Bitmap' CompressionType='PNG'><Rel r:id='${rid}'/></ForeignData></Shape>`);
             }
           }
-          if (L.text) { const [bx, by, bw, bh] = L.text.box; shapes.push(box(bx, by, bw, Math.max(bh, 16), { text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color })); }
+          if (L.text) { const [bx, by, bw, bh] = L.text.box; shapes.push(box(bx, by, bw, Math.max(bh, 16), { text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, face: fontFace(n) })); }
         }
       }
       const tg = codeTagOf(n, p);
-      if (tg) shapes.push(box(tg.x, tg.y, tg.w, tg.h, { fill: tg.fill, line: tg.stroke, lw: 0.7, round: 2, text: tg.text, size: tg.size, bold: true, color: tg.color }));
+      if (tg) shapes.push(box(tg.x, tg.y, tg.w, tg.h, { fill: tg.fill, line: tg.stroke, lw: 0.7, round: 2, text: tg.text, size: tg.size, bold: true, color: tg.color, face: fontFace(n) }));
     }
     function polyShape(pts, color, K, dir, ops) {
       ops = ops || pts.map((q, i) => [i ? 'L' : 'M', q.x, q.y]);
@@ -2595,7 +2766,7 @@ async function exportVSDX() {
       const pts = linkPoints(l, p); if (!pts) continue;
       const K = LINK_KINDS[l.kind] || LINK_KINDS.plain;
       shapes.push(polyShape(pts, t.link[l.kind], K, l.dir, linkOps(routesFor(p).get(l.id))));
-      for (const pill of linkPills(l, p)) { const w = measure(pill.text, 11.5) + 10; shapes.push(box(pill.pos.x - w / 2, pill.pos.y - 9, w, 18, { fill: t.bg, text: pill.text, size: 11.5, color: t.link[l.kind] })); }
+      for (const pill of linkPills(l, p)) { const w = measure(pill.text, 11.5) + 10; shapes.push(box(pill.pos.x - w / 2, pill.pos.y - 9, w, 18, { fill: t.bg, text: pill.text, size: 11.5, color: t.link[l.kind], face: fontFace(null) })); }
     }
     pageXml.push({ name: p.name, PW, PH, xml: `<?xml version='1.0' encoding='utf-8' ?>\n<PageContents xmlns='${NS}' xmlns:r='${RNS}' xml:space='preserve'><Shapes>${shapes.join('')}</Shapes></PageContents>` });
     pageRels.push(rels);
@@ -2605,7 +2776,7 @@ async function exportVSDX() {
   zip.file('_rels/.rels', `<?xml version='1.0' encoding='utf-8' ?>\n<Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'><Relationship Id='rId1' Type='http://schemas.microsoft.com/visio/2010/relationships/document' Target='visio/document.xml'/><Relationship Id='rId2' Type='http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties' Target='docProps/core.xml'/><Relationship Id='rId3' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties' Target='docProps/app.xml'/></Relationships>`);
   zip.file('docProps/core.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<cp:coreProperties xmlns:cp='http://schemas.openxmlformats.org/package/2006/metadata/core-properties' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:dcterms='http://purl.org/dc/terms/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><dc:title>${esc(doc.name || '体系图')}</dc:title><dc:creator>经纬织图</dc:creator></cp:coreProperties>`);
   zip.file('docProps/app.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<Properties xmlns='http://schemas.openxmlformats.org/officeDocument/2006/extended-properties'><Application>Microsoft Visio</Application><AppVersion>15.0000</AppVersion></Properties>`);
-  zip.file('visio/document.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<VisioDocument xmlns='${NS}' xmlns:r='${RNS}' xml:space='preserve'><DocumentSettings TopPage='0' DefaultTextStyle='0' DefaultLineStyle='0' DefaultFillStyle='0' DefaultGuideStyle='0'>${cell('GlueSettings', 9)}${cell('SnapSettings', 65847)}</DocumentSettings><Colors><ColorEntry IX='0' RGB='#000000'/><ColorEntry IX='1' RGB='#FFFFFF'/></Colors><FaceNames><FaceName NameU='${PPT_FONT}' UnicodeRanges='-1 -369098753 63 0' CharSets='1074266271 0' Panose='2 11 5 3 2 2 4 2 2 4' Flags='325'/></FaceNames><StyleSheets><StyleSheet ID='0' NameU='No Style' IsCustomNameU='1' Name='No Style' IsCustomName='1'>${cell('EnableLineProps', 1)}${cell('EnableFillProps', 1)}${cell('EnableTextProps', 1)}${cell('HideForApply', 0)}${cell('LineWeight', '0.01041666666666667')}${cell('LineColor', 0)}${cell('LinePattern', 1)}${cell('Rounding', 0)}${cell('EndArrowSize', 2)}${cell('BeginArrow', 0)}${cell('EndArrow', 0)}${cell('LineCap', 0)}${cell('BeginArrowSize', 2)}${cell('LineColorTrans', 0)}${cell('FillForegnd', 1)}${cell('FillBkgnd', 0)}${cell('FillPattern', 1)}${cell('FillForegndTrans', 0)}${cell('FillBkgndTrans', 0)}${cell('LeftMargin', 0)}${cell('RightMargin', 0)}${cell('TopMargin', 0)}${cell('BottomMargin', 0)}${cell('VerticalAlign', 1)}${cell('TextBkgnd', 0)}${cell('TextDirection', 0)}<Section N='Character'><Row IX='0'>${cell('Font', PPT_FONT)}${cell('Color', 0)}${cell('Style', 0)}${cell('Size', '0.1666666666666667')}</Row></Section><Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', 1)}</Row></Section></StyleSheet></StyleSheets></VisioDocument>`);
+  zip.file('visio/document.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<VisioDocument xmlns='${NS}' xmlns:r='${RNS}' xml:space='preserve'><DocumentSettings TopPage='0' DefaultTextStyle='0' DefaultLineStyle='0' DefaultFillStyle='0' DefaultGuideStyle='0'>${cell('GlueSettings', 9)}${cell('SnapSettings', 65847)}</DocumentSettings><Colors><ColorEntry IX='0' RGB='#000000'/><ColorEntry IX='1' RGB='#FFFFFF'/></Colors><FaceNames>${faceNamesXml()}</FaceNames><StyleSheets><StyleSheet ID='0' NameU='No Style' IsCustomNameU='1' Name='No Style' IsCustomName='1'>${cell('EnableLineProps', 1)}${cell('EnableFillProps', 1)}${cell('EnableTextProps', 1)}${cell('HideForApply', 0)}${cell('LineWeight', '0.01041666666666667')}${cell('LineColor', 0)}${cell('LinePattern', 1)}${cell('Rounding', 0)}${cell('EndArrowSize', 2)}${cell('BeginArrow', 0)}${cell('EndArrow', 0)}${cell('LineCap', 0)}${cell('BeginArrowSize', 2)}${cell('LineColorTrans', 0)}${cell('FillForegnd', 1)}${cell('FillBkgnd', 0)}${cell('FillPattern', 1)}${cell('FillForegndTrans', 0)}${cell('FillBkgndTrans', 0)}${cell('LeftMargin', 0)}${cell('RightMargin', 0)}${cell('TopMargin', 0)}${cell('BottomMargin', 0)}${cell('VerticalAlign', 1)}${cell('TextBkgnd', 0)}${cell('TextDirection', 0)}<Section N='Character'><Row IX='0'>${cell('Font', fontFace(null))}${cell('Color', 0)}${cell('Style', 0)}${cell('Size', '0.1666666666666667')}</Row></Section><Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', 1)}</Row></Section></StyleSheet></StyleSheets></VisioDocument>`);
   zip.file('visio/_rels/document.xml.rels', `<?xml version='1.0' encoding='utf-8' ?>\n<Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'><Relationship Id='rId1' Type='http://schemas.microsoft.com/visio/2010/relationships/pages' Target='pages/pages.xml'/><Relationship Id='rId2' Type='http://schemas.microsoft.com/visio/2010/relationships/windows' Target='windows.xml'/></Relationships>`);
   zip.file('visio/windows.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<Windows xmlns='${NS}' xmlns:r='${RNS}' ClientWidth='1600' ClientHeight='900'><Window ID='0' WindowType='Drawing' WindowState='1073741824' ViewScale='-1' ViewCenterX='0' ViewCenterY='0' Page='0'><ShowRulers>1</ShowRulers><ShowGrid>1</ShowGrid></Window></Windows>`);
   zip.file('visio/pages/pages.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<Pages xmlns='${NS}' xmlns:r='${RNS}' xml:space='preserve'>${pageXml.map((pg, i) => `<Page ID='${i}' NameU='Page-${i + 1}' Name='${esc(pg.name)}' ViewScale='-1'><PageSheet LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PageWidth', num(pg.PW))}${cell('PageHeight', num(pg.PH))}${cell('ShdwOffsetX', 0)}${cell('ShdwOffsetY', 0)}${cell('PageScale', 1, 'IN_F')}${cell('DrawingScale', 1, 'IN_F')}${cell('DrawingSizeType', 0)}${cell('DrawingScaleType', 0)}${cell('InhibitSnap', 0)}${cell('PrintPageOrientation', pg.PW > pg.PH ? 2 : 1)}</PageSheet><Rel r:id='rId${i + 1}'/></Page>`).join('')}</Pages>`);
@@ -2615,7 +2786,7 @@ async function exportVSDX() {
     if (pageRels[i].length) zip.file(`visio/pages/_rels/page${i + 1}.xml.rels`, `<?xml version='1.0' encoding='utf-8' ?>\n<Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'>${pageRels[i].join('')}</Relationships>`);
   });
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/vnd.ms-visio.drawing' });
-  saveFile(fname('vsdx'), blob);
+  saveFile(docExportName('vsdx'), blob);
 }
 function projectJSON() { return JSON.stringify({ format: 'hongtu', version: 1, doc }, null, 0); }
 function projectFileName(raw) {
@@ -2632,13 +2803,14 @@ function confirmSaveAs() {
   const name = projectFileName($('#saveas-name') ? $('#saveas-name').value : '');
   if (!name) return;
   closeSaveAs();
+  rememberShelf(name);
   afterProjectSave(saveFile(name, projectJSON()));
 }
-function saveProject() { afterProjectSave(saveFile(fname('json').replace(/\.json$/, '.jingwei.json'), projectJSON())); }
+function saveProject() { rememberShelf(); afterProjectSave(saveFile(projectFileDefault(), projectJSON())); }
 function saveProjectAs() {
   const box = $('#saveas'); if (!box) return;
   const inp = $('#saveas-name');
-  if (inp) inp.value = fname('json').replace(/\.json$/, '.jingwei.json');
+  if (inp) inp.value = projectFileDefault();
   box.style.display = 'flex';
   setTimeout(() => { if (inp) { inp.focus(); inp.select(); } }, 0);
 }
@@ -2646,7 +2818,6 @@ function refreshDocTitle() {
   if (typeof window.jwRefreshTitle === 'function') { window.jwRefreshTitle(); return; }
   document.title = (doc && doc.name) ? doc.name + ' - 经纬织图' : '经纬织图';
 }
-
 /* ---------- header wiring ---------- */
 function closeMenus() {
   document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open'));
@@ -2667,6 +2838,11 @@ $('#m-export .dd').addEventListener('click', async e => {
     if (k === 'pptx') await exportPPTX();
     if (k === 'vsdx') await exportVSDX();
     if (k === 'drawio') { if (window.DrawIO) await DrawIO.exportFile(); else toast('draw.io 模块未加载'); }
+    if (k === 'allpptx') await exportPPTX();
+    if (k === 'allpng') await exportHierarchy('png');
+    if (k === 'allsvg') await exportHierarchy('svg');
+    if (k === 'allvsdx') await exportHierarchy('vsdx');
+    if (k === 'alldrawio') await exportHierarchy('drawio');
   } catch (err) { console.error(err); toast('导出失败：' + (err.message || err)); }
 });
 $('#b-undo').onclick = undo; $('#b-redo').onclick = redo;
@@ -2694,7 +2870,7 @@ $('#f-open').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   e.target.value = '';
   if (/\.(pptx|vsdx|ppt|vsd|drawio|xml)$/i.test(f.name)) { openForeign(f); return; }
-  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
+  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
 /* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
@@ -2745,3 +2921,73 @@ function friendlyErr(err) {
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
   doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
+
+const SHELF_KEY = 'hongtu.shelf';
+let shelfId = null;
+function readShelf() { try { const a = JSON.parse(localStorage.getItem(SHELF_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (_) { return []; } }
+function writeShelf(a) { try { localStorage.setItem(SHELF_KEY, JSON.stringify(a.slice(0, 8))); } catch (_) { } }
+function rememberShelf(nameHint) {
+  if (window.jwDesk || !doc || !doc.pages) return;
+  const raw = String(nameHint || doc.name || (doc.pages.root && doc.pages.root.name) || '未命名');
+  const name = raw.replace(/\.jingwei\.json$/i, '').replace(/\.json$/i, '') || '未命名';
+  const item = { id: shelfId || ('s' + uid()), name, path: '浏览器本地存储', t: Date.now(), doc: JSON.parse(JSON.stringify(doc)) };
+  shelfId = item.id;
+  writeShelf([item, ...readShelf().filter(x => x.id !== item.id && x.name !== name)]);
+}
+function fmtWhen(t) { const d = new Date(t), p = x => String(x).padStart(2, '0'); return isNaN(d.getTime()) ? '' : `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function editInline(host, value, onCommit) {
+  const input = document.createElement('input');
+  input.type = 'text'; input.value = value;
+  input.addEventListener('click', e => e.stopPropagation());
+  input.addEventListener('mousedown', e => e.stopPropagation());
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    else if (e.key === 'Escape') { e.preventDefault(); input.dataset.cancel = '1'; input.blur(); }
+  });
+  let done = false;
+  input.addEventListener('blur', () => {
+    if (done) return; done = true;
+    onCommit(input.dataset.cancel || input.value.trim() === value ? null : input.value.trim());
+  });
+  host.textContent = ''; host.appendChild(input); input.focus(); input.select();
+}
+function hideWebHist() { const el = $('#jw-webhist'); if (el) el.hidden = true; }
+function renderWebHist() {
+  if (window.jwDesk) return;
+  let el = $('#jw-webhist');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'jw-webhist'; el.hidden = true;
+    el.innerHTML = '<div class="box"><h2>最近工程</h2><div class="list" id="jw-webhist-list"></div><button type="button" id="jw-webhist-go">进入画布</button></div>';
+    document.body.appendChild(el);
+    el.querySelector('#jw-webhist-go').onclick = hideWebHist;
+  }
+  const list = readShelf().filter(it => it && it.doc && it.doc.pages && it.doc.pages.root);
+  const box = el.querySelector('.list');
+  if (!list.length) { el.hidden = true; box.innerHTML = ''; return; }
+  el.hidden = false; box.innerHTML = '';
+  for (const it of list) {
+    const row = document.createElement('div');
+    row.className = 'ri'; row.tabIndex = 0;
+    row.innerHTML = '<div class="meta"><div class="nm" title="单击改名"></div><div class="dir"></div></div><div class="tm"></div>';
+    row.querySelector('.nm').textContent = it.name;
+    row.querySelector('.dir').textContent = it.path;
+    row.querySelector('.tm').textContent = fmtWhen(it.t);
+    row.addEventListener('click', e => {
+      if (e.target.closest('.nm') || e.target.closest('input')) return;
+      const cur = readShelf().find(x => x.id === it.id);
+      if (!cur || !cur.doc) return;
+      checkpoint(); shelfId = cur.id; loadDoc(JSON.parse(JSON.stringify(cur.doc))); hideWebHist();
+    });
+    row.querySelector('.nm').addEventListener('click', e => {
+      e.stopPropagation();
+      editInline(e.currentTarget, it.name, name => {
+        if (!name) { renderWebHist(); return; }
+        const a = readShelf(); const hit = a.find(x => x.id === it.id);
+        if (hit) { hit.name = name; if (hit.doc) hit.doc.name = name; hit.t = Date.now(); writeShelf(a); if (shelfId === it.id) doc.name = name; }
+        renderWebHist();
+      });
+    });
+    box.appendChild(row);
+  }
+}
+renderWebHist();

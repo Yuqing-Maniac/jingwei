@@ -128,8 +128,8 @@
     const b = contentBBox(p);
     return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${t.bg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${out.join('')}</root></mxGraphModel>` };
   }
-  function exportString() {
-    const pages = pagesInOrder(), pageIds = {}, saved = cur;
+  function exportString(pageList) {
+    const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
     pages.forEach((p, i) => pageIds[p.id] = 'ht-' + (p.id === 'root' ? 'root' : p.id));
     let body = '';
     try {
@@ -137,10 +137,10 @@
     } finally { cur = saved; }
     return `<?xml version="1.0" encoding="UTF-8"?>\n<mxfile host="jingwei" agent="经纬织图" version="24.0.0" type="device" pages="${pages.length}">${body}</mxfile>\n`;
   }
-  async function exportFile() {
+  async function exportFile(pageList) {
     toast('正在生成 draw.io 文件…');
-    const s = exportString();
-    await saveFile(fname('svg').replace(/\.svg$/, '.drawio'), new Blob([s], { type: 'application/xml' }));
+    const s = exportString(pageList);
+    await saveFile(docExportName('drawio'), new Blob([s], { type: 'application/xml' }));
   }
 
   /* ================= 导入 ================= */

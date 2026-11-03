@@ -3,6 +3,7 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, Menu, screen, nativeImage, nativeTheme } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const recentLib = require('./recent');
 
 const isLinux = process.platform === 'linux', isWin = process.platform === 'win32';
 // 国产 GPU 驱动差异大：Linux 默认软件渲染，避免黑屏／花屏；可用 --gpu 强制开启
@@ -126,8 +127,26 @@ ipcMain.handle('jw:open-dialog', async () => {
   if (r.canceled || !r.filePaths[0]) return null;
   store.lastDir = path.dirname(r.filePaths[0]); saveStore(); return r.filePaths[0];
 });
-ipcMain.handle('jw:recent', () => store.recent.filter(p => { try { return fs.statSync(p).isFile(); } catch (_) { return false; } }).map(p => ({ path: p, name: path.basename(p), dir: path.dirname(p), t: fs.statSync(p).mtimeMs })));
+function projectDirs() {
+  const dirs = [];
+  const add = d => { if (d && dirs.indexOf(d) < 0) dirs.push(d); };
+  add(store.lastDir);
+  for (const k of ['documents', 'desktop', 'downloads', 'home']) { try { add(app.getPath(k)); } catch (_) { } }
+  return dirs;
+}
+ipcMain.handle('jw:recent', () => recentLib.scanProjects(fs, store.recent, projectDirs()));
 ipcMain.handle('jw:recent-remove', (_e, p) => { store.recent = store.recent.filter(x => x !== p); saveStore(); return true; });
+ipcMain.handle('jw:rename', (_e, p, name) => {
+  const r = recentLib.renameProject(fs, p, name);
+  if (r && r.path) {
+    const was = path.resolve(p);
+    store.recent = store.recent.map(x => { try { return path.resolve(x) === was ? r.path : x; } catch (_) { return x; } });
+    if (!store.recent.some(x => { try { return path.resolve(x) === r.path; } catch (_) { return false; } })) store.recent.unshift(r.path);
+    store.recent = store.recent.slice(0, 12);
+    saveStore();
+  }
+  return r;
+});
 ipcMain.handle('jw:pending', () => { const a = pendingOpen; pendingOpen = []; return a; });
 ipcMain.handle('jw:info', () => ({ version: app.getVersion(), platform: process.platform, arch: process.arch, electron: process.versions.electron, chrome: process.versions.chrome }));
 ipcMain.handle('jw:confirm-close', async (_e, name) => {

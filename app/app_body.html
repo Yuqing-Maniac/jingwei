@@ -121,6 +121,7 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
 .menu.open .dd{display:flex}
 .menu .dd button{justify-content:flex-start}
 .menu .dd small{color:var(--muted);margin-left:auto;font-size:11px}
+.menu .dd .cap{display:block;font-size:11px;color:var(--muted);padding:8px 8px 2px;margin-top:4px;border-top:1px solid var(--line)}
 @media (max-width:860px){
   main{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto}
   #palette{border-right:none;border-bottom:1px solid var(--line);max-height:132px;padding:8px max(16px,env(safe-area-inset-left,0px))}
@@ -130,6 +131,18 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
   .hide-s{display:none}
 }
 @media (prefers-reduced-motion:reduce){#toast,#world .lk{transition:none}}
+#jw-webhist{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(8,22,48,.45)}
+#jw-webhist[hidden]{display:none}
+#jw-webhist .box{width:92vw;max-width:560px;max-height:80vh;overflow:auto;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px;box-shadow:0 16px 40px rgba(0,0,0,.2)}
+#jw-webhist h2{margin:0 0 12px;font-size:15px;font-weight:600;letter-spacing:.12em}
+#jw-webhist .ri{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px;cursor:pointer}
+#jw-webhist .ri:hover{background:var(--hover)}
+#jw-webhist .meta{min-width:0;flex:1}
+#jw-webhist .nm{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#jw-webhist .dir{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#jw-webhist .tm{margin-left:auto;font-size:12px;color:var(--muted);flex:none}
+#jw-webhist input{width:100%}
+#jw-webhist #jw-webhist-go{margin-top:12px}
 </style>
 
 <div id="app">
@@ -166,6 +179,12 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
       <button data-exp="vsdx">Visio <small>.vsdx</small></button>
       <button data-exp="drawio">draw.io <small>.drawio 可编辑</small></button>
       <button data-exp="svg">SVG 矢量图</button>
+      <div class="cap">整体导出</div>
+      <button data-exp="allpptx">PowerPoint <small>每视图一页</small></button>
+      <button data-exp="allpng">PNG <small>每视图一个文件</small></button>
+      <button data-exp="allsvg">SVG <small>每视图一个文件</small></button>
+      <button data-exp="allvsdx">Visio <small>每视图一个文件</small></button>
+      <button data-exp="alldrawio">draw.io <small>每视图一个文件</small></button>
     </div>
   </div>
 </header>
