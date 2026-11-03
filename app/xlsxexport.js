@@ -15,6 +15,12 @@
   const etName = e => { const S = window.Std; return (S && S.ETYPES && S.ETYPES[e] && (S.ETYPES[e].name || S.ETYPES[e].zh || (typeof S.ETYPES[e] === 'string' && S.ETYPES[e]))) || ET[e] || ''; };
   const vwName = v => { const S = window.Std; return (S && S.VIEWS && S.VIEWS[v] && (S.VIEWS[v].name || S.VIEWS[v].zh)) || VW[v] || ''; };
   const kindName = k => { try { return (LINK_KINDS[k] || LINK_KINDS.plain).name; } catch (e) { return k || ''; } };
+  const linkBody = l => {
+    const a = l.attrs || {};
+    let s = a.content || l.label || '';
+    if (l.dir === 'both' && l.labelBack) s = s ? s + ' ⇄ ' + l.labelBack : l.labelBack;
+    return s;
+  };
   const SKIP = new Set(['text', 'note', 'legend', 'tblock']);
   const CONT = new Set(['band', 'lane', 'group']);
   const coll = new Intl.Collator('zh-Hans-CN', { numeric: true, sensitivity: 'base' });
@@ -172,7 +178,7 @@
       const byId = {}; (p.nodes || []).forEach(n => byId[n.id] = n);
       (p.links || []).forEach(l => {
         const a = l.attrs || {}, f = byId[l.from], t = byId[l.to];
-        ifr.push([pi, l.code || '', p.name || '', viewOf(p), f ? lab(f) : '', t ? lab(t) : '', dirN[l.dir] || dirN.one, kindName(l.kind)].concat(lcols.map(([k]) => k === 'content' ? (a.content || l.label || '') : (a[k] || '')), [a.security || '']));
+        ifr.push([pi, l.code || '', p.name || '', viewOf(p), f ? lab(f) : '', t ? lab(t) : '', dirN[l.dir] || dirN.one, kindName(l.kind)].concat(lcols.map(([k]) => k === 'content' ? linkBody(l) : (a[k] || '')), [a.security || '']));
       });
     });
     ifr.sort((a, b) => a[0] - b[0] || coll.compare(a[1] || '\uffff', b[1] || '\uffff')); ifr.forEach(r => r.shift());
@@ -209,7 +215,7 @@
         const domOf = n => { let c = n; for (let i = 0; c && i < 32; i++, c = c.parent && byId[c.parent]) if (c.etype === 'data_domain') return one(c.text); return ''; };
         (p.links || []).forEach(l => {
           const a = l.attrs || {}, f = byId[l.from], t = byId[l.to]; if (!f || !t) return;
-          rows.push((multi ? [p.name || ''] : []).concat([l.code || '', lab(f), etName(f.etype), lab(t), etName(t.etype), a.content || l.label || '', a.protocol || '', a.freq || '', domOf(f), domOf(t), a.security || '']));
+          rows.push((multi ? [p.name || ''] : []).concat([l.code || '', lab(f), etName(f.etype), lab(t), etName(t.etype), linkBody(l), a.protocol || '', a.freq || '', domOf(f), domOf(t), a.security || '']));
         });
       });
       sheets.push(listSheet(safeName('数据流清单', used), (multi ? ['页面'] : []).concat(['编号', '源', '源类型', '目标', '目标类型', '数据对象', '交换方式', '频度／时效', '源数据域', '目标数据域', '密级']), rows, false, 8, 34));
@@ -227,10 +233,12 @@
       const N = Math.min(60, ids.length), ix = {}; ids.slice(0, N).forEach((id, i) => ix[id] = i);
       const cells = Array.from({ length: N }, () => Array(N).fill(null).map(() => []));
       ls.forEach(l => {
-        const a = l.attrs || {}, txt = (l.code || '') + ((a.content || l.label) ? ' ' + (a.content || l.label) : '');
+        const a = l.attrs || {}, body = a.content || l.label || '';
+        const pack = text => (l.code || '') + (text ? ' ' + text : '');
+        const fwd = pack(body);
         if (ix[l.from] == null || ix[l.to] == null) return;
-        cells[ix[l.from]][ix[l.to]].push(txt);
-        if (l.dir === 'both') cells[ix[l.to]][ix[l.from]].push(txt);
+        cells[ix[l.from]][ix[l.to]].push(fwd);
+        if (l.dir === 'both') cells[ix[l.to]][ix[l.from]].push(l.labelBack ? pack(l.labelBack) : fwd);
       });
       const names = ids.slice(0, N).map(id => lab(byId[id]));
       const hdrLen = Math.max(...names.map(cjkLen));

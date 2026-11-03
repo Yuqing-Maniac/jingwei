@@ -772,6 +772,13 @@ function labelFor(l, p, pts, lab) {
   for (let i = 0; i < pills.length; i++) if (pills[i].text === lab) return pills[i].pos;
   return pills.length ? pills[0].pos : labelAt(pts, lab);
 }
+function linkLabelWidth(l, p) {
+  const fwd = linkText(l, p), rev = l.labelBack || '', both = linkDir(l) === 'both';
+  let w = 0;
+  if (fwd) w = Math.max(w, measure(fwd, 11.5, false) + 10);
+  if (both && rev) w = Math.max(w, measure(rev, 11.5, false) + 10);
+  return w;
+}
 function pillMarkup(pill, fill, color) {
   const w = measure(pill.text, 11.5, false) + 10;
   return `<g pointer-events="none"><rect x="${(pill.pos.x - w / 2).toFixed(1)}" y="${(pill.pos.y - 9).toFixed(1)}" width="${w.toFixed(1)}" height="18" rx="3" fill="${fill}" fill-opacity="0.92"/>${textBlock([pill.text], pill.pos.x, pill.pos.y, 11.5, false, color)}</g>`;
@@ -1023,7 +1030,7 @@ function layoutRow(items, x0, x1, y0, y1, opt = {}) {
   }
   /* 同行相邻两框之间有带标签的连线：间距至少放得下标签，标签不压框 */
   let lg = 0;
-  try { const pg = P(); for (let i = 1; i < n; i++) for (const l of pg.links) { const u = items[i - 1].id, v = items[i].id; if ((l.from === u && l.to === v) || (l.from === v && l.to === u)) { const t = linkText(l, pg); if (t) lg = Math.max(lg, measure(t, 11.5, false) + 10 + 16); } } } catch (_) { }
+  try { const pg = P(); for (let i = 1; i < n; i++) for (const l of pg.links) { const u = items[i - 1].id, v = items[i].id; if ((l.from === u && l.to === v) || (l.from === v && l.to === u)) { const w = linkLabelWidth(l, pg); if (w) lg = Math.max(lg, w + 16); } } } catch (_) { }
   const minGap = Math.min(Math.max(opt.minGap ?? 28, lg), Math.max(opt.minGap ?? 28, avail / n * 0.6)), cap = opt.cap ?? 210;
   for (const it of items) delete it._dy;
   /* 一行放不下（框宽会小于 72）：按网格折成多行，_dy 记录行内纵向偏移，由调用方定位 */
@@ -2090,8 +2097,7 @@ async function exportPPTX() {
           slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: S(Math.abs(z.x - a.x)), h: S(Math.abs(z.y - a.y)), flipH: z.x < a.x, flipV: z.y < a.y, line: ln });
         }
       }
-      const lab = linkText(l, p);
-      if (lab) { const lp = labelFor(l, p, pts, lab), w = measure(lab, 11.5) + 10; addT(slide, lab, { x: X(lp.x - w / 2), y: Y(lp.y - 9), w: S(w), h: S(18), fill: { color: hex(t.bg) }, color: c, fontFace: PPT_FONT, fontSize: PT(11.5), align: 'center', valign: 'middle', margin: 0, wrap: false }); }
+      for (const pill of linkPills(l, p)) { const w = measure(pill.text, 11.5) + 10; addT(slide, pill.text, { x: X(pill.pos.x - w / 2), y: Y(pill.pos.y - 9), w: S(w), h: S(18), fill: { color: hex(t.bg) }, color: c, fontFace: PPT_FONT, fontSize: PT(11.5), align: 'center', valign: 'middle', margin: 0, wrap: false }); }
     }
     cur = saved;
   }
@@ -2215,8 +2221,7 @@ async function exportVSDX() {
       const pts = linkPoints(l, p); if (!pts) continue;
       const K = LINK_KINDS[l.kind] || LINK_KINDS.plain;
       shapes.push(polyShape(pts, t.link[l.kind], K, l.dir, linkOps(routesFor(p).get(l.id))));
-      const lab = linkText(l, p);
-      if (lab) { const lp = labelFor(l, p, pts, lab), w = measure(lab, 11.5) + 10; shapes.push(box(lp.x - w / 2, lp.y - 9, w, 18, { fill: t.bg, text: lab, size: 11.5, color: t.link[l.kind] })); }
+      for (const pill of linkPills(l, p)) { const w = measure(pill.text, 11.5) + 10; shapes.push(box(pill.pos.x - w / 2, pill.pos.y - 9, w, 18, { fill: t.bg, text: pill.text, size: 11.5, color: t.link[l.kind] })); }
     }
     pageXml.push({ name: p.name, PW, PH, xml: `<?xml version='1.0' encoding='utf-8' ?>\n<PageContents xmlns='${NS}' xmlns:r='${RNS}' xml:space='preserve'><Shapes>${shapes.join('')}</Shapes></PageContents>` });
     pageRels.push(rels);
