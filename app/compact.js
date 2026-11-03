@@ -198,7 +198,7 @@
   }
   /* 分层图：层之外、超出版心的顶层元素（说明、图片、旁注等）→ 排到层下方，按版心宽度折行 */
   function fitBelow(p, X, W, skip) {
-    const tops = p.nodes.filter(n => !n.parent && n.type !== 'band' && !skip.includes(n) && n.role !== 'title' && n.role !== 'subtitle');
+    const tops = p.nodes.filter(n => !n.parent && n.type !== 'band' && !(contRow(n) && contRow(n).layout === 'inset') && !skip.includes(n) && n.role !== 'title' && n.role !== 'subtitle');
     const bandsB = Math.max(...p.nodes.filter(n => n.type === 'band' && !n.parent).map(b => b.y + b.h));
     if (!tops.some(n => n.x < X - 2 || n.x + n.w > X + W + 2)) return;
     /* 只挪动超出版心的元素：排在现有内容（层、说明、图例、标题栏）下方 */
@@ -217,7 +217,7 @@
   }
   /* 无分层的自由图（流程图等）：整体按比例收进版心宽，框宽同比缩小、文字自动折行，行距随框高顺延 */
   function fitFree(p, W) {
-    const items = p.nodes.filter(n => !n.parent && n.type !== 'band' && !n.role && n.type !== 'legend' && n.type !== 'note' && n.type !== 'tblock');
+    const items = p.nodes.filter(n => !n.parent && n.type !== 'band' && !(contRow(n) && contRow(n).layout === 'inset') && !n.role && n.type !== 'legend' && n.type !== 'note' && n.type !== 'tblock');
     if (!items.length) return;
     const x0 = Math.min(...items.map(n => n.x)), x1 = Math.max(...items.map(n => n.x + n.w)), W0 = x1 - x0;
     if (W0 > W + 2) {
@@ -311,11 +311,13 @@
         shiftBelow(p, free, oldBottom, bottom, [title, sub, note, leg]);
         if (c.mode === 'report') fitBelow(p, X, W, [title, sub]);
       } else {
+        p.nodes.filter(n => !n.parent && contRow(n) && contRow(n).layout === 'inset').forEach(n => layoutInset(n, p));
         const tops = order(p.nodes.filter(n => !n.parent && (n.type === 'lane' || n.type === 'group')));
         for (const t of tops) {
           if (t.type === 'lane') { if (c.mode === 'report') t.w = targetW(c); layoutLaneC(t, p); }
           else { const s = groupNatural(t, c.mode === 'report' ? targetW(c) : 2400, p); placeGroup(t, t.x, t.y, s.w, s.h, s.flow, p); }
         }
+        p.nodes.filter(n => !n.parent && contRow(n) && (contRow(n).layout === 'tile' || contRow(n).layout === 'margin' || (contRow(n).layout === 'stack' && contRow(n).stack === 'all') || (contRow(n).layout === 'flow' && n.type !== 'group'))).forEach(n => layoutCont(n, p, { fitTitle: true }));
         tidyFree(p);
         if (c.mode === 'report') fitFree(p, targetW(c));
       }

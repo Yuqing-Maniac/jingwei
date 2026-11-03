@@ -240,6 +240,93 @@ def main():
         check('vsdx band title on top slab', vb and abs(vb['rx'] - 1) < 1e-4 and abs(vb['ry'] - 34 / 180) < 1e-4 and vb['sameX'] is True, str(vb))
         vl = office['vsdLane']
         check('vsdx lane title on left slab', vl['n'] == 2 and abs(vl['rx'] - 96 / 900) < 1e-4 and abs(vl['ry'] - 1) < 1e-4 and vl['sameY'] is True, str(vl))
+
+        rows = pg.evaluate("""() => {
+          openSecs.add('容器与层级');
+          renderPalette();
+          const labels = [...document.querySelectorAll('#palette .pitem span')].map(s => s.textContent);
+          const frame = (type, w, h) => contFrame(mkNode({ type, text: type, x: 0, y: 0, w, h }));
+          const bound = frame('bound', 1100, 480);
+          const sect = frame('sect', 300, 180);
+          const aside = frame('aside', 160, 220);
+          const phase = frame('phase', 220, 300);
+          const deck = frame('deck', 200, 280);
+          const boundSvg = nodeSVG(mkNode({ type: 'bound', text: '系统边界', x: 0, y: 0, w: 1100, h: 480 }), P(), true);
+          const asideSvg = nodeSVG(mkNode({ type: 'aside', text: '旁注', x: 0, y: 0, w: 160, h: 220 }), P(), true);
+          const line = asideSvg.match(/<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"/);
+          const host = mkNode({ type: 'bound', text: '系统边界', x: 100, y: 80, w: 1100, h: 480 });
+          const band = mkNode({ type: 'band', text: '分组', x: 150, y: 120, w: 800, h: 180 });
+          const sectA = mkNode({ type: 'sect', text: '甲区', x: 0, y: 0, w: 300, h: 180 });
+          const sectB = mkNode({ type: 'sect', text: '乙区', x: 20, y: 20, w: 80, h: 40 });
+          const gIn = mkNode({ type: 'group', text: '内嵌', x: 30, y: 30, w: 100, h: 60 });
+          loadDoc({
+            name: '新容器', theme: 'report', custom: {},
+            statusLabels: { base: '延续', new: '本步新增／重构', key: '重点关注' },
+            pages: { root: { id: 'root', name: '总图', nodes: [host, band, sectA, sectB, gIn], links: [] } }
+          });
+          const pick = t => P().nodes.find(n => n.text === t);
+          const parentOfBand = findParent(pick('分组'));
+          const parentOfSect = findParent(pick('乙区'));
+          const parentOfGroup = findParent(pick('内嵌'));
+          const b0 = pick('分组');
+          b0.parent = host.id;
+          layoutInset(host, P());
+          const phaseN = mkNode({ type: 'phase', text: '阶段', x: 0, y: 0, w: 220, h: 300 });
+          const step = mkNode({ type: 'rect', text: '步骤', parent: phaseN.id, x: 10, y: 40, w: 80, h: 36 });
+          P().nodes.push(phaseN, step);
+          layoutTile(phaseN);
+          const inset = { x: b0.x, y: b0.y, w: b0.w, hostX: host.x, hostY: host.y };
+          const stepBox = { x: step.x, y: step.y, w: step.w };
+          beautify();
+          const held = { x: host.x, y: host.y };
+          const docOf = nodes => ({ name: '参照', pages: { root: { id: 'root', name: '总图', nodes, links: [] } } });
+          const g = mkNode({ type: 'group', text: '子系统', x: 0, y: 0, w: 360, h: 110 });
+          const deckN = mkNode({ type: 'deck', text: '处理叠层', x: 0, y: 0, w: 200, h: 280 });
+          const kid = mkNode({ type: 'rect', text: '步骤甲', parent: deckN.id, x: 8, y: 8, w: 80, h: 36 });
+          const bound2 = mkNode({ type: 'bound', text: '系统边界', x: 0, y: 0, w: 1100, h: 480 });
+          const inner = mkNode({ type: 'band', text: '内部分组', parent: bound2.id, x: 40, y: 40, w: 900, h: 180 });
+          const et = ['bound', 'sect', 'aside', 'phase', 'deck'].map(type => {
+            const n = mkNode({ type, text: type, x: 0, y: 0, w: 100, h: 100 });
+            return { type, ov: Std.defaultEtype(n, P(), 'OV-2'), biz: Std.defaultEtype(n, P(), 'BIZ'), el: Std.isElement(n, P(), 'BIZ') };
+          });
+          return {
+            labels, bound: bound.title, boundContent: bound.content, boundDash: /stroke-dasharray="6 4"/.test(boundSvg),
+            sect: sect.title, aside: aside.title, asideLine: line ? line.slice(1).map(Number) : null,
+            phase: phase.title, deck: deck.title,
+            parentOfBand, hostId: host.id, parentOfSect, parentOfGroup, sectAId: sectA.id,
+            inset, held, step: stepBox,
+            dGroup: RefGen.toDialect(RefGen.skeleton(docOf([g]), 'root')),
+            dDeck: RefGen.toDialect(RefGen.skeleton(docOf([deckN, kid]), 'root')),
+            dBound: RefGen.toDialect(RefGen.skeleton(docOf([bound2, inner]), 'root')),
+            et, groupEt: Std.defaultEtype(g, P(), 'OV-2')
+          };
+        }""")
+        want = ['边界', '分区', '旁注', '阶段列', '叠层']
+        check('palette rows', all(n in rows['labels'] for n in want) and '簇' not in rows['labels'] and '协同簇' not in rows['labels'], str(rows['labels']))
+        bd, bc = rows['bound'], rows['boundContent']
+        check('bound top slab', bd['x'] == 0 and bd['y'] == 0 and bd['w'] == 1100 and bd['h'] == 22 and rows['boundDash'] is True, str(bd))
+        check('bound content', bc['x'] == 0 and bc['y'] == 22 and bc['w'] == 1100 and bc['h'] == 458, str(bc))
+        sc = rows['sect']
+        check('sect bottom slab', sc['x'] == 0 and sc['y'] == 154 and sc['w'] == 300 and sc['h'] == 26, str(sc))
+        ad = rows['aside']
+        check('aside right slab', ad['x'] == 132 and ad['y'] == 0 and ad['w'] == 28 and ad['h'] == 220, str(ad))
+        check('aside separator', rows['asideLine'] == [132, 6, 132, 214], str(rows['asideLine']))
+        ph = rows['phase']
+        check('phase top slab', ph['x'] == 0 and ph['y'] == 0 and ph['w'] == 220 and ph['h'] == 26, str(ph))
+        dk = rows['deck']
+        check('deck bottom slab', dk['x'] == 0 and dk['y'] == 254 and dk['w'] == 200 and dk['h'] == 26, str(dk))
+        check('band parents to bound', rows['parentOfBand'] == rows['hostId'], str(rows['parentOfBand']))
+        check('sections do not nest', rows['parentOfSect'] is None, str(rows['parentOfSect']))
+        check('group can sit in section', rows['parentOfGroup'] == rows['sectAId'], str(rows['parentOfGroup']))
+        ins = rows['inset']
+        check('inset keeps the frame', ins['hostX'] == 100 and ins['hostY'] == 80 and ins['x'] == 100 and ins['y'] == 120 and ins['w'] == 1100, str(ins))
+        check('beautify leaves the boundary', rows['held']['x'] == 100 and rows['held']['y'] == 80, str(rows['held']))
+        st = rows['step']
+        check('phase stacks the step', st['x'] == 0 and st['y'] == 28 and st['w'] == 220, str(st))
+        check('group still a dialect band', rows['dGroup'].split('\n')[0] == '## 子系统', rows['dGroup'][:80])
+        check('deck is not a dialect band', '## 处理叠层' not in rows['dDeck'] and '处理叠层' in rows['dDeck'], rows['dDeck'][:120])
+        check('bound flattens to the inner band', '## 内部分组' in rows['dBound'] and '## 系统边界' not in rows['dBound'], rows['dBound'][:120])
+        check('new types have no element type', all(e['ov'] is None and e['biz'] is None and e['el'] is False for e in rows['et']) and rows['groupEt'] == 'op_node', str(rows['et']) + ' group=' + str(rows['groupEt']))
         check('no page errors', not errs, ' '.join(errs)[:400])
         browser.close()
     if fails:

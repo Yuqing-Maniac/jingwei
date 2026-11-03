@@ -171,6 +171,7 @@
   /* ---------- element model ---------- */
   function defaultEtype(n, p, v = viewOf(p)) {
     if (!v || NON_EL.includes(n.type)) return null;
+    if (contRow(n) && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group') return null;
     if (familyOf(v) === 'it') return itEtype(n, p, v);
     if (n.type === 'band') return null;
     if (n.type === 'lane') return { 'OV-2': 'performer', 'OV-5b': 'performer', 'SV-4': 'system' }[v] || null;
@@ -189,7 +190,7 @@
     if (!v) return false;
     /* 流程起止符（椭圆／起止框，说明为“起止”或文字为开始／结束）不是体系元素 */
     if ((n.attrs && /起止/.test(n.attrs.desc || '')) || (['ellipse', 'terminator', 'round'].includes(n.type) && /^(开始|结束|起点|终点)$/.test((n.text || '').trim()))) return false;
-    if (n.type === 'band' || n.type === 'lane' || n.type === 'group') return !!defaultEtype(n, p, v);
+    if (isCont(n)) return !!defaultEtype(n, p, v);
     return true;
   }
   /* top-to-bottom, left-to-right by centre; centres within 20 px vertically form one row */
