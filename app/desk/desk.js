@@ -153,23 +153,41 @@
       <button class="card" data-a="text">${SVG.text}<b>文字成图</b><span>粘贴文字或 Markdown，自动成图</span></button>
       <button class="card" data-a="conv">${SVG.conv}<b>格式转换</b><span>Visio 转 PPT，字号原样还原</span></button>
       <button class="card" data-a="demo">${SVG.demo}<b>打开示例</b><span>边海防无人化巡逻体系</span></button>
-    </div><h2>最近打开</h2><div class="recent" id="jw-recent"></div></div></div>`);
+    </div><div class="hist" id="jw-hist" hidden><h2>最近工程</h2><div class="recent" id="jw-recent"></div></div></div></div>`);
   document.body.appendChild(S);
   const w2 = wc(); S.querySelector('.bar').appendChild(w2); bindWc(w2);
-  const fmtT = t => { const d = new Date(t), n = new Date(), p = x => String(x).padStart(2, '0'); return d.toDateString() === n.toDateString() ? `今天 ${p(d.getHours())}:${p(d.getMinutes())}` : `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
   const KIND = { json: ['织图', '#2f7cf6', '#fff'], pptx: ['PPT', '#d2603a', '#fff'], vsdx: ['VSD', '#3a5fc8', '#fff'], drawio: ['DIO', '#f08705', '#fff'], xml: ['XML', '#6b7a90', '#fff'] };
   async function fillRecent() {
-    const box = $('#jw-recent'); let list = [];
+    const wrap = $('#jw-hist'), box = $('#jw-recent'); let list = [];
     try { list = await D.recent(); } catch (_) { }
-    if (!list.length) { box.innerHTML = '<div class="empty">还没有最近文件。保存或打开过的文件会显示在这里。</div>'; return; }
-    box.innerHTML = '';
-    for (const it of list.slice(0, 8)) {
+    if (!wrap || !box) return;
+    if (!list || !list.length) { wrap.hidden = true; box.innerHTML = ''; return; }
+    wrap.hidden = false; box.innerHTML = '';
+    for (const it of list.slice(0, 12)) {
       const ext = (it.name.match(/\.([^.]+)$/) || [, ''])[1].toLowerCase(), k = KIND[ext] || KIND.xml;
-      const row = h(`<div class="ri" tabindex="0"><div class="ic" style="background:${k[1]};color:${k[2]}">${k[0]}</div><div style="min-width:0"><div class="nm"></div><div class="dir"></div></div><div class="tm">${fmtT(it.t)}</div><button class="rm" title="从列表移除">×</button></div>`);
-      row.querySelector('.nm').textContent = it.name.replace(/\.jingwei\.json$/i, ''); row.querySelector('.dir').textContent = it.dir;
+      const shown = it.name.replace(/\.jingwei\.json$/i, '');
+      const row = h(`<div class="ri" tabindex="0"><div class="ic" style="background:${k[1]};color:${k[2]}">${k[0]}</div><div class="meta"><div class="nm" title="单击改名"></div><div class="dir"></div></div><div class="tm"></div><button class="rm" title="从列表移除">×</button></div>`);
+      row.querySelector('.nm').textContent = shown;
+      row.querySelector('.dir').textContent = it.path;
+      row.querySelector('.tm').textContent = fmtWhen(it.t);
       row.title = it.path;
-      row.addEventListener('click', e => { if (e.target.closest('.rm')) { e.stopPropagation(); D.recentRemove(it.path).then(fillRecent); return; } openPath(it.path); });
-      row.addEventListener('keydown', e => { if (e.key === 'Enter') openPath(it.path); });
+      row.addEventListener('click', e => {
+        if (e.target.closest('.rm')) { e.stopPropagation(); D.recentRemove(it.path).then(fillRecent); return; }
+        if (e.target.closest('.nm') || e.target.closest('input')) return;
+        openPath(it.path);
+      });
+      row.querySelector('.nm').addEventListener('click', e => {
+        e.stopPropagation();
+        editInline(e.currentTarget, shown, async name => {
+          if (!name) { fillRecent(); return; }
+          let r = null;
+          try { r = await D.rename(it.path, name); } catch (err) { toast('改名失败：' + (err && err.message || err)); fillRecent(); return; }
+          if (!r || r.error) { toast(r && r.error || '改名失败'); fillRecent(); return; }
+          if (curPath === it.path) { curPath = r.path; upd(); }
+          fillRecent();
+        });
+      });
+      row.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.target.closest('input')) openPath(it.path); });
       box.appendChild(row);
     }
   }

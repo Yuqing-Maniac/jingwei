@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('jwDesk', {
   openDialog: () => ipcRenderer.invoke('jw:open-dialog'),
   recent: () => ipcRenderer.invoke('jw:recent'),
   recentRemove: p => ipcRenderer.invoke('jw:recent-remove', p),
+  rename: (p, name) => ipcRenderer.invoke('jw:rename', p, name),
   pending: () => ipcRenderer.invoke('jw:pending'),
   info: () => ipcRenderer.invoke('jw:info'),
   confirmClose: name => ipcRenderer.invoke('jw:confirm-close', name),
