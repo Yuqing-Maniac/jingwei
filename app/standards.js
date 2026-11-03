@@ -490,7 +490,7 @@
       on('#std-num', 'click', () => doNumber(p, false));
       on('#std-renum', 'click', () => doNumber(p, true));
       on('#std-check', 'click', openCheck);
-      on('#std-tb', 'click', () => { checkpoint(); const had = p.nodes.some(n => n.type === 'tblock'); const tb = placeTblock(p); sel = new Set([tb.id]); selLink = null; render(); toast(had ? '标题栏已更新到图面右下方' : '已插入标题栏'); });
+      on('#std-tb', 'click', () => { checkpoint(); const had = p.nodes.some(n => n.type === 'tblock'); const tb = placeTblock(p); selectNodes([tb.id]); render(); toast(had ? '标题栏已更新到图面右下方' : '已插入标题栏'); });
       on('#std-xlsx', 'click', exportXlsx);
       const m = ensureMeta();
       for (const [k] of META_KEYS) { on('#std-m-' + k, 'input', e => { m[k] = e.target.value; live(); }); on('#std-m-' + k, 'change', e => { m[k] = e.target.value; live(); }); }
@@ -587,10 +587,10 @@
   function locate(it) {
     closeCheck();
     if (cur !== it.pageId) { P().cam = { ...view }; stack = pathTo(it.pageId); cur = it.pageId; }
-    const p = P(); sel = new Set(); selLink = null;
+    const p = P(); clearSel();
     let bx = null;
-    if (it.nodeId) { const n = nodeById(it.nodeId, p); if (n) { sel = new Set([n.id]); bx = { x: n.x, y: n.y, w: n.w, h: n.h }; } }
-    else if (it.linkId) { const l = p.links.find(x => x.id === it.linkId); const pts = l && linkPoints(l, p); if (pts) { selLink = l.id; const xs = pts.map(q => q.x), ys = pts.map(q => q.y); bx = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; } }
+    if (it.nodeId) { const n = nodeById(it.nodeId, p); if (n) { selectNodes([n.id]); bx = { x: n.x, y: n.y, w: n.w, h: n.h }; } }
+    else if (it.linkId) { const l = p.links.find(x => x.id === it.linkId); const pts = l && linkPoints(l, p); if (pts) { selectLinks([l.id]); const xs = pts.map(q => q.x), ys = pts.map(q => q.y); bx = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; } }
     render();
     if (!bx) { fit(); return; }
     const r = svg.getBoundingClientRect(), k = clamp(Math.min(r.width / (bx.w + 320), r.height / (bx.h + 240)), 0.3, 1.2);

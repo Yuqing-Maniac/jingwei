@@ -135,7 +135,7 @@ function iconName(key) {
 
 /* ---------- document model ---------- */
 let doc, cur = 'root', stack = ['root'];
-let sel = new Set(), selLink = null, hoverId = null, hoverLink = null;
+let sel = new Set(), linkSel = new Set(), hoverId = null, hoverLink = null;
 let undoS = [], redoS = [];
 const P = () => doc.pages[cur];
 const T = () => THEMES[doc.theme] || THEMES.report;
@@ -145,10 +145,30 @@ function descendants(id, p = P(), acc = []) { for (const k of kids(id, p)) { acc
 function mkNode(o) {
   return Object.assign({ id: uid(), type: 'rect', x: 0, y: 0, w: 120, h: 40, text: '', status: 'base', parent: null, size: 13, bold: false, align: 'center', icon: null, noBox: false, sub: null }, o);
 }
+function selectNodes(ids) {
+  const next = new Set();
+  for (let i = 0; i < ids.length; i++) if (ids[i]) next.add(ids[i]);
+  sel = next;
+  linkSel = new Set();
+}
+function selectLinks(ids) {
+  const next = new Set();
+  for (let i = 0; i < ids.length; i++) if (ids[i]) next.add(ids[i]);
+  linkSel = next;
+  sel = new Set();
+}
+function clearSel() {
+  sel = new Set();
+  linkSel = new Set();
+}
+function onlyLinkId() {
+  if (linkSel.size !== 1) return null;
+  return [...linkSel][0];
+}
 function newPage(name) { const id = 'p' + uid(); doc.pages[id] = { id, name, nodes: [], links: [], view: null }; return id; }
 function snapshot() { return JSON.stringify({ doc, cur, stack }); }
 function checkpoint() { undoS.push(snapshot()); if (undoS.length > 120) undoS.shift(); redoS = []; }
-function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; sel.clear(); selLink = null; if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
+function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; clearSel(); if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
 function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); }
 
@@ -677,7 +697,7 @@ const DIR_NAME = { one: '单向', both: '双向', none: '无' };
 const F2_PHRASE = 'F2 编辑文字';
 const PILL_IN = 28;
 function linkDir(l) { return DIR_NEXT[l.dir] ? l.dir : 'one'; }
-function cycleLinkDir(l) { l.dir = DIR_NEXT[linkDir(l)]; }
+function cycleLinkDir(l) { setLinkDir(l, DIR_NEXT[linkDir(l)]); }
 function setLinkDir(l, dir) { if (!DIR_NAME[dir]) return; l.dir = dir; }
 function setLabelBack(l, raw) {
   const t = String(raw || '');
@@ -708,6 +728,26 @@ const LINK_KEYS = [
 ];
 function linkSelToast() {
   return LINK_KEYS.filter(function (k) { return k.hint; }).map(function (k) { return k.hint; }).concat([F2_PHRASE]).join(' · ');
+}
+function applyLinkChord(links, bind, e) {
+  if (!links.length) return;
+  if (bind.id === 'kind') {
+    const knd = Object.keys(LINK_KINDS)[+e.key - 1];
+    if (!knd) return;
+    links.forEach(l => { l.kind = knd; });
+    doc.lastKind = knd;
+    toast('链路类型：' + LINK_KINDS[knd].name);
+    return;
+  }
+  if (bind.id === 'dir') {
+    links.forEach(cycleLinkDir);
+    toast('箭头：' + DIR_NAME[linkDir(links[0])]);
+    return;
+  }
+  if (bind.id === 'turn') {
+    links.forEach(swapLink);
+    toast('已调换方向');
+  }
 }
 function polyLen(pts) {
   let n = 0;
@@ -856,10 +896,10 @@ function applyView() {
 function overlaySVG() {
   const A = '#2F80ED'; let s = '';
   const p = P();
-  if (selLink) {
-    const l = p.links.find(x => x.id === selLink); const pts = l && linkPoints(l);
+  linkSel.forEach(id => {
+    const l = p.links.find(x => x.id === id); const pts = l && linkPoints(l);
     if (pts) s += `<path d="M${pts.map(q => q.x + ',' + q.y).join(' L')}" fill="none" stroke="${A}" stroke-opacity=".35" stroke-width="7" pointer-events="none"/>`;
-  }
+  });
   for (const id of sel) {
     const n = nodeById(id); if (!n) continue;
     s += `<rect x="${n.x - 3}" y="${n.y - 3}" width="${n.w + 6}" height="${n.h + 6}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
@@ -889,7 +929,7 @@ function render(full = true) {
 }
 let linkNoted;
 function noteLinkSelection() {
-  const id = selLink || null;
+  const id = onlyLinkId();
   if (id === linkNoted) return;
   linkNoted = id;
   if (id) toast(linkSelToast());
@@ -1414,7 +1454,7 @@ function addNode(spec, wx, wy) {
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
-  sel = new Set([n.id]); selLink = null; render();
+  selectNodes([n.id]); render();
 }
 
 /* ---------- 拖动磁吸：对齐其他图形的边／中线、画布中轴、父容器中线，等间距提示 ---------- */
@@ -1488,6 +1528,60 @@ function guidesSVG() {
     return '';
   }).join('');
 }
+function hitTarget(el) {
+  if (!el || !el.closest) return null;
+  const lk = el.closest('[data-link]');
+  if (lk && lk.dataset.link) return { kind: 'link', id: lk.dataset.link };
+  const nd = el.closest('[data-id]');
+  if (nd && nd.dataset.id) return { kind: 'node', id: nd.dataset.id };
+  return null;
+}
+function ensureCtx() {
+  let m = document.getElementById('ctx');
+  if (m) return m;
+  m = document.createElement('div');
+  m.id = 'ctx';
+  m.innerHTML = '<button type="button" id="ctx-same">选中同类</button>';
+  document.body.appendChild(m);
+  m.querySelector('#ctx-same').addEventListener('click', () => {
+    const hit = m._hit;
+    m.style.display = 'none';
+    if (hit) selectSame(hit);
+  });
+  return m;
+}
+function openSameMenu(hit, x, y) {
+  const keep = hit.kind === 'node' ? sel.has(hit.id) && sel.size > 1 : linkSel.has(hit.id) && linkSel.size > 1;
+  if (!keep) {
+    if (hit.kind === 'node') selectNodes([hit.id]);
+    else selectLinks([hit.id]);
+  }
+  const m = ensureCtx();
+  m._hit = hit;
+  m.style.left = x + 'px';
+  m.style.top = y + 'px';
+  m.style.display = 'block';
+  render();
+}
+function selectSame(anchor) {
+  const page = P();
+  if (!anchor) {
+    if (sel.size === 1 && !linkSel.size) anchor = { kind: 'node', id: [...sel][0] };
+    else if (onlyLinkId()) anchor = { kind: 'link', id: onlyLinkId() };
+    else { toast('请先选中一个元素或一条连线'); return; }
+  }
+  if (anchor.kind === 'node') {
+    const n = nodeById(anchor.id, page);
+    if (!n) return;
+    const ids = n.icon ? page.nodes.filter(x => x.icon === n.icon).map(x => x.id) : page.nodes.filter(x => x.type === n.type).map(x => x.id);
+    selectNodes(ids);
+  } else {
+    const l = page.links.find(x => x.id === anchor.id);
+    if (!l) return;
+    selectLinks(page.links.filter(x => x.kind === l.kind).map(x => x.id));
+  }
+  render();
+}
 /* ---------- pointer interaction ---------- */
 let spaceDown = false;
 let ui_drag = null;
@@ -1507,22 +1601,28 @@ svg.addEventListener('pointerdown', e => {
     window.__lastDown = { k: hitKey, t: nowT, x: e.clientX, y: e.clientY };
     if (hitKey && e.button === 0 && last && last.k === hitKey && nowT - last.t < 420 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 6) {
       window.__lastDown = null; ui_drag = null;
-      if (hitKey[0] === 'L') { const id = hitKey.slice(1); noteLinkHit(id, e.clientX, e.clientY); selLink = id; sel.clear(); focusLinkCaption(P().links.find(x => x.id === id)); }
-      else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { sel = new Set([n.id]); render(); setTimeout(() => startEdit(n), 0); } }
+      if (hitKey[0] === 'L') { const id = hitKey.slice(1); noteLinkHit(id, e.clientX, e.clientY); selectLinks([id]); focusLinkCaption(P().links.find(x => x.id === id)); }
+      else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { selectNodes([n.id]); render(); setTimeout(() => startEdit(n), 0); } }
       return;
     }
   }
+  if (e.button === 2) { const hit = hitTarget(t); if (hit) { openSameMenu(hit, e.clientX, e.clientY); return; } }
   if (e.button === 1 || spaceDown || e.button === 2) { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; return; }
   if (t.dataset.h) { const n = nodeById([...sel][0]); ui_drag = { mode: 'resize', h: t.dataset.h, n, o: { ...n }, w0: w, snap: snapshot(), moved: false, kidsO: descendants(n.id).map(d => ({ d, x: d.x, y: d.y })) }; return; }
   if (t.dataset.port) { const n = nodeById(t.dataset.port); ui_drag = { mode: 'link', from: n.id }; ui.temp = { x0: n.x + n.w / 2, y0: n.y + n.h / 2, x1: w.x, y1: w.y }; renderOverlay(); toast('拖到目标节点松开完成，Esc 取消'); return; }
   const lk = t.closest && t.closest('[data-link]');
-  if (lk) { noteLinkHit(lk.dataset.link, e.clientX, e.clientY); selLink = lk.dataset.link; sel.clear(); render(); ui_drag = null; return; }
+  if (lk) { noteLinkHit(lk.dataset.link, e.clientX, e.clientY); selectLinks([lk.dataset.link]); render(); ui_drag = null; return; }
   const g = t.closest && t.closest('[data-id]');
   if (g) {
     const id = g.dataset.id;
-    if (e.shiftKey || e.ctrlKey || e.metaKey) { sel.has(id) ? sel.delete(id) : sel.add(id); }
-    else if (!sel.has(id)) sel = new Set([id]);
-    selLink = null;
+    let ids;
+    if (e.shiftKey || e.ctrlKey || e.metaKey) {
+      ids = [...sel];
+      const at = ids.indexOf(id);
+      if (at >= 0) ids.splice(at, 1); else ids.push(id);
+    } else if (sel.has(id) && !linkSel.size) ids = [...sel];
+    else ids = [id];
+    selectNodes(ids);
     const set = new Map();
     for (const sid of sel) { const n = nodeById(sid); if (!n) continue; set.set(n.id, n); for (const d of descendants(n.id)) set.set(d.id, d); }
     ui_drag = { mode: 'move', w0: w, items: [...set.values()].map(n => ({ n, x: n.x, y: n.y })), snap: snapshot(), moved: false };
@@ -1530,7 +1630,11 @@ svg.addEventListener('pointerdown', e => {
     render(); return;
   }
   if (e.pointerType === 'touch') { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; }
-  else { if (!e.shiftKey) sel.clear(); selLink = null; ui_drag = { mode: 'marquee', base: new Set(sel) }; ui.marquee = { x0: w.x, y0: w.y, x1: w.x, y1: w.y }; }
+  else {
+    if (!e.shiftKey) clearSel();
+    else if (linkSel.size) selectNodes([...sel]);
+    ui_drag = { mode: 'marquee', base: new Set(sel) }; ui.marquee = { x0: w.x, y0: w.y, x1: w.x, y1: w.y };
+  }
   render();
 });
 svg.addEventListener('pointermove', e => {
@@ -1577,7 +1681,9 @@ svg.addEventListener('pointermove', e => {
   if (d.mode === 'marquee') {
     const m = ui.marquee; m.x1 = w.x; m.y1 = w.y;
     const x0 = Math.min(m.x0, m.x1), x1 = Math.max(m.x0, m.x1), y0 = Math.min(m.y0, m.y1), y1 = Math.max(m.y0, m.y1);
-    sel = new Set(d.base); for (const n of P().nodes) if (n.x >= x0 && n.y >= y0 && n.x + n.w <= x1 && n.y + n.h <= y1) sel.add(n.id);
+    const ids = [...d.base];
+    for (const n of P().nodes) if (n.x >= x0 && n.y >= y0 && n.x + n.w <= x1 && n.y + n.h <= y1 && ids.indexOf(n.id) < 0) ids.push(n.id);
+    selectNodes(ids);
     renderOverlay();
   }
 });
@@ -1592,7 +1698,7 @@ function endDrag(e) {
   if (d.mode === 'link') {
     const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
-    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selLink = l.id; sel.clear(); }
+    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selectLinks([l.id]); }
   }
   if (d.mode === 'marquee') ui.marquee = null;
   render();
@@ -1609,7 +1715,7 @@ svg.addEventListener('dblclick', e => {
   /* pointerdown re-renders the canvas, so the event target may be detached: hit-test again */
   const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
   e = { target: (hit && hit.closest) ? hit : e.target, clientX: e.clientX, clientY: e.clientY };
-  const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selLink = l.id; focusLinkCaption(l); return; }
+  const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selectLinks([l.id]); focusLinkCaption(l); return; }
   const g = e.target.closest('[data-id]'); if (!g) return;
   const n = nodeById(g.dataset.id); if (!n || n.type === 'legend' || n.type === 'tblock') return;
   startEdit(n);
@@ -1641,7 +1747,7 @@ $('#editor').addEventListener('blur', () => commitEdit());
 let clipboard = null;
 const SHORTCUTS = [
   ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
-  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
+  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
   ['复合图标', [['Ctrl+G', '把所选元素组合为一个复合图标'], ['Ctrl+Shift+U', '拆分复合图标'], ['Ctrl+Shift+B', '编队生成器（同型装备按阵型合成）']]],
@@ -1676,13 +1782,14 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if (closePanels()) return;
     if (ui_drag && ui_drag.mode === 'link') { ui_drag = null; ui.temp = null; render(); return; }
-    sel.clear(); selLink = null; render(); return;
+    clearSel(); render(); return;
   }
   if ($('#modal').style.display === 'flex' || $('#help').style.display === 'flex') return;
   if (document.getElementById('cb-dlg')?.style.display === 'flex') return;
   if (document.getElementById('std-dlg')?.style.display === 'flex') return;
   if (e.code === 'Space') { spaceDown = true; svg.style.cursor = 'grab'; e.preventDefault(); return; }
   if (ctrl && sh) {
+    if (k === 'a') return go(selectSame);
     if (k === 's') return go(saveProjectAs);
     if (k === 'f') return go(doBeautify);
     if (k === 'x') return go(doReduce);
@@ -1700,7 +1807,7 @@ document.addEventListener('keydown', e => {
     if (k === 'z') return go(undo);
     if (k === 'g') return go(() => window.Combo ? Combo.groupSelection() : toast('复合图标模块未加载'));
     if (k === 'y') return go(redo);
-    if (k === 'a') return go(() => { sel = new Set(P().nodes.map(n => n.id)); selLink = null; render(); });
+    if (k === 'a') return go(() => { selectNodes(P().nodes.map(n => n.id)); render(); });
     if (k === 'c') return copySel();
     if (k === 'v') return paste();
     if (k === 'd') return go(() => { copySel(); paste(); });
@@ -1714,11 +1821,21 @@ document.addEventListener('keydown', e => {
   }
   if (ctrl || e.altKey) return;
   if (e.key === 'Delete' || e.key === 'Backspace') return go(deleteSel);
-  if (e.key === 'F2') return go(() => { if (sel.size === 1) startEdit(nodeById([...sel][0])); else if (selLink) focusLinkCaption(P().links.find(x => x.id === selLink)); });
-  const l = selLink && P().links.find(x => x.id === selLink);
-  if (l) {
-    const linkBind = LINK_KEYS.filter(b => b.match(e))[0];
-    if (linkBind) return go(() => { checkpoint(); linkBind.apply(l, e); render(); });
+  if (e.key === 'F2') return go(() => {
+    if (sel.size === 1) startEdit(nodeById([...sel][0]));
+    else if (onlyLinkId()) focusLinkCaption(P().links.find(x => x.id === onlyLinkId()));
+  });
+  const linkBind = LINK_KEYS.filter(b => b.match(e))[0];
+  if (linkBind && linkSel.size) {
+    return go(() => {
+      const chosen = [];
+      linkSel.forEach(id => { const x = P().links.find(q => q.id === id); if (x) chosen.push(x); });
+      if (!chosen.length) return;
+      if (chosen.length === 1) { checkpoint(); linkBind.apply(chosen[0], e); render(); return; }
+      checkpoint();
+      applyLinkChord(chosen, linkBind, e);
+      render();
+    });
   }
   const ar = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
   if (ar && sel.size) {
@@ -1769,11 +1886,18 @@ function reduceCrossings(p = P()) {
 }
 function deleteSel() {
   const p = P();
-  if (selLink) { checkpoint(); p.links = p.links.filter(l => l.id !== selLink); selLink = null; render(); return; }
+  if (linkSel.size) {
+    checkpoint();
+    const drop = new Set(linkSel);
+    p.links = p.links.filter(l => !drop.has(l.id));
+    clearSel();
+    render();
+    return;
+  }
   if (!sel.size) return; checkpoint();
   const kill = new Set(); for (const id of sel) { kill.add(id); descendants(id).forEach(d => kill.add(d.id)); }
   p.nodes = p.nodes.filter(n => !kill.has(n.id)); p.links = p.links.filter(l => !kill.has(l.from) && !kill.has(l.to));
-  sel.clear(); render();
+  clearSel(); render();
 }
 function copySel() {
   if (!sel.size) return; const ids = new Set(); for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
@@ -1785,7 +1909,7 @@ function paste() {
   clipboard.nodes.forEach(n => map[n.id] = uid());
   const ns = clipboard.nodes.map(n => ({ ...n, id: map[n.id], parent: map[n.parent] || n.parent, x: n.x + 24, y: n.y + 24, sub: null }));
   P().nodes.push(...ns); P().links.push(...clipboard.links.map(l => ({ ...l, id: uid(), from: map[l.from], to: map[l.to] })));
-  sel = new Set(ns.filter(n => !map[clipboard.nodes.find(o => map[o.id] === n.id)?.parent]).map(n => n.id));
+  selectNodes(ns.filter(n => !map[clipboard.nodes.find(o => map[o.id] === n.id)?.parent]).map(n => n.id));
   clipboard = { nodes: ns.map(n => ({ ...n })), links: [] };
   render();
 }
@@ -1801,10 +1925,10 @@ function enterSub(id) {
     ['组成单元一', '组成单元二', '组成单元三'].forEach((t, i) => sp.nodes.push(mkNode({ type: 'round', text: t, parent: b.id, x: 100 + i * 200, y: 40 })));
     beautify(sp);
   }
-  P().cam = { ...view }; stack.push(n.sub); cur = n.sub; sel.clear(); selLink = null;
+  P().cam = { ...view }; stack.push(n.sub); cur = n.sub; clearSel();
   render(); if (P().cam) { view = { ...P().cam }; applyView(); } else fit();
 }
-function goPage(i) { P().cam = { ...view }; stack = stack.slice(0, i + 1); cur = stack[i]; sel.clear(); selLink = null; render(); if (P().cam) { view = { ...P().cam }; applyView(); renderOverlay(); } else fit(); }
+function goPage(i) { P().cam = { ...view }; stack = stack.slice(0, i + 1); cur = stack[i]; clearSel(); render(); if (P().cam) { view = { ...P().cam }; applyView(); renderOverlay(); } else fit(); }
 function renderCrumb() {
   $('#crumb').innerHTML = stack.map((id, i) => i === stack.length - 1 ? `<span class="cur">${esc(doc.pages[id]?.name || '')}</span>` : `<button data-crumb="${i}">${esc(doc.pages[id]?.name || '')}</button><span style="color:var(--muted)">›</span>`).join('');
 }
@@ -1815,10 +1939,24 @@ const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map((
 const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
   ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate']]];
 function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
+function selectedLinks() {
+  const p = P(), out = [];
+  linkSel.forEach(id => { const l = p.links.find(x => x.id === id); if (l) out.push(l); });
+  return out;
+}
+function sameButton() {
+  if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
+  return '';
+}
 function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
-  if (selLink) {
-    const l = p.links.find(x => x.id === selLink); if (!l) { selLink = null; return renderProps(); }
+  const links = selectedLinks();
+  if (linkSel.size && !links.length) { clearSel(); return renderProps(); }
+  if (links.length > 1) {
+    h += `<h3>已选 ${links.length} 条连线</h3>`;
+    h += `<hr><button id="p-del" type="button" style="color:var(--danger)">删除连线</button>`;
+  } else if (links.length === 1) {
+    const l = links[0];
     const a = nodeById(l.from), b = nodeById(l.to), both = linkDir(l) === 'both';
     h += `<div class="hint">${linkPanelHint()}</div>`;
     h += `<h3>连线 <span class="tag">${esc((a?.text || '').split('\n')[0])} → ${esc((b?.text || '').split('\n')[0])}</span></h3>`;
@@ -1831,6 +1969,7 @@ function renderProps() {
     } else h += `<div class="row"><label>标签</label><input type="text" id="p-label" value="${esc(l.label)}" placeholder="如：数据链、MCP 调用"></div>`;
     h += `<div class="row"><label>走线</label>${seg('p-route', [['ortho', '直角'], ['straight', '直线']], l.route)}</div>`;
     if (window.Std) h += Std.propsHTML('link', l, p);
+    h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
   } else if (sel.size > 1) {
     h += `<h3>已选 ${sel.size} 个元素</h3><div class="hint">对齐与分布</div>`;
@@ -1839,7 +1978,7 @@ function renderProps() {
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
   } else if (sel.size === 1) {
-    const n = nodeById([...sel][0]); if (!n) { sel.clear(); return renderProps(); }
+    const n = nodeById([...sel][0]); if (!n) { clearSel(); return renderProps(); }
     h += `<h3>${TYPE_NAME[n.type] || '元素'}</h3>`;
     if (n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>${isCont(n) ? '标题' : '文字'}</label><textarea id="p-text" rows="2">${esc(n.text)}</textarea></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) h += `<div class="row"><label>形状</label><select id="p-type">${SHAPE_GROUPS.map(([g, ts]) => `<optgroup label="${g}">${ts.map(t => `<option value="${t}" ${t === n.type ? 'selected' : ''}>${TYPE_NAME[t]}</option>`).join('')}</optgroup>`).join('')}</select></div>`;
@@ -1859,6 +1998,7 @@ function renderProps() {
     }
     if (window.Std) h += Std.propsHTML('node', n, p);
     if (!['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)) h += `<hr><div class="hint">内部结构：双击进入后可继续画该系统的组成。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
+    h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
     const st = legendEntries(p);
@@ -1896,8 +2036,9 @@ function bindProps() {
   const el = $('#props');
   if (!el._jwSnap) { el._jwSnap = true; el.addEventListener('focusin', () => { propSnap = snapshot(); }); }
   el.onchange = () => { if (propSnap && propSnap !== snapshot()) { undoS.push(propSnap); redoS = []; if (typeof window.jwTouch === 'function') window.jwTouch(); } propSnap = snapshot(); };
+  const links = selectedLinks();
   const n = sel.size === 1 ? nodeById([...sel][0]) : null;
-  const l = selLink ? P().links.find(x => x.id === selLink) : null;
+  const l = links.length === 1 ? links[0] : null;
   const live = () => render(false);
   const on = (id, ev, fn) => { const x = $(id); if (x) x.addEventListener(ev, fn); };
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
@@ -1919,6 +2060,7 @@ function bindProps() {
   on('#p-cbedit', 'click', () => Combo.open(n));
   on('#p-form', 'click', () => Combo.open(n));
   on('#p-del', 'click', deleteSel);
+  on('#p-same', 'click', () => selectSame());
   on('#p-dir', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); setLinkDir(l, b.dataset.v); render(); });
   on('#p-swap', 'click', () => { checkpoint(); swapLink(l); render(); });
   on('#p-kind', 'change', e => { checkpoint(); l.kind = e.target.value; doc.lastKind = l.kind; render(); });
@@ -1931,8 +2073,8 @@ function bindProps() {
   on('#d-jump', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.jumpStyle = b.dataset.v; render(); });
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
   on('#d-snapon', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; try { localStorage.setItem('hongtu.snap', b.dataset.v); } catch (_) { } render(); });
-  if (window.Compact && !l && !n) Compact.bind($('#props'));
-  if (window.Std) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
+  if (window.Compact && !l && !n && !links.length) Compact.bind($('#props'));
+  if (window.Std && links.length < 2) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
   on('#d-ms', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.msColor = b.dataset.v; renderPalette(); render(); if ($('#modal').style.display === 'flex') renderPicker(); });
 }
 function setTheme(k) { checkpoint(); doc.theme = k; $('#b-theme').value = k; render(); }
@@ -2283,7 +2425,11 @@ function refreshDocTitle() {
 }
 
 /* ---------- header wiring ---------- */
-function closeMenus() { document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open')); }
+function closeMenus() {
+  document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open'));
+  const ctx = document.getElementById('ctx');
+  if (ctx) ctx.style.display = 'none';
+}
 $('#b-export').onclick = e => { e.stopPropagation(); $('#m-export').classList.toggle('open'); };
 document.addEventListener('click', e => { if (!e.target.closest('.menu')) closeMenus(); });
 $('#m-export .dd').addEventListener('click', async e => {
@@ -2375,4 +2521,4 @@ function friendlyErr(err) {
   return m;
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
-  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; sel.clear(); selLink = null; $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); }
+  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); }

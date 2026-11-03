@@ -1079,7 +1079,7 @@
     if (mode === 'replace') {
       const P0 = doc.pages[cur];
       P0.nodes = rootP.nodes; P0.links = rootP.links; P0.view = null; if (res.title) P0.name = res.title;
-      sel.clear(); selLink = null; render(); fit(); return;
+      clearSel(); render(); fit(); return;
     }
     if (mode === 'page') {
       const pg = doc.pages[cur];
@@ -1094,7 +1094,7 @@
         pg.nodes.push(host);
       }
       host.sub = rootP.id;
-      sel.clear(); selLink = null;
+      clearSel();
       enterSub(host.id); fit();
       return;
     }
@@ -1110,7 +1110,7 @@
       if (n.role === 'title' || n.role === 'subtitle' || (n.role === 'note' && hasNote) || (n.type === 'legend')) { if (pg.nodes.length) delete n.role; }
     }
     pg.nodes.push(...add); pg.links.push(...rootP.links);
-    sel = new Set(add.filter(n => !n.parent).map(n => n.id)); selLink = null;
+    selectNodes(add.filter(n => !n.parent).map(n => n.id));
     render(); fit();
   }
 

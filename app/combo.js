@@ -119,7 +119,7 @@
     const seen = new Set(); p.links = p.links.filter(l => { const k = l.from + '>' + l.to + '|' + l.kind; if (seen.has(k)) return false; seen.add(k); return true; });
     p.nodes = p.nodes.filter(n => !ids.has(n.id)); p.nodes.push(cn);
     cn.parent = findParent(cn);
-    sel = new Set([cn.id]); selLink = null; renderPalette(); render();
+    selectNodes([cn.id]); renderPalette(); render();
     toast(`已组合为复合图标：${label}（Ctrl+Shift+U 可拆分）`);
   }
 
@@ -146,7 +146,7 @@
     const p = P(); p.nodes = p.nodes.filter(x => x.id !== n.id); p.nodes.push(...out);
     /* links attach to the first member */
     for (const l of p.links) { if (l.from === n.id) l.from = out[0].id; if (l.to === n.id) l.to = out[0].id; }
-    sel = new Set(out.map(o => o.id)); render(); toast(`已拆分为 ${out.length} 个元素`);
+    selectNodes(out.map(o => o.id)); render(); toast(`已拆分为 ${out.length} 个元素`);
   }
 
   /* ---------- 2. formation dialog ---------- */
@@ -245,7 +245,7 @@
       const id = saveCombo(spec, name), sz = sizeFor(doc.custom[id].aspect);
       const r = svg.getBoundingClientRect(), c = clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
       const n = mkNode({ type: 'equip', icon: 'cu:' + id, text: name, size: 12, w: sz.w, h: sz.h, x: snapv(c.x - sz.w / 2), y: snapv(c.y - sz.h / 2) });
-      P().nodes.push(n); n.parent = findParent(n); sel = new Set([n.id]); selLink = null;
+      P().nodes.push(n); n.parent = findParent(n); selectNodes([n.id]);
     }
     close(); renderPalette(); render(); toast(editNode ? '编队已更新' : '已插入编队，可拖入任意层，也可连线');
   }
