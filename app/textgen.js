@@ -1075,10 +1075,12 @@
       loadDoc(d);
       return;
     }
-    subs.forEach(p => doc.pages[p.id] = p);
+    const bag = {};
+    subs.forEach(p => bag[p.id] = p);
     if (mode === 'replace') {
       const P0 = doc.pages[cur];
       P0.nodes = rootP.nodes; P0.links = rootP.links; P0.view = null; if (res.title) P0.name = res.title;
+      hangUnder(cur, bag);
       clearSel(); render(); fit(); return;
     }
     if (mode === 'page') {
@@ -1086,16 +1088,17 @@
       let host = sel.size === 1 ? nodeById([...sel][0]) : null;
       if (host && (isCont(host) || ['text', 'note', 'legend'].includes(host.type) || host.sub)) host = null;
       rootP.id = 'p' + uid(); rootP.name = res.title || '文字成图';
-      doc.pages[rootP.id] = rootP;
       if (!host) {
         const b = contentBBox(pg), label = res.title || '文字成图';
         const w = snapv(clamp(measure(label, 13, true) + 40, 140, 320));
         host = mkNode({ type: 'round', text: label, bold: true, x: snapv(pg.nodes.length ? b.x + b.w - w : 0), y: snapv(pg.nodes.length ? b.y + b.h + 32 : 0), w, h: 40 });
         pg.nodes.push(host);
       }
-      host.sub = rootP.id;
+      bag[rootP.id] = rootP;
+      hangPages(bag, rootP.id, cur);
+      setDoor(host, rootP.id);
       clearSel();
-      enterSub(host.id); fit();
+      showPage(rootP.id);
       return;
     }
     /* add to current page, below existing content */
@@ -1110,6 +1113,7 @@
       if (n.role === 'title' || n.role === 'subtitle' || (n.role === 'note' && hasNote) || (n.type === 'legend')) { if (pg.nodes.length) delete n.role; }
     }
     pg.nodes.push(...add); pg.links.push(...rootP.links);
+    hangUnder(cur, bag);
     selectNodes(add.filter(n => !n.parent).map(n => n.id));
     render(); fit();
   }

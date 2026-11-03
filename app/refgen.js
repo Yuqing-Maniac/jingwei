@@ -357,7 +357,28 @@
     q('#rg-src').value = selId || 'cur';
     pickSource();
   }
-  function pagesOf(d) { const out = [], seen = new Set(); const walk = (id, dep) => { const p = d.pages[id]; if (!p || seen.has(id)) return; seen.add(id); out.push({ p, dep }); for (const n of p.nodes) if (n.sub) walk(n.sub, dep + 1); }; walk(d.pages.root ? 'root' : Object.keys(d.pages)[0], 0); for (const p of Object.values(d.pages)) if (!seen.has(p.id)) out.push({ p, dep: 0 }); return out; }
+  function pagesOf(d) {
+    const out = [], seen = new Set();
+    if (!d || !d.pages) return out;
+    if (d.pages.root) adoptPages(d);
+    const by = pagesByUp(d);
+    const walk = (id, dep) => {
+      const p = d.pages[id];
+      if (!p || seen.has(id)) return;
+      seen.add(id);
+      out.push({ p, dep });
+      const kids = by.get(id) || [];
+      for (let i = 0; i < kids.length; i++) walk(kids[i].id, dep + 1);
+    };
+    const tops = by.get(null) || [];
+    for (let i = 0; i < tops.length; i++) walk(tops[i].id, 0);
+    if (!tops.length) {
+      const start = d.pages.root ? 'root' : Object.keys(d.pages)[0];
+      if (start) walk(start, 0);
+    }
+    for (const p of Object.values(d.pages)) if (p && !seen.has(p.id)) out.push({ p, dep: 0 });
+    return out;
+  }
   function pickSource() {
     const s = sources().find(x => x.id === q('#rg-src').value) || sources()[0];
     try { refDoc = s.get(); } catch (e) { console.error(e); msg('参照加载失败：' + (e.message || e), true); return; }

@@ -1966,8 +1966,11 @@ function deleteSel() {
   }
   if (!sel.size) return; checkpoint();
   const kill = new Set(); for (const id of sel) { kill.add(id); descendants(id).forEach(d => kill.add(d.id)); }
+  let door = false;
+  for (const n of p.nodes) if (kill.has(n.id) && n.sub && doc.pages[n.sub]) door = true;
   p.nodes = p.nodes.filter(n => !kill.has(n.id)); p.links = p.links.filter(l => !kill.has(l.from) && !kill.has(l.to));
   clearSel(); render();
+  if (door) toast('内部结构页还在，可从「子页」进入');
 }
 function copySel() {
   if (!sel.size) return; const ids = new Set(); for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
@@ -2265,10 +2268,69 @@ function enterSub(nodeId) {
   }
   showPage(n.sub);
 }
-function renderCrumb() {
-  $('#crumb').innerHTML = stack.map((id, i) => i === stack.length - 1 ? `<span class="cur">${esc(doc.pages[id]?.name || '')}</span>` : `<button data-crumb="${i}">${esc(doc.pages[id]?.name || '')}</button><span style="color:var(--muted)">›</span>`).join('');
+function deletePage(id) {
+  if (id === 'root' || !doc.pages[id]) return;
+  checkpoint();
+  const kill = new Set();
+  const pile = [id];
+  while (pile.length) {
+    const pid = pile.pop();
+    if (kill.has(pid) || !doc.pages[pid]) continue;
+    kill.add(pid);
+    const kids = childPages(pid);
+    for (let i = 0; i < kids.length; i++) pile.push(kids[i].id);
+  }
+  const group = doc.pages[id].up;
+  const dest = group || 'root';
+  const leaving = kill.has(cur);
+  kill.forEach(pid => { delete doc.pages[pid]; });
+  clearDoors(kill);
+  renumber(group);
+  if (!leaving) { render(); return; }
+  /* 不走 showPage：被删的页已经不在，不能把离开前的视口写进去。 */
+  cur = dest;
+  stack = pathOf(dest);
+  clearSel();
+  const page = doc.pages[dest];
+  const cam = page && page.cam;
+  if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
+  else view = fitView(page);
+  render();
 }
-$('#crumb').addEventListener('click', e => { const b = e.target.closest('[data-crumb]'); if (b) goPage(+b.dataset.crumb); });
+function renderCrumb() {
+  const by = pagesByUp(doc);
+  const path = pathOf(cur);
+  const here = doc.pages[cur];
+  const sibs = by.get(here ? here.up : null) || [];
+  const kids = by.get(cur) || [];
+  const chip = (p) => `<button type="button" data-page="${esc(p.id)}" class="${p.id === cur ? 'on' : ''}">${esc(p.name || '未命名')}</button>`;
+  let h = '';
+  if (path.length > 1) {
+    const bits = [];
+    for (let i = 0; i < path.length; i++) {
+      const name = esc((doc.pages[path[i]] && doc.pages[path[i]].name) || '');
+      if (i === path.length - 1) bits.push(`<span class="cur">${name}</span>`);
+      else bits.push(`<button type="button" data-crumb="${i}">${name}</button><span style="color:var(--muted)">›</span>`);
+    }
+    h += `<div class="cr">${bits.join('')}</div>`;
+  }
+  let sib = '<span class="lab">同级</span>';
+  for (let i = 0; i < sibs.length; i++) sib += chip(sibs[i]);
+  sib += '<button type="button" data-add="sib">＋同级</button>';
+  let kid = '<span class="lab">子页</span>';
+  for (let i = 0; i < kids.length; i++) kid += chip(kids[i]);
+  kid += '<button type="button" data-add="child">＋子页</button>';
+  h += `<div class="cr">${sib}</div><div class="cr">${kid}</div>`;
+  $('#crumb').innerHTML = h;
+}
+$('#crumb').addEventListener('click', e => {
+  const add = e.target.closest('[data-add]');
+  if (add) { if (add.dataset.add === 'sib') addSibling(); else addChild(); return; }
+  const sib = e.target.closest('[data-page]');
+  if (sib) { showPage(sib.dataset.page); return; }
+  const b = e.target.closest('[data-crumb]');
+  if (b) goPage(+b.dataset.crumb);
+});
 
 /* ---------- properties panel ---------- */
 const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏', band: '分组带', lane: '层（泳道）', group: '子容器' });
@@ -2562,7 +2624,7 @@ function renderProps() {
       else if (n.icon && n.icon.startsWith('lib:')) h += `<hr><div class="row"><button id="p-form" style="border-color:var(--line);justify-content:center">⁂ 用此装备生成编队（Ctrl+Shift+B）</button></div>`;
     }
     if (window.Std) h += Std.propsHTML('node', n, p);
-    if (!['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)) h += `<hr><div class="hint">内部结构：双击进入后可继续画该系统的组成。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
+    if (!['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
@@ -2570,6 +2632,7 @@ function renderProps() {
     h += `<h3>图面设置</h3>`;
     h += `<div class="row"><label>文档名</label><input id="d-dname" type="text" placeholder="未命名" value="${esc(doc.name || '')}"></div>`;
     h += `<div class="row"><label>页面名</label><input type="text" id="d-pname" value="${esc(p.name)}"></div>`;
+    if (cur !== 'root') h += `<div class="row"><button id="p-delpage" type="button" style="color:var(--danger);justify-content:center">删除此页（子页一并删除）</button></div>`;
     h += `<div class="row"><label>主题</label><select id="d-theme">${Object.entries(THEMES).map(([k, v]) => `<option value="${k}" ${k === doc.theme ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
     h += `<div class="row"><label>跨线</label>${seg('d-jump', [['arc', '⌒ 跨线弧'], ['gap', '断开'], ['none', '无']], doc.jumpStyle || 'arc')}</div>`;
     h += `<div class="row" title="连线遇到中间的框时自动绕开"><label>连线避障</label>${seg('d-avoid', [['on', '自动绕开'], ['off', '关闭']], doc.avoid === false ? 'off' : 'on')}</div>`;
@@ -2626,6 +2689,7 @@ function bindProps() {
   on('#p-cbedit', 'click', () => Combo.open(n));
   on('#p-form', 'click', () => Combo.open(n));
   on('#p-del', 'click', deleteSel);
+  on('#p-delpage', 'click', () => deletePage(cur));
   on('#p-same', 'click', () => selectSame());
   on('#p-swap', 'click', () => { checkpoint(); swapLink(l); render(); });
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
@@ -3157,7 +3221,7 @@ $('#f-open').addEventListener('change', e => {
   rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
-/* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
+/* PowerPoint／Visio／draw.io → 可编辑的织图文档。首页为总图，没有入口的页在同级。 */
 async function openForeign(f) {
   const dio = /\.(drawio|xml)$/i.test(f.name);
   if (dio ? !window.DrawIO : !window.Importer) { toast('导入模块未加载'); return; }
@@ -3173,12 +3237,8 @@ async function openForeign(f) {
     const linked = new Set(r.pages.flatMap(p => p.nodes.map(n => n.sub).filter(Boolean)));
     rest.forEach(p => d.pages[p.id] = p);
     const orphan = rest.filter(p => !linked.has(p.id));
-    if (orphan.length) {
-      const b = first.nodes.length ? first.nodes.reduce((a, n) => ({ x1: Math.max(a.x1, n.x + n.w), y0: Math.min(a.y0, n.y) }), { x1: -1e9, y0: 1e9 }) : { x1: 0, y0: 0 };
-      orphan.forEach((p, i) => { first.nodes.push(mkNode({ type: 'round', text: p.name || ('第 ' + (i + 2) + ' 页'), x: snapv(b.x1 + 60), y: snapv(b.y0 + i * 56), w: 180, h: 40, sub: p.id })); });
-    }
     loadDoc(d);
-    toast(`已导入 ${f.name}：${r.pages.length} 页${orphan.length ? '（其余页面在总图右侧入口框中，点框右上角 ⊕ 进入）' : ''}${r.warnings && r.warnings.length ? '；' + r.warnings.length + ' 条提示见控制台' : ''}，可按 Ctrl+Shift+F 一键美化`);
+    toast(`已导入 ${f.name}：${r.pages.length} 页${orphan.length ? '（其余页面在顶部「同级」里）' : ''}${r.warnings && r.warnings.length ? '；' + r.warnings.length + ' 条提示见控制台' : ''}，可按 Ctrl+Shift+F 一键美化`);
     if (r.warnings && r.warnings.length) console.info('导入提示', r.warnings);
   } catch (err) { console.error(err); toast('导入失败：' + friendlyErr(err)); }
 }

@@ -148,6 +148,44 @@ def main():
         check('demo nest is a child of root', demo['childOfRoot'], str(demo))
         check('enterSub opens the nest page', demo['cur'] == 'pnest' and demo['pageName'] == demo['nestName'] and demo['canvas'] and demo['grew'] == 0, str(demo))
 
+        page.evaluate(OLD)
+        page.click('#crumb [data-add="sib"]')
+        sib = page.evaluate(r"""
+() => {
+  const row = [...document.querySelectorAll('#crumb .cr')].find(r => ((r.querySelector('.lab') || {}).textContent) === '同级');
+  const on = row && row.querySelector('[data-page].on');
+  const canvas = (document.querySelector('#world') || {}).textContent || '';
+  return {
+    name: on ? on.textContent : '',
+    chips: row ? [...row.querySelectorAll('[data-page]')].map(b => b.textContent) : [],
+    canvas,
+    pageName: (document.querySelector('#d-pname') || {}).value || ''
+  };
+}
+""")
+        print('predicate 4 sibling', sib)
+        check('＋同级 adds a sibling chip and shows that page',
+              sib['name'] == '未命名页' and sib['chips'] == ['总图', '未命名页'] and sib['pageName'] == '未命名页' and sib['canvas'].find('未命名页') >= 0,
+              str(sib))
+        page.click('#crumb [data-page="root"]')
+        back = page.evaluate(r"""
+() => {
+  const canvas = (document.querySelector('#world') || {}).textContent || '';
+  const row = [...document.querySelectorAll('#crumb .cr')].find(r => ((r.querySelector('.lab') || {}).textContent) === '同级');
+  const on = row && row.querySelector('[data-page].on');
+  return {
+    canvas,
+    pageName: (document.querySelector('#d-pname') || {}).value || '',
+    on: on ? on.textContent : '',
+    still: row ? [...row.querySelectorAll('[data-page]')].map(b => b.textContent) : []
+  };
+}
+""")
+        print('predicate 4 root', back)
+        check('root chip brings 巡逻节点 back',
+              back['pageName'] == '总图' and back['on'] == '总图' and '巡逻节点' in back['canvas'] and '未命名页' not in back['canvas'] and back['still'] == ['总图', '未命名页'],
+              str(back))
+
         if errors:
             check('page has no script errors', False, ' | '.join(errors))
         else:

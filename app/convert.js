@@ -17,7 +17,7 @@
   const lsSet = o => { try { localStorage.setItem(LS, JSON.stringify(Object.assign(lsGet(), o))); } catch (_) { } };
   const baseName = n => String(n || '文件').replace(/\.[^.]+$/, '');
 
-  /* 读入一个源文件 → 临时文档（不含入口框，页面顺序存于 pageOrder） */
+  /* 读入一个源文件 → 临时文档。不加入口框。pageOrder 只用来记住幻灯片顺序，adoptPages 随后把它收进 ord。 */
   async function readDoc(f, keepColors) {
     const ext = (f.name.split('.').pop() || '').toLowerCase();
     if (ext === 'ppt' || ext === 'vsd') throw new Error('旧版二进制格式，请先在 PowerPoint／Visio 中另存为 .pptx／.vsdx');
@@ -25,7 +25,7 @@
     if (ext === 'json') {
       const o = JSON.parse(await f.text()), d = o.doc || o;
       if (!d.pages || !d.pages.root) throw new Error('不是织图工程文件');
-      return Object.assign({ custom: {}, statusLabels: { base: '已建', new: '本期新增', key: '重点建设' } }, d);
+      return adoptPages(Object.assign({ custom: {}, statusLabels: { base: '已建', new: '本期新增', key: '重点建设' } }, d));
     }
     if (ext === 'drawio' || ext === 'xml') { const r = await DrawIO.importText(await f.text(), { keepColors }); pages = r.pages; custom = r.custom; if (r.docSettings) extra = r.docSettings; }
     else {
@@ -39,7 +39,7 @@
     for (const p of pages) for (const n of p.nodes) if (n.sub === old0) n.sub = 'root';
     pages.forEach(p => d.pages[p.id] = p);
     d.pageOrder = pages.map(p => p.id);
-    return d;
+    return adoptPages(d);
   }
 
   /* 在临时文档上执行导出：临时替换 doc／cur／saveFile，导出后原样恢复 */
