@@ -208,15 +208,9 @@ function restore(s) {
   const o = JSON.parse(s);
   const ms0 = msMode();
   doc = o.doc;
-  cur = o.cur && doc.pages && doc.pages[o.cur] ? o.cur : 'root';
-  /* 不走 showPage，否则会把撤销前的视口写进刚恢复的页面。 */
-  stack = pathOf(cur);
-  clearSel();
-  const cam = P() && P().cam;
-  if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
-  else view = fitView(P());
+  const id = o.cur && doc.pages && doc.pages[o.cur] ? o.cur : 'root';
   if (ms0 !== msMode()) renderPalette();
-  render();
+  paintPage(id);
   refreshDocTitle();
 }
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
@@ -1987,7 +1981,6 @@ function paste() {
   render();
 }
 
-/* ---------- page tree ---------- */
 function writeUp(page, up, ord) {
   page.up = up;
   page.ord = ord;
@@ -2116,28 +2109,29 @@ function repair(d) {
     for (let i = 0; i < list.length; i++) writeUp(list[i], up, i);
   });
 }
+function migrateLegacyPages(d) {
+  if ('up' in d.pages.root) return;
+  const all = Object.values(d.pages);
+  for (let i = 0; i < all.length; i++) {
+    if (!all[i]) continue;
+    delete all[i].up;
+    delete all[i].ord;
+  }
+  writeUp(d.pages.root, null, 0);
+  const seen = walkDoors(d.pages, 'root', (page, up, i) => writeUp(page, up, i));
+  seen.add('root');
+  let n = 1;
+  const order = Array.isArray(d.pageOrder) ? d.pageOrder : Object.keys(d.pages);
+  for (let i = 0; i < order.length; i++) {
+    const id = order[i];
+    if (d.pages[id] && !seen.has(id)) { writeUp(d.pages[id], null, n++); seen.add(id); }
+  }
+  const keys = Object.keys(d.pages);
+  for (let i = 0; i < keys.length; i++) if (!seen.has(keys[i])) writeUp(d.pages[keys[i]], null, n++);
+}
 function adoptPages(d) {
   if (!d || !d.pages || !d.pages.root) return d;
-  /* 根页面已有 up 就不再用 node.sub 重建。没有门的子页要留在原来的位置。 */
-  if (!('up' in d.pages.root)) {
-    const all = Object.values(d.pages);
-    for (let i = 0; i < all.length; i++) {
-      if (!all[i]) continue;
-      delete all[i].up;
-      delete all[i].ord;
-    }
-    writeUp(d.pages.root, null, 0);
-    const seen = walkDoors(d.pages, 'root', (page, up, i) => writeUp(page, up, i));
-    seen.add('root');
-    let n = 1;
-    const order = Array.isArray(d.pageOrder) ? d.pageOrder : Object.keys(d.pages);
-    for (let i = 0; i < order.length; i++) {
-      const id = order[i];
-      if (d.pages[id] && !seen.has(id)) { writeUp(d.pages[id], null, n++); seen.add(id); }
-    }
-    const keys = Object.keys(d.pages);
-    for (let i = 0; i < keys.length; i++) if (!seen.has(keys[i])) writeUp(d.pages[keys[i]], null, n++);
-  }
+  migrateLegacyPages(d);
   delete d.pageOrder;
   repair(d);
   return d;
@@ -2236,17 +2230,20 @@ function addChild(name) {
   showPage(page.id);
   return page.id;
 }
-function showPage(id) {
-  if (!id || id === cur || !doc.pages[id]) return;
-  if (doc.pages[cur]) doc.pages[cur].cam = { x: view.x, y: view.y, k: view.k };
+function paintPage(id) {
+  if (!doc.pages[id]) return;
   cur = id;
   clearSel();
   stack = pathOf(id);
   const cam = doc.pages[id].cam;
-  /* render 会把 view 写进当前页的 cam，所以先放上目标页自己的视口。 */
   if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
   else view = fitView(doc.pages[id]);
   render();
+}
+function showPage(id) {
+  if (!id || id === cur || !doc.pages[id]) return;
+  if (doc.pages[cur]) doc.pages[cur].cam = { x: view.x, y: view.y, k: view.k };
+  paintPage(id);
 }
 function goPage(i) {
   const id = pathOf(cur)[i];
@@ -2287,15 +2284,7 @@ function deletePage(id) {
   clearDoors(kill);
   renumber(group);
   if (!leaving) { render(); return; }
-  /* 不走 showPage：被删的页已经不在，不能把离开前的视口写进去。 */
-  cur = dest;
-  stack = pathOf(dest);
-  clearSel();
-  const page = doc.pages[dest];
-  const cam = page && page.cam;
-  if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
-  else view = fitView(page);
-  render();
+  paintPage(dest);
 }
 function renderCrumb() {
   const by = pagesByUp(doc);
@@ -2646,7 +2635,7 @@ function renderProps() {
       <b style="color:var(--fg)">操作要点</b><br>
       · 左侧元素<b>拖到画布</b>或点击添加；放进层或子容器即归属该层<br>
       · 悬停元素出现<b>蓝点</b>，拖到另一元素即连线；连线可设单向／双向箭头<br>
-      · 元素右上角 <b style="color:#2F80ED">⊕</b> 进入内部结构，顶部路径返回上一级<br>
+      · 左上角「同级」「子页」切换页面，「＋同级」「＋子页」新建。点图元右上角 <b style="color:#2F80ED">⊕</b> 进入内部结构，点路径回到上层<br>
       · <b>一键美化</b> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>：层内等距、统一尺寸、分组带对齐<br>
       · <b>减少交叉</b> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>：按连线关系重排层内顺序后美化<br>
       · 同侧多条连线自动<b>分散端点</b>、并行线自动错开；交叉处画<b>跨线弧</b>（上方可改为断开／无）<br>
@@ -2821,22 +2810,23 @@ function iconPNG(uri, px = 256) {
     try { img.src = uri; } catch (e) { finish(null); }
   });
 }
-function hierarchyPages() {
-  adoptPages(doc);
-  const out = [], seen = {};
+function hierarchyPages(d) {
+  const host = d || doc;
+  adoptPages(host);
+  const out = [], seen = {}, by = pagesByUp(host);
   const walk = (id, chain) => {
-    if (seen[id] || !doc.pages[id]) return;
+    if (seen[id] || !host.pages[id]) return;
     seen[id] = 1;
-    const p = doc.pages[id], name = p.name || '未命名', next = chain.concat(name);
+    const p = host.pages[id], name = p.name || '未命名', next = chain.concat(name);
     out.push({ page: p, depth: chain.length, chain: next });
-    const kids = childPages(id);
+    const kids = by.get(id) || [];
     for (let i = 0; i < kids.length; i++) walk(kids[i].id, next);
   };
-  const tops = siblingPages('root');
+  const tops = by.get(null) || [];
   for (let i = 0; i < tops.length; i++) walk(tops[i].id, []);
   return out;
 }
-function pagesInOrder() { return hierarchyPages().map(h => h.page); }
+function pagesInOrder(d) { return hierarchyPages(d).map(h => h.page); }
 function hierarchyFileName(item, index, ext) {
   const label = item.chain.map(s => String(s || '').replace(/[\\/:*?"<>|]/g, '_').trim()).filter(Boolean).join('-') || '页面';
   return projectBaseName() + '-' + String(index + 1).padStart(2, '0') + '-' + label + '.' + ext;
@@ -3221,7 +3211,6 @@ $('#f-open').addEventListener('change', e => {
   rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
-/* PowerPoint／Visio／draw.io → 可编辑的织图文档。首页为总图，没有入口的页在同级。 */
 async function openForeign(f) {
   const dio = /\.(drawio|xml)$/i.test(f.name);
   if (dio ? !window.DrawIO : !window.Importer) { toast('导入模块未加载'); return; }

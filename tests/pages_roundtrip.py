@@ -1,4 +1,3 @@
-"""One project file holds a page tree. Old files, siblings, children, and the demo drill."""
 import pathlib
 import sys
 from playwright.sync_api import sync_playwright

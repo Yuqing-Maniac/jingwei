@@ -124,25 +124,9 @@
     return { name, rows, widths, heights, freezeRow: 1, filter: 1, first };
   }
 
-  function collect(doc) {
-    const pages = (typeof pagesInOrder === 'function' && pagesInOrder()) || Object.values(doc.pages);
-    // pagesInOrder 读的是当前画布文档。传入另一份时按 up 走子页，不能调用 childPages（它读全局 doc）。
-    let list = pages;
-    if (typeof doc === 'object' && doc.pages && !pages.every(p => doc.pages[p.id] === p)) {
-      if (typeof adoptPages === 'function') adoptPages(doc);
-      list = []; const seen = new Set();
-      const by = typeof pagesByUp === 'function' ? pagesByUp(doc) : new Map();
-      const walk = id => {
-        if (seen.has(id) || !doc.pages[id]) return;
-        seen.add(id); list.push(doc.pages[id]);
-        const kids = by.get(id) || [];
-        for (let i = 0; i < kids.length; i++) walk(kids[i].id);
-      };
-      const tops = by.get(null) || [];
-      for (let i = 0; i < tops.length; i++) walk(tops[i].id);
-      for (const id in doc.pages) walk(id);
-    }
-    return list;
+  function collect(target) {
+    if (typeof pagesInOrder === 'function') return pagesInOrder(target);
+    return Object.values((target && target.pages) || {});
   }
 
   async function build(doc) {

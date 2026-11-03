@@ -17,7 +17,6 @@
   const lsSet = o => { try { localStorage.setItem(LS, JSON.stringify(Object.assign(lsGet(), o))); } catch (_) { } };
   const baseName = n => String(n || '文件').replace(/\.[^.]+$/, '');
 
-  /* 读入一个源文件 → 临时文档。不加入口框。pageOrder 只用来记住幻灯片顺序，adoptPages 随后把它收进 ord。 */
   async function readDoc(f, keepColors) {
     const ext = (f.name.split('.').pop() || '').toLowerCase();
     if (ext === 'ppt' || ext === 'vsd') throw new Error('旧版二进制格式，请先在 PowerPoint／Visio 中另存为 .pptx／.vsdx');
@@ -38,7 +37,6 @@
     const old0 = pages[0].id; pages[0].id = 'root';
     for (const p of pages) for (const n of p.nodes) if (n.sub === old0) n.sub = 'root';
     pages.forEach(p => d.pages[p.id] = p);
-    d.pageOrder = pages.map(p => p.id);
     return adoptPages(d);
   }
 
