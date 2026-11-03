@@ -61,6 +61,35 @@ def main():
         pg.dispatch_event('#p-size', 'input')
         assert pg.evaluate("() => nodeById([...sel][0]).size") == 18
 
+        office = pg.evaluate("""async () => {
+          window.__saved = [];
+          window.saveFile = saveFile = async (name, data) => { window.__saved.push({ name, data }); };
+          const plain = mkNode({ type: 'text', text: '默认样本', x: 40, y: 40, w: 180, h: 40 });
+          const song = mkNode({ type: 'text', text: '仿宋样本', font: 'fangsong', size: 16, x: 40, y: 100, w: 180, h: 40 });
+          loadDoc({ name: '字体', theme: 'report', statusLabels: { base: '延续', new: '本步新增／重构', key: '重点关注' }, custom: {}, pages: { root: { id: 'root', name: '总图', nodes: [plain, song], links: [] } } });
+          await exportPPTX();
+          const z = await JSZip.loadAsync(await window.__saved[0].data.arrayBuffer());
+          const slide = await z.file('ppt/slides/slide1.xml').async('string');
+          window.__saved = [];
+          await exportVSDX();
+          const z2 = await JSZip.loadAsync(await window.__saved[0].data.arrayBuffer());
+          const page = await z2.file('visio/pages/page1.xml').async('string');
+          const docxml = await z2.file('visio/document.xml').async('string');
+          const near = (xml, text, face) => {
+            const i = xml.indexOf(text);
+            if (i < 0) return false;
+            return xml.slice(Math.max(0, i - 2500), i + 400).indexOf(face) >= 0;
+          };
+          return {
+            pptPlain: near(slide, '默认样本', 'Microsoft YaHei'),
+            pptSong: near(slide, '仿宋样本', 'FangSong'),
+            vsdPlain: near(page, '默认样本', 'Microsoft YaHei'),
+            vsdSong: near(page, '仿宋样本', 'FangSong'),
+            faces: docxml.indexOf("NameU='FangSong'") >= 0 && docxml.indexOf("NameU='Microsoft YaHei'") >= 0
+          };
+        }""")
+        assert office['pptPlain'] and office['pptSong'] and office['vsdPlain'] and office['vsdSong'] and office['faces'], office
+
         pg.evaluate("() => localStorage.removeItem('hongtu.shelf')")
         pg.reload()
         pg.wait_for_timeout(300)

@@ -83,6 +83,7 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
 .swatch{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle}
 .mdl{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(10,15,22,.45);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
 .mdl .box{background:var(--panel);border:1px solid var(--line);border-radius:10px;width:min(760px,100%);max-height:86vh;display:flex;flex-direction:column;overflow:hidden}
+#saveas .box{width:420px;max-width:100%}
 .mdl .mh{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .mdl .mb{overflow:auto;padding:10px 12px}
 #help-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px;padding:12px 16px 16px}
@@ -112,6 +113,7 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
 .menu.open .dd{display:flex}
 .menu .dd button{justify-content:flex-start}
 .menu .dd small{color:var(--muted);margin-left:auto;font-size:11px}
+.menu .dd .cap{display:block;font-size:11px;color:var(--muted);padding:8px 8px 2px;margin-top:4px;border-top:1px solid var(--line)}
 @media (max-width:860px){
   main{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto}
   #palette{border-right:none;border-bottom:1px solid var(--line);max-height:132px;padding:8px max(16px,env(safe-area-inset-left,0px))}
@@ -141,6 +143,7 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
   <button id="b-new" title="新建空白图">新建</button>
   <button id="b-open" title="打开工程文件（.json），也可直接打开 PowerPoint（.pptx）、Visio（.vsdx）、draw.io（.drawio）转为可编辑图　Ctrl+O">打开</button>
   <button id="b-save" title="保存工程文件 (.json)　Ctrl+S">保存</button>
+  <button id="b-saveas" title="另存为新的工程文件　Ctrl+Shift+S">另存为</button>
   <button id="b-conv" title="PPT、Visio、draw.io、织图工程批量互转，不影响当前画布　Ctrl+Shift+O">格式转换</button>
   <div class="sep hide-s"></div>
   <button id="b-undo" title="撤销 Ctrl+Z">↶ 撤销</button>
@@ -168,6 +171,12 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
       <button data-exp="vsdx">Visio <small>.vsdx</small></button>
       <button data-exp="drawio">draw.io <small>.drawio 可编辑</small></button>
       <button data-exp="svg">SVG 矢量图</button>
+      <div class="cap">整体导出</div>
+      <button data-exp="allpptx">PowerPoint <small>每视图一页</small></button>
+      <button data-exp="allpng">PNG <small>每视图一个文件</small></button>
+      <button data-exp="allsvg">SVG <small>每视图一个文件</small></button>
+      <button data-exp="allvsdx">Visio <small>每视图一个文件</small></button>
+      <button data-exp="alldrawio">draw.io <small>每视图一个文件</small></button>
     </div>
   </div>
 </header>
@@ -183,6 +192,7 @@ hr{border:none;border-top:1px solid var(--line);margin:12px 0}
 </main>
 </div>
 <div id="help" class="mdl" role="dialog" aria-label="快捷键"><div class="box"><div class="mh"><strong>快捷键</strong><span class="hint" style="flex:1">在输入框内打字时快捷键不生效（Esc 除外）</span><button id="help-close">关闭</button></div><div class="mb" id="help-body"></div></div></div>
+<div id="saveas" class="mdl" role="dialog" aria-label="另存为"><div class="box"><div class="mh"><strong>另存为</strong><button id="saveas-x" type="button">关闭</button></div><div class="mb"><p class="hint">将下载一份新的 .jingwei.json，不会覆盖以前下载的文件。</p><div class="row"><label>文件名</label><input id="saveas-name" type="text"></div><div class="row" style="justify-content:flex-end"><button id="saveas-cancel" type="button" style="flex:none">取消</button><button id="saveas-ok" class="primary" type="button" style="flex:none">下载</button></div></div></div></div>
 <div id="modal" class="mdl"><div class="box"><div class="mh"><strong>选择图标</strong><input type="text" id="ic-q" placeholder="搜索：舰、无人机、雷达…" style="flex:1;min-width:120px"><button id="ic-close">关闭</button></div><div class="mh tabs" id="ic-tabs"></div><div class="mb"><div class="igrid" id="ic-grid"></div></div></div></div>
 <input type="file" id="f-open" accept=".json,.pptx,.vsdx,.drawio,.xml,.ppt,.vsd,application/json" hidden>
 <input type="file" id="f-icon" accept=".svg,.png,.jpg,.jpeg,image/*" hidden>

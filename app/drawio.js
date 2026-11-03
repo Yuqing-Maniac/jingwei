@@ -116,16 +116,20 @@
       const end = l.dir === 'none' ? 'endArrow=none' : 'endArrow=block;endFill=1;endSize=7', start = l.dir === 'both' ? 'startArrow=block;startFill=1;startSize=7' : 'startArrow=none';
       const pts = (typeof linkPoints === 'function' ? linkPoints(l, p) : null) || [];
       const way = pts.length > 2 ? `<Array as="points">${pts.slice(1, -1).map(q => `<mxPoint x="${r1(q.x)}" y="${r1(q.y)}"/>`).join('')}</Array>` : '';
-      const label = (typeof linkText === 'function' ? linkText(l, p) : l.label) || '';
+      let label = (typeof linkText === 'function' ? linkText(l, p) : l.label) || '';
       const ht = { ht_kind: l.kind, ht_dir: l.dir, ht_code: l.code, ht_attrs: l.attrs && Object.keys(l.attrs).length ? l.attrs : '' };
+      if ((typeof linkDir === 'function' ? linkDir(l) : l.dir) === 'both' && l.labelBack) {
+        ht.ht_labelBack = l.labelBack;
+        label = label ? label + ' ⇄ ' + l.labelBack : l.labelBack;
+      }
       const style = `edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;fontFamily=Microsoft YaHei;labelBackgroundColor=${t.bg};${end};${start};strokeColor=${c};fontColor=${c};strokeWidth=${K.w || 1.6};${DASH[K.dash] || ''}`;
       out.push(`<UserObject label="${xa(label)}" id="e${l.id}"${meta(ht)}><mxCell style="${xa(style)}" edge="1" parent="1" source="${cid(l.from)}" target="${cid(l.to)}"><mxGeometry relative="1" as="geometry">${way}</mxGeometry></mxCell></UserObject>`);
     }
     const b = contentBBox(p);
     return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${t.bg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${out.join('')}</root></mxGraphModel>` };
   }
-  function exportString() {
-    const pages = pagesInOrder(), pageIds = {}, saved = cur;
+  function exportString(pageList) {
+    const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
     pages.forEach((p, i) => pageIds[p.id] = 'ht-' + (p.id === 'root' ? 'root' : p.id));
     let body = '';
     try {
@@ -133,10 +137,10 @@
     } finally { cur = saved; }
     return `<?xml version="1.0" encoding="UTF-8"?>\n<mxfile host="jingwei" agent="经纬织图" version="24.0.0" type="device" pages="${pages.length}">${body}</mxfile>\n`;
   }
-  async function exportFile() {
+  async function exportFile(pageList) {
     toast('正在生成 draw.io 文件…');
-    const s = exportString();
-    await saveFile(fname('svg').replace(/\.svg$/, '.drawio'), new Blob([s], { type: 'application/xml' }));
+    const s = exportString(pageList);
+    await saveFile(docExportName('drawio'), new Blob([s], { type: 'application/xml' }));
   }
 
   /* ================= 导入 ================= */
@@ -328,8 +332,16 @@
         let from = a, to = b, dir = he && hs ? 'both' : (he || hs) ? 'one' : 'none';
         if (!he && hs) { from = b; to = a; }
         let kind = D.ht_kind || (st.dashed === '1' ? (/^\s*[1-3]\s/.test(st.dashPattern || '') ? 'radio' : 'ctrl') : (+st.strokeWidth >= 2.2 ? 'wired' : 'data'));
-        const lab = htmlText(c.label, st.html === '1') || edgeLabels.get(c.id) || '';
+        let lab = htmlText(c.label, st.html === '1') || edgeLabels.get(c.id) || '';
+        let labelBack = '';
+        if (D.ht_labelBack) {
+          labelBack = String(D.ht_labelBack);
+          const suf = ' ⇄ ' + labelBack;
+          if (lab.endsWith(suf)) lab = lab.slice(0, lab.length - suf.length);
+          else if (lab === labelBack) lab = '';
+        }
         const lk = { id: uid(), from: from.id, to: to.id, dir: D.ht_dir || dir, kind, route: 'ortho', label: lab };
+        if (labelBack) lk.labelBack = labelBack;
         if (D.ht_code) { lk.code = D.ht_code; if (lk.label.startsWith(D.ht_code)) lk.label = lk.label.slice(D.ht_code.length).replace(/^[\s　]+/, ''); }
         if (D.ht_attrs) try { lk.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
         page.links.push(lk);

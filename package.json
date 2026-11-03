@@ -1,7 +1,7 @@
 {
   "name": "jingwei-zhitu-build",
   "private": true,
-  "version": "3.3.3",
+  "version": "3.3.5",
   "description": "经纬织图 构建依赖（网页版内联库、语法降级、桌面版打包、发布说明生成）",
   "overrides": {
     "image-size": "2.0.4"
