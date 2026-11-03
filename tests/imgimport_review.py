@@ -37,6 +37,41 @@ def open_sample(page):
     page.wait_for_function("() => document.getElementById('img-review').style.display === 'flex'")
 
 
+def open_arrows(page):
+    page.evaluate("""() => {
+      const c = document.createElement('canvas');
+      c.width = 520; c.height = 300;
+      const g = c.getContext('2d');
+      g.fillStyle = '#fff';
+      g.fillRect(0, 0, 520, 300);
+      const url = c.toDataURL('image/png');
+      const page0 = {
+        id: 'root', name: '总图',
+        nodes: [
+          mkNode({ id: 'a', type: 'rect', text: '甲', x: 40, y: 40, w: 120, h: 48 }),
+          mkNode({ id: 'b', type: 'rect', text: '乙', x: 300, y: 40, w: 120, h: 48 }),
+          mkNode({ id: 'c', type: 'rect', text: '丙', x: 40, y: 180, w: 120, h: 48 }),
+          mkNode({ id: 'd', type: 'rect', text: '丁', x: 300, y: 180, w: 120, h: 48 })
+        ],
+        links: [{ id: 'k1', from: 'a', to: 'b', dir: 'one', route: 'ortho', label: '' }]
+      };
+      showImageReview({ name: '箭头校对', url: url, width: 520, height: 300, page: page0, notes: [] });
+    }""")
+    page.wait_for_function("() => document.getElementById('img-review').style.display === 'flex'")
+
+
+def drag_handle(page, end, node_id):
+    handle = page.locator('#ir-svg [data-kind="handle"][data-end="%s"]' % end)
+    dest = page.locator('#ir-svg [data-kind="node"][data-id="%s"]' % node_id)
+    hb = handle.bounding_box()
+    db = dest.bounding_box()
+    page.mouse.move(hb['x'] + hb['width'] / 2, hb['y'] + hb['height'] / 2)
+    page.mouse.down()
+    page.mouse.move(db['x'] + db['width'] / 2, db['y'] + db['height'] / 2, steps=12)
+    page.mouse.up()
+    page.wait_for_timeout(80)
+
+
 with sync_playwright() as pw:
     exe = os.environ.get('JW_CHROME')
     if not exe:
@@ -77,6 +112,30 @@ with sync_playwright() as pw:
       links: P().links.map(l => ({ id: l.id, from: l.from, to: l.to, dir: l.dir || 'one' })),
       toast: document.getElementById('toast').textContent
     })""")
+    held = page.evaluate("""() => ({ name: doc.name, n: P().nodes.length, undo: undoS.length })""")
+    open_arrows(page)
+    page.locator('#ir-svg [data-kind="link"][data-id="k1"]').dispatch_event('click')
+    page.click('#ir-rev')
+    reversed_link = page.evaluate("""() => {
+      const hit = document.querySelector('#ir-svg [data-kind="link"][data-id="k1"]');
+      return { from: hit.getAttribute('data-from'), to: hit.getAttribute('data-to'), dir: hit.getAttribute('data-dir') };
+    }""")
+    page.select_option('#ir-dir', 'both')
+    drag_handle(page, 'to', 'd')
+    dragged = page.evaluate("""() => {
+      const hit = document.querySelector('#ir-svg [data-kind="link"][data-id="k1"]');
+      return hit ? { from: hit.getAttribute('data-from'), to: hit.getAttribute('data-to'), dir: hit.getAttribute('data-dir') } : null;
+    }""")
+    page.click('#ir-split')
+    page.locator('#ir-svg [data-kind="node"][data-id="a"]').click()
+    page.locator('#ir-svg [data-kind="node"][data-id="c"]').click()
+    page.select_option('#ir-dir', 'none')
+    during = page.evaluate("""() => ({ name: doc.name, n: P().nodes.length, undo: undoS.length })""")
+    page.click('#ir-ok')
+    page.wait_for_function("() => doc.name === '箭头校对'")
+    arrows = page.evaluate("""() => ({
+      links: P().links.map(l => ({ from: l.from, to: l.to, dir: l.dir || 'one' }))
+    })""")
     snap = page.evaluate("""() => ({ name: doc.name, n: P().nodes.length, undo: undoS.length })""")
     open_sample(page)
     page.click('#ir-cancel')
@@ -103,6 +162,15 @@ check('new arrow matches the correction', len(added) == 1 and added[0]['dir'] ==
 check('added shape is on the canvas', sum(1 for n in after['nodes'] if n['text'] == '新框' and n['type'] == 'rect') == 1, str(after['nodes']))
 check('grouping matches the correction', nodes.get('c', {}).get('parent') == 'a', str(nodes.get('c')))
 check('import toast starts with 已导入', after['toast'].startswith('已导入'), after['toast'])
+check('reverse swaps the ends', reversed_link == {'from': 'b', 'to': 'a', 'dir': 'one'}, str(reversed_link))
+check('drag keeps both and moves the end', dragged == {'from': 'b', 'to': 'd', 'dir': 'both'}, str(dragged))
+check('arrow edits stay off the canvas until import', during == held, str(during))
+both = [l for l in arrows['links'] if l['from'] == 'b' and l['to'] == 'd' and l['dir'] == 'both']
+none_l = [l for l in arrows['links'] if l['from'] == 'a' and l['to'] == 'c' and l['dir'] == 'none']
+old = [l for l in arrows['links'] if {l['from'], l['to']} == {'a', 'b'}]
+check('imported link matches the dragged both-way arrow', len(both) == 1 and len(arrows['links']) == 2, str(arrows['links']))
+check('split link imports with no arrow', len(none_l) == 1, str(arrows['links']))
+check('original pair is gone after the drag', len(old) == 0, str(arrows['links']))
 check('cancel keeps the document', later['name'] == snap['name'] and later['n'] == snap['n'], str(later))
 check('cancel does not checkpoint', later['undo'] == snap['undo'], 'undo %s -> %s' % (snap['undo'], later['undo']))
 check('cancel says it was cancelled', '已取消导入' in later['toast'], later['toast'])

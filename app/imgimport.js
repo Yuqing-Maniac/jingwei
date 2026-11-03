@@ -481,7 +481,33 @@
     var maxR = Math.max(radii[0], radii[1], radii[2], radii[3]);
     var rectR = Math.max(3, sw * 4);
     var eRect = meanDist(pts, function (p) { return Math.min(p.x, p.y, w - 1 - p.x, h - 1 - p.y); });
-    if (maxR <= rectR && eRect < 0.075 * minSide) return 'rect';
+    var ww = w - 1, hh = h - 1, inset = 0.25 * minSide;
+    var cut = Math.min(w / 4, h * 0.29), chamfer = 0.29289 * minSide;
+    function polyDist(poly) {
+      return meanDist(pts, function (p) {
+        var best = 1e9;
+        for (var i = 0; i < poly.length; i++) {
+          var a = poly[i], b = poly[(i + 1) % poly.length];
+          var d = distSeg(p.x, p.y, a[0], a[1], b[0], b[1]);
+          if (d < best) best = d;
+        }
+        return best;
+      });
+    }
+    var polys = [
+      ['triangle', [[ww / 2, 0], [ww, hh], [0, hh]]],
+      ['trapezoid', [[inset, 0], [ww - inset, 0], [ww, hh], [0, hh]]],
+      ['parallelogram', [[inset, 0], [ww, 0], [ww - inset, hh], [0, hh]]],
+      ['hexagon', [[cut, 0], [ww - cut, 0], [ww, hh / 2], [ww - cut, hh], [cut, hh], [0, hh / 2]]],
+      ['pentagon', [[ww / 2, 0], [ww, hh * 0.382], [ww * 0.809, hh], [ww * 0.191, hh], [0, hh * 0.382]]],
+      ['octagon', [[chamfer, 0], [ww - chamfer, 0], [ww, chamfer], [ww, hh - chamfer], [ww - chamfer, hh], [chamfer, hh], [0, hh - chamfer], [0, chamfer]]]
+    ];
+    var polyBestErr = 1e9;
+    for (var pi = 0; pi < polys.length; pi++) {
+      polys[pi][2] = polyDist(polys[pi][1]);
+      if (polys[pi][2] < polyBestErr) polyBestErr = polys[pi][2];
+    }
+    if (maxR <= rectR && eRect < 0.075 * minSide && !(polyBestErr < 0.72 * Math.max(eRect, 0.001))) return 'rect';
     var cands = [];
     function agree(a, b) { return Math.abs(a - b) <= 0.30 * Math.max(a, b, 1); }
     function sideOk(a, b) {
@@ -523,12 +549,28 @@
       })
     });
     if (eRect < 0.12 * minSide && maxR <= rectR + 2) cands.push({ shape: 'rect', err: eRect });
+    for (var pj = 0; pj < polys.length; pj++) cands.push({ shape: polys[pj][0], err: polys[pj][2] });
     cands.sort(function (a, b) { return a.err - b.err; });
     if (!cands.length) return null;
-    var best = cands[0], second = cands[1];
-    if (best.err < 0.075 * minSide && (!second || best.err < 0.72 * Math.max(second.err, 0.001))) return best.shape;
-    if (best.shape === 'rect' && best.err < 0.12 * minSide && maxR <= rectR + 2) return 'rect';
-    return null;
+    function isPoly(shape) {
+      return shape === 'triangle' || shape === 'trapezoid' || shape === 'parallelogram' || shape === 'hexagon' || shape === 'pentagon' || shape === 'octagon';
+    }
+    function pick(list) {
+      if (!list.length) return null;
+      var b = list[0], s = list[1];
+      if (b.err < 0.075 * minSide && (!s || b.err < 0.72 * Math.max(s.err, 0.001))) return b.shape;
+      if (b.shape === 'rect' && b.err < 0.12 * minSide && maxR <= rectR + 2) return 'rect';
+      return null;
+    }
+    var plain = [];
+    for (var ci = 0; ci < cands.length; ci++) if (!isPoly(cands[ci].shape)) plain.push(cands[ci]);
+    var polyChoice = isPoly(cands[0].shape) ? pick(cands) : null;
+    var plainChoice = pick(plain);
+    if (polyChoice && (!plainChoice || cands[0].err < 0.5 * Math.max(plain[0].err, 0.001))) {
+      if (!plainChoice && cands[0].err > 0.04 * minSide) return null;
+      return polyChoice;
+    }
+    return plainChoice;
   }
 
   function distRound(px, py, w, h, r) {

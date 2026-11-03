@@ -2938,6 +2938,7 @@ function showImageReview(spec) {
       sel: null,
       mode: '',
       linkFrom: null,
+      dragged: false,
       resolve: resolve
     };
     const dlg = $('#img-review');
@@ -2945,7 +2946,7 @@ function showImageReview(spec) {
     $('#ir-overlay').classList.remove('on');
     dlg.classList.remove('overlay');
     const note = (spec.notes && spec.notes.length) ? spec.notes.join('') : '';
-    $('#ir-msg').textContent = note + '点一个框改文字。连线先点起点，再点终点。';
+    $('#ir-msg').textContent = note + '点一个框改文字。选中连线后可反转、改箭头、拖两端圆点，或拆开交叉线。';
     const toastEl = $('#toast');
     if (toastEl) toastEl.classList.remove('show');
     paintImageReview();
@@ -3022,6 +3023,9 @@ function irSyncTools() {
   grp.textContent = n && n.type === 'group' ? '取消组合' : '标为组合';
   $('#ir-link').classList.toggle('on', s.mode === 'link');
   $('#ir-add').classList.toggle('on', s.mode === 'add');
+  $('#ir-rev').disabled = !k;
+  $('#ir-split').disabled = !k;
+  $('#ir-split').classList.toggle('on', s.mode === 'split');
   $('#ir-del').disabled = !(n || k);
   $('#ir-file').textContent = s.name + '　' + s.nodes.length + ' 个图形，' + s.links.length + ' 条连线';
 }
@@ -3118,9 +3122,20 @@ function paintImageReview() {
     const dash = k.kind === 'ctrl' ? ' ir-dash' : '';
     const d = pts.map((p, i) => (i ? 'L' : 'M') + p.x + ' ' + p.y).join('');
     return '<path class="ir-link' + dash + (on ? ' ir-on' : '') + '" d="' + d + '"' + marker + '/>' +
-      '<path class="ir-hit" data-kind="link" data-id="' + esc(k.id) + '" d="' + d + '"/>';
+      '<path class="ir-hit" data-kind="link" data-id="' + esc(k.id) + '" data-from="' + esc(k.from) + '" data-to="' + esc(k.to) + '" data-dir="' + esc(dir) + '" d="' + d + '"/>';
   }).join('');
   body += rest.map(drawNode).join('');
+  const selLink = s.sel && s.sel.kind === 'link' ? s.links.find(k => k.id === s.sel.id) : null;
+  if (selLink) {
+    const a = nodeOf(selLink.from), b = nodeOf(selLink.to);
+    if (a && b) {
+      const pts = irPolyline(a, b, s.nodes);
+      const r = Math.max(16, Math.min(s.w, s.h) * 0.02);
+      const p0 = pts[0], p1 = pts[pts.length - 1];
+      body += '<circle class="ir-handle" data-kind="handle" data-end="from" data-id="' + esc(selLink.id) + '" cx="' + p0.x + '" cy="' + p0.y + '" r="' + r + '"/>';
+      body += '<circle class="ir-handle" data-kind="handle" data-end="to" data-id="' + esc(selLink.id) + '" cx="' + p1.x + '" cy="' + p1.y + '" r="' + r + '"/>';
+    }
+  }
   const defs = '<defs><marker id="ir-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M0 0 L10 5 L0 10 Z"/></marker>' +
     '<marker id="ir-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M10 0 L0 5 L10 10 Z"/></marker></defs>';
   $('#ir-prev').innerHTML = '<svg id="ir-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ' + s.w + ' ' + s.h + '" preserveAspectRatio="xMidYMid meet">' + defs + body + '</svg>';
@@ -3136,9 +3151,25 @@ function irSvgPoint(e) {
   const p = pt.matrixTransform(m.inverse());
   return { x: p.x, y: p.y };
 }
+function irConnectPair(a, b, msg) {
+  const s = irSess;
+  if (!s || a === b) return false;
+  if (s.links.some(k => (k.from === a && k.to === b) || (k.from === b && k.to === a))) {
+    $('#ir-msg').textContent = '这两框之间已经有连线。';
+    paintImageReview();
+    return false;
+  }
+  const kid = 'k' + uid();
+  s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
+  s.sel = { kind: 'link', id: kid };
+  $('#ir-msg').textContent = msg;
+  paintImageReview();
+  return true;
+}
 function irPreviewClick(e) {
   const s = irSess;
   if (!s) return;
+  if (s.dragged) { s.dragged = false; return; }
   if (s.mode === 'add') {
     const p = irSvgPoint(e);
     const w = Math.max(80, s.w * 0.12), h = Math.max(36, s.h * 0.08);
@@ -3151,29 +3182,90 @@ function irPreviewClick(e) {
     return;
   }
   const hit = e.target.closest ? e.target.closest('[data-kind]') : null;
-  if (s.mode === 'link') {
+  if (hit && hit.getAttribute('data-kind') === 'handle') return;
+  if (s.mode === 'link' || s.mode === 'split') {
     if (!hit || hit.getAttribute('data-kind') !== 'node') return;
     const id = hit.getAttribute('data-id');
-    if (!s.linkFrom) { s.linkFrom = id; $('#ir-msg').textContent = '再点终点。'; return; }
-    if (s.linkFrom === id) return;
-    const a = s.linkFrom, b = id;
-    s.mode = ''; s.linkFrom = null;
-    if (s.links.some(k => (k.from === a && k.to === b) || (k.from === b && k.to === a))) {
-      $('#ir-msg').textContent = '这两框之间已经有连线。';
-      paintImageReview();
+    if (!s.linkFrom) {
+      s.linkFrom = id;
+      $('#ir-msg').textContent = s.mode === 'split' ? '再点这条线的终点。原线仍保留。' : '再点终点。';
       return;
     }
-    const kid = 'k' + uid();
-    s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
-    s.sel = { kind: 'link', id: kid };
-    $('#ir-msg').textContent = '已连上。可改箭头方向，或删除。';
-    paintImageReview();
+    if (s.linkFrom === id) return;
+    const a = s.linkFrom, b = id, splitting = s.mode === 'split';
+    s.mode = ''; s.linkFrom = null;
+    irConnectPair(a, b, splitting ? '已拆出一条新线。可改箭头，或拖两端圆点。' : '已连上。可反转方向，改单向、双向或无箭头。');
     return;
   }
   if (!hit) { s.sel = null; paintImageReview(); return; }
   s.sel = { kind: hit.getAttribute('data-kind'), id: hit.getAttribute('data-id') };
   if (s.sel.kind === 'node') $('#ir-msg').textContent = '正在改这个框的文字。也可以删除、标为组合，或归入别的组合。';
-  else $('#ir-msg').textContent = '正在改这条连线。可改箭头方向，或删除后重连。';
+  else $('#ir-msg').textContent = '可反转方向，改成单向、双向或无箭头。拖两端圆点改接到别的框，或拆开交叉线。';
+  paintImageReview();
+}
+function irReverse() {
+  const k = irSelectedLink();
+  if (!k) { $('#ir-msg').textContent = '先点选一条连线，再反转。'; return; }
+  const from = k.from;
+  k.from = k.to;
+  k.to = from;
+  if (k.label || k.labelBack) {
+    const lab = k.label || '';
+    k.label = k.labelBack || '';
+    k.labelBack = lab;
+  }
+  $('#ir-msg').textContent = '已反转方向。';
+  paintImageReview();
+}
+function irArmSplit() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'split') {
+    s.mode = ''; s.linkFrom = null;
+    $('#ir-msg').textContent = '点一个框改文字。选中连线后可反转、改箭头、拖两端圆点，或拆开交叉线。';
+    paintImageReview();
+    return;
+  }
+  if (!irSelectedLink()) { $('#ir-msg').textContent = '先点选被合并的那条线，再拆开。'; return; }
+  s.mode = 'split';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '原线保留。再点另一条线的起点和终点。';
+  paintImageReview();
+}
+function irHandleDown(e) {
+  const s = irSess;
+  if (!s) return;
+  const hit = e.target.closest ? e.target.closest('[data-kind="handle"]') : null;
+  if (!hit) return;
+  e.preventDefault();
+  s.pendingDrag = { id: hit.getAttribute('data-id'), end: hit.getAttribute('data-end') };
+}
+function irHandleUp(e) {
+  const s = irSess;
+  if (!s || !s.pendingDrag) return;
+  const drag = s.pendingDrag;
+  s.pendingDrag = null;
+  s.dragged = true;
+  setTimeout(function () { if (irSess) irSess.dragged = false; }, 0);
+  const k = s.links.find(x => x.id === drag.id);
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const node = el && el.closest ? el.closest('[data-kind="node"]') : null;
+  if (!k || !node) return;
+  const id = node.getAttribute('data-id');
+  const cur = drag.end === 'from' ? k.from : k.to;
+  if (id === cur) return;
+  const other = drag.end === 'from' ? k.to : k.from;
+  if (id === other) { $('#ir-msg').textContent = '两端不能是同一个框。'; return; }
+  const nextFrom = drag.end === 'from' ? id : k.from;
+  const nextTo = drag.end === 'to' ? id : k.to;
+  if (s.links.some(x => x.id !== k.id && ((x.from === nextFrom && x.to === nextTo) || (x.from === nextTo && x.to === nextFrom)))) {
+    $('#ir-msg').textContent = '这两框之间已经有连线。';
+    return;
+  }
+  k.from = nextFrom;
+  k.to = nextTo;
+  s.sel = { kind: 'link', id: k.id };
+  $('#ir-msg').textContent = '已改接到这个框。';
   paintImageReview();
 }
 function irTextInput() {
@@ -3264,11 +3356,15 @@ $('#ir-overlay').onclick = irToggleOverlay;
 $('#ir-del').onclick = irDeleteSel;
 $('#ir-link').onclick = irArmLink;
 $('#ir-add').onclick = irArmAdd;
+$('#ir-rev').onclick = irReverse;
+$('#ir-split').onclick = irArmSplit;
 $('#ir-group').onclick = irToggleGroup;
 $('#ir-text').oninput = irTextInput;
 $('#ir-dir').onchange = irDirInput;
 $('#ir-parent').onchange = irParentInput;
 $('#ir-prev').addEventListener('click', irPreviewClick);
+$('#ir-prev').addEventListener('pointerdown', irHandleDown);
+window.addEventListener('pointerup', irHandleUp);
 $('#img-review').addEventListener('click', e => { if (e.target.id === 'img-review') cancelImageReview(); });
 /* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
 async function openForeign(f) {
