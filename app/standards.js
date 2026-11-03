@@ -236,9 +236,7 @@
     if (!doc.showCodes || !n.code || NON_EL.includes(n.type)) return null;
     const t = T(), size = 9.5, text = String(n.code), w = measure(text, size, true) + 11, h = 14;
     let x = n.x + 4, y = n.y - 7;
-    if (n.type === 'group') { x = n.x + 5; y = n.y + (GROUP_TH - h) / 2; }
-    else if (n.type === 'lane') { x = n.x + 4; y = n.y + 4; }
-    else if (n.type === 'band') { x = n.x + BAND_TW + 4; y = n.y + 4; if (p && p.nodes && p.nodes.some(k => k.parent === n.id && (k.type === 'lane' || k.type === 'group'))) y = n.y - 7; /* 带内有层／子容器：编号骑在上边框，避免被遮挡 */ }
+    if (contRow(n)) { const b = contBadge(n, p, { w, h }); if (!b) return null; x = b.x; y = b.y; }
     return { x, y, w, h, text, size, bold: true, fill: t.bg, stroke: t.muted, color: t.text };
   }
   function linkLabel(l, p) {

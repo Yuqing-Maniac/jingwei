@@ -39,7 +39,7 @@ function parseSize(raw) {
   return clamp(Math.round(n * 10) / 10, 5, 72);
 }
 const GRID = 4;
-const CONT = { band: 0, lane: 1, group: 2 };
+let CONT = {};
 const isCont = n => n && n.type in CONT;
 
 const THEMES = {
@@ -366,7 +366,7 @@ const linkText = (l, p) => window.Std ? Std.linkLabel(l, p) : (l.label || '');
 const codeTagOf = (n, p) => window.Std ? Std.codeTag(n, p) : null;
 function legendEntries(p) {
   const t = T(), out = [];
-  const used = new Set(p.nodes.filter(n => !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)).map(n => n.status || 'base'));
+  const used = new Set(p.nodes.filter(n => { const row = contRow(n); if (row) return !!row.legend; return !['text', 'note', 'legend', 'tblock'].includes(n.type); }).map(n => n.status || 'base'));
   for (const s of ['base', 'new', 'key']) if (used.has(s)) out.push({ kind: 'st', s, label: doc.statusLabels[s] });
   const lk = new Set(p.links.map(l => l.kind));
   for (const k of Object.keys(LINK_KINDS)) if (lk.has(k)) out.push({ kind: 'ln', k, label: LINK_KINDS[k].name });
@@ -381,27 +381,8 @@ function legendLayout(n, p) {
 
 function nodeSVG(n, p, exp) {
   const t = T(); let s = '';
-  if (n.type === 'band') {
-    const st = stStyle(n, t);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" fill="${n.fill || t.band.fill}" stroke="${n.stroke || t.band.stroke}" stroke-width="1.5"/>`;
-    s += `<rect x="${n.x}" y="${n.y}" width="${BAND_TW}" height="${n.h}" fill="${n.status === 'base' ? t.band.titleFill : st.stroke}"/>`;
-    const chars = [...String(n.text || '')].filter(c => c.trim());
-    s += textBlock(chars.length ? chars : [''], n.x + BAND_TW / 2, n.y + n.h / 2, 15, true, t.band.titleText);
-  } else if (n.type === 'lane') {
-    const tw = laneTW(n);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" fill="${n.fill || t.lane.fill}" stroke="${t.lane.stroke}" stroke-width="1"/>`;
-    s += `<line x1="${n.x + tw}" y1="${n.y + 6}" x2="${n.x + tw}" y2="${n.y + n.h - 6}" stroke="${t.lane.stroke}" stroke-width="1"/>`;
-    s += textBlock(wrap(n.text, tw - 14, 13.5, true), n.x + tw / 2, n.y + n.h / 2, 13.5, true, t.lane.titleText);
-  } else if (n.type === 'group') {
-    const st = stStyle(n, t);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="6" fill="${st.fill === t.box.fill ? t.group.fill : st.fill}" stroke="${st.stroke === t.box.stroke ? t.group.stroke : st.stroke}" stroke-width="1.3"/>`;
-    s += `<path d="M${n.x + 0.65},${n.y + GROUP_TH} V${n.y + 6} Q${n.x + 0.65},${n.y + 0.65} ${n.x + 6},${n.y + 0.65} H${n.x + n.w - 6} Q${n.x + n.w - 0.65},${n.y + 0.65} ${n.x + n.w - 0.65},${n.y + 6} V${n.y + GROUP_TH} Z" fill="${n.status === 'base' ? t.group.titleFill : st.title}"/>`;
-    /* 显示编号时，标题避开左上角的编号牌：居中放不下就右移 */
-    const tg = codeTagOf(n, p), L0 = tg ? tg.x + tg.w + 6 : n.x + 6, avail = n.x + n.w - 6 - L0;
-    const tl = wrap(n.text, Math.max(24, tg ? avail : n.w - 12), 12.5, true).slice(0, 1), tw0 = measure(tl[0] || '', 12.5, true);
-    let tcx = n.x + n.w / 2; if (tg && tcx - tw0 / 2 < L0) tcx = Math.min(L0 + tw0 / 2, n.x + n.w - 6 - tw0 / 2);
-    s += textBlock(tl, tcx, n.y + GROUP_TH / 2, 12.5, true, t.group.titleText);
-  } else if (n.type === 'tblock') {
+  if (contRow(n)) s += paintCont(n, p);
+  else if (n.type === 'tblock') {
     if (window.Std) s += Std.tblockSVG(n, p);
   } else if (n.type === 'legend') {
     const items = legendLayout(n, p);
@@ -871,7 +852,7 @@ function labelAt(pts, label, taken = [], seed) {
   }
   /* 避让：默认位置压在框上时，沿折线另找不压框的位置 */
   let obs = null;
-  try { const pg = P(); obs = pg.nodes.filter(n => !isCont(n) && n.type !== 'legend' && n.type !== 'tblock').map(n => ({ x: n.x - 2, y: n.y - 2, w: n.w + 4, h: n.h + 4 })).concat(pg.nodes.filter(n => n.type === 'group').map(n => ({ x: n.x, y: n.y, w: n.w, h: GROUP_TH }))); } catch (_) { }
+  try { const pg = P(); obs = pg.nodes.filter(n => !isCont(n) && n.type !== 'legend' && n.type !== 'tblock').map(n => ({ x: n.x - 2, y: n.y - 2, w: n.w + 4, h: n.h + 4 })).concat(pg.nodes.filter(n => { const row = contRow(n); return row && row.block; }).map(n => contFrame(n).title)); } catch (_) { }
   obs = (obs || []).concat(taken);
   if (!obs.length) return r0;
   const hit = c => obs.some(o => c.x - w / 2 < o.x + o.w && c.x + w / 2 > o.x && c.y - 9 < o.y + o.h && c.y + 9 > o.y);
@@ -1061,12 +1042,15 @@ function zoomAt(k2, cx, cy) {
 function findParent(n, p = P()) {
   const desc = new Set(descendants(n.id, p).map(d => d.id));
   const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+  const mine = contRow(n);
   let best = null;
   for (const c of p.nodes) {
-    if (!isCont(c) || c.id === n.id || desc.has(c.id)) continue;
-    if (n.type === 'band') continue;
-    if (n.type === 'lane' && c.type !== 'band') continue;
-    if (n.type === 'group' && c.type === 'group' && c.w * c.h <= n.w * n.h) continue;
+    const host = contRow(c);
+    if (!host || c.id === n.id || desc.has(c.id)) continue;
+    if (mine) {
+      if (host.rank > mine.rank) continue;
+      if (host.rank === mine.rank && (!mine.nest || c.w * c.h <= n.w * n.h)) continue;
+    }
     if (cx < c.x || cx > c.x + c.w || cy < c.y || cy > c.y + c.h) continue;
     if (c.w * c.h <= n.w * n.h) continue;
     if (!best || c.w * c.h < best.w * best.h) best = c;
@@ -1170,7 +1154,8 @@ function leafNatW(k) {
   return snapv(clamp(tw * kk + 28 + (k.icon ? 30 : 0), 96, 180));
 }
 function groupPlan(g, width) {
-  const ks = kids(g.id); if (!ks.length) return { rows: [], w: Math.max(120, measure(String(g.text || '').split('\n')[0], 12.5, true) + 24), h: GROUP_TH + 40 };
+  const eat = contEat(g);
+  const ks = kids(g.id); if (!ks.length) return { rows: [], w: Math.max(120, measure(String(g.text || '').split('\n')[0], 12.5, true) + 24) + eat.x, h: eat.y + 40 };
   const linked = !!g.links, gap = linked ? 40 : 16, vgap = linked ? 34 : 12;
   const rows = rowsOf(ks);
   const leaves = ks.filter(k => !isCont(k) && k.type !== 'equip');
@@ -1179,41 +1164,43 @@ function groupPlan(g, width) {
   let maxW = 0;
   for (const r of rows) { r.ws = r.items.map(widthOf); r.w = r.ws.reduce((a, b) => a + b, 0) + gap * (r.items.length - 1); maxW = Math.max(maxW, r.w); }
   const tg = codeTagOf(g, P()), titleW = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24 + (tg ? tg.w + 8 : 0);
-  const w = width || snapv(Math.max(titleW, maxW + 24));
+  const w = width || snapv(Math.max(titleW, maxW + 24) + eat.x);
+  const inner = w - eat.x;
   /* 一行放不下：按可用宽度折行（原图各子项同一高度、尚未排布时即退化为网格） */
-  if (maxW > w - 24) {
+  if (maxW > inner - 24) {
     const out = [];
     for (const r of rows) {
       let cur = null;
       r.items.forEach((it, i) => {
         const x = r.ws[i];
-        if (!cur || (cur.items.length && cur.w + gap + x > w - 24)) { cur = { items: [], ws: [], w: 0 }; out.push(cur); }
+        if (!cur || (cur.items.length && cur.w + gap + x > inner - 24)) { cur = { items: [], ws: [], w: 0 }; out.push(cur); }
         cur.w += (cur.items.length ? gap : 0) + x; cur.items.push(it); cur.ws.push(x);
       });
     }
     rows.length = 0; rows.push(...out); maxW = Math.max(...rows.map(r => r.w));
   }
   /* 宽度不够时等比收窄叶子 */
-  const k = Math.min(1, (w - 24) / (maxW || 1));
+  const k = Math.min(1, (inner - 24) / (maxW || 1));
   for (const r of rows) {
     r.ws = r.ws.map((x, i) => { const it = r.items[i]; return it.type === 'equip' || isCont(it) ? x : snapv(Math.max(72, x * k)); });
     r.hs = r.items.map((it, i) => isCont(it) ? groupPlan(it, r.ws[i]).h : it.type === 'equip' ? it.h : leafH(it, r.ws[i]));
     r.rh = Math.max(...r.hs); r.w = r.ws.reduce((a, b) => a + b, 0) + gap * (r.items.length - 1);
   }
-  const h = GROUP_TH + 12 + rows.reduce((a, r) => a + r.rh, 0) + vgap * (rows.length - 1) + 12;
+  const h = eat.y + 12 + rows.reduce((a, r) => a + r.rh, 0) + vgap * (rows.length - 1) + 12;
   return { rows, w, h: snapv(h), gap, vgap };
 }
 function groupNeed(g) { return groupPlan(g, g.w).h; }
 function layoutGroup(g) {
   const pl = groupPlan(g, g.w); if (!pl.rows.length) return;
   g.h = snapv(Math.max(g.h, pl.h));
-  let y = g.y + GROUP_TH + 12 + Math.max(0, (g.h - pl.h) / 2);
+  const box = contFrame(g).content;
+  let y = box.y + 12 + Math.max(0, (g.h - pl.h) / 2);
   for (const r of pl.rows) {
-    let x = g.x + (g.w - r.w) / 2;
+    let x = box.x + (box.w - r.w) / 2;
     r.items.forEach((it, i) => {
       const w = r.ws[i], h = r.hs[i];
       const nx = snapv(x), ny = snapv(y + (r.rh - h) / 2);
-      if (isCont(it)) { const dx = nx - it.x, dy = ny - it.y; for (const d of descendants(it.id)) { d.x += dx; d.y += dy; } it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); layoutGroup(it); }
+      if (isCont(it)) { const dx = nx - it.x, dy = ny - it.y; for (const d of descendants(it.id)) { d.x += dx; d.y += dy; } it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); layoutCont(it); }
       else if (it.type === 'equip') { it.x = snapv(x + (w - it.w) / 2); it.y = ny; }
       else { it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); }
       x += w + pl.gap;
@@ -1223,43 +1210,135 @@ function layoutGroup(g) {
 }
 function layoutLane(l) {
   const ks = kids(l.id); if (!ks.length) return;
-  const x0 = l.x + laneTW(l) + 10, x1 = l.x + l.w - 10;
+  const box0 = contFrame(l).content;
+  const x0 = box0.x + 10, x1 = box0.x + box0.w - 10;
   const need = layoutRow(ks, x0, x1, 0, 0, { minGap: l.links ? 36 : 28 });
   const hasG = ks.some(isCont);
-  l.h = snapv(Math.max(hasG ? need + 16 : need + 20, 56));
+  const side = sideOf(l), bar = (side === 't' || side === 'b') ? thickness(l, contRow(l)) : 0;
+  l.h = snapv(Math.max(bar + (hasG ? need + 16 : need + 20), 56));
+  const box = contFrame(l).content;
   for (const k of ks) {
-    if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(l.y + (l.h - need) / 2 + k._dy); delete k._dy; continue; }
-    if (isCont(k)) { k.y = snapv(l.y + 8); k.h = snapv(l.h - 16); layoutGroup(k); }
-    else if (k.type === 'equip') k.y = snapv(l.y + (l.h - k.h) / 2);
-    else { k.h = snapv(Math.min(leafH(k, k.w), l.h - 16)); k.y = snapv(l.y + (l.h - k.h) / 2); }
+    if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(box.y + (box.h - need) / 2 + k._dy); delete k._dy; continue; }
+    if (isCont(k)) { k.y = snapv(box.y + 8); k.h = snapv(box.h - 16); layoutCont(k); }
+    else if (k.type === 'equip') k.y = snapv(box.y + (box.h - k.h) / 2);
+    else { k.h = snapv(Math.min(leafH(k, k.w), box.h - 16)); k.y = snapv(box.y + (box.h - k.h) / 2); }
   }
+}
+function layoutInset(n, p) {
+  const box = contFrame(n).content;
+  const stacks = kids(n.id).filter(k => { const r = contRow(k); return r && r.layout === 'stack'; }).sort((a, b) => a.y - b.y);
+  for (const c of stacks) {
+    const dx = box.x - c.x;
+    c.x = box.x; c.w = box.w;
+    if (dx) for (const d of descendants(c.id)) d.x += dx;
+    layoutCont(c, p);
+  }
+}
+function layoutMargin(n) {
+  const box = contFrame(n).content;
+  const ks = kids(n.id).slice().sort((a, b) => a.y - b.y);
+  let y = box.y;
+  for (const k of ks) {
+    const dx = box.x - k.x, dy = y - k.y;
+    k.x = box.x; k.w = Math.min(k.w, box.w); k.y = snapv(y);
+    if (dx || dy) for (const d of descendants(k.id)) { d.x += dx; d.y += dy; }
+    if (isCont(k)) layoutCont(k);
+    y = k.y + k.h + 8;
+  }
+  const side = sideOf(n), th = (side === 't' || side === 'b') ? thickness(n, contRow(n)) : 0;
+  const need = ks.length ? y - 8 - n.y + th : n.h;
+  n.h = snapv(Math.max(n.h, need));
+}
+function layoutTile(n) {
+  const box = contFrame(n).content;
+  const ks = kids(n.id).slice().sort((a, b) => a.y - b.y);
+  let y = box.y;
+  for (const k of ks) {
+    const dx = box.x - k.x, dy = y - k.y;
+    k.x = box.x; k.w = box.w; k.y = snapv(y);
+    if (dx || dy) for (const d of descendants(k.id)) { d.x += dx; d.y += dy; }
+    if (isCont(k)) layoutCont(k);
+    y = k.y + k.h + 6;
+  }
+  const side = sideOf(n), th = side === 'b' ? thickness(n, contRow(n)) : 0;
+  if (ks.length) n.h = snapv(Math.max(n.h, y - 6 - n.y + th));
 }
 function layoutBand(b) {
-  const ks = kids(b.id);
-  const lanes = ks.filter(k => k.type === 'lane').sort((a, c) => a.y - c.y);
-  const others = ks.filter(k => k.type !== 'lane');
-  let y = b.y + 6;
-  for (const l of lanes) { l.x = b.x + BAND_TW + 6; l.w = b.w - BAND_TW - 12; l.y = snapv(y); layoutLane(l); y = l.y + l.h + 6; }
-  if (others.length) {
-    const need = layoutRow(others, b.x + BAND_TW + 16, b.x + b.w - 16, 0, 0, { cap: 180, maxGap: 160 });
-    const rowH = Math.max(need, 40) + 20;
-    for (const k of others) {
-      if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(y + 10 + k._dy); delete k._dy; continue; }
-      if (isCont(k)) { k.y = snapv(y + 4); k.h = snapv(rowH - 8); layoutGroup(k); }
-      else if (k.type === 'equip') k.y = snapv(y + (rowH - k.h) / 2);
-      else { k.h = leafH(k, k.w); k.y = snapv(y + (rowH - k.h) / 2); }
+  const ks = kids(b.id), row = contRow(b), box = contFrame(b).content;
+  const margins = ks.filter(k => { const r = contRow(k); return r && r.layout === 'margin'; });
+  const mw = margins.length ? Math.max(...margins.map(k => k.w)) : 0;
+  const mainX = box.x, mainW = box.w - mw;
+  const stacked = (row.stack === 'all' ? ks.filter(k => margins.indexOf(k) < 0) : ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; })).sort((a, c) => a.y - c.y);
+  const tiles = row.stack === 'all' ? [] : ks.filter(k => { const r = contRow(k); return r && r.layout === 'tile'; }).sort((a, c) => a.x - c.x);
+  const rest = ks.filter(k => stacked.indexOf(k) < 0 && margins.indexOf(k) < 0 && tiles.indexOf(k) < 0);
+  let y = box.y + 6;
+  if (row.stack === 'all') {
+    for (const l of stacked) {
+      const dx = mainX - l.x;
+      l.x = mainX; l.w = mainW; l.y = snapv(y);
+      if (dx) for (const d of descendants(l.id)) d.x += dx;
+      if (isCont(l)) layoutCont(l);
+      y = l.y + l.h + 6;
     }
-    y += rowH;
+  } else {
+    for (const l of stacked) { l.x = mainX + 6; l.w = mainW - 12; l.y = snapv(y); layoutLane(l); y = l.y + l.h + 6; }
+    if (tiles.length) {
+      const gap = 8, tw = (mainW - gap * (tiles.length - 1)) / tiles.length, y0 = y;
+      let x = mainX, maxH = 0;
+      for (const t of tiles) {
+        const dx = x - t.x, dy = y0 - t.y;
+        t.x = x; t.w = tw; t.y = snapv(y0);
+        if (dx || dy) for (const d of descendants(t.id)) { d.x += dx; d.y += dy; }
+        layoutCont(t); maxH = Math.max(maxH, t.h); x += tw + gap;
+      }
+      y = y0 + maxH + 6;
+    }
+    if (rest.length) {
+      const need = layoutRow(rest, mainX + 16, mainX + mainW - 16, 0, 0, { cap: 180, maxGap: 160 });
+      const rowH = Math.max(need, 40) + 20;
+      for (const k of rest) {
+        if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(y + 10 + k._dy); delete k._dy; continue; }
+        if (isCont(k)) { k.y = snapv(y + 4); k.h = snapv(rowH - 8); layoutCont(k); }
+        else if (k.type === 'equip') k.y = snapv(y + (rowH - k.h) / 2);
+        else { k.h = leafH(k, k.w); k.y = snapv(y + (rowH - k.h) / 2); }
+      }
+      y += rowH;
+    }
   }
-  const chars = [...String(b.text || '')].filter(c => c.trim()).length;
-  b.h = snapv(Math.max(y - b.y, 40, chars * 17 + 12));
+  for (const m of margins) {
+    const nx = box.x + box.w - mw, dx = nx - m.x, dy = box.y - m.y;
+    m.x = nx; m.y = box.y; m.h = Math.max(m.h, y - box.y);
+    if (dx || dy) for (const d of descendants(m.id)) { d.x += dx; d.y += dy; }
+    layoutCont(m);
+  }
+  const bot = sideOf(b) === 'b' ? thickness(b, row) : 0;
+  b.h = snapv(Math.max(y - b.y + bot, 40));
+  growForChars(b, row);
+}
+function layoutCont(n, p, opt) {
+  opt = opt || {};
+  const row = contRow(n);
+  if (!row) return;
+  if (row.thick.fit && opt.fitTitle && row.thick.fit.sides.indexOf(sideOf(n)) >= 0) fitTitle(n, row);
+  if (row.layout === 'inset') { layoutInset(n, p || P()); return; }
+  if (row.layout === 'margin') { layoutMargin(n); growForChars(n, row); return; }
+  if (row.layout === 'tile') { layoutTile(n); growForChars(n, row); return; }
+  if (row.layout === 'stack') { layoutBand(n); return; }
+  if (row.layout === 'row') { layoutLane(n); return; }
+  layoutGroup(n);
 }
 function bandNeedW(b, p) {
-  const ks = kids(b.id, p), lanes = ks.filter(k => k.type === 'lane'), others = ks.filter(k => k.type !== 'lane');
+  const ks = kids(b.id, p);
+  const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; });
+  const others = ks.filter(k => lanes.indexOf(k) < 0 && !(contRow(k) && (contRow(k).layout === 'margin' || contRow(k).layout === 'tile')));
   const rowW = items => { if (!items.length) return 0; const lw = Math.max(0, ...items.filter(i => !isCont(i) && i.type !== 'equip').map(leafNatW)); return items.reduce((a, i) => a + (isCont(i) ? groupPlan(i).w : i.type === 'equip' ? i.w : lw), 0) + 56 * (items.length - 1); };
   let w = others.length ? rowW(others) + 32 : 0;
-  for (const l of lanes) w = Math.max(w, laneTW(l) + 20 + rowW(kids(l.id, p)) + 6);
-  return BAND_TW + 12 + w;
+  for (const l of lanes) {
+    const side = sideOf(l), tw = (side === 'l' || side === 'r') ? thickness(l, contRow(l)) : 0;
+    w = Math.max(w, tw + 20 + rowW(kids(l.id, p)) + 6);
+  }
+  const eat = (sideOf(b) === 'l' || sideOf(b) === 'r') ? thickness(b, contRow(b)) : 0;
+  return eat + 12 + w;
 }
 function beautify(p = P()) {
   const saved = cur; cur = p.id;
@@ -1294,9 +1373,11 @@ function beautify(p = P()) {
     if (note) { note.x = X; note.y = snapv(bottom + 12); note.w = snapv(W - (leg ? leg.w + 12 : 0)); const lines = wrap(note.text, note.w - 20, note.size); note.h = snapv(Math.max(leg ? leg.h : 0, lines.length * Math.round(note.size * 1.38) + 16)); if (leg) leg.h = note.h; }
     shiftBelow(p, free, oldBottom, bottom, [title, sub, note, leg]);
   } else {
+    p.nodes.filter(n => !n.parent && contRow(n) && contRow(n).layout === 'inset').forEach(n => layoutInset(n, p));
     p.nodes.filter(n => n.type === 'lane' && !n.parent).forEach(layoutLane);
     const linkedFlow = g => { const ks = kids(g.id, p), ids = new Set(ks.map(k => k.id)); return ks.length >= 2 && !ks.some(isCont) && p.links.some(l => ids.has(l.from) && ids.has(l.to)); };
     p.nodes.filter(n => n.type === 'group' && !n.parent && !linkedFlow(n)).forEach(g => { const pl = groupPlan(g); g.w = pl.w; g.h = pl.h; layoutGroup(g); });
+    p.nodes.filter(n => !n.parent && contRow(n) && (contRow(n).layout === 'tile' || contRow(n).layout === 'margin' || (contRow(n).layout === 'stack' && contRow(n).stack === 'all') || (contRow(n).layout === 'flow' && n.type !== 'group'))).forEach(n => { if (contRow(n).layout === 'flow' && !linkedFlow(n)) { const pl = groupPlan(n); n.w = pl.w; n.h = pl.h; } layoutCont(n, p); });
     tidyFree(p);
   }
   for (const n of p.nodes) delete n.links;
@@ -1381,8 +1462,10 @@ function tidyFree(p) {
     const ids = new Set(ks.map(k => k.id)); if (!p.links.some(l => ids.has(l.from) && ids.has(l.to))) continue;
     tidyItems(ks, p);
     const x0 = Math.min(...ks.map(k => k.x)), y0 = Math.min(...ks.map(k => k.y)), x1 = Math.max(...ks.map(k => k.x + k.w)), y1 = Math.max(...ks.map(k => k.y + k.h));
-    const tw = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24, W = Math.max(tw, x1 - x0 + 48);
-    g.x = snapv((x0 + x1) / 2 - W / 2); g.w = snapv(W); g.y = snapv(y0 - GROUP_TH - 20); g.h = snapv(y1 - g.y + 20);
+    const side = sideOf(g), th = thickness(g, contRow(g));
+    const topEat = side === 't' ? th : 0, botEat = side === 'b' ? th : 0, sideEat = (side === 'l' || side === 'r') ? th : 0;
+    const tw = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24, W = Math.max(tw, x1 - x0 + 48) + sideEat;
+    g.x = snapv((x0 + x1) / 2 - W / 2); g.w = snapv(W); g.y = snapv(y0 - topEat - 20); g.h = snapv(y1 - g.y + 20 + botEat);
   }
   tidyItems(items, p);
   /* 标题、副标题、说明框 */
@@ -1446,10 +1529,224 @@ const SHAPES = SHAPES0.map(s => Object.assign(s, { grp: '基础形状' })).slice
   SH('arrowLR', 140, 52, 36, 18, '', '箭头'), SH('arrowUD', 56, 110, 16, 26, '', '箭头'), SH('chevron', 120, 48, 32, 18, '阶段', '箭头'), SH('homeplate', 120, 48, 32, 18, '阶段', '箭头'),
 ]);
 const CONTS = [
-  { k: 'band', name: '分组带', spec: { type: 'band', w: 1000, h: 180, text: '分组' }, svg: '<rect x="3" y="5" width="36" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="5" width="7" height="22" fill="currentColor"/>' },
-  { k: 'lane', name: '层（泳道）', spec: { type: 'lane', w: 900, h: 56, text: '新的一层' }, svg: '<rect x="3" y="9" width="36" height="13" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 9v13" stroke="currentColor" stroke-width="1.2"/>' },
-  { k: 'group', name: '子容器', spec: { type: 'group', w: 360, h: 110, text: '子系统' }, svg: '<rect x="5" y="5" width="32" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 11h32" stroke="currentColor" stroke-width="1.4"/>' },
+  { name: '分组带', spec: { type: 'band', w: 1000, h: 180, text: '分组' }, svg: '<rect x="3" y="5" width="36" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="5" width="7" height="22" fill="currentColor"/>', rank: 1, nest: false, defaultSide: 'l', layout: 'stack', stack: 'lanes', dialect: 'band', tone: 'band', slab: 'fill', thick: { mode: 'fixed', px: 34 }, script: 'chars', size: 15, bold: true, pad: 0, fill: 'node', stroke: 'node', titleFill: 'statusStroke', sw: 1.5, rx: 0, dash: '', rule: 0, block: false, dodge: false, badge: 'out', badgeAlign: 'start', badgePad: 4, badgeLift: true, edit: 'fixed', editW: 160, editH: 60, editExtra: 0, status: true, legend: false, sub: false, minChar: 17, minPad: 12 },
+  { name: '层（泳道）', spec: { type: 'lane', w: 900, h: 56, text: '新的一层' }, svg: '<rect x="3" y="9" width="36" height="13" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 9v13" stroke="currentColor" stroke-width="1.2"/>', rank: 2, nest: false, defaultSide: 'l', layout: 'row', stack: null, dialect: 'lane', tone: 'lane', slab: 'plain', thick: { mode: 'field', key: 'titleW', fallback: 96, min: 40, max: 300, bar: 28, fit: { min: 60, max: 96, pad: 22, sides: ['l', 'r'] } }, script: 'wrap', size: 13.5, bold: true, pad: 14, fill: 'node', stroke: 'theme', titleFill: 'none', sw: 1, rx: 0, dash: '', rule: 6, block: false, dodge: false, badge: 'in', badgeAlign: 'start', badgePad: 4, badgeLift: false, edit: 'slab', editW: null, editH: null, editExtra: 0, status: false, legend: false, sub: false, minChar: null, minPad: null },
+  { name: '子容器', spec: { type: 'group', w: 360, h: 110, text: '子系统' }, svg: '<rect x="5" y="5" width="32" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 11h32" stroke="currentColor" stroke-width="1.4"/>', rank: 3, nest: true, defaultSide: 't', layout: 'flow', stack: null, dialect: 'item', tone: 'group', slab: 'fill', thick: { mode: 'fixed', px: 26 }, script: 'line', size: 12.5, bold: true, pad: 12, fill: 'status', stroke: 'status', titleFill: 'statusTitle', sw: 1.3, rx: 6, dash: '', rule: 0, block: true, dodge: true, badge: 'in', badgeAlign: 'center', badgePad: 5, badgeLift: false, edit: 'slab+', editW: null, editH: null, editExtra: 30, status: true, legend: true, sub: true, minChar: null, minPad: null },
 ];
+function checkContRows() {
+  const ids = {}, sides = { t: 1, b: 1, l: 1, r: 1 }, layouts = { stack: 1, row: 1, flow: 1, inset: 1, margin: 1, tile: 1 };
+  const dialects = { band: 1, lane: 1, skip: 1, item: 1 }, tones = { band: 1, lane: 1, group: 1 }, slabs = { fill: 1, plain: 1 };
+  const scripts = { chars: 1, wrap: 1, line: 1 }, fills = { node: 1, status: 1 }, strokes = { node: 1, theme: 1, status: 1 };
+  const titles = { none: 1, statusStroke: 1, statusTitle: 1 }, badges = { out: 1, in: 1 }, aligns = { start: 1, center: 1 };
+  const edits = { fixed: 1, slab: 1, 'slab+': 1 }, dashes = { '': 1, '6 4': 1 };
+  const bad = () => { throw new Error('bad container row'); };
+  const flag = v => { if (v !== true && v !== false) bad(); };
+  for (const row of CONTS) {
+    if (!row || !row.spec || typeof row.spec.type !== 'string' || ids[row.spec.type]) bad();
+    ids[row.spec.type] = 1;
+    if (typeof row.name !== 'string' || typeof row.svg !== 'string' || !Number.isInteger(row.rank)) bad();
+    flag(row.nest);
+    if (!sides[row.defaultSide] || !layouts[row.layout] || !dialects[row.dialect]) bad();
+    if (row.layout === 'stack') { if (row.stack !== 'lanes' && row.stack !== 'all') bad(); }
+    else if (row.stack != null) bad();
+    if (!tones[row.tone] || !slabs[row.slab] || !scripts[row.script]) bad();
+    if (!fills[row.fill] || !strokes[row.stroke] || !titles[row.titleFill]) bad();
+    if (typeof row.size !== 'number' || typeof row.pad !== 'number' || typeof row.sw !== 'number' || typeof row.rx !== 'number') bad();
+    flag(row.bold);
+    if (!(row.dash in dashes) || typeof row.rule !== 'number') bad();
+    flag(row.block); flag(row.dodge); flag(row.badgeLift); flag(row.status); flag(row.legend); flag(row.sub);
+    if (!badges[row.badge] || !aligns[row.badgeAlign] || typeof row.badgePad !== 'number') bad();
+    if (!edits[row.edit] || typeof row.editExtra !== 'number') bad();
+    if (row.edit === 'fixed') { if (typeof row.editW !== 'number' || typeof row.editH !== 'number') bad(); }
+    else if (row.editW != null || row.editH != null) bad();
+    if (!((row.minChar == null && row.minPad == null) || (typeof row.minChar === 'number' && typeof row.minPad === 'number'))) bad();
+    const th = row.thick;
+    if (!th || (th.mode !== 'fixed' && th.mode !== 'field')) bad();
+    if (th.mode === 'fixed') { if (typeof th.px !== 'number') bad(); }
+    else {
+      if (typeof th.key !== 'string' || typeof th.fallback !== 'number' || typeof th.min !== 'number' || typeof th.max !== 'number') bad();
+      if (th.bar != null && typeof th.bar !== 'number') bad();
+      if (th.fit != null) {
+        const f = th.fit;
+        if (typeof f.min !== 'number' || typeof f.max !== 'number' || typeof f.pad !== 'number' || !Array.isArray(f.sides)) bad();
+      }
+    }
+  }
+  CONT = {};
+  for (const row of CONTS) CONT[row.spec.type] = row.rank;
+}
+function contRow(n) {
+  if (!n) return null;
+  for (let i = 0; i < CONTS.length; i++) if (CONTS[i].spec.type === n.type) return CONTS[i];
+  return null;
+}
+function sideOf(n) {
+  const row = contRow(n);
+  if (!row) return null;
+  if (n.labelSide === 't' || n.labelSide === 'b' || n.labelSide === 'l' || n.labelSide === 'r') return n.labelSide;
+  return row.defaultSide;
+}
+function thickness(n, row) {
+  const th = row.thick, side = sideOf(n);
+  if (th.mode === 'fixed') return th.px;
+  /* 层的左右栏用 titleW。上下改成 28，短层才留得下内容行，栏宽也不会被当成栏高。 */
+  if ((side === 't' || side === 'b') && th.bar != null) return th.bar;
+  return n[th.key] || th.fallback;
+}
+function contEat(n) {
+  const row = contRow(n);
+  if (!row) return { x: 0, y: 0 };
+  const side = sideOf(n), th = thickness(n, row);
+  if (side === 'l' || side === 'r') return { x: th, y: 0 };
+  return { x: 0, y: th };
+}
+function slabRect(n, side, thick) {
+  if (side === 'l') return { x: n.x, y: n.y, w: thick, h: n.h };
+  if (side === 'r') return { x: n.x + n.w - thick, y: n.y, w: thick, h: n.h };
+  if (side === 't') return { x: n.x, y: n.y, w: n.w, h: thick };
+  return { x: n.x, y: n.y + n.h - thick, w: n.w, h: thick };
+}
+function contentRect(n, side, thick) {
+  if (side === 'l') return { x: n.x + thick, y: n.y, w: Math.max(0, n.w - thick), h: n.h };
+  if (side === 'r') return { x: n.x, y: n.y, w: Math.max(0, n.w - thick), h: n.h };
+  if (side === 't') return { x: n.x, y: n.y + thick, w: n.w, h: Math.max(0, n.h - thick) };
+  return { x: n.x, y: n.y, w: n.w, h: Math.max(0, n.h - thick) };
+}
+function contColors(n) {
+  const row = contRow(n), t = T(), tone = t[row.tone], st = stStyle(n, t);
+  const fill = row.fill === 'node' ? (n.fill || tone.fill) : (st.fill === t.box.fill ? tone.fill : st.fill);
+  const stroke = row.stroke === 'node' ? (n.stroke || tone.stroke) : row.stroke === 'theme' ? tone.stroke : (st.stroke === t.box.stroke ? tone.stroke : st.stroke);
+  let titleFill = null;
+  if (row.slab === 'fill' && row.titleFill !== 'none') {
+    const head = tone.titleFill != null ? tone.titleFill : tone.stroke;
+    titleFill = n.status === 'base' ? head : (row.titleFill === 'statusTitle' ? st.title : st.stroke);
+  }
+  return { fill, stroke, titleFill, titleText: tone.titleText };
+}
+function titleLines(n, row, slab, color) {
+  const raw = String(n.text || '');
+  const glyphs = [...raw].filter(c => c.trim());
+  const vertical = slab.h > slab.w;
+  const wrapW = Math.max(8, slab.w - row.pad);
+  let lines, vert;
+  if (row.script === 'chars' && vertical) { lines = glyphs.length ? glyphs : ['']; vert = true; }
+  else if (row.script === 'chars') { lines = [glyphs.join('')]; vert = false; }
+  else if (wrapW < row.size * 2) { lines = glyphs.length ? glyphs : ['']; vert = true; }
+  else {
+    lines = wrap(raw, wrapW, row.size, row.bold);
+    if (row.script === 'line') lines = lines.slice(0, 1);
+    if (!lines.length) lines = [''];
+    vert = false;
+  }
+  return { raw, lines, size: row.size, bold: row.bold, color, cx: slab.x + slab.w / 2, cy: slab.y + slab.h / 2, vert };
+}
+function ruleLine(title, side, inset, stroke) {
+  if (side === 'l') return { x1: title.x + title.w, y1: title.y + inset, x2: title.x + title.w, y2: title.y + title.h - inset, stroke };
+  if (side === 'r') return { x1: title.x, y1: title.y + inset, x2: title.x, y2: title.y + title.h - inset, stroke };
+  if (side === 't') return { x1: title.x + inset, y1: title.y + title.h, x2: title.x + title.w - inset, y2: title.y + title.h, stroke };
+  return { x1: title.x + inset, y1: title.y, x2: title.x + title.w - inset, y2: title.y, stroke };
+}
+function editRect(title, side, row) {
+  if (row.edit === 'fixed') return { x: title.x, y: title.y, w: row.editW, h: row.editH };
+  if (row.edit === 'slab') return { x: title.x, y: title.y, w: title.w, h: title.h };
+  const extra = row.editExtra || 0;
+  if (side === 'b') return { x: title.x, y: title.y - extra, w: title.w, h: title.h + extra };
+  if (side === 'l') return { x: title.x, y: title.y, w: title.w + extra, h: title.h };
+  if (side === 'r') return { x: title.x - extra, y: title.y, w: title.w + extra, h: title.h };
+  return { x: title.x, y: title.y, w: title.w, h: title.h + extra };
+}
+function contFrame(n) {
+  const row = contRow(n);
+  if (!row) return null;
+  const side = sideOf(n), thick = thickness(n, row);
+  const title = slabRect(n, side, thick), content = contentRect(n, side, thick), colors = contColors(n);
+  return {
+    body: { x: n.x, y: n.y, w: n.w, h: n.h, rx: row.rx, fill: colors.fill, stroke: colors.stroke, sw: row.sw, dash: row.dash },
+    title: { x: title.x, y: title.y, w: title.w, h: title.h, fill: row.slab === 'fill' ? colors.titleFill : null },
+    rule: row.rule > 0 ? ruleLine(title, side, row.rule, colors.stroke) : null,
+    text: titleLines(n, row, title, colors.titleText),
+    content, edit: editRect(title, side, row)
+  };
+}
+function contBadge(n, p, pill) {
+  const row = contRow(n);
+  if (!row || !pill) return null;
+  const f = contFrame(n);
+  let x, y;
+  if (row.badge === 'in' && f.title.w < pill.w + 8) { x = f.content.x + row.badgePad; y = f.content.y + row.badgePad; }
+  else if (row.badge === 'out') {
+    x = f.content.x + row.badgePad; y = f.content.y + row.badgePad;
+    /* 带内还有容器时，编号骑在上边框外，避免被层挡住 */
+    if (row.badgeLift && p && p.nodes && p.nodes.some(k => k.parent === n.id && isCont(k))) y = n.y - 7;
+  } else if (row.badgeAlign === 'center') { x = f.title.x + row.badgePad; y = f.title.y + (f.title.h - pill.h) / 2; }
+  else { x = f.title.x + row.badgePad; y = f.title.y + row.badgePad; }
+  return { x, y, w: pill.w, h: pill.h };
+}
+/* 0.65 贴着外框描边的内沿。顶栏厚 26、圆角 6 时，这条路径与原来的子容器顶栏字符串相同。 */
+function slabPath(n, slab, side, rx) {
+  const x = n.x, y = n.y, w = n.w, h = n.h, k = (side === 't' || side === 'b') ? slab.h : slab.w;
+  if (side === 't') return `M${x + 0.65},${y + k} V${y + rx} Q${x + 0.65},${y + 0.65} ${x + rx},${y + 0.65} H${x + w - rx} Q${x + w - 0.65},${y + 0.65} ${x + w - 0.65},${y + rx} V${y + k} Z`;
+  if (side === 'b') { const yb = y + h; return `M${x + 0.65},${yb - k} V${yb - rx} Q${x + 0.65},${yb - 0.65} ${x + rx},${yb - 0.65} H${x + w - rx} Q${x + w - 0.65},${yb - 0.65} ${x + w - 0.65},${yb - rx} V${yb - k} Z`; }
+  if (side === 'l') return `M${x + k},${y + 0.65} H${x + rx} Q${x + 0.65},${y + 0.65} ${x + 0.65},${y + rx} V${y + h - rx} Q${x + 0.65},${y + h - 0.65} ${x + rx},${y + h - 0.65} H${x + k} Z`;
+  const xr = x + w;
+  return `M${xr - k},${y + 0.65} H${xr - rx} Q${xr - 0.65},${y + 0.65} ${xr - 0.65},${y + rx} V${y + h - rx} Q${xr - 0.65},${y + h - 0.65} ${xr - rx},${y + h - 0.65} H${xr - k} Z`;
+}
+function paintCont(n, p) {
+  const row = contRow(n), f = contFrame(n), side = sideOf(n), b = f.body;
+  let s = `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}"`;
+  if (b.rx) s += ` rx="${b.rx}"`;
+  s += ` fill="${b.fill}" stroke="${b.stroke}" stroke-width="${b.sw}"`;
+  if (b.dash) s += ` stroke-dasharray="${b.dash}"`;
+  s += '/>';
+  if (f.title.fill) {
+    if (b.rx) s += `<path d="${slabPath(n, f.title, side, b.rx)}" fill="${f.title.fill}"/>`;
+    else s += `<rect x="${f.title.x}" y="${f.title.y}" width="${f.title.w}" height="${f.title.h}" fill="${f.title.fill}"/>`;
+  }
+  if (f.rule) s += `<line x1="${f.rule.x1}" y1="${f.rule.y1}" x2="${f.rule.x2}" y2="${f.rule.y2}" stroke="${f.rule.stroke}" stroke-width="1"/>`;
+  let lines = f.text.lines, cx = f.text.cx;
+  if (row.dodge && !f.text.vert) {
+    const tg = codeTagOf(n, p);
+    const L0 = tg ? tg.x + tg.w + 6 : f.title.x + 6, avail = f.title.x + f.title.w - 6 - L0;
+    lines = wrap(n.text, Math.max(24, tg ? avail : f.title.w - row.pad), row.size, row.bold);
+    if (row.script === 'line') lines = lines.slice(0, 1);
+    if (!lines.length) lines = [''];
+    const tw0 = measure(lines[0] || '', row.size, row.bold);
+    /* 编号牌占住标题左端时右移，避免叠字 */
+    if (tg && cx - tw0 / 2 < L0) cx = Math.min(L0 + tw0 / 2, f.title.x + f.title.w - 6 - tw0 / 2);
+  }
+  s += textBlock(lines, cx, f.text.cy, f.text.size, f.text.bold, f.text.color);
+  return s;
+}
+function exportCont(n, p, sink) {
+  const f = contFrame(n);
+  sink.body(f.body);
+  if (f.title.fill) sink.slab(f.title);
+  if (f.rule && sink.rule) sink.rule(f.rule);
+  sink.label(f.title, f.text);
+}
+function setLabelSide(n, side) {
+  if (!contRow(n)) return;
+  if (side !== 't' && side !== 'b' && side !== 'l' && side !== 'r') return;
+  const before = contFrame(n).content;
+  n.labelSide = side;
+  const after = contFrame(n).content;
+  const dx = after.x - before.x, dy = after.y - before.y;
+  if (!dx && !dy) return;
+  for (const k of kids(n.id)) for (const d of [k].concat(descendants(k.id))) { d.x += dx; d.y += dy; }
+}
+function contDialect(n) { const row = contRow(n); return row ? row.dialect : null; }
+function fitTitle(n, row) {
+  const fit = row.thick.fit, line = String(n.text || '').split('\n')[0];
+  n[row.thick.key] = snapv(clamp(measure(line, row.size, row.bold) + fit.pad, fit.min, fit.max));
+}
+function growForChars(n, row) {
+  if (!row || row.minChar == null) return;
+  const side = sideOf(n);
+  if (side !== 'l' && side !== 'r') return;
+  const chars = [...String(n.text || '')].filter(c => c.trim()).length;
+  n.h = snapv(Math.max(n.h, chars * row.minChar + row.minPad));
+}
+checkContRows();
 function pitem(label, payload, inner, isImg) {
   return `<div class="pitem" draggable="true" data-add='${esc(JSON.stringify(payload))}' title="拖到画布，或点击添加">${isImg ? `<img src="${inner}" alt="">` : `<svg viewBox="0 0 42 30">${inner}</svg>`}<span>${esc(label)}</span></div>`;
 }
@@ -1778,9 +2075,7 @@ function startEdit(n) {
   if (!n || n.type === 'legend' || n.type === 'tblock') return;
   editing = n; const ed = $('#editor'), r = svg.getBoundingClientRect(), sr = stage.getBoundingClientRect();
   let x = n.x, y = n.y, w = n.w, h = n.h;
-  if (n.type === 'band') { w = Math.max(160, BAND_TW); h = 60; }
-  if (n.type === 'lane') { w = laneTW(n); }
-  if (n.type === 'group') { h = GROUP_TH + 30; }
+  if (contRow(n)) { const e = contFrame(n).edit; x = e.x; y = e.y; w = e.w; h = e.h; }
   Object.assign(ed.style, { display: 'block', left: ((x - view.x) * view.k + r.left - sr.left) + 'px', top: ((y - view.y) * view.k + r.top - sr.top) + 'px', width: Math.max(120, w * view.k) + 'px', height: Math.max(40, h * view.k) + 'px', fontSize: Math.max(12, (n.size || 13) * view.k) + 'px', fontFamily: fontCSS(n) });
   ed.value = n.text || ''; ed.focus(); ed.select();
 }
@@ -1906,12 +2201,12 @@ function reduceCrossings(p = P()) {
   const snap = () => JSON.stringify(p.nodes);
   beautify(p); let best = crossingCount(p), bestSnap = snap();
   const byId = new Map(p.nodes.map(n => [n.id, n]));
-  const conts = p.nodes.filter(n => n.type === 'lane' || n.type === 'group' || n.type === 'band');
+  const conts = p.nodes.filter(isCont);
   const cxOf = id => { const n = byId.get(id); return n ? n.x + n.w / 2 : 0; };
   for (let sweep = 0; sweep < 4; sweep++) {
     const order = [...conts].sort((a, b) => sweep % 2 ? (b.y - a.y) : (a.y - b.y));
     for (const C of order) {
-      const sibs = kids(C.id, p).filter(k => k.type !== 'lane' && !['text', 'note', 'legend'].includes(k.type));
+      const sibs = kids(C.id, p).filter(k => { const r = contRow(k); if (r && r.layout === 'row') return false; return !['text', 'note', 'legend'].includes(k.type); });
       if (sibs.length < 2) continue;
       const own = new Map(); for (const sb of sibs) { own.set(sb.id, sb); for (const d of descendants(sb.id, p)) own.set(d.id, sb); }
       const ext = new Map(sibs.map(sb => [sb.id, []])), par = new Map(sibs.map(sb => [sb.id, sb.id]));
@@ -1919,14 +2214,15 @@ function reduceCrossings(p = P()) {
       for (const l of p.links) {
         const a = own.get(l.from), b = own.get(l.to);
         if (a && !b) ext.get(a.id).push(cxOf(l.to)); else if (b && !a) ext.get(b.id).push(cxOf(l.from));
-        else if (a && b && a !== b && C.type !== 'group') par.set(find(a.id), find(b.id));
+        else if (a && b && a !== b && contRow(C).layout !== 'flow' && contRow(C).layout !== 'margin') par.set(find(a.id), find(b.id));
       }
       const bary = sb => { const v = ext.get(sb.id); return v.length ? v.reduce((t, x) => t + x, 0) / v.length : sb.x + sb.w / 2; };
       const blocks = new Map(); for (const sb of sibs) { const r = find(sb.id); if (!blocks.has(r)) blocks.set(r, []); blocks.get(r).push(sb); }
       const bl = [...blocks.values()].map(m => { m.sort((a, b) => a.x - b.x || a.y - b.y); const withExt = m.filter(x => ext.get(x.id).length); return { m, key: (withExt.length ? withExt : m).reduce((t, x) => t + bary(x), 0) / (withExt.length || m.length), x0: m[0].x }; });
       bl.sort((a, b) => a.key - b.key || a.x0 - b.x0);
       const newOrder = bl.flatMap(b => b.m);
-      const slots = [...sibs].sort(C.type === 'group' ? ((a, b) => a.y - b.y || a.x - b.x) : ((a, b) => a.x - b.x || a.y - b.y)).map(n => [n.x, n.y]);
+      const ySlot = contRow(C).layout === 'flow' || contRow(C).layout === 'margin';
+      const slots = [...sibs].sort(ySlot ? ((a, b) => a.y - b.y || a.x - b.x) : ((a, b) => a.x - b.x || a.y - b.y)).map(n => [n.x, n.y]);
       newOrder.forEach((n, i) => { const dx = slots[i][0] - n.x, dy = slots[i][1] - n.y; for (const d of [n, ...descendants(n.id, p)]) { d.x += dx; d.y += dy; } });
     }
     beautify(p);
@@ -1988,7 +2284,8 @@ function renderCrumb() {
 $('#crumb').addEventListener('click', e => { const b = e.target.closest('[data-crumb]'); if (b) goPage(+b.dataset.crumb); });
 
 /* ---------- properties panel ---------- */
-const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏', band: '分组带', lane: '层（泳道）', group: '子容器' });
+const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏' });
+for (const row of CONTS) TYPE_NAME[row.spec.type] = row.name;
 const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
   ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate']]];
 function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
@@ -2001,14 +2298,23 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
-const FIELD_CAP = { status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
+const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
 const SHARED_REJECT = {};
 const NODE_FIELDS = {
+  labelSide: {
+    id: 'labelSide', kind: 'seg',
+    show: function (items) { return items.length > 0 && items.every(function (n) { return !!contRow(n); }); },
+    get: function (n) { return sideOf(n); },
+    set: function (n, v) { setLabelSide(n, v); },
+    options: function () { return [['t', '上'], ['b', '下'], ['l', '左'], ['r', '右']]; }
+  },
   status: {
     id: 'status', kind: 'seg',
     show: function (items) {
       if (items.length > 1) return true;
-      return ['text', 'note', 'legend', 'lane', 'tblock'].indexOf(items[0].type) < 0;
+      const row = contRow(items[0]);
+      if (row) return !!row.status;
+      return ['text', 'note', 'legend', 'tblock'].indexOf(items[0].type) < 0;
     },
     get: function (n) { return n.status || 'base'; },
     set: function (n, v) { n.status = v; },
@@ -2142,6 +2448,7 @@ function selectedNodes() {
 function parseShared(field, raw) {
   if (raw === null) return null;
   if (raw === '__mixed__') return SHARED_REJECT;
+  if (field.id === 'labelSide' && raw !== 't' && raw !== 'b' && raw !== 'l' && raw !== 'r') return SHARED_REJECT;
   if (field.id === 'status' && ['base', 'new', 'key'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'dir' && ['one', 'both', 'none'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'kind' && !LINK_KINDS[raw]) return SHARED_REJECT;
@@ -2271,7 +2578,8 @@ function renderProps() {
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
     }
     h += fieldsHTML([n], NODE_FIELDS);
-    if (n.type === 'lane') h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="40" max="300" value="${laneTW(n)}"></div>`;
+    const crow = contRow(n);
+    if (crow && crow.thick.mode === 'field' && (sideOf(n) === 'l' || sideOf(n) === 'r')) h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="${crow.thick.min}" max="${crow.thick.max}" value="${thickness(n, crow)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
     if (window.Combo && iconable(n)) {
       const cb = Combo.isCombo(n) && doc.custom[n.icon.slice(3)].combo;
@@ -2279,7 +2587,8 @@ function renderProps() {
       else if (n.icon && n.icon.startsWith('lib:')) h += `<hr><div class="row"><button id="p-form" style="border-color:var(--line);justify-content:center">⁂ 用此装备生成编队（Ctrl+Shift+B）</button></div>`;
     }
     if (window.Std) h += Std.propsHTML('node', n, p);
-    if (!['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)) h += `<hr><div class="hint">内部结构：双击进入后可继续画该系统的组成。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
+    const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'tblock'].includes(n.type);
+    if (showSub) h += `<hr><div class="hint">内部结构：双击进入后可继续画该系统的组成。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
@@ -2331,7 +2640,7 @@ function bindProps() {
   else if (sel.size) bindFields(selectedNodes(), NODE_FIELDS);
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
   on('#p-type', 'change', e => { checkpoint(); n.type = e.target.value; if (n.type === 'equip' && n.h < 72) { n.w = Math.max(n.w, 96); n.h = 96; } render(); });
-  on('#p-tw', 'input', e => { n.titleW = clamp(+e.target.value || 96, 40, 300); live(); });
+  on('#p-tw', 'input', e => { const row = contRow(n), th = row && row.thick.mode === 'field' ? row.thick : { key: 'titleW', min: 40, max: 300, fallback: 96 }; n[th.key] = clamp(+e.target.value || th.fallback, th.min, th.max); live(); });
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
@@ -2565,19 +2874,24 @@ async function exportPPTX() {
     const txt = (lines, o) => lines.join('\n');
     for (const n of drawOrder(p)) {
       const base = { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h) };
-      if (n.type === 'band') {
-        const st = stStyle(n, t);
-        slide.addShape(pptx.ShapeType.rect, { ...base, fill: { color: hex(n.fill || t.band.fill) }, line: { color: hex(t.band.stroke), width: LW(1.5) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(BAND_TW), h: S(n.h), fill: { color: hex(n.status === 'base' ? t.band.titleFill : st.stroke) }, color: hex(t.band.titleText), fontFace: fontFace(n), fontSize: PT(15), bold: true, align: 'center', valign: 'middle', vert: 'eaVert', margin: 0 });
-      } else if (n.type === 'lane') {
-        const tw = laneTW(n);
-        slide.addShape(pptx.ShapeType.rect, { ...base, fill: { color: hex(n.fill || t.lane.fill) }, line: { color: hex(t.lane.stroke), width: LW(1) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(tw), h: S(n.h), color: hex(t.lane.titleText), fontFace: fontFace(n), fontSize: PT(13.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
-        slide.addShape(pptx.ShapeType.line, { x: X(n.x + tw), y: Y(n.y + 6), w: 0, h: S(n.h - 12), line: { color: hex(t.lane.stroke), width: LW(1) } });
-      } else if (n.type === 'group') {
-        const st = stStyle(n, t);
-        slide.addShape(pptx.ShapeType.roundRect, { ...base, rectRadius: S(6), fill: { color: hex(st.fill === t.box.fill ? t.group.fill : st.fill) }, line: { color: hex(st.stroke === t.box.stroke ? t.group.stroke : st.stroke), width: LW(1.3) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(GROUP_TH), fill: { color: hex(n.status === 'base' ? t.group.titleFill : st.title) }, color: hex(t.group.titleText), fontFace: fontFace(n), fontSize: PT(12.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
+      if (contRow(n)) {
+        exportCont(n, p, {
+          body(b) {
+            const o = { x: X(b.x), y: Y(b.y), w: S(b.w), h: S(b.h), fill: { color: hex(b.fill) }, line: { color: hex(b.stroke), width: LW(b.sw) } };
+            if (b.dash) o.line.dashType = PPT_DASH[b.dash] || 'solid';
+            slide.addShape(b.rx ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, b.rx ? { ...o, rectRadius: S(b.rx) } : o);
+          },
+          slab(s) { slide.addShape(pptx.ShapeType.rect, { x: X(s.x), y: Y(s.y), w: S(s.w), h: S(s.h), fill: { color: hex(s.fill) }, line: { color: hex(s.fill), width: 0 } }); },
+          rule(r) {
+            const dx = r.x2 - r.x1, dy = r.y2 - r.y1;
+            slide.addShape(pptx.ShapeType.line, { x: X(Math.min(r.x1, r.x2)), y: Y(Math.min(r.y1, r.y2)), w: dx === 0 ? 0 : S(Math.abs(dx)), h: dy === 0 ? 0 : S(Math.abs(dy)), line: { color: hex(r.stroke), width: LW(1) } });
+          },
+          label(s, text) {
+            const o = { x: X(s.x), y: Y(s.y), w: S(s.w), h: S(s.h), color: hex(text.color), fontFace: fontFace(n), fontSize: PT(text.size), bold: !!text.bold, align: 'center', valign: 'middle', margin: text.vert ? 0 : 1 };
+            if (text.vert) o.vert = 'eaVert';
+            addT(slide, text.raw, o);
+          }
+        });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) {
           const o = { x: X(c.x), y: Y(c.y), w: S(c.w), h: S(c.h), line: { color: hex(c.stroke), width: LW(c.lw) }, ...(c.fill ? { fill: { color: hex(c.fill) } } : {}) };
@@ -2686,7 +3000,7 @@ async function exportVSDX(pageList) {
       const W = w * f, H = h * f;
       let s = `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(x) + W / 2))}${cell('PinY', num(Y(y) - H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('Angle', 0)}`;
       if (o.fill) s += cell('FillForegnd', o.fill) + cell('FillPattern', 1); else s += cell('FillPattern', 0);
-      if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', 1); else s += cell('LinePattern', 0);
+      if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', o.dash ? (VSD_PAT[o.dash] || 1) : 1); else s += cell('LinePattern', 0);
       if (o.round) s += cell('Rounding', num(o.round * f));
       s += cell('VerticalAlign', o.valign ?? 1) + cell('LeftMargin', num(2 * f)) + cell('RightMargin', num(2 * f)) + cell('TopMargin', num(1 * f)) + cell('BottomMargin', num(1 * f));
       if (o.text != null && o.type && GEO[o.type] && o.type !== 'rect') {
@@ -2700,17 +3014,12 @@ async function exportVSDX(pageList) {
       return s + '</Shape>';
     };
     for (const n of drawOrder(p)) {
-      if (n.type === 'band') {
-        const st = stStyle(n, t);
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: n.fill || t.band.fill, line: t.band.stroke, lw: 1.5 }));
-        shapes.push(box(n.x, n.y, BAND_TW, n.h, { fill: n.status === 'base' ? t.band.titleFill : st.stroke, text: n.text, size: 15, bold: true, color: t.band.titleText, vert: true, face: fontFace(n) }));
-      } else if (n.type === 'lane') {
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: n.fill || t.lane.fill, line: t.lane.stroke }));
-        shapes.push(box(n.x, n.y, laneTW(n), n.h, { text: n.text, size: 13.5, bold: true, color: t.lane.titleText, face: fontFace(n) }));
-      } else if (n.type === 'group') {
-        const st = stStyle(n, t);
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: st.fill === t.box.fill ? t.group.fill : st.fill, line: st.stroke === t.box.stroke ? t.group.stroke : st.stroke, lw: 1.3, round: 6 }));
-        shapes.push(box(n.x, n.y, n.w, GROUP_TH, { fill: n.status === 'base' ? t.group.titleFill : st.title, text: n.text, size: 12.5, bold: true, color: t.group.titleText, face: fontFace(n) }));
+      if (contRow(n)) {
+        exportCont(n, p, {
+          body(b) { shapes.push(box(b.x, b.y, b.w, b.h, { fill: b.fill, line: b.stroke, lw: b.sw, round: b.rx || 0, dash: b.dash })); },
+          slab(s) { shapes.push(box(s.x, s.y, s.w, s.h, { fill: s.fill })); },
+          label(s, text) { shapes.push(box(s.x, s.y, s.w, s.h, { text: text.raw, size: text.size, bold: text.bold, color: text.color, vert: text.vert, face: fontFace(n) })); }
+        });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) shapes.push(box(c.x, c.y, c.w, c.h, { fill: c.fill || null, line: c.stroke, lw: c.lw, ...(c.text ? { text: c.text, size: c.size, bold: c.bold, color: c.color, align: c.align, face: fontFace(n) } : {}) }));
       } else if (n.type === 'legend') {
