@@ -174,6 +174,7 @@ function iconName(key) {
 let doc, cur = 'root', stack = ['root'];
 let sel = new Set(), linkSel = new Set(), hoverId = null, hoverLink = null;
 let undoS = [], redoS = [];
+let irSess = null;
 const P = () => doc.pages[cur];
 const T = () => THEMES[doc.theme] || THEMES.report;
 const nodeById = (id, p = P()) => p.nodes.find(n => n.id === id);
@@ -1798,8 +1799,8 @@ $('#editor').addEventListener('blur', () => commitEdit());
 /* ---------- keyboard ---------- */
 let clipboard = null;
 const SHORTCUTS = [
-  ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
-  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
+  ['文件', [['Ctrl+O', '打开工程／图片／PPT／Visio（图片先进入导入校对）'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
+  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+X／Ctrl+C／Ctrl+V', '剪切／复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
   ['复合图标', [['Ctrl+G', '把所选元素组合为一个复合图标'], ['Ctrl+Shift+U', '拆分复合图标'], ['Ctrl+Shift+B', '编队生成器（同型装备按阵型合成）']]],
@@ -1825,6 +1826,12 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { e.preventDefault(); closeSaveAs(); return; }
     if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); confirmSaveAs(); return; }
     if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault();
+    return;
+  }
+  const review = $('#img-review');
+  if (review && review.style.display === 'flex') {
+    if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault();
+    if (e.key === 'Escape') { e.preventDefault(); cancelImageReview(); }
     return;
   }
   const tag = (document.activeElement?.tagName || '').toLowerCase();
@@ -1862,6 +1869,7 @@ document.addEventListener('keydown', e => {
     if (k === 'y') return go(redo);
     if (k === 'a') return go(() => { selectNodes(P().nodes.map(n => n.id)); render(); });
     if (k === 'c') return copySel();
+    if (k === 'x') return cutSel();
     if (k === 'v') return paste();
     if (k === 'd') return go(() => { copySel(); paste(); });
     if (k === 's') return go(saveProject);
@@ -1947,15 +1955,42 @@ function deleteSel() {
     render();
     return;
   }
-  if (!sel.size) return; checkpoint();
-  const kill = new Set(); for (const id of sel) { kill.add(id); descendants(id).forEach(d => kill.add(d.id)); }
-  p.nodes = p.nodes.filter(n => !kill.has(n.id)); p.links = p.links.filter(l => !kill.has(l.from) && !kill.has(l.to));
-  clearSel(); render();
+  const snap = snapSel();
+  if (!snap) return;
+  checkpoint();
+  dropSnap(snap);
+}
+function snapSel() {
+  if (!sel.size) return null;
+  const ids = new Set();
+  for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
+  const page = P();
+  return {
+    nodes: page.nodes.filter(n => ids.has(n.id)).map(n => ({ ...n })),
+    links: page.links.filter(l => ids.has(l.from) && ids.has(l.to)).map(l => ({ ...l }))
+  };
+}
+function dropSnap(snap) {
+  const ids = new Set(snap.nodes.map(n => n.id));
+  const page = P();
+  page.nodes = page.nodes.filter(n => !ids.has(n.id));
+  page.links = page.links.filter(l => !ids.has(l.from) && !ids.has(l.to));
+  clearSel();
+  render();
 }
 function copySel() {
-  if (!sel.size) return; const ids = new Set(); for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
-  clipboard = { nodes: P().nodes.filter(n => ids.has(n.id)).map(n => ({ ...n })), links: P().links.filter(l => ids.has(l.from) && ids.has(l.to)).map(l => ({ ...l })) };
+  const snap = snapSel();
+  if (!snap) return;
+  clipboard = snap;
   toast(`已复制 ${clipboard.nodes.length} 个元素`);
+}
+function cutSel() {
+  const snap = snapSel();
+  if (!snap) return;
+  clipboard = snap;
+  checkpoint();
+  dropSnap(clipboard);
+  toast(`已剪切 ${clipboard.nodes.length} 个元素`);
 }
 function paste() {
   if (!clipboard) return; checkpoint(); const map = {};
@@ -2869,10 +2904,496 @@ $('#b-open').onclick = () => $('#f-open').click();
 $('#f-open').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   e.target.value = '';
+  if (/\.(png|jpe?g)$/i.test(f.name)) { openImageFile(f); return; }
   if (/\.(pptx|vsdx|ppt|vsd|drawio|xml)$/i.test(f.name)) { openForeign(f); return; }
-  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
+  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、框图图片（.png／.jpg）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
+function decodeImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!/\.(png|jpe?g)$/i.test(file.name || '')) { reject(new Error('不是图片')); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      URL.revokeObjectURL(url);
+      if (!w || !h) { reject(new Error('无法读取该图片')); return; }
+      if (w * h > 8000000) { reject(new Error('图片过大，请缩到 800 万像素以内再导入')); return; }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0);
+      resolve(g.getImageData(0, 0, w, h));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('无法读取该图片')); };
+    img.src = url;
+  });
+}
+async function openImageFile(file) {
+  if (!window.ImgImport) { toast('识图模块未加载'); return false; }
+  toast('正在识别 ' + file.name + ' …');
+  await new Promise(r => setTimeout(r, 30));
+  let image;
+  try { image = await decodeImageFile(file); }
+  catch (e) { toast((e && e.message) || '无法读取该图片'); return false; }
+  let draft;
+  try { draft = ImgImport.read(image); }
+  catch (e) { toast('导入失败：' + ((e && e.message) || e)); return false; }
+  if (!draft.page || !draft.page.nodes.length) { toast('没有识别到可编辑的框图'); return false; }
+  if (draft.notes && draft.notes.length) console.info('识图提示', draft.notes);
+  const url = URL.createObjectURL(file);
+  try {
+    return await showImageReview({
+      name: file.name.replace(/\.[^.]+$/, ''),
+      url: url,
+      width: image.width,
+      height: image.height,
+      page: draft.page,
+      notes: draft.notes
+    });
+  } finally { URL.revokeObjectURL(url); }
+}
+function showImageReview(spec) {
+  if (irSess) { const prev = irSess; irSess = null; prev.resolve(false); }
+  return new Promise(resolve => {
+    irSess = {
+      name: spec.name || '未命名',
+      url: spec.url,
+      w: spec.width || 1,
+      h: spec.height || 1,
+      nodes: (spec.page.nodes || []).map(n => Object.assign({}, n)),
+      links: (spec.page.links || []).map(k => Object.assign({}, k)),
+      sel: null,
+      mode: '',
+      linkFrom: null,
+      dragged: false,
+      resolve: resolve
+    };
+    const dlg = $('#img-review');
+    $('#ir-img').src = spec.url;
+    $('#ir-overlay').classList.remove('on');
+    dlg.classList.remove('overlay');
+    const note = (spec.notes && spec.notes.length) ? spec.notes.join('') : '';
+    $('#ir-msg').textContent = note + '点一个框改文字。选中连线后可反转、改箭头、拖两端圆点，或拆开交叉线。';
+    const toastEl = $('#toast');
+    if (toastEl) toastEl.classList.remove('show');
+    paintImageReview();
+    dlg.style.display = 'flex';
+  });
+}
+function finishImageReview(ok) {
+  const s = irSess;
+  irSess = null;
+  const dlg = $('#img-review');
+  if (dlg) { dlg.style.display = 'none'; dlg.classList.remove('overlay'); }
+  const ov = $('#ir-overlay');
+  if (ov) ov.classList.remove('on');
+  if (s) s.resolve(!!ok);
+}
+function cancelImageReview() {
+  if (!irSess) return;
+  toast('已取消导入');
+  finishImageReview(false);
+}
+function confirmImageReview() {
+  const s = irSess;
+  if (!s) return;
+  if (!s.nodes.length) { toast('没有可导入的图形'); return; }
+  const page = {
+    id: 'root', name: '总图', view: null,
+    nodes: s.nodes.map(n => mkNode(n)),
+    links: s.links.map(k => Object.assign({ dir: 'one', route: 'ortho', label: '' }, k))
+  };
+  const name = s.name, nn = page.nodes.length, nl = page.links.length;
+  checkpoint();
+  const d = {
+    name: name,
+    theme: doc.theme,
+    statusLabels: Object.assign({}, doc.statusLabels),
+    custom: {},
+    lastKind: 'data',
+    pages: { root: page }
+  };
+  finishImageReview(true);
+  loadDoc(d);
+  toast('已导入 ' + name + '：' + nn + ' 个图形，' + nl + ' 条连线。位置按图片保留，一键美化会改框的大小。');
+}
+function irNode(id) { return irSess && irSess.nodes.find(n => n.id === id); }
+function irSelectedNode() { return irSess && irSess.sel && irSess.sel.kind === 'node' ? irNode(irSess.sel.id) : null; }
+function irSelectedLink() { return irSess && irSess.sel && irSess.sel.kind === 'link' ? irSess.links.find(k => k.id === irSess.sel.id) : null; }
+function irWouldCycle(node, parentId) {
+  let id = parentId; const seen = {};
+  while (id) {
+    if (id === node.id || seen[id]) return true;
+    seen[id] = 1;
+    const p = irNode(id);
+    id = p ? p.parent : null;
+  }
+  return false;
+}
+function irSyncTools() {
+  const s = irSess;
+  const n = irSelectedNode();
+  const k = irSelectedLink();
+  const text = $('#ir-text');
+  if (document.activeElement !== text) text.value = n ? (n.text || '') : '';
+  text.disabled = !n;
+  const dir = $('#ir-dir');
+  dir.disabled = !k;
+  if (k) dir.value = k.dir || 'one';
+  const parent = $('#ir-parent');
+  const groups = s.nodes.filter(g => g.type === 'group' && (!n || g.id !== n.id));
+  parent.innerHTML = '<option value="">不归入</option>' + groups.map(g => '<option value="' + esc(g.id) + '">' + esc(g.text || '组合') + '</option>').join('');
+  parent.value = (n && n.parent && irNode(n.parent)) ? n.parent : '';
+  parent.disabled = !n;
+  const grp = $('#ir-group');
+  grp.disabled = !n;
+  grp.textContent = n && n.type === 'group' ? '取消组合' : '标为组合';
+  $('#ir-link').classList.toggle('on', s.mode === 'link');
+  $('#ir-add').classList.toggle('on', s.mode === 'add');
+  $('#ir-rev').disabled = !k;
+  $('#ir-split').disabled = !k;
+  $('#ir-split').classList.toggle('on', s.mode === 'split');
+  $('#ir-del').disabled = !(n || k);
+  $('#ir-file').textContent = s.name + '　' + s.nodes.length + ' 个图形，' + s.links.length + ' 条连线';
+}
+function irFont(n) {
+  const chars = Math.max(1, String(n.text || '').replace(/\s/g, '').length);
+  const byH = n.type === 'group' ? n.h * 0.075 : n.h * 0.42;
+  const byW = n.w * 0.86 / chars;
+  return Math.max(14, Math.min(byH, byW, 64));
+}
+function irBar(n) { return Math.min(Math.max(0, n.h - 8), Math.max(28, irFont(n) * 1.65)); }
+function irEdge(n, to) {
+  const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+  const dx = to.x - cx, dy = to.y - cy;
+  if (!dx && !dy) return { x: cx, y: cy };
+  const hx = Math.max(1, n.w / 2), hy = Math.max(1, n.h / 2);
+  const t = Math.abs(dx) / hx > Math.abs(dy) / hy ? hx / Math.abs(dx) : hy / Math.abs(dy);
+  return { x: cx + dx * t, y: cy + dy * t };
+}
+function irPolyline(a, b, nodes) {
+  const ca = { x: a.x + a.w / 2, y: a.y + a.h / 2 };
+  const cb = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+  const p1 = irEdge(a, cb), p2 = irEdge(b, ca);
+  const horiz = Math.abs(p1.y - p2.y) <= Math.abs(p1.x - p2.x);
+  const blocked = nodes.some(n => {
+    if (n.id === a.id || n.id === b.id || n.type === 'group' || n.type === 'band' || n.type === 'lane') return false;
+    if (horiz) {
+      const x0 = Math.min(p1.x, p2.x) + 2, x1 = Math.max(p1.x, p2.x) - 2, y = (p1.y + p2.y) / 2;
+      return n.x < x1 && n.x + n.w > x0 && y > n.y && y < n.y + n.h;
+    }
+    const y0 = Math.min(p1.y, p2.y) + 2, y1 = Math.max(p1.y, p2.y) - 2, x = (p1.x + p2.x) / 2;
+    return n.y < y1 && n.y + n.h > y0 && x > n.x && x < n.x + n.w;
+  });
+  if (!blocked) return [p1, p2];
+  if (horiz) {
+    let lane = Math.min(a.y, b.y) - 18;
+    const below = lane < 4;
+    if (below) lane = Math.max(a.y + a.h, b.y + b.h) + 18;
+    const t1 = { x: a.x + a.w / 2, y: below ? a.y + a.h : a.y };
+    const t2 = { x: b.x + b.w / 2, y: below ? b.y + b.h : b.y };
+    return [t1, { x: t1.x, y: lane }, { x: t2.x, y: lane }, t2];
+  }
+  let lane = Math.min(a.x, b.x) - 18;
+  const right = lane < 4;
+  if (right) lane = Math.max(a.x + a.w, b.x + b.w) + 18;
+  const t1 = { x: right ? a.x + a.w : a.x, y: a.y + a.h / 2 };
+  const t2 = { x: right ? b.x + b.w : b.x, y: b.y + b.h / 2 };
+  return [t1, { x: lane, y: t1.y }, { x: lane, y: t2.y }, t2];
+}
+function irShape(n, on) {
+  const x = n.x, y = n.y, w = Math.max(1, n.w), h = Math.max(1, n.h);
+  const mark = on ? ' ir-on' : '';
+  if (n.type === 'ellipse') return '<ellipse class="ir-sh' + mark + '" cx="' + (x + w / 2) + '" cy="' + (y + h / 2) + '" rx="' + (w / 2) + '" ry="' + (h / 2) + '"/>';
+  if (n.type === 'diamond') return '<polygon class="ir-sh' + mark + '" points="' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + ' ' + x + ',' + (y + h / 2) + '"/>';
+  if (n.type === 'text') return '<rect class="ir-sh ir-plain' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+  if (n.type === 'round') return '<rect class="ir-sh' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + Math.min(10, h / 3) + '"/>';
+  if (n.type === 'roundL' || n.type === 'roundR') {
+    const r = Math.min(14, h / 2, w / 2);
+    const d = n.type === 'roundL'
+      ? 'M' + (x + r) + ' ' + y + 'H' + (x + w) + 'V' + (y + h) + 'H' + (x + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + x + ' ' + (y + h - r) + 'V' + (y + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + r) + ' ' + y + 'Z'
+      : 'M' + x + ' ' + y + 'H' + (x + w - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) + 'V' + (y + h - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w - r) + ' ' + (y + h) + 'H' + x + 'Z';
+    return '<path class="ir-sh' + mark + '" d="' + d + '"/>';
+  }
+  if (n.type === 'group') {
+    const bar = irBar(n);
+    return '<rect class="ir-sh ir-group' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>' + (h > bar + 8 ? '<line class="ir-rule" x1="' + x + '" y1="' + (y + bar) + '" x2="' + (x + w) + '" y2="' + (y + bar) + '"/>' : '');
+  }
+  return '<rect class="ir-sh' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3"/>';
+}
+function paintImageReview() {
+  const s = irSess;
+  if (!s) return;
+  const box = $('#img-review');
+  const overlay = box && box.classList.contains('overlay');
+  const groups = s.nodes.filter(n => n.type === 'group' || n.type === 'band' || n.type === 'lane');
+  const rest = s.nodes.filter(n => n.type !== 'group' && n.type !== 'band' && n.type !== 'lane');
+  const nodeOf = id => s.nodes.find(n => n.id === id);
+  let body = '';
+  if (overlay) body += '<image href="' + esc(s.url) + '" xlink:href="' + esc(s.url) + '" x="0" y="0" width="' + s.w + '" height="' + s.h + '" opacity="0.5" preserveAspectRatio="none" pointer-events="none"/>';
+  const drawNode = n => {
+    const on = s.sel && s.sel.kind === 'node' && s.sel.id === n.id;
+    const ty = n.type === 'group' ? n.y + irBar(n) / 2 : n.y + n.h / 2;
+    const fs = irFont(n);
+    return '<g data-kind="node" data-id="' + esc(n.id) + '">' + irShape(n, on) +
+      '<text x="' + (n.x + n.w / 2) + '" y="' + ty + '" text-anchor="middle" dominant-baseline="middle" font-size="' + fs + '">' + esc(String(n.text || '').replace(/\n/g, ' ')) + '</text></g>';
+  };
+  body += groups.map(drawNode).join('');
+  body += s.links.map(k => {
+    const a = nodeOf(k.from), b = nodeOf(k.to);
+    if (!a || !b) return '';
+    const pts = irPolyline(a, b, s.nodes);
+    const on = s.sel && s.sel.kind === 'link' && s.sel.id === k.id;
+    const dir = k.dir || 'one';
+    const marker = dir === 'both' ? ' marker-start="url(#ir-start)" marker-end="url(#ir-end)"' : (dir === 'none' ? '' : ' marker-end="url(#ir-end)"');
+    const dash = k.kind === 'ctrl' ? ' ir-dash' : '';
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + p.x + ' ' + p.y).join('');
+    return '<path class="ir-link' + dash + (on ? ' ir-on' : '') + '" d="' + d + '"' + marker + '/>' +
+      '<path class="ir-hit" data-kind="link" data-id="' + esc(k.id) + '" data-from="' + esc(k.from) + '" data-to="' + esc(k.to) + '" data-dir="' + esc(dir) + '" d="' + d + '"/>';
+  }).join('');
+  body += rest.map(drawNode).join('');
+  const selLink = s.sel && s.sel.kind === 'link' ? s.links.find(k => k.id === s.sel.id) : null;
+  if (selLink) {
+    const a = nodeOf(selLink.from), b = nodeOf(selLink.to);
+    if (a && b) {
+      const pts = irPolyline(a, b, s.nodes);
+      const r = Math.max(16, Math.min(s.w, s.h) * 0.02);
+      const p0 = pts[0], p1 = pts[pts.length - 1];
+      body += '<circle class="ir-handle" data-kind="handle" data-end="from" data-id="' + esc(selLink.id) + '" cx="' + p0.x + '" cy="' + p0.y + '" r="' + r + '"/>';
+      body += '<circle class="ir-handle" data-kind="handle" data-end="to" data-id="' + esc(selLink.id) + '" cx="' + p1.x + '" cy="' + p1.y + '" r="' + r + '"/>';
+    }
+  }
+  const defs = '<defs><marker id="ir-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M0 0 L10 5 L0 10 Z"/></marker>' +
+    '<marker id="ir-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M10 0 L0 5 L10 10 Z"/></marker></defs>';
+  $('#ir-prev').innerHTML = '<svg id="ir-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ' + s.w + ' ' + s.h + '" preserveAspectRatio="xMidYMid meet">' + defs + body + '</svg>';
+  irSyncTools();
+}
+function irSvgPoint(e) {
+  const svg = $('#ir-svg');
+  if (!svg) return { x: 0, y: 0 };
+  const pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const m = svg.getScreenCTM();
+  if (!m) return { x: 0, y: 0 };
+  const p = pt.matrixTransform(m.inverse());
+  return { x: p.x, y: p.y };
+}
+function irConnectPair(a, b, msg) {
+  const s = irSess;
+  if (!s || a === b) return false;
+  if (s.links.some(k => (k.from === a && k.to === b) || (k.from === b && k.to === a))) {
+    $('#ir-msg').textContent = '这两框之间已经有连线。';
+    paintImageReview();
+    return false;
+  }
+  const kid = 'k' + uid();
+  s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
+  s.sel = { kind: 'link', id: kid };
+  $('#ir-msg').textContent = msg;
+  paintImageReview();
+  return true;
+}
+function irPreviewClick(e) {
+  const s = irSess;
+  if (!s) return;
+  if (s.dragged) { s.dragged = false; return; }
+  if (s.mode === 'add') {
+    const p = irSvgPoint(e);
+    const w = Math.max(80, s.w * 0.12), h = Math.max(36, s.h * 0.08);
+    const n = mkNode({ id: 'n' + uid(), type: 'rect', text: '新框', parent: null, w: w, h: h, x: Math.max(0, Math.min(Math.max(0, s.w - w), p.x - w / 2)), y: Math.max(0, Math.min(Math.max(0, s.h - h), p.y - h / 2)) });
+    s.nodes.push(n);
+    s.sel = { kind: 'node', id: n.id };
+    s.mode = '';
+    $('#ir-msg').textContent = '已添加矩形。可改文字，或归入组合。';
+    paintImageReview();
+    return;
+  }
+  const hit = e.target.closest ? e.target.closest('[data-kind]') : null;
+  if (hit && hit.getAttribute('data-kind') === 'handle') return;
+  if (s.mode === 'link' || s.mode === 'split') {
+    if (!hit || hit.getAttribute('data-kind') !== 'node') return;
+    const id = hit.getAttribute('data-id');
+    if (!s.linkFrom) {
+      s.linkFrom = id;
+      $('#ir-msg').textContent = s.mode === 'split' ? '再点这条线的终点。原线仍保留。' : '再点终点。';
+      return;
+    }
+    if (s.linkFrom === id) return;
+    const a = s.linkFrom, b = id, splitting = s.mode === 'split';
+    s.mode = ''; s.linkFrom = null;
+    irConnectPair(a, b, splitting ? '已拆出一条新线。可改箭头，或拖两端圆点。' : '已连上。可反转方向，改单向、双向或无箭头。');
+    return;
+  }
+  if (!hit) { s.sel = null; paintImageReview(); return; }
+  s.sel = { kind: hit.getAttribute('data-kind'), id: hit.getAttribute('data-id') };
+  if (s.sel.kind === 'node') $('#ir-msg').textContent = '正在改这个框的文字。也可以删除、标为组合，或归入别的组合。';
+  else $('#ir-msg').textContent = '可反转方向，改成单向、双向或无箭头。拖两端圆点改接到别的框，或拆开交叉线。';
+  paintImageReview();
+}
+function irReverse() {
+  const k = irSelectedLink();
+  if (!k) { $('#ir-msg').textContent = '先点选一条连线，再反转。'; return; }
+  const from = k.from;
+  k.from = k.to;
+  k.to = from;
+  if (k.label || k.labelBack) {
+    const lab = k.label || '';
+    k.label = k.labelBack || '';
+    k.labelBack = lab;
+  }
+  $('#ir-msg').textContent = '已反转方向。';
+  paintImageReview();
+}
+function irArmSplit() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'split') {
+    s.mode = ''; s.linkFrom = null;
+    $('#ir-msg').textContent = '点一个框改文字。选中连线后可反转、改箭头、拖两端圆点，或拆开交叉线。';
+    paintImageReview();
+    return;
+  }
+  if (!irSelectedLink()) { $('#ir-msg').textContent = '先点选被合并的那条线，再拆开。'; return; }
+  s.mode = 'split';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '原线保留。再点另一条线的起点和终点。';
+  paintImageReview();
+}
+function irHandleDown(e) {
+  const s = irSess;
+  if (!s) return;
+  const hit = e.target.closest ? e.target.closest('[data-kind="handle"]') : null;
+  if (!hit) return;
+  e.preventDefault();
+  s.pendingDrag = { id: hit.getAttribute('data-id'), end: hit.getAttribute('data-end') };
+}
+function irHandleUp(e) {
+  const s = irSess;
+  if (!s || !s.pendingDrag) return;
+  const drag = s.pendingDrag;
+  s.pendingDrag = null;
+  s.dragged = true;
+  setTimeout(function () { if (irSess) irSess.dragged = false; }, 0);
+  const k = s.links.find(x => x.id === drag.id);
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const node = el && el.closest ? el.closest('[data-kind="node"]') : null;
+  if (!k || !node) return;
+  const id = node.getAttribute('data-id');
+  const cur = drag.end === 'from' ? k.from : k.to;
+  if (id === cur) return;
+  const other = drag.end === 'from' ? k.to : k.from;
+  if (id === other) { $('#ir-msg').textContent = '两端不能是同一个框。'; return; }
+  const nextFrom = drag.end === 'from' ? id : k.from;
+  const nextTo = drag.end === 'to' ? id : k.to;
+  if (s.links.some(x => x.id !== k.id && ((x.from === nextFrom && x.to === nextTo) || (x.from === nextTo && x.to === nextFrom)))) {
+    $('#ir-msg').textContent = '这两框之间已经有连线。';
+    return;
+  }
+  k.from = nextFrom;
+  k.to = nextTo;
+  s.sel = { kind: 'link', id: k.id };
+  $('#ir-msg').textContent = '已改接到这个框。';
+  paintImageReview();
+}
+function irTextInput() {
+  const n = irSelectedNode();
+  if (!n) return;
+  n.text = $('#ir-text').value;
+  paintImageReview();
+}
+function irDirInput() {
+  const k = irSelectedLink();
+  if (!k) return;
+  k.dir = $('#ir-dir').value || 'one';
+  paintImageReview();
+}
+function irParentInput() {
+  const n = irSelectedNode();
+  if (!n) return;
+  const next = $('#ir-parent').value || null;
+  if ((n.parent || null) === next) return;
+  if (next && irWouldCycle(n, next)) {
+    $('#ir-parent').value = n.parent || '';
+    $('#ir-msg').textContent = '不能归入自己里面的组合。';
+    return;
+  }
+  n.parent = next;
+  $('#ir-msg').textContent = next ? '已归入所选组合。' : '已取消归入。';
+  paintImageReview();
+}
+function irToggleGroup() {
+  const s = irSess;
+  const n = irSelectedNode();
+  if (!s || !n) { $('#ir-msg').textContent = '先点选一个框，再标为组合。'; return; }
+  if (n.type === 'group') {
+    n.type = 'rect';
+    s.nodes.forEach(c => { if (c.parent === n.id) c.parent = null; });
+    $('#ir-msg').textContent = '已取消组合。里面的框不再归入它。';
+  } else {
+    n.type = 'group';
+    $('#ir-msg').textContent = '已标为组合。点里面的框，再用「归入」放进来。';
+  }
+  paintImageReview();
+}
+function irArmLink() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'link') { s.mode = ''; s.linkFrom = null; $('#ir-msg').textContent = '点一个框改文字。连线先点起点，再点终点。'; paintImageReview(); return; }
+  s.mode = 'link';
+  const n = irSelectedNode();
+  s.linkFrom = n ? n.id : null;
+  $('#ir-msg').textContent = s.linkFrom ? '再点终点。' : '先点起点，再点终点。';
+  paintImageReview();
+}
+function irArmAdd() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'add') { s.mode = ''; $('#ir-msg').textContent = '点一个框改文字。连线先点起点，再点终点。'; paintImageReview(); return; }
+  s.mode = 'add';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '在右侧预览里点一处，放下新的矩形。';
+  paintImageReview();
+}
+function irDeleteSel() {
+  const s = irSess;
+  if (!s || !s.sel) { $('#ir-msg').textContent = '先点选要删的框或连线。'; return; }
+  if (s.sel.kind === 'link') s.links = s.links.filter(k => k.id !== s.sel.id);
+  else {
+    const id = s.sel.id;
+    s.nodes = s.nodes.filter(n => n.id !== id);
+    s.links = s.links.filter(k => k.from !== id && k.to !== id);
+    s.nodes.forEach(n => { if (n.parent === id) n.parent = null; });
+  }
+  s.sel = null;
+  s.mode = '';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '已删除。';
+  paintImageReview();
+}
+function irToggleOverlay() {
+  const dlg = $('#img-review');
+  const on = dlg.classList.toggle('overlay');
+  $('#ir-overlay').classList.toggle('on', on);
+  $('#ir-msg').textContent = on ? '原图叠在识别结果上。再点一次恢复左右对照。' : '左边是原图，右边是识别结果。';
+  paintImageReview();
+}
+$('#ir-ok').onclick = confirmImageReview;
+$('#ir-cancel').onclick = cancelImageReview;
+$('#ir-overlay').onclick = irToggleOverlay;
+$('#ir-del').onclick = irDeleteSel;
+$('#ir-link').onclick = irArmLink;
+$('#ir-add').onclick = irArmAdd;
+$('#ir-rev').onclick = irReverse;
+$('#ir-split').onclick = irArmSplit;
+$('#ir-group').onclick = irToggleGroup;
+$('#ir-text').oninput = irTextInput;
+$('#ir-dir').onchange = irDirInput;
+$('#ir-parent').onchange = irParentInput;
+$('#ir-prev').addEventListener('click', irPreviewClick);
+$('#ir-prev').addEventListener('pointerdown', irHandleDown);
+window.addEventListener('pointerup', irHandleUp);
+$('#img-review').addEventListener('click', e => { if (e.target.id === 'img-review') cancelImageReview(); });
 /* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
 async function openForeign(f) {
   const dio = /\.(drawio|xml)$/i.test(f.name);

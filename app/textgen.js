@@ -891,7 +891,7 @@
       e.stopPropagation();
       if (e.key === 'Escape') { e.preventDefault(); close(); }
       else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); go(); }
-      else if (['Delete', 'Backspace', ' '].includes(e.key) || e.ctrlKey || e.metaKey) { if (!/^[cv]$/i.test(e.key)) e.preventDefault(); }
+      else if (['Delete', 'Backspace', ' '].includes(e.key) || e.ctrlKey || e.metaKey) { if (!/^[cvx]$/i.test(e.key)) e.preventDefault(); }
     }, true);
     root.addEventListener('mousedown', e => { if (e.target === root) close(); });
     root.addEventListener('click', e => { if (!e.target.closest('#tg-exm')) q('#tg-exm').classList.remove('open'); });
