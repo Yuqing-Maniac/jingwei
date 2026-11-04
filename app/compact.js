@@ -90,12 +90,13 @@
     return { w, h: snapv(Math.max(32, lines * lineH(size) + 12)) };
   }
   function groupNatural(g, avail, p) {
+    const eat = contEat(g);
     const ks = order(kids(g.id, p));
     const tg = codeTagOf(g, p), titleW = measure(firstLineOf(g.text), 12.5, true) + 24 + (tg ? tg.w + 8 : 0);
-    if (!ks.length) return { w: Math.min(avail, Math.max(120, titleW)), h: GROUP_TH + 36, flow: null };
-    const inner = Math.max(60, avail - 16);
+    if (!ks.length) return { w: Math.min(avail, Math.max(120, titleW) + eat.x), h: eat.y + 36, flow: null };
+    const inner = Math.max(60, avail - 16 - eat.x);
     const fl = flow(ks, inner, g.links, p);
-    return { w: Math.min(avail, Math.max(fl.w + 16, titleW)), h: GROUP_TH + 8 + fl.h + 8, flow: fl };
+    return { w: Math.min(avail, Math.max(fl.w + 16, titleW) + eat.x), h: eat.y + 8 + fl.h + 8, flow: fl };
   }
   const firstLineOf = s => String(s || '').split('\n')[0];
 
@@ -139,7 +140,9 @@
   }
   function placeGroup(g, x, y, w, h, fl, p) {
     g.x = x; g.y = y; g.w = snapv(w); g.h = snapv(h);
-    if (fl) place(fl, g.x + 8, g.y + GROUP_TH + 8 + Math.max(0, (g.h - GROUP_TH - 16 - fl.h) / 2), g.w - 16, p);
+    if (!fl) return;
+    const box = contFrame(g).content;
+    place(fl, box.x + 8, box.y + 8 + Math.max(0, (box.h - 16 - fl.h) / 2), box.w - 16, p);
   }
 
   /* ---------- 层与分组带 ---------- */
@@ -148,39 +151,79 @@
     return snapv(clamp(w, 60, 96));
   }
   function layoutLaneC(l, p) {
-    l.titleW = laneTitleW(l);
-    const ks = order(kids(l.id, p)), tw = l.titleW;
-    const x0 = l.x + tw + 8, aw = l.w - tw - 16;
+    const row = contRow(l), side = sideOf(l);
+    if (row && row.thick.fit && row.thick.fit.sides.indexOf(side) >= 0) l.titleW = laneTitleW(l);
+    const ks = order(kids(l.id, p));
     if (!ks.length) { l.h = Math.max(l.h, 44); return; }
+    const box0 = contFrame(l).content, aw = box0.w - 16;
     const fl = flow(ks, aw, l.links, p);
-    const tl = wrap(l.text, tw - 12, 13.5, true).length * lineH(13.5) + 12;
-    l.h = snapv(Math.max(44, fl.h + 14, tl));
-    place(fl, x0, l.y + (l.h - fl.h) / 2, aw, p);
+    if (side === 'l' || side === 'r') {
+      const tw = thickness(l, row);
+      const tl = wrap(l.text, tw - 12, row.size, row.bold).length * lineH(row.size) + 12;
+      l.h = snapv(Math.max(44, fl.h + 14, tl));
+    } else l.h = snapv(Math.max(thickness(l, row) + fl.h + 14, 44));
+    const box = contFrame(l).content;
+    place(fl, box.x + 8, box.y + (box.h - fl.h) / 2, box.w - 16, p);
   }
   function layoutBandC(b, p) {
-    const ks = kids(b.id, p), lanes = ks.filter(k => k.type === 'lane').sort((a, c) => a.y - c.y), others = order(ks.filter(k => k.type !== 'lane'));
+    const ks = kids(b.id, p);
+    const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; }).sort((a, c) => a.y - c.y);
+    const tiles = ks.filter(k => { const r = contRow(k); return r && r.layout === 'tile'; }).sort((a, c) => a.x - c.x);
+    const margins = ks.filter(k => { const r = contRow(k); return r && r.layout === 'margin'; });
+    const others = order(ks.filter(k => lanes.indexOf(k) < 0 && tiles.indexOf(k) < 0 && margins.indexOf(k) < 0));
     /* 跨层连线：层间留出连线与标签的位置 */
     const laneOf = id => { let n = nodeById(id, p), k = 0; while (n && n.parent && k++ < 20) { if (n.type === 'lane') return n.id; n = nodeById(n.parent, p); } return n && n.type === 'lane' ? n.id : null; };
     const ids = new Set(lanes.map(l => l.id));
     const cross = p.links.some(l => { const a = laneOf(l.from), c = laneOf(l.to); return a && c && a !== c && ids.has(a) && ids.has(c); });
     const lg = cross ? 22 : 4;
-    let y = b.y + 4;
-    for (const l of lanes) { l.x = b.x + BAND_TW + 4; l.w = b.w - BAND_TW - 8; l.y = snapv(y); layoutLaneC(l, p); y = l.y + l.h + lg; }
+    const box = contFrame(b).content;
+    const mw = margins.length ? Math.max(...margins.map(k => k.w)) : 0;
+    const mainX = box.x, mainW = box.w - mw;
+    let y = box.y + 4;
+    for (const l of lanes) { l.x = mainX + 4; l.w = mainW - 8; l.y = snapv(y); layoutLaneC(l, p); y = l.y + l.h + lg; }
     if (lanes.length) y -= lg - 4;
-    if (others.length) {
-      const aw = b.w - BAND_TW - 20, fl = flow(others, aw, b.links, p);
-      place(fl, b.x + BAND_TW + 10, y + 8, aw, p); y += fl.h + 16;
+    if (tiles.length) {
+      const gap = 8, tw = (mainW - gap * (tiles.length - 1)) / tiles.length, y0 = y;
+      let x = mainX, maxH = 0;
+      for (const t of tiles) {
+        const dx = x - t.x, dy = y0 - t.y;
+        t.x = x; t.w = tw; t.y = snapv(y0);
+        if (dx || dy) for (const d of descendants(t.id, p)) { d.x += dx; d.y += dy; }
+        layoutCont(t, p, { fitTitle: true });
+        maxH = Math.max(maxH, t.h); x += tw + gap;
+      }
+      y = y0 + maxH + 4;
     }
-    const chars = [...String(b.text || '')].filter(c => c.trim()).length;
-    b.h = snapv(Math.max(y - b.y, 40, chars * 17 + 12));
+    if (others.length) {
+      const aw = mainW - 20, fl = flow(others, aw, b.links, p);
+      place(fl, mainX + 10, y + 8, aw, p); y += fl.h + 16;
+    }
+    for (const m of margins) {
+      const nx = box.x + box.w - mw, dx = nx - m.x, dy = box.y - m.y;
+      m.x = nx; m.y = box.y; m.h = Math.max(m.h, y - box.y);
+      if (dx || dy) for (const d of descendants(m.id, p)) { d.x += dx; d.y += dy; }
+      layoutCont(m, p, { fitTitle: true });
+    }
+    const side = sideOf(b), brow = contRow(b), bot = side === 'b' ? thickness(b, brow) : 0;
+    b.h = snapv(Math.max(y - b.y + bot, 40));
+    if ((side === 'l' || side === 'r') && brow.minChar != null) {
+      const chars = [...String(b.text || '')].filter(c => c.trim()).length;
+      b.h = snapv(Math.max(b.h, chars * brow.minChar + brow.minPad));
+    }
   }
   /* 一行排下所需宽度（紧凑模式图宽） */
   function needW(b, p) {
-    const ks = kids(b.id, p), lanes = ks.filter(k => k.type === 'lane'), others = ks.filter(k => k.type !== 'lane');
+    const ks = kids(b.id, p);
+    const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; });
+    const others = ks.filter(k => lanes.indexOf(k) < 0 && !(contRow(k) && (contRow(k).layout === 'margin' || contRow(k).layout === 'tile')));
     const rowW = (items0, linked) => { const gap = linked ? G.gapL : G.gap, items = order(items0); return items.reduce((a, n, i) => a + natural(n, 4000, p).w + (i ? pairGap(items[i - 1], n, gap, p) : 0), 0); };
     let w = others.length ? rowW(others, b.links) + 20 : 0;
-    for (const l of lanes) w = Math.max(w, laneTitleW(l) + 16 + 8 + rowW(kids(l.id, p), l.links));
-    return BAND_TW + 8 + w;
+    for (const l of lanes) {
+      const tw = (sideOf(l) === 'l' || sideOf(l) === 'r') ? laneTitleW(l) : 0;
+      w = Math.max(w, tw + 16 + 8 + rowW(kids(l.id, p), l.links));
+    }
+    const eat = (sideOf(b) === 'l' || sideOf(b) === 'r') ? thickness(b, contRow(b)) : 0;
+    return eat + 8 + w;
   }
 
   /* ---------- 报告版心：超出版心宽的元素收进版心 ---------- */
@@ -192,7 +235,7 @@
   }
   /* 分层图：层之外、超出版心的顶层元素（说明、图片、旁注等）→ 排到层下方，按版心宽度折行 */
   function fitBelow(p, X, W, skip) {
-    const tops = p.nodes.filter(n => !n.parent && n.type !== 'band' && !skip.includes(n) && n.role !== 'title' && n.role !== 'subtitle');
+    const tops = p.nodes.filter(n => !n.parent && n.type !== 'band' && !(contRow(n) && contRow(n).layout === 'inset') && !skip.includes(n) && n.role !== 'title' && n.role !== 'subtitle');
     const bandsB = Math.max(...p.nodes.filter(n => n.type === 'band' && !n.parent).map(b => b.y + b.h));
     if (!tops.some(n => n.x < X - 2 || n.x + n.w > X + W + 2)) return;
     /* 只挪动超出版心的元素：排在现有内容（层、说明、图例、标题栏）下方 */
@@ -211,7 +254,7 @@
   }
   /* 无分层的自由图（流程图等）：整体按比例收进版心宽，框宽同比缩小、文字自动折行，行距随框高顺延 */
   function fitFree(p, W) {
-    const items = p.nodes.filter(n => !n.parent && n.type !== 'band' && !n.role && n.type !== 'legend' && n.type !== 'note' && n.type !== 'tblock');
+    const items = p.nodes.filter(n => !n.parent && n.type !== 'band' && !(contRow(n) && contRow(n).layout === 'inset') && !n.role && n.type !== 'legend' && n.type !== 'note' && n.type !== 'tblock');
     if (!items.length) return;
     const x0 = Math.min(...items.map(n => n.x)), x1 = Math.max(...items.map(n => n.x + n.w)), W0 = x1 - x0;
     if (W0 > W + 2) {
@@ -308,11 +351,13 @@
         shiftBelow(p, free, oldBottom, bottom, [title, sub, note, leg]);
         if (c.mode === 'report') fitBelow(p, X, W, [title, sub]);
       } else {
+        p.nodes.filter(n => !n.parent && contRow(n) && contRow(n).layout === 'inset').forEach(n => layoutInset(n, p));
         const tops = order(p.nodes.filter(n => !n.parent && (n.type === 'lane' || n.type === 'group')));
         for (const t of tops) {
           if (t.type === 'lane') { if (c.mode === 'report') t.w = targetW(c); layoutLaneC(t, p); }
           else { const s = groupNatural(t, c.mode === 'report' ? targetW(c) : 2400, p); placeGroup(t, t.x, t.y, s.w, s.h, s.flow, p); }
         }
+        p.nodes.filter(n => !n.parent && contRow(n) && (contRow(n).layout === 'tile' || contRow(n).layout === 'margin' || (contRow(n).layout === 'stack' && contRow(n).stack === 'all') || (contRow(n).layout === 'flow' && n.type !== 'group'))).forEach(n => layoutCont(n, p, { fitTitle: true }));
         tidyFree(p);
         if (c.mode === 'report') fitFree(p, targetW(c));
       }
