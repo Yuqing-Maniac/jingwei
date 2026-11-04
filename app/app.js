@@ -203,10 +203,17 @@ function onlyLinkId() {
   if (linkSel.size !== 1) return null;
   return [...linkSel][0];
 }
-function newPage(name) { const id = 'p' + uid(); doc.pages[id] = { id, name, nodes: [], links: [], view: null }; return id; }
 function snapshot() { return JSON.stringify({ doc, cur, stack }); }
 function checkpoint() { undoS.push(snapshot()); if (undoS.length > 120) undoS.shift(); redoS = []; }
-function restore(s) { const o = JSON.parse(s); const ms0 = msMode(); doc = o.doc; cur = o.cur; stack = o.stack; clearSel(); if (ms0 !== msMode()) renderPalette(); render(); refreshDocTitle(); }
+function restore(s) {
+  const o = JSON.parse(s);
+  const ms0 = msMode();
+  doc = o.doc;
+  const id = o.cur && doc.pages && doc.pages[o.cur] ? o.cur : 'root';
+  if (ms0 !== msMode()) renderPalette();
+  paintPage(id);
+  refreshDocTitle();
+}
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
 function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); }
 
@@ -1029,10 +1036,14 @@ function contentBBox(p = P()) {
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 function fit() {
-  const b = contentBBox(), r = svg.getBoundingClientRect();
-  const k = clamp(Math.min((r.width - 60) / b.w, (r.height - 80) / b.h), 0.15, 2);
-  view.k = k; view.x = b.x - (r.width / k - b.w) / 2; view.y = b.y - (r.height / k - b.h) / 2 + 10 / k;
+  const cam = fitView(P());
+  view.x = cam.x; view.y = cam.y; view.k = cam.k;
   applyView(); renderOverlay();
+}
+function fitView(p) {
+  const b = contentBBox(p || P()), r = svg.getBoundingClientRect();
+  const k = clamp(Math.min((r.width - 60) / b.w, (r.height - 80) / b.h), 0.15, 2);
+  return { x: b.x - (r.width / k - b.w) / 2, y: b.y - (r.height / k - b.h) / 2 + 10 / k, k: k };
 }
 function zoomAt(k2, cx, cy) {
   const w = clientToWorld(cx, cy), r = svg.getBoundingClientRect();
@@ -2254,8 +2265,10 @@ function deleteSel() {
   }
   const snap = snapSel();
   if (!snap) return;
+  const door = snap.nodes.some(n => n.sub && doc.pages[n.sub]);
   checkpoint();
   dropSnap(snap);
+  if (door) toast('内部结构页还在，可从「子页」进入');
 }
 function snapSel() {
   if (!sel.size) return null;
@@ -2299,25 +2312,345 @@ function paste() {
   render();
 }
 
-/* ---------- drill-down pages ---------- */
-function enterSub(id) {
-  const n = nodeById(id); if (!n) return;
-  if (!n.sub || !doc.pages[n.sub]) {
-    checkpoint(); n.sub = newPage(`${(n.text || '系统').split('\n')[0]} · 内部构成`);
-    const sp = doc.pages[n.sub];
-    sp.nodes.push(mkNode({ type: 'text', role: 'title', text: `${(n.text || '系统').split('\n')[0]} 内部构成`, size: 20, bold: true, x: 0, y: -50, w: 400, h: 32 }));
-    const b = mkNode({ type: 'band', text: '组成', x: 0, y: 0, w: 900, h: 140 }); sp.nodes.push(b);
-    ['组成单元一', '组成单元二', '组成单元三'].forEach((t, i) => sp.nodes.push(mkNode({ type: 'round', text: t, parent: b.id, x: 100 + i * 200, y: 40 })));
-    beautify(sp);
+function writeUp(page, up, ord) {
+  page.up = up;
+  page.ord = ord;
+}
+function byOrd(a, b) {
+  if (a.id === 'root') return -1;
+  if (b.id === 'root') return 1;
+  const ao = typeof a.ord === 'number' ? a.ord : 1e9;
+  const bo = typeof b.ord === 'number' ? b.ord : 1e9;
+  if (ao !== bo) return ao - bo;
+  if (a.id < b.id) return -1;
+  if (a.id > b.id) return 1;
+  return 0;
+}
+function blankPage(name) {
+  return { id: 'p' + uid(), name: name || '未命名页', nodes: [], links: [], view: null };
+}
+function setDoor(node, pageId) {
+  if (node && doc.pages[pageId]) node.sub = pageId;
+}
+function clearDoors(ids) {
+  const pages = Object.values(doc.pages);
+  for (let i = 0; i < pages.length; i++) {
+    const nodes = pages[i].nodes || [];
+    for (let k = 0; k < nodes.length; k++) if (nodes[k].sub && ids.has(nodes[k].sub)) nodes[k].sub = null;
   }
-  P().cam = { ...view }; stack.push(n.sub); cur = n.sub; clearSel();
-  render(); if (P().cam) { view = { ...P().cam }; applyView(); } else fit();
 }
-function goPage(i) { P().cam = { ...view }; stack = stack.slice(0, i + 1); cur = stack[i]; clearSel(); render(); if (P().cam) { view = { ...P().cam }; applyView(); renderOverlay(); } else fit(); }
+function renumber(up) {
+  const list = [];
+  const pages = Object.values(doc.pages);
+  for (let i = 0; i < pages.length; i++) {
+    const p = pages[i];
+    if (p && ('up' in p) && p.up === up) list.push(p);
+  }
+  list.sort(byOrd);
+  for (let i = 0; i < list.length; i++) writeUp(list[i], up, i);
+}
+function pagesByUp(d) {
+  const m = new Map();
+  const pages = Object.values((d && d.pages) || {});
+  for (let i = 0; i < pages.length; i++) {
+    const p = pages[i];
+    if (!p || !('up' in p)) continue;
+    const k = p.up;
+    if (!m.has(k)) m.set(k, []);
+    m.get(k).push(p);
+  }
+  m.forEach(list => list.sort(byOrd));
+  return m;
+}
+function walkDoors(pages, topId, visit) {
+  const seen = new Set();
+  if (topId) seen.add(topId);
+  const walk = id => {
+    const page = pages[id];
+    if (!page) return;
+    const next = [];
+    let n = 0;
+    const nodes = page.nodes || [];
+    for (let i = 0; i < nodes.length; i++) {
+      const sub = nodes[i].sub;
+      if (!sub || !pages[sub] || seen.has(sub)) continue;
+      seen.add(sub);
+      visit(pages[sub], id, n);
+      n++;
+      next.push(sub);
+    }
+    for (let i = 0; i < next.length; i++) walk(next[i]);
+  };
+  walk(topId);
+  return seen;
+}
+function pageUnder(pages, pageId, ancestorId) {
+  const seen = {};
+  let c = pageId;
+  while (c != null && pages[c] && !seen[c]) {
+    if (c === ancestorId) return true;
+    seen[c] = 1;
+    c = pages[c].up;
+  }
+  return false;
+}
+function upEnds(pages, start) {
+  const seen = {};
+  let c = start;
+  while (c != null) {
+    if (!pages[c] || seen[c]) return false;
+    seen[c] = 1;
+    c = pages[c].up;
+  }
+  return true;
+}
+function doorHost(pages, id) {
+  const ids = Object.keys(pages);
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || p.id === id || pageUnder(pages, p.id, id)) continue;
+    const nodes = p.nodes || [];
+    for (let k = 0; k < nodes.length; k++) if (nodes[k].sub === id) return p.id;
+  }
+  return null;
+}
+function repair(d) {
+  if (!d || !d.pages || !d.pages.root) return;
+  const pages = d.pages;
+  writeUp(pages.root, null, 0);
+  const ids = Object.keys(pages);
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || p.id === 'root') continue;
+    const holds = ('up' in p) && (p.up === null || (typeof p.up === 'string' && pages[p.up])) && upEnds(pages, p.id);
+    if (holds) continue;
+    const host = doorHost(pages, p.id);
+    writeUp(p, host || null, 1e9);
+  }
+  const groups = new Map();
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || !('up' in p)) continue;
+    const k = p.up;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(p);
+  }
+  groups.forEach((list, up) => {
+    list.sort(byOrd);
+    for (let i = 0; i < list.length; i++) writeUp(list[i], up, i);
+  });
+}
+function migrateLegacyPages(d) {
+  if ('up' in d.pages.root) return;
+  const all = Object.values(d.pages);
+  for (let i = 0; i < all.length; i++) {
+    if (!all[i]) continue;
+    delete all[i].up;
+    delete all[i].ord;
+  }
+  writeUp(d.pages.root, null, 0);
+  const seen = walkDoors(d.pages, 'root', (page, up, i) => writeUp(page, up, i));
+  seen.add('root');
+  let n = 1;
+  const order = Array.isArray(d.pageOrder) ? d.pageOrder : Object.keys(d.pages);
+  for (let i = 0; i < order.length; i++) {
+    const id = order[i];
+    if (d.pages[id] && !seen.has(id)) { writeUp(d.pages[id], null, n++); seen.add(id); }
+  }
+  const keys = Object.keys(d.pages);
+  for (let i = 0; i < keys.length; i++) if (!seen.has(keys[i])) writeUp(d.pages[keys[i]], null, n++);
+}
+function adoptPages(d) {
+  if (!d || !d.pages || !d.pages.root) return d;
+  migrateLegacyPages(d);
+  delete d.pageOrder;
+  repair(d);
+  return d;
+}
+function placePage(page, up, afterId) {
+  if (!page || !page.id || page.id === 'root') return;
+  if (up === page.id) return;
+  if (up !== null && !doc.pages[up]) return;
+  if (up !== null && pageUnder(doc.pages, up, page.id)) return;
+  const prev = doc.pages[page.id];
+  const oldUp = prev && ('up' in prev) ? prev.up : undefined;
+  doc.pages[page.id] = page;
+  const group = [];
+  const pages = Object.values(doc.pages);
+  for (let i = 0; i < pages.length; i++) {
+    const p = pages[i];
+    if (!p || p.id === page.id || !('up' in p) || p.up !== up) continue;
+    group.push(p);
+  }
+  group.sort(byOrd);
+  let idx = group.length;
+  if (afterId) {
+    const at = group.findIndex(p => p.id === afterId);
+    if (at >= 0) idx = at + 1;
+  }
+  if (up === null) {
+    const rootAt = group.findIndex(p => p.id === 'root');
+    if (rootAt >= 0 && idx <= rootAt) idx = rootAt + 1;
+  }
+  group.splice(idx, 0, page);
+  for (let i = 0; i < group.length; i++) writeUp(group[i], up, i);
+  if (oldUp !== undefined && oldUp !== up) renumber(oldUp);
+}
+function hangUnder(hostId, pages) {
+  const map = Object.assign({}, doc.pages, pages || {});
+  const placed = {};
+  walkDoors(map, hostId, (page, up) => {
+    const fresh = pages && pages[page.id];
+    if (!fresh || fresh.id === hostId) return;
+    placePage(fresh, up, null);
+    placed[fresh.id] = 1;
+  });
+  if (!pages) return;
+  const ids = Object.keys(pages);
+  for (let i = 0; i < ids.length; i++) {
+    const p = pages[ids[i]];
+    if (!p || p.id === hostId || placed[p.id] || p.id === 'root') continue;
+    placePage(p, hostId, null);
+  }
+}
+function hangPages(pages, topId, hostId) {
+  const top = pages && pages[topId];
+  if (!top) return;
+  placePage(top, hostId, null);
+  hangUnder(topId, pages);
+}
+function pathOf(id) {
+  if (!id || !doc || !doc.pages || !doc.pages[id]) return ['root'];
+  const path = [];
+  const seen = {};
+  let c = id;
+  while (c && doc.pages[c] && !seen[c]) {
+    seen[c] = 1;
+    path.push(c);
+    if (doc.pages[c].up == null) break;
+    c = doc.pages[c].up;
+  }
+  path.reverse();
+  return path.length ? path : ['root'];
+}
+function siblingPages(id) {
+  const p = doc.pages[id];
+  const up = p ? p.up : null;
+  return pagesByUp(doc).get(up) || [];
+}
+function childPages(id) {
+  return pagesByUp(doc).get(id) || [];
+}
+function titleNode(page) {
+  page.nodes.push(mkNode({ type: 'text', role: 'title', text: page.name, size: 20, bold: true, x: 0, y: -50, w: 400, h: 32 }));
+}
+function addSibling(name) {
+  checkpoint();
+  const page = blankPage(name || '未命名页');
+  const up = P() && ('up' in P()) ? P().up : null;
+  placePage(page, up, cur);
+  titleNode(page);
+  showPage(page.id);
+  return page.id;
+}
+function addChild(name) {
+  checkpoint();
+  const page = blankPage(name || '未命名子页');
+  placePage(page, cur, null);
+  titleNode(page);
+  showPage(page.id);
+  return page.id;
+}
+function paintPage(id) {
+  if (!doc.pages[id]) return;
+  cur = id;
+  clearSel();
+  stack = pathOf(id);
+  const cam = doc.pages[id].cam;
+  if (cam && Number.isFinite(cam.x) && Number.isFinite(cam.y) && Number.isFinite(cam.k)) view = { x: cam.x, y: cam.y, k: cam.k };
+  else view = fitView(doc.pages[id]);
+  render();
+}
+function showPage(id) {
+  if (!id || id === cur || !doc.pages[id]) return;
+  if (doc.pages[cur]) doc.pages[cur].cam = { x: view.x, y: view.y, k: view.k };
+  paintPage(id);
+}
+function goPage(i) {
+  const id = pathOf(cur)[i];
+  if (id && id !== cur) showPage(id);
+}
+function enterSub(nodeId) {
+  const n = nodeById(nodeId); if (!n) return;
+  if (!n.sub || !doc.pages[n.sub]) {
+    checkpoint();
+    const title = (n.text || '系统').split('\n')[0];
+    const page = blankPage(title + ' · 内部构成');
+    placePage(page, cur, null);
+    page.nodes.push(mkNode({ type: 'text', role: 'title', text: title + ' 内部构成', size: 20, bold: true, x: 0, y: -50, w: 400, h: 32 }));
+    const b = mkNode({ type: 'band', text: '组成', x: 0, y: 0, w: 900, h: 140 });
+    page.nodes.push(b);
+    ['组成单元一', '组成单元二', '组成单元三'].forEach((t, i) => page.nodes.push(mkNode({ type: 'round', text: t, parent: b.id, x: 100 + i * 200, y: 40 })));
+    beautify(page);
+    setDoor(n, page.id);
+  }
+  showPage(n.sub);
+}
+function deletePage(id) {
+  if (id === 'root' || !doc.pages[id]) return;
+  checkpoint();
+  const kill = new Set();
+  const pile = [id];
+  while (pile.length) {
+    const pid = pile.pop();
+    if (kill.has(pid) || !doc.pages[pid]) continue;
+    kill.add(pid);
+    const kids = childPages(pid);
+    for (let i = 0; i < kids.length; i++) pile.push(kids[i].id);
+  }
+  const group = doc.pages[id].up;
+  const dest = group || 'root';
+  const leaving = kill.has(cur);
+  kill.forEach(pid => { delete doc.pages[pid]; });
+  clearDoors(kill);
+  renumber(group);
+  if (!leaving) { render(); return; }
+  paintPage(dest);
+}
 function renderCrumb() {
-  $('#crumb').innerHTML = stack.map((id, i) => i === stack.length - 1 ? `<span class="cur">${esc(doc.pages[id]?.name || '')}</span>` : `<button data-crumb="${i}">${esc(doc.pages[id]?.name || '')}</button><span style="color:var(--muted)">›</span>`).join('');
+  const by = pagesByUp(doc);
+  const path = pathOf(cur);
+  const here = doc.pages[cur];
+  const sibs = by.get(here ? here.up : null) || [];
+  const kids = by.get(cur) || [];
+  const chip = (p) => `<button type="button" data-page="${esc(p.id)}" class="${p.id === cur ? 'on' : ''}">${esc(p.name || '未命名')}</button>`;
+  let h = '';
+  if (path.length > 1) {
+    const bits = [];
+    for (let i = 0; i < path.length; i++) {
+      const name = esc((doc.pages[path[i]] && doc.pages[path[i]].name) || '');
+      if (i === path.length - 1) bits.push(`<span class="cur">${name}</span>`);
+      else bits.push(`<button type="button" data-crumb="${i}">${name}</button><span style="color:var(--muted)">›</span>`);
+    }
+    h += `<div class="cr">${bits.join('')}</div>`;
+  }
+  let sib = '<span class="lab">同级</span>';
+  for (let i = 0; i < sibs.length; i++) sib += chip(sibs[i]);
+  sib += '<button type="button" data-add="sib">＋同级</button>';
+  let kid = '<span class="lab">子页</span>';
+  for (let i = 0; i < kids.length; i++) kid += chip(kids[i]);
+  kid += '<button type="button" data-add="child">＋子页</button>';
+  h += `<div class="cr">${sib}</div><div class="cr">${kid}</div>`;
+  $('#crumb').innerHTML = h;
 }
-$('#crumb').addEventListener('click', e => { const b = e.target.closest('[data-crumb]'); if (b) goPage(+b.dataset.crumb); });
+$('#crumb').addEventListener('click', e => {
+  const add = e.target.closest('[data-add]');
+  if (add) { if (add.dataset.add === 'sib') addSibling(); else addChild(); return; }
+  const sib = e.target.closest('[data-page]');
+  if (sib) { showPage(sib.dataset.page); return; }
+  const b = e.target.closest('[data-crumb]');
+  if (b) goPage(+b.dataset.crumb);
+});
 
 /* ---------- properties panel ---------- */
 const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏' });
@@ -2623,8 +2956,8 @@ function renderProps() {
       else if (n.icon && n.icon.startsWith('lib:')) h += `<hr><div class="row"><button id="p-form" style="border-color:var(--line);justify-content:center">⁂ 用此装备生成编队（Ctrl+Shift+B）</button></div>`;
     }
     if (window.Std) h += Std.propsHTML('node', n, p);
-    const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'tblock'].includes(n.type);
-    if (showSub) h += `<hr><div class="hint">内部结构：双击进入后可继续画该系统的组成。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
+    const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type);
+    if (showSub) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
@@ -2632,6 +2965,7 @@ function renderProps() {
     h += `<h3>图面设置</h3>`;
     h += `<div class="row"><label>文档名</label><input id="d-dname" type="text" placeholder="未命名" value="${esc(doc.name || '')}"></div>`;
     h += `<div class="row"><label>页面名</label><input type="text" id="d-pname" value="${esc(p.name)}"></div>`;
+    if (cur !== 'root') h += `<div class="row"><button id="p-delpage" type="button" style="color:var(--danger);justify-content:center">删除此页（子页一并删除）</button></div>`;
     h += `<div class="row"><label>主题</label><select id="d-theme">${Object.entries(THEMES).map(([k, v]) => `<option value="${k}" ${k === doc.theme ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>`;
     h += `<div class="row"><label>跨线</label>${seg('d-jump', [['arc', '⌒ 跨线弧'], ['gap', '断开'], ['none', '无']], doc.jumpStyle || 'arc')}</div>`;
     h += `<div class="row" title="连线遇到中间的框时自动绕开"><label>连线避障</label>${seg('d-avoid', [['on', '自动绕开'], ['off', '关闭']], doc.avoid === false ? 'off' : 'on')}</div>`;
@@ -2645,7 +2979,7 @@ function renderProps() {
       <b style="color:var(--fg)">操作要点</b><br>
       · 左侧元素<b>拖到画布</b>或点击添加；放进层或子容器即归属该层<br>
       · 悬停元素出现<b>蓝点</b>，拖到另一元素即连线；连线可设单向／双向箭头<br>
-      · 元素右上角 <b style="color:#2F80ED">⊕</b> 进入内部结构，顶部路径返回上一级<br>
+      · 左上角「同级」「子页」切换页面，「＋同级」「＋子页」新建。点图元右上角 <b style="color:#2F80ED">⊕</b> 进入内部结构，点路径回到上层<br>
       · <b>一键美化</b> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>：层内等距、统一尺寸、分组带对齐<br>
       · <b>减少交叉</b> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>：按连线关系重排层内顺序后美化<br>
       · 同侧多条连线自动<b>分散端点</b>、并行线自动错开；交叉处画<b>跨线弧</b>（上方可改为断开／无）<br>
@@ -2688,6 +3022,7 @@ function bindProps() {
   on('#p-cbedit', 'click', () => Combo.open(n));
   on('#p-form', 'click', () => Combo.open(n));
   on('#p-del', 'click', deleteSel);
+  on('#p-delpage', 'click', () => deletePage(cur));
   on('#p-same', 'click', () => selectSame());
   on('#p-swap', 'click', () => { checkpoint(); swapLink(l); render(); });
   on('#p-label', 'input', e => { l.label = e.target.value; live(); });
@@ -2819,21 +3154,23 @@ function iconPNG(uri, px = 256) {
     try { img.src = uri; } catch (e) { finish(null); }
   });
 }
-function hierarchyPages() {
-  const out = [], seen = new Set();
+function hierarchyPages(d) {
+  const host = d || doc;
+  adoptPages(host);
+  const out = [], seen = {}, by = pagesByUp(host);
   const walk = (id, chain) => {
-    if (seen.has(id) || !doc.pages[id]) return;
-    seen.add(id);
-    const p = doc.pages[id], name = p.name || '未命名', next = chain.concat(name);
+    if (seen[id] || !host.pages[id]) return;
+    seen[id] = 1;
+    const p = host.pages[id], name = p.name || '未命名', next = chain.concat(name);
     out.push({ page: p, depth: chain.length, chain: next });
-    for (const n of p.nodes) if (n.sub) walk(n.sub, next);
+    const kids = by.get(id) || [];
+    for (let i = 0; i < kids.length; i++) walk(kids[i].id, next);
   };
-  walk('root', []);
-  /* 无入口的页面（格式转换时按原文件页序）也要导出 */
-  if (doc.pageOrder) doc.pageOrder.forEach(id => walk(id, []));
+  const tops = by.get(null) || [];
+  for (let i = 0; i < tops.length; i++) walk(tops[i].id, []);
   return out;
 }
-function pagesInOrder() { return hierarchyPages().map(h => h.page); }
+function pagesInOrder(d) { return hierarchyPages(d).map(h => h.page); }
 function hierarchyFileName(item, index, ext) {
   const label = item.chain.map(s => String(s || '').replace(/[\\/:*?"<>|]/g, '_').trim()).filter(Boolean).join('-') || '页面';
   return projectBaseName() + '-' + String(index + 1).padStart(2, '0') + '-' + label + '.' + ext;
@@ -3704,7 +4041,6 @@ $('#ir-prev').addEventListener('click', irPreviewClick);
 $('#ir-prev').addEventListener('pointerdown', irHandleDown);
 window.addEventListener('pointerup', irHandleUp);
 $('#img-review').addEventListener('click', e => { if (e.target.id === 'img-review') cancelImageReview(); });
-/* PowerPoint／Visio → 可编辑的织图文档（每张幻灯片／每个 Visio 页面一页，首页为总图，其余页挂在总图右侧入口框下） */
 async function openForeign(f) {
   const dio = /\.(drawio|xml)$/i.test(f.name);
   if (dio ? !window.DrawIO : !window.Importer) { toast('导入模块未加载'); return; }
@@ -3720,12 +4056,8 @@ async function openForeign(f) {
     const linked = new Set(r.pages.flatMap(p => p.nodes.map(n => n.sub).filter(Boolean)));
     rest.forEach(p => d.pages[p.id] = p);
     const orphan = rest.filter(p => !linked.has(p.id));
-    if (orphan.length) {
-      const b = first.nodes.length ? first.nodes.reduce((a, n) => ({ x1: Math.max(a.x1, n.x + n.w), y0: Math.min(a.y0, n.y) }), { x1: -1e9, y0: 1e9 }) : { x1: 0, y0: 0 };
-      orphan.forEach((p, i) => { first.nodes.push(mkNode({ type: 'round', text: p.name || ('第 ' + (i + 2) + ' 页'), x: snapv(b.x1 + 60), y: snapv(b.y0 + i * 56), w: 180, h: 40, sub: p.id })); });
-    }
     loadDoc(d);
-    toast(`已导入 ${f.name}：${r.pages.length} 页${orphan.length ? '（其余页面在总图右侧入口框中，点框右上角 ⊕ 进入）' : ''}${r.warnings && r.warnings.length ? '；' + r.warnings.length + ' 条提示见控制台' : ''}，可按 Ctrl+Shift+F 一键美化`);
+    toast(`已导入 ${f.name}：${r.pages.length} 页${orphan.length ? '（其余页面在顶部「同级」里）' : ''}${r.warnings && r.warnings.length ? '；' + r.warnings.length + ' 条提示见控制台' : ''}，可按 Ctrl+Shift+F 一键美化`);
     if (r.warnings && r.warnings.length) console.info('导入提示', r.warnings);
   } catch (err) { console.error(err); toast('导入失败：' + friendlyErr(err)); }
 }
@@ -3751,7 +4083,8 @@ function friendlyErr(err) {
   return m;
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
-  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); render(); fit(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
+  adoptPages(d);
+  doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); view = fitView(d.pages.root); render(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
 
 const SHELF_KEY = 'hongtu.shelf';
 let shelfId = null;

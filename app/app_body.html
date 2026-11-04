@@ -57,9 +57,11 @@ main{display:grid;grid-template-columns:232px minmax(0,1fr) 268px;min-height:0}
 .search{width:100%;margin-bottom:8px}
 #stage{position:relative;overflow:hidden;background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1px,transparent 1.2px);min-width:0;touch-action:none}
 #svg{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block;touch-action:none;user-select:none}
-#crumb{position:absolute;left:12px;top:10px;display:flex;gap:4px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-size:12px;z-index:2;max-width:calc(100% - 24px);overflow-x:auto}
-#crumb button{padding:2px 6px}
+#crumb{position:absolute;left:12px;top:10px;display:flex;flex-direction:column;align-items:stretch;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-size:12px;z-index:2;max-width:calc(100% - 24px)}
+#crumb .cr{display:flex;gap:4px;align-items:center;overflow-x:auto;flex-wrap:nowrap;max-width:100%}
+#crumb button{padding:2px 6px;flex:none;white-space:nowrap}
 #crumb .cur{font-weight:700;padding:2px 6px;white-space:nowrap}
+#crumb .lab{color:var(--muted);flex:none;white-space:nowrap;padding:2px 4px}
 #zoombox{position:absolute;right:12px;bottom:12px;display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px;z-index:2;font-variant-numeric:tabular-nums}
 #zoombox span{padding:5px 6px;min-width:44px;text-align:center;color:var(--muted)}
 #editor{position:absolute;z-index:5;display:none;font-family:var(--ui);text-align:center;border:2px solid var(--accent);border-radius:4px;padding:4px;background:var(--panel);color:var(--fg);resize:none}

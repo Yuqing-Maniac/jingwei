@@ -123,16 +123,9 @@
     return { name, rows, widths, heights, freezeRow: 1, filter: 1, first };
   }
 
-  function collect(doc) {
-    const pages = (typeof pagesInOrder === 'function' && pagesInOrder()) || Object.values(doc.pages);
-    // pagesInOrder 依赖当前 doc；若传入的 doc 不同则自行遍历
-    let list = pages;
-    if (typeof doc === 'object' && doc.pages && !pages.every(p => doc.pages[p.id] === p)) {
-      list = []; const seen = new Set();
-      const walk = id => { if (seen.has(id) || !doc.pages[id]) return; seen.add(id); list.push(doc.pages[id]); for (const n of doc.pages[id].nodes || []) if (n.sub) walk(n.sub); };
-      walk('root'); for (const id in doc.pages) walk(id);
-    }
-    return list;
+  function collect(target) {
+    if (typeof pagesInOrder === 'function') return pagesInOrder(target);
+    return Object.values((target && target.pages) || {});
   }
 
   async function build(doc) {

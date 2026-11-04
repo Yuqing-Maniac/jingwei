@@ -381,20 +381,22 @@
     toast('已应用模板：' + t.name);
   }
   function insertAsPage(t) {
-    const src = t.build(), idMap = {};
+    const src = t.build(), idMap = {}, mapped = {};
     for (const k of Object.keys(src.pages)) idMap[k] = 'p' + uid();
     checkpoint();
     for (const [k, pg] of Object.entries(src.pages)) {
       pg.id = idMap[k]; if (k === 'root') pg.name = t.name;
       for (const n of pg.nodes) if (n.sub && idMap[n.sub]) n.sub = idMap[n.sub];
-      doc.pages[pg.id] = pg;
+      mapped[pg.id] = pg;
     }
     const p = P(); let a = sel.size === 1 ? nodeById([...sel][0]) : null;
     if (!a || a.sub || isCont(a) || ['text', 'note', 'legend'].includes(a.type)) {
       const b = contentBBox(p);
       a = mkNode({ type: 'round', text: t.name, x: snapv(b.x), y: snapv(b.y + b.h + 40), w: 200, h: 40 }); p.nodes.push(a);
     }
-    a.sub = idMap.root; selectNodes([a.id]); render();
+    hangPages(mapped, idMap.root, cur);
+    setDoor(a, idMap.root);
+    selectNodes([a.id]); render();
     toast('已插入“' + t.name + '”：点击节点右上角 ⊕ 进入该页');
   }
   window.openTemplates = function () {

@@ -577,15 +577,9 @@
   }
   function openCheck() { ensureDlg(); renderCheck(); dlg.style.display = 'flex'; setTimeout(() => dlg.querySelector('#std-close').focus(), 0); }
   function closeCheck() { if (dlg) dlg.style.display = 'none'; }
-  function pathTo(pid) {
-    if (pid === 'root') return ['root'];
-    const parentOf = {}; for (const p of Object.values(doc.pages)) for (const n of p.nodes) if (n.sub && doc.pages[n.sub] && !parentOf[n.sub]) parentOf[n.sub] = p.id;
-    const path = [pid]; let c = pid; while (c !== 'root' && parentOf[c] && path.length < 50) { c = parentOf[c]; path.unshift(c); }
-    return path[0] === 'root' ? path : ['root', pid];
-  }
   function locate(it) {
     closeCheck();
-    if (cur !== it.pageId) { P().cam = { ...view }; stack = pathTo(it.pageId); cur = it.pageId; }
+    if (cur !== it.pageId) showPage(it.pageId);
     const p = P(); clearSel();
     let bx = null;
     if (it.nodeId) { const n = nodeById(it.nodeId, p); if (n) { selectNodes([n.id]); bx = { x: n.x, y: n.y, w: n.w, h: n.h }; } }
