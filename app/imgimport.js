@@ -43,7 +43,7 @@
     }
     var scaleX = 1, scaleY = 1, gw = sw0, gh = sh0;
     var long = sw0 > sh0 ? sw0 : sh0;
-    if (long > 1600) {
+    if (long > 1600 * 1.08) {
       var sc = long / 1600;
       gw = Math.max(8, Math.round(sw0 / sc));
       gh = Math.max(8, Math.round(sh0 / sc));
@@ -273,7 +273,44 @@
       markRing(plate, solid);
     }
     mergeCaps(marks);
+    mergePredefs(marks);
     plate.dt = null;
+  }
+
+  function mergePredefs(marks) {
+    var figs = figList(marks);
+    var drop = [];
+    var i, j;
+    for (i = 0; i < figs.length; i++) {
+      var c = figs[i];
+      if (drop[i] || c.shape !== 'rect') continue;
+      var left = null, right = null, li = -1, ri = -1;
+      for (j = 0; j < figs.length; j++) {
+        if (j === i || drop[j] || figs[j].shape !== 'rect') continue;
+        var s = figs[j];
+        if (Math.abs(s.y - c.y) > 4 || Math.abs(s.h - c.h) > 4) continue;
+        if (s.w > c.w * 0.4 || s.w < 6) continue;
+        var gapL = c.x - (s.x + s.w);
+        var gapR = s.x - (c.x + c.w);
+        if (gapL >= -2 && gapL <= 6) { left = s; li = j; }
+        if (gapR >= -2 && gapR <= 6) { right = s; ri = j; }
+      }
+      if (!left || !right) continue;
+      if (Math.abs(left.w - right.w) > Math.max(left.w, right.w) * 0.35) continue;
+      c.shape = 'predef';
+      c.x = left.x;
+      c.w = right.x + right.w - left.x;
+      drop[li] = 1;
+      drop[ri] = 1;
+    }
+    if (!drop.length) return;
+    var keep = [];
+    for (i = 0; i < marks.length; i++) {
+      if (marks[i].kind === 'figure' && drop[figs.indexOf(marks[i])]) continue;
+      keep.push(marks[i]);
+    }
+    marks.length = 0;
+    for (i = 0; i < keep.length; i++) marks.push(keep[i]);
   }
 
   function mergeCaps(marks) {
@@ -415,20 +452,31 @@
     var rad = Math.max(2, Math.round(plate.sw + 1));
     var mask = solid.mask, w = solid.w, h = solid.h;
     var bin = plate.bin, drop = plate.drop, imgW = plate.w, imgH = plate.h;
+    if (!plate.dt) return;
+    var seen = new Uint8Array(imgW * imgH);
+    var qx = [], qy = [], qd = [];
+    var dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+    function push(ix, iy, dist) {
+      if (dist > rad || ix < 0 || iy < 0 || ix >= imgW || iy >= imgH) return;
+      var i = iy * imgW + ix;
+      if (seen[i] || !bin[i] || plate.dt[i] > plate.sw * 0.9) return;
+      var lx = ix - solid.x, ly = iy - solid.y;
+      if (lx >= 0 && ly >= 0 && lx < w && ly < h && mask[ly * w + lx]) return;
+      seen[i] = 1;
+      qx.push(ix);
+      qy.push(iy);
+      qd.push(dist);
+    }
     for (var py = 0; py < h; py++) for (var px = 0; px < w; px++) {
       if (!mask[py * w + px]) continue;
       var edge = px === 0 || py === 0 || px === w - 1 || py === h - 1
         || !mask[py * w + px - 1] || !mask[py * w + px + 1] || !mask[(py - 1) * w + px] || !mask[(py + 1) * w + px];
       if (!edge) continue;
-      for (var dy = -rad; dy <= rad; dy++) for (var dx = -rad; dx <= rad; dx++) {
-        if (dx * dx + dy * dy > rad * rad) continue;
-        var ix = solid.x + px + dx, iy = solid.y + py + dy;
-        if (ix < 0 || iy < 0 || ix >= imgW || iy >= imgH) continue;
-        var lx = ix - solid.x, ly = iy - solid.y;
-        if (lx >= 0 && ly >= 0 && lx < w && ly < h && mask[ly * w + lx]) continue;
-        var i = iy * imgW + ix;
-        if (bin[i] && plate.dt && plate.dt[i] <= plate.sw * 0.9) drop[i] = 1;
-      }
+      for (var d = 0; d < dirs.length; d++) push(solid.x + px + dirs[d][0], solid.y + py + dirs[d][1], 1);
+    }
+    for (var q = 0; q < qx.length; q++) {
+      drop[qy[q] * imgW + qx[q]] = 1;
+      for (var e = 0; e < dirs.length; e++) push(qx[q] + dirs[e][0], qy[q] + dirs[e][1], qd[q] + 1);
     }
   }
 
@@ -782,7 +830,7 @@
     for (var i = 0; i < pending.length; i++) {
       var item = pending[i];
       if (!item.linked && !item.bar && !(item.strokeLike && alone(item, pending, margin))) continue;
-      if (!item.linked && textStack(item, pending, sw)) continue;
+      if (!item.linked && (textStack(item, pending, sw) || charPiece(item, pending, sw))) continue;
       marks.push({
         kind: 'stroke', x: item.box.x, y: item.box.y, w: item.bw, h: item.bh,
         mask: crop(plate.bin, w, ink.lab, item.id, item.box), mw: item.bw, mh: item.bh
@@ -1069,7 +1117,9 @@
           for (var k = 0; k < line.length; k++) {
             var gap = boxGap(line[k], boxes[j]);
             var overlapY = Math.min(line[k].y + line[k].h, boxes[j].y + boxes[j].h) - Math.max(line[k].y, boxes[j].y);
-            if (gap.dy <= join || overlapY > 0) { used[j] = 1; line.push(boxes[j]); grew = true; break; }
+            var overlapX = Math.min(line[k].x + line[k].w, boxes[j].x + boxes[j].w) - Math.max(line[k].x, boxes[j].x);
+            var stacked = overlapX > Math.min(line[k].w, boxes[j].w) * 0.4 && gap.dy <= Math.max(8, sw * 2);
+            if (stacked || gap.dy <= join || overlapY > 0) { used[j] = 1; line.push(boxes[j]); grew = true; break; }
           }
         }
       }
@@ -1100,11 +1150,61 @@
     return out;
   }
 
-  function groupBounds(comps) {
-    var use = [];
-    for (var i = 0; i < comps.length; i++) {
-      if (Math.min(comps[i].w, comps[i].h) > 3 || Math.max(comps[i].w, comps[i].h) >= 12) use.push(comps[i]);
+  function charPiece(item, pending, sw) {
+    var long = Math.max(item.bw, item.bh);
+    if (long > Math.max(34, sw * 12)) return false;
+    var reach = Math.max(8, sw * 2);
+    for (var i = 0; i < pending.length; i++) {
+      var o = pending[i];
+      if (o === item || Math.max(o.bw, o.bh) > Math.max(48, sw * 16)) continue;
+      var gap = boxGap(item.box, o.box);
+      var overlapX = Math.min(item.box.x + item.bw, o.box.x + o.bw) - Math.max(item.box.x, o.box.x);
+      var overlapY = Math.min(item.box.y + item.bh, o.box.y + o.bh) - Math.max(item.box.y, o.box.y);
+      if (overlapX > Math.min(item.bw, o.bw) * 0.4 && gap.dy <= reach && gap.dx === 0) return true;
+      if (overlapY > Math.min(item.bh, o.bh) * 0.4 && gap.dx <= reach && gap.dy === 0) return true;
     }
+    return false;
+  }
+
+  function glyphParts(comps) {
+    var core = [], thin = [], i;
+    for (i = 0; i < comps.length; i++) {
+      if (Math.min(comps[i].w, comps[i].h) > 3) core.push(comps[i]);
+      else if (Math.max(comps[i].w, comps[i].h) >= 12) thin.push(comps[i]);
+    }
+    if (!core.length) return { use: comps.slice(), rest: [] };
+    var use = core.slice(), rest = [];
+    var ux0 = core[0].x, uy0 = core[0].y, ux1 = core[0].x + core[0].w, uy1 = core[0].y + core[0].h;
+    for (i = 1; i < core.length; i++) {
+      if (core[i].x < ux0) ux0 = core[i].x;
+      if (core[i].y < uy0) uy0 = core[i].y;
+      if (core[i].x + core[i].w > ux1) ux1 = core[i].x + core[i].w;
+      if (core[i].y + core[i].h > uy1) uy1 = core[i].y + core[i].h;
+    }
+    for (i = 0; i < thin.length; i++) {
+      var bar = thin[i], keep = false;
+      var overU = Math.min(bar.x + bar.w, ux1) - Math.max(bar.x, ux0);
+      var overV = Math.min(bar.y + bar.h, uy1) - Math.max(bar.y, uy0);
+      if (overU > 0 && overV > 0) keep = true;
+      for (var c = 0; c < core.length && !keep; c++) {
+        var gap = boxGap(bar, core[c]);
+        var overlapX = Math.min(bar.x + bar.w, core[c].x + core[c].w) - Math.max(bar.x, core[c].x);
+        var overlapY = Math.min(bar.y + bar.h, core[c].y + core[c].h) - Math.max(bar.y, core[c].y);
+        var flat = core[c].h < core[c].w * 0.8 || core[c].w < core[c].h * 0.8;
+        var touch = gap.dx === 0 && gap.dy === 0;
+        var cap = overlapX > Math.min(bar.w, core[c].w) * 0.4 && gap.dy <= 8 && gap.dx === 0;
+        var side = overlapY > Math.min(bar.h, core[c].h) * 0.4 && gap.dx <= 8 && gap.dy === 0;
+        if (touch || (flat && (cap || side))) keep = true;
+      }
+      if (keep) use.push(bar);
+      else rest.push(bar);
+    }
+    return { use: use, rest: rest };
+  }
+
+  function groupBounds(comps) {
+    var part = glyphParts(comps);
+    var use = part.use;
     if (!use.length) use = comps;
     var x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
     for (var j = 0; j < use.length; j++) {
@@ -1118,36 +1218,55 @@
   }
 
   function sliceGroup(bin, imgW, comps, sw) {
+    var part = glyphParts(comps);
+    var cells = sliceGroupBox(bin, imgW, part.use.length ? part.use : comps, sw);
+    if (!part.rest.length) return cells;
+    var more = sliceGroup(bin, imgW, part.rest, sw);
+    for (var r = 0; r < more.length; r++) cells.push(more[r]);
+    return cells;
+  }
+
+  function sliceGroupBox(bin, imgW, comps, sw) {
     var b = groupBounds(comps);
     var wide = b.x1 - b.x0 + 1, tall = b.y1 - b.y0 + 1;
     var n = Math.max(1, Math.round(wide / Math.max(1, tall)));
     if (n === 1 && wide > tall * 1.35) n = 2;
-    if (tall <= Math.max(8, sw * 3.4)) n = 1;
+    var vertical = false;
+    if (n === 1 && tall > wide * 1.35 && tall > Math.max(8, sw * 3.4)) { n = 2; vertical = true; }
+    if (!vertical && tall <= Math.max(8, sw * 3.4)) n = 1;
     var whole = tightBox(bin, imgW, b.x0, b.y0, b.x1 + 1, b.y1 + 1);
     if (!whole || n <= 1) return whole ? [whole] : [];
-    var proj = new Uint16Array(wide);
-    for (var y = b.y0; y <= b.y1; y++) for (var x = b.x0; x <= b.x1; x++) {
-      if (bin[y * imgW + x]) proj[x - b.x0]++;
+    var span = vertical ? tall : wide;
+    var proj = new Uint16Array(span);
+    var y, x;
+    for (y = b.y0; y <= b.y1; y++) for (x = b.x0; x <= b.x1; x++) {
+      if (!bin[y * imgW + x]) continue;
+      proj[vertical ? y - b.y0 : x - b.x0]++;
     }
     var inkCols = [];
-    for (var p = 0; p < wide; p++) if (proj[p]) inkCols.push(proj[p]);
+    for (var p = 0; p < span; p++) if (proj[p]) inkCols.push(proj[p]);
     var med = median(inkCols) || 1;
     var cuts = [];
-    var cellW = wide / n;
+    var cellW = span / n;
     for (var i = 1; i < n; i++) {
       var ideal = Math.round(i * cellW);
       var rad = Math.max(2, Math.round(cellW * 0.4));
-      var lo = Math.max(1, ideal - rad), hi = Math.min(wide - 2, ideal + rad);
-      var best = -1, bestV = 1e9;
-      for (var col = lo; col <= hi; col++) if (proj[col] < bestV) { bestV = proj[col]; best = col; }
+      var lo = Math.max(1, ideal - rad), hi = Math.min(span - 2, ideal + rad);
+      var best = -1, bestV = 1e9, bestDist = 1e9;
+      for (var col = lo; col <= hi; col++) {
+        var dist = Math.abs(col - ideal);
+        if (proj[col] < bestV || (proj[col] === bestV && dist < bestDist)) { bestV = proj[col]; best = col; bestDist = dist; }
+      }
       if (best < 0 || bestV > med * 0.35) continue;
       if (!cuts.length || best > cuts[cuts.length - 1] + 2) cuts.push(best);
     }
     if (!cuts.length) return [whole];
-    var bounds = [0].concat(cuts).concat([wide]);
+    var bounds = [0].concat(cuts).concat([span]);
     var cells = [];
     for (var k = 0; k < bounds.length - 1; k++) {
-      var cell = tightBox(bin, imgW, b.x0 + bounds[k], b.y0, b.x0 + bounds[k + 1], b.y1 + 1);
+      var cell = vertical
+        ? tightBox(bin, imgW, b.x0, b.y0 + bounds[k], b.x1 + 1, b.y0 + bounds[k + 1])
+        : tightBox(bin, imgW, b.x0 + bounds[k], b.y0, b.x0 + bounds[k + 1], b.y1 + 1);
       if (cell) cells.push(cell);
     }
     return cells.length ? cells : [whole];

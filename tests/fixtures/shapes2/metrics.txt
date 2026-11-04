@@ -2,22 +2,22 @@ TYPE png
 type	n	hit	recall	text	wrong_mode	miss
 arrowR	1	1	1.000	1.000	-	0
 chevron	1	1	1.000	1.000	-	0
-cloud	1	1	1.000	0.000	-	0
+cloud	1	1	1.000	1.000	-	0
 cube	1	1	1.000	1.000	-	0
 cylinder	1	1	1.000	1.000	-	0
 delay	1	1	1.000	1.000	-	0
-diamond	3	3	1.000	0.667	-	0
+diamond	3	3	1.000	1.000	-	0
 display	1	1	1.000	1.000	-	0
 document	1	1	1.000	1.000	-	0
-donut	1	1	1.000	0.000	-	0
-ellipse	4	4	1.000	0.750	-	0
+donut	1	1	1.000	0.667	-	0
+ellipse	4	4	1.000	1.000	-	0
 frame	1	1	1.000	1.000	-	0
-hexagon	3	3	1.000	0.667	-	0
+hexagon	3	3	1.000	1.000	-	0
 octagon	1	1	1.000	1.000	-	0
 parallelogram	1	1	1.000	1.000	-	0
 pentagon	1	1	1.000	1.000	-	0
 plus	1	1	1.000	1.000	-	0
-predef	1	0	0.000	0.000	rect:1	0
+predef	1	1	1.000	1.000	-	0
 rect	12	12	1.000	0.958	-	0
 round	2	2	1.000	1.000	-	0
 roundL	1	1	1.000	1.000	-	0
@@ -30,32 +30,32 @@ ARROWS png
 key	links	end_hit	end_rate	dir_hit	dir_given	dir_raw	cross_ok	cross_swap	cross_miss
 poly	6	6	1.000	6	1.000	1.000	0	0	0
 rounds	5	5	1.000	5	1.000	1.000	0	0	0
-flowmisc	6	5	0.833	5	1.000	0.833	0	0	0
+flowmisc	6	6	1.000	6	1.000	1.000	0	0	0
 arrows	6	6	1.000	6	1.000	1.000	2	0	0
 sizes	4	3	0.750	3	0.750	0.750	0	0	0
 extra	4	4	1.000	4	1.000	1.000	0	0	0
-ALL	31	29	0.935	29	0.967	0.935	2	0	0
+ALL	31	30	0.968	30	0.968	0.968	2	0	0
 crossing_pair_rate 1.000 (2/2) swap 0 miss 0
 TYPE jpg
 type	n	hit	recall	text	wrong_mode	miss
 arrowR	1	1	1.000	1.000	-	0
 chevron	1	1	1.000	1.000	-	0
-cloud	1	1	1.000	0.000	-	0
+cloud	1	1	1.000	1.000	-	0
 cube	1	1	1.000	1.000	-	0
 cylinder	1	1	1.000	1.000	-	0
 delay	1	1	1.000	1.000	-	0
-diamond	3	3	1.000	0.667	-	0
+diamond	3	3	1.000	1.000	-	0
 display	1	1	1.000	1.000	-	0
 document	1	1	1.000	1.000	-	0
-donut	1	1	1.000	0.000	-	0
-ellipse	4	4	1.000	0.750	-	0
+donut	1	1	1.000	0.667	-	0
+ellipse	4	4	1.000	1.000	-	0
 frame	1	1	1.000	1.000	-	0
-hexagon	3	3	1.000	0.667	-	0
+hexagon	3	3	1.000	1.000	-	0
 octagon	1	1	1.000	1.000	-	0
 parallelogram	1	1	1.000	1.000	-	0
 pentagon	1	1	1.000	1.000	-	0
 plus	1	1	1.000	1.000	-	0
-predef	1	0	0.000	0.000	rect:1	0
+predef	1	1	1.000	1.000	-	0
 rect	12	12	1.000	0.958	-	0
 round	2	2	1.000	1.000	-	0
 roundL	1	1	1.000	1.000	-	0
@@ -68,11 +68,11 @@ ARROWS jpg
 key	links	end_hit	end_rate	dir_hit	dir_given	dir_raw	cross_ok	cross_swap	cross_miss
 poly	6	6	1.000	6	1.000	1.000	0	0	0
 rounds	5	5	1.000	5	1.000	1.000	0	0	0
-flowmisc	6	5	0.833	5	1.000	0.833	0	0	0
+flowmisc	6	6	1.000	6	1.000	1.000	0	0	0
 arrows	6	6	1.000	6	1.000	1.000	2	0	0
 sizes	4	3	0.750	3	0.750	0.750	0	0	0
 extra	4	4	1.000	4	1.000	1.000	0	0	0
-ALL	31	29	0.935	29	0.967	0.935	2	0	0
+ALL	31	30	0.968	30	0.968	0.968	2	0	0
 crossing_pair_rate 1.000 (2/2) swap 0 miss 0
 DUMP
 poly	t	triangle	三角	0.976	triangle	三角	hit
@@ -92,11 +92,11 @@ rounds	s	terminator	开始	1.000	terminator	开始	hit
 flowmisc	a	document	文档	0.986	document	文档	hit
 flowmisc	b	delay	延迟	1.000	delay	延迟	hit
 flowmisc	c	display	显示	0.996	display	显示	hit
-flowmisc	d	predef	过程	0.750	rect	过程	miss
+flowmisc	d	predef	过程	1.000	predef	过程	hit
 flowmisc	e	cylinder	数据	0.988	cylinder	数据	hit
 flowmisc	f	chevron	阶段	0.990	chevron	阶段	hit
 flowmisc	g	cube	立方	0.989	cube	立方	hit
-flowmisc	h	cloud	云	0.994	cloud	□	hit
+flowmisc	h	cloud	云	0.994	cloud	云	hit
 arrows	a	rect	甲点	0.986	rect	甲点	hit
 arrows	b	rect	乙点	0.986	rect	乙点	hit
 arrows	c	rect	丙点	0.976	rect	丙点	hit
@@ -109,17 +109,19 @@ arrows	m	rect	左框	0.990	rect	左框	hit
 arrows	k	rect	右框	0.986	rect	右□	hit
 arrows	i	rect	折起	0.986	rect	折起	hit
 arrows	j	rect	折落	0.990	rect	折落	hit
-sizes	a	triangle	小三角	0.962	triangle	J	hit
+sizes	a	triangle	小三角	0.962	triangle	j
+三	hit
 sizes	b	triangle	大三角	0.980	triangle	大三角	hit
-sizes	c	diamond	小菱	0.951	diamond	J□	hit
+sizes	c	diamond	小菱	0.951	diamond	小菱	hit
 sizes	d	diamond	大菱	0.980	diamond	大菱	hit
-sizes	e	ellipse	小圆	1.000	ellipse	J□	hit
+sizes	e	ellipse	小圆	1.000	ellipse	小圆	hit
 sizes	f	ellipse	大椭圆	1.000	ellipse	大椭圆	hit
-sizes	g	hexagon	小六	0.988	hexagon	J/	hit
+sizes	g	hexagon	小六	0.988	hexagon	小六	hit
 sizes	h	hexagon	大六	0.994	hexagon	大六	hit
-extra	a	star	星形	0.934	star	星形	hit
-extra	b	plus	十字	0.988	plus	十字	hit
-extra	c	donut	圆环	0.978	donut	]	hit
-extra	d	frame	外框	0.994	frame	外框	hit
+extra	a	star	星形	0.924	star	星形	hit
+extra	b	plus	十字	1.000	plus	十字	hit
+extra	c	donut	圆环	1.000	donut	圆
+环	hit
+extra	d	frame	外框	1.000	frame	外框	hit
 extra	e	arrowR	右箭	0.966	arrowR	右箭	hit
-affinity=[0] chrome_rss_sum_mib=1282 chrome_hwm_max_mib=529 no_memory_cgroup=1 one_trial=1
+affinity=[0] chrome_rss_sum_mib=1324 chrome_hwm_max_mib=523 no_memory_cgroup=1 one_trial=1
