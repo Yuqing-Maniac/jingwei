@@ -1,0 +1,107 @@
+{
+  "name": "不同大小",
+  "nodes": [
+    {
+      "id": "a",
+      "type": "triangle",
+      "text": "小三角",
+      "x": 48,
+      "y": 48,
+      "w": 112,
+      "h": 96
+    },
+    {
+      "id": "b",
+      "type": "triangle",
+      "text": "大三角",
+      "x": 184,
+      "y": 48,
+      "w": 320,
+      "h": 260
+    },
+    {
+      "id": "c",
+      "type": "diamond",
+      "text": "小菱",
+      "x": 48,
+      "y": 332,
+      "w": 140,
+      "h": 96
+    },
+    {
+      "id": "d",
+      "type": "diamond",
+      "text": "大菱",
+      "x": 212,
+      "y": 332,
+      "w": 360,
+      "h": 220
+    },
+    {
+      "id": "e",
+      "type": "ellipse",
+      "text": "小圆",
+      "x": 48,
+      "y": 576,
+      "w": 96,
+      "h": 96
+    },
+    {
+      "id": "f",
+      "type": "ellipse",
+      "text": "大椭圆",
+      "x": 168,
+      "y": 576,
+      "w": 400,
+      "h": 140
+    },
+    {
+      "id": "g",
+      "type": "hexagon",
+      "text": "小六",
+      "x": 48,
+      "y": 740,
+      "w": 160,
+      "h": 88
+    },
+    {
+      "id": "h",
+      "type": "hexagon",
+      "text": "大六",
+      "x": 232,
+      "y": 740,
+      "w": 360,
+      "h": 160
+    }
+  ],
+  "links": [
+    {
+      "id": "l1",
+      "from": "a",
+      "to": "b",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l2",
+      "from": "c",
+      "to": "d",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l3",
+      "from": "e",
+      "to": "f",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l4",
+      "from": "g",
+      "to": "h",
+      "dir": "one",
+      "cross": false
+    }
+  ]
+}

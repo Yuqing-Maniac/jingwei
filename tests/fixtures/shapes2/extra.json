@@ -1,0 +1,80 @@
+{
+  "name": "其余形状",
+  "nodes": [
+    {
+      "id": "a",
+      "type": "star",
+      "text": "星形",
+      "x": 48,
+      "y": 48,
+      "w": 180,
+      "h": 180
+    },
+    {
+      "id": "b",
+      "type": "plus",
+      "text": "十字",
+      "x": 348,
+      "y": 68,
+      "w": 160,
+      "h": 160
+    },
+    {
+      "id": "c",
+      "type": "donut",
+      "text": "圆环",
+      "x": 628,
+      "y": 48,
+      "w": 180,
+      "h": 180
+    },
+    {
+      "id": "d",
+      "type": "frame",
+      "text": "外框",
+      "x": 908,
+      "y": 60,
+      "w": 240,
+      "h": 160
+    },
+    {
+      "id": "e",
+      "type": "arrowR",
+      "text": "右箭",
+      "x": 1268,
+      "y": 84,
+      "w": 320,
+      "h": 128
+    }
+  ],
+  "links": [
+    {
+      "id": "l1",
+      "from": "a",
+      "to": "b",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l2",
+      "from": "b",
+      "to": "c",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l3",
+      "from": "c",
+      "to": "d",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l4",
+      "from": "d",
+      "to": "e",
+      "dir": "one",
+      "cross": false
+    }
+  ]
+}

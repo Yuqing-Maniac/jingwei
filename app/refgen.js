@@ -556,7 +556,7 @@
       if (!root.classList.contains('open') || root.contains(e.target)) return;
       e.stopPropagation();
       if (e.key === 'Escape') { e.preventDefault(); close(); }
-      else if (['Delete', 'Backspace', ' '].includes(e.key) || e.ctrlKey || e.metaKey) { if (!/^[cv]$/i.test(e.key)) e.preventDefault(); }
+      else if (['Delete', 'Backspace', ' '].includes(e.key) || e.ctrlKey || e.metaKey) { if (!/^[cvx]$/i.test(e.key)) e.preventDefault(); }
     }, true);
     root.addEventListener('mousedown', e => { if (e.target === root) close(); });
     q('#rg-close').onclick = close;
