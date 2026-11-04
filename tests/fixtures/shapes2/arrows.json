@@ -1,0 +1,157 @@
+{
+  "name": "箭头方向",
+  "nodes": [
+    {
+      "id": "a",
+      "type": "rect",
+      "text": "甲点",
+      "x": 48,
+      "y": 48,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "b",
+      "type": "rect",
+      "text": "乙点",
+      "x": 688,
+      "y": 48,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "c",
+      "type": "rect",
+      "text": "丙点",
+      "x": 48,
+      "y": 408,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "d",
+      "type": "rect",
+      "text": "丁点",
+      "x": 688,
+      "y": 408,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "e",
+      "type": "rect",
+      "text": "起点",
+      "x": 48,
+      "y": 728,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "f",
+      "type": "rect",
+      "text": "终点",
+      "x": 688,
+      "y": 784,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "g",
+      "type": "rect",
+      "text": "回点",
+      "x": 1368,
+      "y": 48,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "h",
+      "type": "rect",
+      "text": "去点",
+      "x": 1368,
+      "y": 368,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "m",
+      "type": "rect",
+      "text": "左框",
+      "x": 1008,
+      "y": 728,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "k",
+      "type": "rect",
+      "text": "右框",
+      "x": 1488,
+      "y": 728,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "i",
+      "type": "rect",
+      "text": "折起",
+      "x": 48,
+      "y": 1048,
+      "w": 260,
+      "h": 96
+    },
+    {
+      "id": "j",
+      "type": "rect",
+      "text": "折落",
+      "x": 568,
+      "y": 1288,
+      "w": 260,
+      "h": 96
+    }
+  ],
+  "links": [
+    {
+      "id": "x1",
+      "from": "a",
+      "to": "d",
+      "dir": "one",
+      "cross": true
+    },
+    {
+      "id": "x2",
+      "from": "b",
+      "to": "c",
+      "dir": "one",
+      "cross": true
+    },
+    {
+      "id": "both",
+      "from": "e",
+      "to": "f",
+      "dir": "both",
+      "cross": false
+    },
+    {
+      "id": "up",
+      "from": "h",
+      "to": "g",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "left",
+      "from": "k",
+      "to": "m",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "elbow",
+      "from": "i",
+      "to": "j",
+      "dir": "one",
+      "cross": false
+    }
+  ]
+}

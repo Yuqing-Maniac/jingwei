@@ -1,0 +1,112 @@
+{
+  "name": "多边形流程",
+  "nodes": [
+    {
+      "id": "t",
+      "type": "triangle",
+      "text": "三角",
+      "x": 48,
+      "y": 48,
+      "w": 180,
+      "h": 156
+    },
+    {
+      "id": "z",
+      "type": "trapezoid",
+      "text": "梯形",
+      "x": 348,
+      "y": 72,
+      "w": 300,
+      "h": 112
+    },
+    {
+      "id": "p",
+      "type": "parallelogram",
+      "text": "并行",
+      "x": 768,
+      "y": 76,
+      "w": 320,
+      "h": 104
+    },
+    {
+      "id": "h",
+      "type": "hexagon",
+      "text": "六边",
+      "x": 1208,
+      "y": 56,
+      "w": 280,
+      "h": 144
+    },
+    {
+      "id": "f",
+      "type": "pentagon",
+      "text": "五边",
+      "x": 108,
+      "y": 376,
+      "w": 192,
+      "h": 180
+    },
+    {
+      "id": "o",
+      "type": "octagon",
+      "text": "八角",
+      "x": 468,
+      "y": 388,
+      "w": 176,
+      "h": 176
+    },
+    {
+      "id": "d",
+      "type": "diamond",
+      "text": "判断",
+      "x": 828,
+      "y": 368,
+      "w": 260,
+      "h": 192
+    }
+  ],
+  "links": [
+    {
+      "id": "l1",
+      "from": "t",
+      "to": "z",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l2",
+      "from": "z",
+      "to": "p",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l3",
+      "from": "p",
+      "to": "h",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l4",
+      "from": "f",
+      "to": "o",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l5",
+      "from": "o",
+      "to": "d",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l6",
+      "from": "z",
+      "to": "o",
+      "dir": "one",
+      "cross": false
+    }
+  ]
+}
