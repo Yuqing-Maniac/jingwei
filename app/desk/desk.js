@@ -110,6 +110,10 @@
         if (official) { curPath = official[1]; dirty = true; }
         else { curPath = r.path; dirty = false; }
         upd(); toast('已打开：' + r.name);
+      } else if (/\.(png|jpe?g)$/i.test(r.name)) {
+        const ok = await openImageFile(new File([r.data], r.name));
+        if (!ok) return;
+        upd();
       } else {
         await openForeign(new File([r.data], r.name)); upd();
       }
@@ -128,7 +132,7 @@
     drop.classList.remove('on');
     if (!isFileDrag(e)) return;
     const f = e.dataTransfer.files[0];
-    if (f && f.path && /\.(json|pptx|vsdx|drawio|xml)$/i.test(f.name)) { e.preventDefault(); e.stopPropagation(); openPath(f.path); }
+    if (f && f.path && /\.(json|png|jpe?g|pptx|vsdx|drawio|xml)$/i.test(f.name)) { e.preventDefault(); e.stopPropagation(); openPath(f.path); }
   }, true);
 
   /* ---------- 关闭前确认 ---------- */

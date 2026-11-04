@@ -1,5 +1,6 @@
 /* ============ 织图 · 紧凑排版与报告版心（排版密度） ============
  * doc.layout = { mode:'standard'|'compact'|'report', page:'a4p'|'a4l'|'ppt', font:10.5 }
+ * 缺省 mode 为 compact。文件里已有的 mode 优先；没有时用 localStorage 的 hongtu.layout。
  *  · standard：原有一键美化（铺满整幅宽度）。
  *  · compact ：条目按自然宽度紧挨排列、装备卡缩小、层标题收窄，图宽随内容收缩。
  *  · report  ：在紧凑基础上，按“报告版心宽度 × 目标字号”反推图宽，条目自动折行；
@@ -13,10 +14,46 @@
     ppt: { name: 'PPT 宽屏', cm: 31.0, hint: '幻灯片内容区宽 31 cm' },
   };
   const FONTS = [[14, '四号（14 pt）'], [12, '小四（12 pt）'], [10.5, '五号（10.5 pt）'], [9, '小五（9 pt）']];
+  const MODES = {
+    standard: { label: '标准', toast: '已切换为标准排版' },
+    compact: { label: '紧凑', toast: '已切换为紧凑排版' },
+    report: { label: '报告版心' },
+  };
+  const FACTORY = { mode: 'compact', page: 'a4p', font: 10.5 };
+  if (!MODES[FACTORY.mode] || !PAGES[FACTORY.page] || !(FACTORY.font > 0)) throw new Error('bad factory layout');
+  const PREF_KEY = 'hongtu.layout';
   const BASE = 13;          /* 画布上框内正文字号（px） */
   const PAD = 24;           /* exportSVGString 的留白 */
   const G = { gap: 14, gapL: 30, vgap: 10, vgapL: 30, eqW: 88, boxMinW: 60, boxMaxW: 168 };
-  const cfg = () => { const L = doc.layout || {}; return { mode: L.mode || 'standard', page: PAGES[L.page] ? L.page : 'a4p', font: L.font || 10.5 }; };
+  function plainLayout(v) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return null;
+    return v;
+  }
+  function readPref() {
+    try { return plainLayout(JSON.parse(localStorage.getItem(PREF_KEY) || 'null')); }
+    catch (_) { return null; }
+  }
+  function writePref(layout) {
+    try { localStorage.setItem(PREF_KEY, JSON.stringify({ mode: layout.mode, page: layout.page, font: layout.font })); }
+    catch (_) { }
+  }
+  function modeOf(L) { return L && MODES[L.mode] ? L.mode : ''; }
+  function pageOf(L) { return L && PAGES[L.page] ? L.page : ''; }
+  function fontOf(L) { const f = L && L.font; return typeof f === 'number' && isFinite(f) && f > 0 ? f : 0; }
+  function cfg(d) {
+    const src = d && typeof d === 'object' ? d : doc;
+    const file = plainLayout(src && src.layout);
+    const pref = readPref();
+    return {
+      mode: modeOf(file) || modeOf(pref) || FACTORY.mode,
+      page: pageOf(file) || pageOf(pref) || FACTORY.page,
+      font: fontOf(file) || fontOf(pref) || FACTORY.font,
+    };
+  }
+  function adopt(layout) {
+    doc.layout = { mode: layout.mode, page: layout.page, font: layout.font };
+    return doc.layout;
+  }
   const ptOf = cm => cm / 2.54 * 72;
   /* 报告模式下的总图宽（px，不含导出留白）：版心宽(pt) × 13px ÷ 目标字号(pt) */
   function targetW(c = cfg()) { return snapv(ptOf(PAGES[c.page].cm) * BASE / c.font - PAD * 2); }
@@ -53,12 +90,13 @@
     return { w, h: snapv(Math.max(32, lines * lineH(size) + 12)) };
   }
   function groupNatural(g, avail, p) {
+    const eat = contEat(g);
     const ks = order(kids(g.id, p));
     const tg = codeTagOf(g, p), titleW = measure(firstLineOf(g.text), 12.5, true) + 24 + (tg ? tg.w + 8 : 0);
-    if (!ks.length) return { w: Math.min(avail, Math.max(120, titleW)), h: GROUP_TH + 36, flow: null };
-    const inner = Math.max(60, avail - 16);
+    if (!ks.length) return { w: Math.min(avail, Math.max(120, titleW) + eat.x), h: eat.y + 36, flow: null };
+    const inner = Math.max(60, avail - 16 - eat.x);
     const fl = flow(ks, inner, g.links, p);
-    return { w: Math.min(avail, Math.max(fl.w + 16, titleW)), h: GROUP_TH + 8 + fl.h + 8, flow: fl };
+    return { w: Math.min(avail, Math.max(fl.w + 16, titleW) + eat.x), h: eat.y + 8 + fl.h + 8, flow: fl };
   }
   const firstLineOf = s => String(s || '').split('\n')[0];
 
@@ -102,7 +140,9 @@
   }
   function placeGroup(g, x, y, w, h, fl, p) {
     g.x = x; g.y = y; g.w = snapv(w); g.h = snapv(h);
-    if (fl) place(fl, g.x + 8, g.y + GROUP_TH + 8 + Math.max(0, (g.h - GROUP_TH - 16 - fl.h) / 2), g.w - 16, p);
+    if (!fl) return;
+    const box = contFrame(g).content;
+    place(fl, box.x + 8, box.y + 8 + Math.max(0, (box.h - 16 - fl.h) / 2), box.w - 16, p);
   }
 
   /* ---------- 层与分组带 ---------- */
@@ -111,39 +151,79 @@
     return snapv(clamp(w, 60, 96));
   }
   function layoutLaneC(l, p) {
-    l.titleW = laneTitleW(l);
-    const ks = order(kids(l.id, p)), tw = l.titleW;
-    const x0 = l.x + tw + 8, aw = l.w - tw - 16;
+    const row = contRow(l), side = sideOf(l);
+    if (row && row.thick.fit && row.thick.fit.sides.indexOf(side) >= 0) l.titleW = laneTitleW(l);
+    const ks = order(kids(l.id, p));
     if (!ks.length) { l.h = Math.max(l.h, 44); return; }
+    const box0 = contFrame(l).content, aw = box0.w - 16;
     const fl = flow(ks, aw, l.links, p);
-    const tl = wrap(l.text, tw - 12, 13.5, true).length * lineH(13.5) + 12;
-    l.h = snapv(Math.max(44, fl.h + 14, tl));
-    place(fl, x0, l.y + (l.h - fl.h) / 2, aw, p);
+    if (side === 'l' || side === 'r') {
+      const tw = thickness(l, row);
+      const tl = wrap(l.text, tw - 12, row.size, row.bold).length * lineH(row.size) + 12;
+      l.h = snapv(Math.max(44, fl.h + 14, tl));
+    } else l.h = snapv(Math.max(thickness(l, row) + fl.h + 14, 44));
+    const box = contFrame(l).content;
+    place(fl, box.x + 8, box.y + (box.h - fl.h) / 2, box.w - 16, p);
   }
   function layoutBandC(b, p) {
-    const ks = kids(b.id, p), lanes = ks.filter(k => k.type === 'lane').sort((a, c) => a.y - c.y), others = order(ks.filter(k => k.type !== 'lane'));
+    const ks = kids(b.id, p);
+    const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; }).sort((a, c) => a.y - c.y);
+    const tiles = ks.filter(k => { const r = contRow(k); return r && r.layout === 'tile'; }).sort((a, c) => a.x - c.x);
+    const margins = ks.filter(k => { const r = contRow(k); return r && r.layout === 'margin'; });
+    const others = order(ks.filter(k => lanes.indexOf(k) < 0 && tiles.indexOf(k) < 0 && margins.indexOf(k) < 0));
     /* 跨层连线：层间留出连线与标签的位置 */
     const laneOf = id => { let n = nodeById(id, p), k = 0; while (n && n.parent && k++ < 20) { if (n.type === 'lane') return n.id; n = nodeById(n.parent, p); } return n && n.type === 'lane' ? n.id : null; };
     const ids = new Set(lanes.map(l => l.id));
     const cross = p.links.some(l => { const a = laneOf(l.from), c = laneOf(l.to); return a && c && a !== c && ids.has(a) && ids.has(c); });
     const lg = cross ? 22 : 4;
-    let y = b.y + 4;
-    for (const l of lanes) { l.x = b.x + BAND_TW + 4; l.w = b.w - BAND_TW - 8; l.y = snapv(y); layoutLaneC(l, p); y = l.y + l.h + lg; }
+    const box = contFrame(b).content;
+    const mw = margins.length ? Math.max(...margins.map(k => k.w)) : 0;
+    const mainX = box.x, mainW = box.w - mw;
+    let y = box.y + 4;
+    for (const l of lanes) { l.x = mainX + 4; l.w = mainW - 8; l.y = snapv(y); layoutLaneC(l, p); y = l.y + l.h + lg; }
     if (lanes.length) y -= lg - 4;
-    if (others.length) {
-      const aw = b.w - BAND_TW - 20, fl = flow(others, aw, b.links, p);
-      place(fl, b.x + BAND_TW + 10, y + 8, aw, p); y += fl.h + 16;
+    if (tiles.length) {
+      const gap = 8, tw = (mainW - gap * (tiles.length - 1)) / tiles.length, y0 = y;
+      let x = mainX, maxH = 0;
+      for (const t of tiles) {
+        const dx = x - t.x, dy = y0 - t.y;
+        t.x = x; t.w = tw; t.y = snapv(y0);
+        if (dx || dy) for (const d of descendants(t.id, p)) { d.x += dx; d.y += dy; }
+        layoutCont(t, p, { fitTitle: true });
+        maxH = Math.max(maxH, t.h); x += tw + gap;
+      }
+      y = y0 + maxH + 4;
     }
-    const chars = [...String(b.text || '')].filter(c => c.trim()).length;
-    b.h = snapv(Math.max(y - b.y, 40, chars * 17 + 12));
+    if (others.length) {
+      const aw = mainW - 20, fl = flow(others, aw, b.links, p);
+      place(fl, mainX + 10, y + 8, aw, p); y += fl.h + 16;
+    }
+    for (const m of margins) {
+      const nx = box.x + box.w - mw, dx = nx - m.x, dy = box.y - m.y;
+      m.x = nx; m.y = box.y; m.h = Math.max(m.h, y - box.y);
+      if (dx || dy) for (const d of descendants(m.id, p)) { d.x += dx; d.y += dy; }
+      layoutCont(m, p, { fitTitle: true });
+    }
+    const side = sideOf(b), brow = contRow(b), bot = side === 'b' ? thickness(b, brow) : 0;
+    b.h = snapv(Math.max(y - b.y + bot, 40));
+    if ((side === 'l' || side === 'r') && brow.minChar != null) {
+      const chars = [...String(b.text || '')].filter(c => c.trim()).length;
+      b.h = snapv(Math.max(b.h, chars * brow.minChar + brow.minPad));
+    }
   }
   /* 一行排下所需宽度（紧凑模式图宽） */
   function needW(b, p) {
-    const ks = kids(b.id, p), lanes = ks.filter(k => k.type === 'lane'), others = ks.filter(k => k.type !== 'lane');
+    const ks = kids(b.id, p);
+    const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; });
+    const others = ks.filter(k => lanes.indexOf(k) < 0 && !(contRow(k) && (contRow(k).layout === 'margin' || contRow(k).layout === 'tile')));
     const rowW = (items0, linked) => { const gap = linked ? G.gapL : G.gap, items = order(items0); return items.reduce((a, n, i) => a + natural(n, 4000, p).w + (i ? pairGap(items[i - 1], n, gap, p) : 0), 0); };
     let w = others.length ? rowW(others, b.links) + 20 : 0;
-    for (const l of lanes) w = Math.max(w, laneTitleW(l) + 16 + 8 + rowW(kids(l.id, p), l.links));
-    return BAND_TW + 8 + w;
+    for (const l of lanes) {
+      const tw = (sideOf(l) === 'l' || sideOf(l) === 'r') ? laneTitleW(l) : 0;
+      w = Math.max(w, tw + 16 + 8 + rowW(kids(l.id, p), l.links));
+    }
+    const eat = (sideOf(b) === 'l' || sideOf(b) === 'r') ? thickness(b, contRow(b)) : 0;
+    return eat + 8 + w;
   }
 
   /* ---------- 报告版心：超出版心宽的元素收进版心 ---------- */
@@ -155,7 +235,7 @@
   }
   /* 分层图：层之外、超出版心的顶层元素（说明、图片、旁注等）→ 排到层下方，按版心宽度折行 */
   function fitBelow(p, X, W, skip) {
-    const tops = p.nodes.filter(n => !n.parent && n.type !== 'band' && !skip.includes(n) && n.role !== 'title' && n.role !== 'subtitle');
+    const tops = p.nodes.filter(n => !n.parent && n.type !== 'band' && !(contRow(n) && contRow(n).layout === 'inset') && !skip.includes(n) && n.role !== 'title' && n.role !== 'subtitle');
     const bandsB = Math.max(...p.nodes.filter(n => n.type === 'band' && !n.parent).map(b => b.y + b.h));
     if (!tops.some(n => n.x < X - 2 || n.x + n.w > X + W + 2)) return;
     /* 只挪动超出版心的元素：排在现有内容（层、说明、图例、标题栏）下方 */
@@ -174,7 +254,7 @@
   }
   /* 无分层的自由图（流程图等）：整体按比例收进版心宽，框宽同比缩小、文字自动折行，行距随框高顺延 */
   function fitFree(p, W) {
-    const items = p.nodes.filter(n => !n.parent && n.type !== 'band' && !n.role && n.type !== 'legend' && n.type !== 'note' && n.type !== 'tblock');
+    const items = p.nodes.filter(n => !n.parent && n.type !== 'band' && !(contRow(n) && contRow(n).layout === 'inset') && !n.role && n.type !== 'legend' && n.type !== 'note' && n.type !== 'tblock');
     if (!items.length) return;
     const x0 = Math.min(...items.map(n => n.x)), x1 = Math.max(...items.map(n => n.x + n.w)), W0 = x1 - x0;
     if (W0 > W + 2) {
@@ -234,6 +314,9 @@
   function beautifyC(p = P()) {
     const c = cfg();
     if (c.mode === 'standard') return std(p);
+    return pack(p, c);
+  }
+  function pack(p, c) {
     const saved = cur; cur = p.id;
     try {
       normalizeImported(p);
@@ -268,11 +351,13 @@
         shiftBelow(p, free, oldBottom, bottom, [title, sub, note, leg]);
         if (c.mode === 'report') fitBelow(p, X, W, [title, sub]);
       } else {
+        p.nodes.filter(n => !n.parent && contRow(n) && contRow(n).layout === 'inset').forEach(n => layoutInset(n, p));
         const tops = order(p.nodes.filter(n => !n.parent && (n.type === 'lane' || n.type === 'group')));
         for (const t of tops) {
           if (t.type === 'lane') { if (c.mode === 'report') t.w = targetW(c); layoutLaneC(t, p); }
           else { const s = groupNatural(t, c.mode === 'report' ? targetW(c) : 2400, p); placeGroup(t, t.x, t.y, s.w, s.h, s.flow, p); }
         }
+        p.nodes.filter(n => !n.parent && contRow(n) && (contRow(n).layout === 'tile' || contRow(n).layout === 'margin' || (contRow(n).layout === 'stack' && contRow(n).stack === 'all') || (contRow(n).layout === 'flow' && n.type !== 'group'))).forEach(n => layoutCont(n, p, { fitTitle: true }));
         tidyFree(p);
         if (c.mode === 'report') fitFree(p, targetW(c));
       }
@@ -310,7 +395,7 @@
   /* ---------- 图面设置面板 ---------- */
   function panelHTML() {
     const c = cfg(), seg = (id, opts, v) => `<div class="seg" id="${id}">${opts.map(([k, t]) => `<button data-v="${k}" class="${k === v ? 'on' : ''}">${t}</button>`).join('')}</div>`;
-    let h = `<div class="row" title="标准：铺满整幅；紧凑：条目紧挨、图宽随内容收缩；报告版心：按报告版心宽度与字号自动折行"><label>排版</label>${seg('d-lay', [['standard', '标准'], ['compact', '紧凑'], ['report', '报告版心']], c.mode)}</div>`;
+    let h = `<div class="row" title="标准：铺满整幅；紧凑：条目紧挨、图宽随内容收缩；报告版心：按报告版心宽度与字号自动折行"><label>排版</label>${seg('d-lay', Object.keys(MODES).map(k => [k, MODES[k].label]), c.mode)}</div>`;
     if (c.mode === 'report') {
       h += `<div class="row"><label>版心</label><select id="d-lay-page">${Object.entries(PAGES).map(([k, v]) => `<option value="${k}" ${k === c.page ? 'selected' : ''}>${v.name}（${v.hint}）</option>`).join('')}</select></div>`;
       h += `<div class="row"><label>图内字号</label><select id="d-lay-font">${FONTS.map(([v, t]) => `<option value="${v}" ${v === c.font ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`;
@@ -321,10 +406,13 @@
     return h;
   }
   function apply(mut) {
-    checkpoint(); doc.layout = Object.assign(cfg(), doc.layout || {}, mut);
+    checkpoint();
+    const next = cfg({ layout: Object.assign({}, cfg(), mut) });
+    adopt(next);
+    writePref(next);
     beautifyC(P()); render(); fit();
     const c = cfg();
-    toast(c.mode === 'report' ? `已按${PAGES[c.page].name}版心排版：图宽 ${targetW(c)} px，导出“报告插图 PNG”插入 Word 即为 ${PAGES[c.page].cm} cm 宽` : c.mode === 'compact' ? '已切换为紧凑排版' : '已切换为标准排版');
+    toast(c.mode === 'report' ? `已按${PAGES[c.page].name}版心排版：图宽 ${targetW(c)} px，导出“报告插图 PNG”插入 Word 即为 ${PAGES[c.page].cm} cm 宽` : MODES[c.mode].toast);
   }
   function bind(root) {
     const q = s => root.querySelector(s);
@@ -332,5 +420,6 @@
     const pg = q('#d-lay-page'); if (pg) pg.addEventListener('change', e => apply({ page: e.target.value }));
     const ft = q('#d-lay-font'); if (ft) ft.addEventListener('change', e => apply({ font: +e.target.value }));
   }
-  window.Compact = { PAGES, FONTS, cfg, targetW, fontAt, beautify: beautifyC, exportReportPNG, withDPI, panelHTML, bind, natural, flow };
+  function stamp() { return adopt(cfg()); }
+  window.Compact = { PAGES, FONTS, cfg, targetW, fontAt, beautify: beautifyC, stamp, exportReportPNG, withDPI, panelHTML, bind, natural, flow };
 })();

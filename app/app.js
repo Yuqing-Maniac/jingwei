@@ -39,7 +39,7 @@ function parseSize(raw) {
   return clamp(Math.round(n * 10) / 10, 5, 72);
 }
 const GRID = 4;
-const CONT = { band: 0, lane: 1, group: 2 };
+let CONT = {};
 const isCont = n => n && n.type in CONT;
 
 const THEMES = {
@@ -174,6 +174,7 @@ function iconName(key) {
 let doc, cur = 'root', stack = ['root'];
 let sel = new Set(), linkSel = new Set(), hoverId = null, hoverLink = null;
 let undoS = [], redoS = [];
+let irSess = null;
 const P = () => doc.pages[cur];
 const T = () => THEMES[doc.theme] || THEMES.report;
 const nodeById = (id, p = P()) => p.nodes.find(n => n.id === id);
@@ -373,7 +374,7 @@ const linkText = (l, p) => window.Std ? Std.linkLabel(l, p) : (l.label || '');
 const codeTagOf = (n, p) => window.Std ? Std.codeTag(n, p) : null;
 function legendEntries(p) {
   const t = T(), out = [];
-  const used = new Set(p.nodes.filter(n => !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)).map(n => n.status || 'base'));
+  const used = new Set(p.nodes.filter(n => { const row = contRow(n); if (row) return !!row.legend; return !['text', 'note', 'legend', 'tblock'].includes(n.type); }).map(n => n.status || 'base'));
   for (const s of ['base', 'new', 'key']) if (used.has(s)) out.push({ kind: 'st', s, label: doc.statusLabels[s] });
   const lk = new Set(p.links.map(l => l.kind));
   for (const k of Object.keys(LINK_KINDS)) if (lk.has(k)) out.push({ kind: 'ln', k, label: LINK_KINDS[k].name });
@@ -388,27 +389,8 @@ function legendLayout(n, p) {
 
 function nodeSVG(n, p, exp) {
   const t = T(); let s = '';
-  if (n.type === 'band') {
-    const st = stStyle(n, t);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" fill="${n.fill || t.band.fill}" stroke="${n.stroke || t.band.stroke}" stroke-width="1.5"/>`;
-    s += `<rect x="${n.x}" y="${n.y}" width="${BAND_TW}" height="${n.h}" fill="${n.status === 'base' ? t.band.titleFill : st.stroke}"/>`;
-    const chars = [...String(n.text || '')].filter(c => c.trim());
-    s += textBlock(chars.length ? chars : [''], n.x + BAND_TW / 2, n.y + n.h / 2, 15, true, t.band.titleText);
-  } else if (n.type === 'lane') {
-    const tw = laneTW(n);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" fill="${n.fill || t.lane.fill}" stroke="${t.lane.stroke}" stroke-width="1"/>`;
-    s += `<line x1="${n.x + tw}" y1="${n.y + 6}" x2="${n.x + tw}" y2="${n.y + n.h - 6}" stroke="${t.lane.stroke}" stroke-width="1"/>`;
-    s += textBlock(wrap(n.text, tw - 14, 13.5, true), n.x + tw / 2, n.y + n.h / 2, 13.5, true, t.lane.titleText);
-  } else if (n.type === 'group') {
-    const st = stStyle(n, t);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="6" fill="${st.fill === t.box.fill ? t.group.fill : st.fill}" stroke="${st.stroke === t.box.stroke ? t.group.stroke : st.stroke}" stroke-width="1.3"/>`;
-    s += `<path d="M${n.x + 0.65},${n.y + GROUP_TH} V${n.y + 6} Q${n.x + 0.65},${n.y + 0.65} ${n.x + 6},${n.y + 0.65} H${n.x + n.w - 6} Q${n.x + n.w - 0.65},${n.y + 0.65} ${n.x + n.w - 0.65},${n.y + 6} V${n.y + GROUP_TH} Z" fill="${n.status === 'base' ? t.group.titleFill : st.title}"/>`;
-    /* 显示编号时，标题避开左上角的编号牌：居中放不下就右移 */
-    const tg = codeTagOf(n, p), L0 = tg ? tg.x + tg.w + 6 : n.x + 6, avail = n.x + n.w - 6 - L0;
-    const tl = wrap(n.text, Math.max(24, tg ? avail : n.w - 12), 12.5, true).slice(0, 1), tw0 = measure(tl[0] || '', 12.5, true);
-    let tcx = n.x + n.w / 2; if (tg && tcx - tw0 / 2 < L0) tcx = Math.min(L0 + tw0 / 2, n.x + n.w - 6 - tw0 / 2);
-    s += textBlock(tl, tcx, n.y + GROUP_TH / 2, 12.5, true, t.group.titleText);
-  } else if (n.type === 'tblock') {
+  if (contRow(n)) s += paintCont(n, p);
+  else if (n.type === 'tblock') {
     if (window.Std) s += Std.tblockSVG(n, p);
   } else if (n.type === 'legend') {
     const items = legendLayout(n, p);
@@ -878,7 +860,7 @@ function labelAt(pts, label, taken = [], seed) {
   }
   /* 避让：默认位置压在框上时，沿折线另找不压框的位置 */
   let obs = null;
-  try { const pg = P(); obs = pg.nodes.filter(n => !isCont(n) && n.type !== 'legend' && n.type !== 'tblock').map(n => ({ x: n.x - 2, y: n.y - 2, w: n.w + 4, h: n.h + 4 })).concat(pg.nodes.filter(n => n.type === 'group').map(n => ({ x: n.x, y: n.y, w: n.w, h: GROUP_TH }))); } catch (_) { }
+  try { const pg = P(); obs = pg.nodes.filter(n => !isCont(n) && n.type !== 'legend' && n.type !== 'tblock').map(n => ({ x: n.x - 2, y: n.y - 2, w: n.w + 4, h: n.h + 4 })).concat(pg.nodes.filter(n => { const row = contRow(n); return row && row.block; }).map(n => contFrame(n).title)); } catch (_) { }
   obs = (obs || []).concat(taken);
   if (!obs.length) return r0;
   const hit = c => obs.some(o => c.x - w / 2 < o.x + o.w && c.x + w / 2 > o.x && c.y - 9 < o.y + o.h && c.y + 9 > o.y);
@@ -1072,12 +1054,15 @@ function zoomAt(k2, cx, cy) {
 function findParent(n, p = P()) {
   const desc = new Set(descendants(n.id, p).map(d => d.id));
   const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+  const mine = contRow(n);
   let best = null;
   for (const c of p.nodes) {
-    if (!isCont(c) || c.id === n.id || desc.has(c.id)) continue;
-    if (n.type === 'band') continue;
-    if (n.type === 'lane' && c.type !== 'band') continue;
-    if (n.type === 'group' && c.type === 'group' && c.w * c.h <= n.w * n.h) continue;
+    const host = contRow(c);
+    if (!host || c.id === n.id || desc.has(c.id)) continue;
+    if (mine) {
+      if (host.rank > mine.rank) continue;
+      if (host.rank === mine.rank && (!mine.nest || c.w * c.h <= n.w * n.h)) continue;
+    }
     if (cx < c.x || cx > c.x + c.w || cy < c.y || cy > c.y + c.h) continue;
     if (c.w * c.h <= n.w * n.h) continue;
     if (!best || c.w * c.h < best.w * best.h) best = c;
@@ -1181,7 +1166,8 @@ function leafNatW(k) {
   return snapv(clamp(tw * kk + 28 + (k.icon ? 30 : 0), 96, 180));
 }
 function groupPlan(g, width) {
-  const ks = kids(g.id); if (!ks.length) return { rows: [], w: Math.max(120, measure(String(g.text || '').split('\n')[0], 12.5, true) + 24), h: GROUP_TH + 40 };
+  const eat = contEat(g);
+  const ks = kids(g.id); if (!ks.length) return { rows: [], w: Math.max(120, measure(String(g.text || '').split('\n')[0], 12.5, true) + 24) + eat.x, h: eat.y + 40 };
   const linked = !!g.links, gap = linked ? 40 : 16, vgap = linked ? 34 : 12;
   const rows = rowsOf(ks);
   const leaves = ks.filter(k => !isCont(k) && k.type !== 'equip');
@@ -1190,41 +1176,43 @@ function groupPlan(g, width) {
   let maxW = 0;
   for (const r of rows) { r.ws = r.items.map(widthOf); r.w = r.ws.reduce((a, b) => a + b, 0) + gap * (r.items.length - 1); maxW = Math.max(maxW, r.w); }
   const tg = codeTagOf(g, P()), titleW = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24 + (tg ? tg.w + 8 : 0);
-  const w = width || snapv(Math.max(titleW, maxW + 24));
+  const w = width || snapv(Math.max(titleW, maxW + 24) + eat.x);
+  const inner = w - eat.x;
   /* 一行放不下：按可用宽度折行（原图各子项同一高度、尚未排布时即退化为网格） */
-  if (maxW > w - 24) {
+  if (maxW > inner - 24) {
     const out = [];
     for (const r of rows) {
       let cur = null;
       r.items.forEach((it, i) => {
         const x = r.ws[i];
-        if (!cur || (cur.items.length && cur.w + gap + x > w - 24)) { cur = { items: [], ws: [], w: 0 }; out.push(cur); }
+        if (!cur || (cur.items.length && cur.w + gap + x > inner - 24)) { cur = { items: [], ws: [], w: 0 }; out.push(cur); }
         cur.w += (cur.items.length ? gap : 0) + x; cur.items.push(it); cur.ws.push(x);
       });
     }
     rows.length = 0; rows.push(...out); maxW = Math.max(...rows.map(r => r.w));
   }
   /* 宽度不够时等比收窄叶子 */
-  const k = Math.min(1, (w - 24) / (maxW || 1));
+  const k = Math.min(1, (inner - 24) / (maxW || 1));
   for (const r of rows) {
     r.ws = r.ws.map((x, i) => { const it = r.items[i]; return it.type === 'equip' || isCont(it) ? x : snapv(Math.max(72, x * k)); });
     r.hs = r.items.map((it, i) => isCont(it) ? groupPlan(it, r.ws[i]).h : it.type === 'equip' ? it.h : leafH(it, r.ws[i]));
     r.rh = Math.max(...r.hs); r.w = r.ws.reduce((a, b) => a + b, 0) + gap * (r.items.length - 1);
   }
-  const h = GROUP_TH + 12 + rows.reduce((a, r) => a + r.rh, 0) + vgap * (rows.length - 1) + 12;
+  const h = eat.y + 12 + rows.reduce((a, r) => a + r.rh, 0) + vgap * (rows.length - 1) + 12;
   return { rows, w, h: snapv(h), gap, vgap };
 }
 function groupNeed(g) { return groupPlan(g, g.w).h; }
 function layoutGroup(g) {
   const pl = groupPlan(g, g.w); if (!pl.rows.length) return;
   g.h = snapv(Math.max(g.h, pl.h));
-  let y = g.y + GROUP_TH + 12 + Math.max(0, (g.h - pl.h) / 2);
+  const box = contFrame(g).content;
+  let y = box.y + 12 + Math.max(0, (g.h - pl.h) / 2);
   for (const r of pl.rows) {
-    let x = g.x + (g.w - r.w) / 2;
+    let x = box.x + (box.w - r.w) / 2;
     r.items.forEach((it, i) => {
       const w = r.ws[i], h = r.hs[i];
       const nx = snapv(x), ny = snapv(y + (r.rh - h) / 2);
-      if (isCont(it)) { const dx = nx - it.x, dy = ny - it.y; for (const d of descendants(it.id)) { d.x += dx; d.y += dy; } it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); layoutGroup(it); }
+      if (isCont(it)) { const dx = nx - it.x, dy = ny - it.y; for (const d of descendants(it.id)) { d.x += dx; d.y += dy; } it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); layoutCont(it); }
       else if (it.type === 'equip') { it.x = snapv(x + (w - it.w) / 2); it.y = ny; }
       else { it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); }
       x += w + pl.gap;
@@ -1234,43 +1222,135 @@ function layoutGroup(g) {
 }
 function layoutLane(l) {
   const ks = kids(l.id); if (!ks.length) return;
-  const x0 = l.x + laneTW(l) + 10, x1 = l.x + l.w - 10;
+  const box0 = contFrame(l).content;
+  const x0 = box0.x + 10, x1 = box0.x + box0.w - 10;
   const need = layoutRow(ks, x0, x1, 0, 0, { minGap: l.links ? 36 : 28 });
   const hasG = ks.some(isCont);
-  l.h = snapv(Math.max(hasG ? need + 16 : need + 20, 56));
+  const side = sideOf(l), bar = (side === 't' || side === 'b') ? thickness(l, contRow(l)) : 0;
+  l.h = snapv(Math.max(bar + (hasG ? need + 16 : need + 20), 56));
+  const box = contFrame(l).content;
   for (const k of ks) {
-    if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(l.y + (l.h - need) / 2 + k._dy); delete k._dy; continue; }
-    if (isCont(k)) { k.y = snapv(l.y + 8); k.h = snapv(l.h - 16); layoutGroup(k); }
-    else if (k.type === 'equip') k.y = snapv(l.y + (l.h - k.h) / 2);
-    else { k.h = snapv(Math.min(leafH(k, k.w), l.h - 16)); k.y = snapv(l.y + (l.h - k.h) / 2); }
+    if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(box.y + (box.h - need) / 2 + k._dy); delete k._dy; continue; }
+    if (isCont(k)) { k.y = snapv(box.y + 8); k.h = snapv(box.h - 16); layoutCont(k); }
+    else if (k.type === 'equip') k.y = snapv(box.y + (box.h - k.h) / 2);
+    else { k.h = snapv(Math.min(leafH(k, k.w), box.h - 16)); k.y = snapv(box.y + (box.h - k.h) / 2); }
   }
+}
+function layoutInset(n, p) {
+  const box = contFrame(n).content;
+  const stacks = kids(n.id).filter(k => { const r = contRow(k); return r && r.layout === 'stack'; }).sort((a, b) => a.y - b.y);
+  for (const c of stacks) {
+    const dx = box.x - c.x;
+    c.x = box.x; c.w = box.w;
+    if (dx) for (const d of descendants(c.id)) d.x += dx;
+    layoutCont(c, p);
+  }
+}
+function layoutMargin(n) {
+  const box = contFrame(n).content;
+  const ks = kids(n.id).slice().sort((a, b) => a.y - b.y);
+  let y = box.y;
+  for (const k of ks) {
+    const dx = box.x - k.x, dy = y - k.y;
+    k.x = box.x; k.w = Math.min(k.w, box.w); k.y = snapv(y);
+    if (dx || dy) for (const d of descendants(k.id)) { d.x += dx; d.y += dy; }
+    if (isCont(k)) layoutCont(k);
+    y = k.y + k.h + 8;
+  }
+  const side = sideOf(n), th = (side === 't' || side === 'b') ? thickness(n, contRow(n)) : 0;
+  const need = ks.length ? y - 8 - n.y + th : n.h;
+  n.h = snapv(Math.max(n.h, need));
+}
+function layoutTile(n) {
+  const box = contFrame(n).content;
+  const ks = kids(n.id).slice().sort((a, b) => a.y - b.y);
+  let y = box.y;
+  for (const k of ks) {
+    const dx = box.x - k.x, dy = y - k.y;
+    k.x = box.x; k.w = box.w; k.y = snapv(y);
+    if (dx || dy) for (const d of descendants(k.id)) { d.x += dx; d.y += dy; }
+    if (isCont(k)) layoutCont(k);
+    y = k.y + k.h + 6;
+  }
+  const side = sideOf(n), th = side === 'b' ? thickness(n, contRow(n)) : 0;
+  if (ks.length) n.h = snapv(Math.max(n.h, y - 6 - n.y + th));
 }
 function layoutBand(b) {
-  const ks = kids(b.id);
-  const lanes = ks.filter(k => k.type === 'lane').sort((a, c) => a.y - c.y);
-  const others = ks.filter(k => k.type !== 'lane');
-  let y = b.y + 6;
-  for (const l of lanes) { l.x = b.x + BAND_TW + 6; l.w = b.w - BAND_TW - 12; l.y = snapv(y); layoutLane(l); y = l.y + l.h + 6; }
-  if (others.length) {
-    const need = layoutRow(others, b.x + BAND_TW + 16, b.x + b.w - 16, 0, 0, { cap: 180, maxGap: 160 });
-    const rowH = Math.max(need, 40) + 20;
-    for (const k of others) {
-      if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(y + 10 + k._dy); delete k._dy; continue; }
-      if (isCont(k)) { k.y = snapv(y + 4); k.h = snapv(rowH - 8); layoutGroup(k); }
-      else if (k.type === 'equip') k.y = snapv(y + (rowH - k.h) / 2);
-      else { k.h = leafH(k, k.w); k.y = snapv(y + (rowH - k.h) / 2); }
+  const ks = kids(b.id), row = contRow(b), box = contFrame(b).content;
+  const margins = ks.filter(k => { const r = contRow(k); return r && r.layout === 'margin'; });
+  const mw = margins.length ? Math.max(...margins.map(k => k.w)) : 0;
+  const mainX = box.x, mainW = box.w - mw;
+  const stacked = (row.stack === 'all' ? ks.filter(k => margins.indexOf(k) < 0) : ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; })).sort((a, c) => a.y - c.y);
+  const tiles = row.stack === 'all' ? [] : ks.filter(k => { const r = contRow(k); return r && r.layout === 'tile'; }).sort((a, c) => a.x - c.x);
+  const rest = ks.filter(k => stacked.indexOf(k) < 0 && margins.indexOf(k) < 0 && tiles.indexOf(k) < 0);
+  let y = box.y + 6;
+  if (row.stack === 'all') {
+    for (const l of stacked) {
+      const dx = mainX - l.x;
+      l.x = mainX; l.w = mainW; l.y = snapv(y);
+      if (dx) for (const d of descendants(l.id)) d.x += dx;
+      if (isCont(l)) layoutCont(l);
+      y = l.y + l.h + 6;
     }
-    y += rowH;
+  } else {
+    for (const l of stacked) { l.x = mainX + 6; l.w = mainW - 12; l.y = snapv(y); layoutLane(l); y = l.y + l.h + 6; }
+    if (tiles.length) {
+      const gap = 8, tw = (mainW - gap * (tiles.length - 1)) / tiles.length, y0 = y;
+      let x = mainX, maxH = 0;
+      for (const t of tiles) {
+        const dx = x - t.x, dy = y0 - t.y;
+        t.x = x; t.w = tw; t.y = snapv(y0);
+        if (dx || dy) for (const d of descendants(t.id)) { d.x += dx; d.y += dy; }
+        layoutCont(t); maxH = Math.max(maxH, t.h); x += tw + gap;
+      }
+      y = y0 + maxH + 6;
+    }
+    if (rest.length) {
+      const need = layoutRow(rest, mainX + 16, mainX + mainW - 16, 0, 0, { cap: 180, maxGap: 160 });
+      const rowH = Math.max(need, 40) + 20;
+      for (const k of rest) {
+        if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(y + 10 + k._dy); delete k._dy; continue; }
+        if (isCont(k)) { k.y = snapv(y + 4); k.h = snapv(rowH - 8); layoutCont(k); }
+        else if (k.type === 'equip') k.y = snapv(y + (rowH - k.h) / 2);
+        else { k.h = leafH(k, k.w); k.y = snapv(y + (rowH - k.h) / 2); }
+      }
+      y += rowH;
+    }
   }
-  const chars = [...String(b.text || '')].filter(c => c.trim()).length;
-  b.h = snapv(Math.max(y - b.y, 40, chars * 17 + 12));
+  for (const m of margins) {
+    const nx = box.x + box.w - mw, dx = nx - m.x, dy = box.y - m.y;
+    m.x = nx; m.y = box.y; m.h = Math.max(m.h, y - box.y);
+    if (dx || dy) for (const d of descendants(m.id)) { d.x += dx; d.y += dy; }
+    layoutCont(m);
+  }
+  const bot = sideOf(b) === 'b' ? thickness(b, row) : 0;
+  b.h = snapv(Math.max(y - b.y + bot, 40));
+  growForChars(b, row);
+}
+function layoutCont(n, p, opt) {
+  opt = opt || {};
+  const row = contRow(n);
+  if (!row) return;
+  if (row.thick.fit && opt.fitTitle && row.thick.fit.sides.indexOf(sideOf(n)) >= 0) fitTitle(n, row);
+  if (row.layout === 'inset') { layoutInset(n, p || P()); return; }
+  if (row.layout === 'margin') { layoutMargin(n); growForChars(n, row); return; }
+  if (row.layout === 'tile') { layoutTile(n); growForChars(n, row); return; }
+  if (row.layout === 'stack') { layoutBand(n); return; }
+  if (row.layout === 'row') { layoutLane(n); return; }
+  layoutGroup(n);
 }
 function bandNeedW(b, p) {
-  const ks = kids(b.id, p), lanes = ks.filter(k => k.type === 'lane'), others = ks.filter(k => k.type !== 'lane');
+  const ks = kids(b.id, p);
+  const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; });
+  const others = ks.filter(k => lanes.indexOf(k) < 0 && !(contRow(k) && (contRow(k).layout === 'margin' || contRow(k).layout === 'tile')));
   const rowW = items => { if (!items.length) return 0; const lw = Math.max(0, ...items.filter(i => !isCont(i) && i.type !== 'equip').map(leafNatW)); return items.reduce((a, i) => a + (isCont(i) ? groupPlan(i).w : i.type === 'equip' ? i.w : lw), 0) + 56 * (items.length - 1); };
   let w = others.length ? rowW(others) + 32 : 0;
-  for (const l of lanes) w = Math.max(w, laneTW(l) + 20 + rowW(kids(l.id, p)) + 6);
-  return BAND_TW + 12 + w;
+  for (const l of lanes) {
+    const side = sideOf(l), tw = (side === 'l' || side === 'r') ? thickness(l, contRow(l)) : 0;
+    w = Math.max(w, tw + 20 + rowW(kids(l.id, p)) + 6);
+  }
+  const eat = (sideOf(b) === 'l' || sideOf(b) === 'r') ? thickness(b, contRow(b)) : 0;
+  return eat + 12 + w;
 }
 function beautify(p = P()) {
   const saved = cur; cur = p.id;
@@ -1305,9 +1385,11 @@ function beautify(p = P()) {
     if (note) { note.x = X; note.y = snapv(bottom + 12); note.w = snapv(W - (leg ? leg.w + 12 : 0)); const lines = wrap(note.text, note.w - 20, note.size); note.h = snapv(Math.max(leg ? leg.h : 0, lines.length * Math.round(note.size * 1.38) + 16)); if (leg) leg.h = note.h; }
     shiftBelow(p, free, oldBottom, bottom, [title, sub, note, leg]);
   } else {
+    p.nodes.filter(n => !n.parent && contRow(n) && contRow(n).layout === 'inset').forEach(n => layoutInset(n, p));
     p.nodes.filter(n => n.type === 'lane' && !n.parent).forEach(layoutLane);
     const linkedFlow = g => { const ks = kids(g.id, p), ids = new Set(ks.map(k => k.id)); return ks.length >= 2 && !ks.some(isCont) && p.links.some(l => ids.has(l.from) && ids.has(l.to)); };
     p.nodes.filter(n => n.type === 'group' && !n.parent && !linkedFlow(n)).forEach(g => { const pl = groupPlan(g); g.w = pl.w; g.h = pl.h; layoutGroup(g); });
+    p.nodes.filter(n => !n.parent && contRow(n) && (contRow(n).layout === 'tile' || contRow(n).layout === 'margin' || (contRow(n).layout === 'stack' && contRow(n).stack === 'all') || (contRow(n).layout === 'flow' && n.type !== 'group'))).forEach(n => { if (contRow(n).layout === 'flow' && !linkedFlow(n)) { const pl = groupPlan(n); n.w = pl.w; n.h = pl.h; } layoutCont(n, p); });
     tidyFree(p);
   }
   for (const n of p.nodes) delete n.links;
@@ -1384,7 +1466,7 @@ function tidyItems(items, p) {
   }
 }
 function tidyFree(p) {
-  const isItem = n => !n.parent && !['text', 'note', 'legend', 'tblock', 'band'].includes(n.type) && !n.role;
+  const isItem = n => !n.parent && !['text', 'note', 'legend', 'tblock', 'band'].includes(n.type) && !(contRow(n) && contRow(n).layout === 'inset') && !n.role;
   const items = p.nodes.filter(isItem); if (!items.length) return;
   /* 顶层子容器内有连线的（框＋箭头的流程图被外框包住）：内部按同样规则对齐，外框随内容收拢 */
   for (const g of items.filter(n => n.type === 'group')) {
@@ -1392,8 +1474,10 @@ function tidyFree(p) {
     const ids = new Set(ks.map(k => k.id)); if (!p.links.some(l => ids.has(l.from) && ids.has(l.to))) continue;
     tidyItems(ks, p);
     const x0 = Math.min(...ks.map(k => k.x)), y0 = Math.min(...ks.map(k => k.y)), x1 = Math.max(...ks.map(k => k.x + k.w)), y1 = Math.max(...ks.map(k => k.y + k.h));
-    const tw = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24, W = Math.max(tw, x1 - x0 + 48);
-    g.x = snapv((x0 + x1) / 2 - W / 2); g.w = snapv(W); g.y = snapv(y0 - GROUP_TH - 20); g.h = snapv(y1 - g.y + 20);
+    const side = sideOf(g), th = thickness(g, contRow(g));
+    const topEat = side === 't' ? th : 0, botEat = side === 'b' ? th : 0, sideEat = (side === 'l' || side === 'r') ? th : 0;
+    const tw = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24, W = Math.max(tw, x1 - x0 + 48) + sideEat;
+    g.x = snapv((x0 + x1) / 2 - W / 2); g.w = snapv(W); g.y = snapv(y0 - topEat - 20); g.h = snapv(y1 - g.y + 20 + botEat);
   }
   tidyItems(items, p);
   /* 标题、副标题、说明框 */
@@ -1409,7 +1493,7 @@ function shiftBelow(p, free, oldBottom, newBottom, skip) {
   if (oldBottom == null) return;
   const dy = snapv(newBottom - oldBottom); if (!dy) return;
   for (const n of p.nodes) {
-    if (n.parent || n.type === 'band' || skip.includes(n)) continue;
+    if (n.parent || n.type === 'band' || (contRow(n) && contRow(n).layout === 'inset') || skip.includes(n)) continue;
     if (n.y >= oldBottom - 4) { for (const d of [n, ...descendants(n.id, p)]) d.y += dy; }
   }
 }
@@ -1457,10 +1541,225 @@ const SHAPES = SHAPES0.map(s => Object.assign(s, { grp: '基础形状' })).slice
   SH('arrowLR', 140, 52, 36, 18, '', '箭头'), SH('arrowUD', 56, 110, 16, 26, '', '箭头'), SH('chevron', 120, 48, 32, 18, '阶段', '箭头'), SH('homeplate', 120, 48, 32, 18, '阶段', '箭头'),
 ]);
 const CONTS = [
-  { k: 'band', name: '分组带', spec: { type: 'band', w: 1000, h: 180, text: '分组' }, svg: '<rect x="3" y="5" width="36" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="5" width="7" height="22" fill="currentColor"/>' },
-  { k: 'lane', name: '层（泳道）', spec: { type: 'lane', w: 900, h: 56, text: '新的一层' }, svg: '<rect x="3" y="9" width="36" height="13" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 9v13" stroke="currentColor" stroke-width="1.2"/>' },
-  { k: 'group', name: '子容器', spec: { type: 'group', w: 360, h: 110, text: '子系统' }, svg: '<rect x="5" y="5" width="32" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 11h32" stroke="currentColor" stroke-width="1.4"/>' },
+  { name: '分组带', spec: { type: 'band', w: 1000, h: 180, text: '分组' }, svg: '<rect x="3" y="5" width="36" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="5" width="7" height="22" fill="currentColor"/>', rank: 1, nest: false, defaultSide: 'l', layout: 'stack', stack: 'lanes', dialect: 'band', tone: 'band', slab: 'fill', thick: { mode: 'fixed', px: 34 }, script: 'chars', size: 15, bold: true, pad: 0, fill: 'node', stroke: 'node', titleFill: 'statusStroke', sw: 1.5, rx: 0, dash: '', rule: 0, block: false, dodge: false, badge: 'out', badgeAlign: 'start', badgePad: 4, badgeLift: true, edit: 'fixed', editW: 160, editH: 60, editExtra: 0, status: true, legend: false, sub: false, minChar: 17, minPad: 12 },
+  { name: '层（泳道）', spec: { type: 'lane', w: 900, h: 56, text: '新的一层' }, svg: '<rect x="3" y="9" width="36" height="13" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 9v13" stroke="currentColor" stroke-width="1.2"/>', rank: 2, nest: false, defaultSide: 'l', layout: 'row', stack: null, dialect: 'lane', tone: 'lane', slab: 'plain', thick: { mode: 'field', key: 'titleW', fallback: 96, min: 40, max: 300, bar: 28, fit: { min: 60, max: 96, pad: 22, sides: ['l', 'r'] } }, script: 'wrap', size: 13.5, bold: true, pad: 14, fill: 'node', stroke: 'theme', titleFill: 'none', sw: 1, rx: 0, dash: '', rule: 6, block: false, dodge: false, badge: 'in', badgeAlign: 'start', badgePad: 4, badgeLift: false, edit: 'slab', editW: null, editH: null, editExtra: 0, status: false, legend: false, sub: false, minChar: null, minPad: null },
+  { name: '子容器', spec: { type: 'group', w: 360, h: 110, text: '子系统' }, svg: '<rect x="5" y="5" width="32" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 11h32" stroke="currentColor" stroke-width="1.4"/>', rank: 3, nest: true, defaultSide: 't', layout: 'flow', stack: null, dialect: 'item', tone: 'group', slab: 'fill', thick: { mode: 'fixed', px: 26 }, script: 'line', size: 12.5, bold: true, pad: 12, fill: 'status', stroke: 'status', titleFill: 'statusTitle', sw: 1.3, rx: 6, dash: '', rule: 0, block: true, dodge: true, badge: 'in', badgeAlign: 'center', badgePad: 5, badgeLift: false, edit: 'slab+', editW: null, editH: null, editExtra: 30, status: true, legend: true, sub: true, minChar: null, minPad: null },
+  { name: '边界', spec: { type: 'bound', w: 1100, h: 480, text: '系统边界' }, svg: '<rect x="3" y="4" width="36" height="22" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2"/><path d="M8 8h26" stroke="currentColor" stroke-width="1.2"/>', rank: 0, nest: false, defaultSide: 't', layout: 'inset', stack: null, dialect: 'skip', tone: 'lane', slab: 'plain', thick: { mode: 'fixed', px: 22 }, script: 'line', size: 13, bold: true, pad: 8, fill: 'node', stroke: 'theme', titleFill: 'none', sw: 1.25, rx: 0, dash: '6 4', rule: 0, block: false, dodge: false, badge: 'out', badgeAlign: 'start', badgePad: 4, badgeLift: false, edit: 'slab+', editW: null, editH: null, editExtra: 24, status: false, legend: false, sub: false, minChar: null, minPad: null },
+  { name: '分区', spec: { type: 'sect', w: 300, h: 180, text: '分区' }, svg: '<rect x="5" y="4" width="32" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="5" y="20" width="32" height="6" fill="currentColor"/>', rank: 3, nest: false, defaultSide: 'b', layout: 'flow', stack: null, dialect: 'item', tone: 'group', slab: 'fill', thick: { mode: 'fixed', px: 26 }, script: 'line', size: 12.5, bold: true, pad: 12, fill: 'status', stroke: 'status', titleFill: 'statusTitle', sw: 1.2, rx: 0, dash: '', rule: 0, block: true, dodge: true, badge: 'in', badgeAlign: 'center', badgePad: 5, badgeLift: false, edit: 'slab+', editW: null, editH: null, editExtra: 30, status: true, legend: true, sub: false, minChar: null, minPad: null },
+  { name: '旁注', spec: { type: 'aside', w: 160, h: 220, text: '旁注' }, svg: '<rect x="8" y="3" width="28" height="24" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="30" y="3" width="6" height="24" fill="currentColor"/>', rank: 2, nest: false, defaultSide: 'r', layout: 'margin', stack: null, dialect: 'item', tone: 'lane', slab: 'plain', thick: { mode: 'fixed', px: 28 }, script: 'chars', size: 13, bold: true, pad: 4, fill: 'node', stroke: 'theme', titleFill: 'none', sw: 1, rx: 0, dash: '', rule: 6, block: false, dodge: false, badge: 'in', badgeAlign: 'start', badgePad: 4, badgeLift: false, edit: 'fixed', editW: 160, editH: 60, editExtra: 0, status: false, legend: false, sub: false, minChar: 17, minPad: 12 },
+  { name: '阶段列', spec: { type: 'phase', w: 220, h: 300, text: '阶段' }, svg: '<rect x="8" y="3" width="26" height="24" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="3" width="26" height="6" fill="currentColor"/><path d="M12 14h18M12 19h18" stroke="currentColor" stroke-width="1.1"/>', rank: 2, nest: false, defaultSide: 't', layout: 'tile', stack: null, dialect: 'item', tone: 'lane', slab: 'fill', thick: { mode: 'fixed', px: 26 }, script: 'line', size: 13.5, bold: true, pad: 8, fill: 'node', stroke: 'theme', titleFill: 'statusStroke', sw: 1, rx: 0, dash: '', rule: 0, block: true, dodge: false, badge: 'out', badgeAlign: 'start', badgePad: 4, badgeLift: false, edit: 'slab+', editW: null, editH: null, editExtra: 30, status: true, legend: false, sub: false, minChar: null, minPad: null },
+  { name: '叠层', spec: { type: 'deck', w: 200, h: 280, text: '处理叠层' }, svg: '<rect x="12" y="3" width="18" height="24" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M12 9h18M12 15h18" stroke="currentColor" stroke-width="1.1"/><rect x="12" y="21" width="18" height="6" fill="currentColor"/>', rank: 3, nest: false, defaultSide: 'b', layout: 'stack', stack: 'all', dialect: 'item', tone: 'group', slab: 'fill', thick: { mode: 'fixed', px: 26 }, script: 'line', size: 12.5, bold: true, pad: 12, fill: 'status', stroke: 'status', titleFill: 'statusTitle', sw: 1.2, rx: 0, dash: '', rule: 0, block: true, dodge: true, badge: 'in', badgeAlign: 'center', badgePad: 5, badgeLift: false, edit: 'slab+', editW: null, editH: null, editExtra: 30, status: true, legend: false, sub: false, minChar: null, minPad: null },
 ];
+function checkContRows() {
+  const ids = {}, sides = { t: 1, b: 1, l: 1, r: 1 }, layouts = { stack: 1, row: 1, flow: 1, inset: 1, margin: 1, tile: 1 };
+  const dialects = { band: 1, lane: 1, skip: 1, item: 1 }, tones = { band: 1, lane: 1, group: 1 }, slabs = { fill: 1, plain: 1 };
+  const scripts = { chars: 1, wrap: 1, line: 1 }, fills = { node: 1, status: 1 }, strokes = { node: 1, theme: 1, status: 1 };
+  const titles = { none: 1, statusStroke: 1, statusTitle: 1 }, badges = { out: 1, in: 1 }, aligns = { start: 1, center: 1 };
+  const edits = { fixed: 1, slab: 1, 'slab+': 1 }, dashes = { '': 1, '6 4': 1 };
+  const bad = () => { throw new Error('bad container row'); };
+  const flag = v => { if (v !== true && v !== false) bad(); };
+  for (const row of CONTS) {
+    if (!row || !row.spec || typeof row.spec.type !== 'string' || ids[row.spec.type]) bad();
+    ids[row.spec.type] = 1;
+    if (typeof row.name !== 'string' || typeof row.svg !== 'string' || !Number.isInteger(row.rank)) bad();
+    flag(row.nest);
+    if (!sides[row.defaultSide] || !layouts[row.layout] || !dialects[row.dialect]) bad();
+    if (row.layout === 'stack') { if (row.stack !== 'lanes' && row.stack !== 'all') bad(); }
+    else if (row.stack != null) bad();
+    if (!tones[row.tone] || !slabs[row.slab] || !scripts[row.script]) bad();
+    if (!fills[row.fill] || !strokes[row.stroke] || !titles[row.titleFill]) bad();
+    if (typeof row.size !== 'number' || typeof row.pad !== 'number' || typeof row.sw !== 'number' || typeof row.rx !== 'number') bad();
+    flag(row.bold);
+    if (!(row.dash in dashes) || typeof row.rule !== 'number') bad();
+    flag(row.block); flag(row.dodge); flag(row.badgeLift); flag(row.status); flag(row.legend); flag(row.sub);
+    if (!badges[row.badge] || !aligns[row.badgeAlign] || typeof row.badgePad !== 'number') bad();
+    if (!edits[row.edit] || typeof row.editExtra !== 'number') bad();
+    if (row.edit === 'fixed') { if (typeof row.editW !== 'number' || typeof row.editH !== 'number') bad(); }
+    else if (row.editW != null || row.editH != null) bad();
+    if (!((row.minChar == null && row.minPad == null) || (typeof row.minChar === 'number' && typeof row.minPad === 'number'))) bad();
+    const th = row.thick;
+    if (!th || (th.mode !== 'fixed' && th.mode !== 'field')) bad();
+    if (th.mode === 'fixed') { if (typeof th.px !== 'number') bad(); }
+    else {
+      if (typeof th.key !== 'string' || typeof th.fallback !== 'number' || typeof th.min !== 'number' || typeof th.max !== 'number') bad();
+      if (th.bar != null && typeof th.bar !== 'number') bad();
+      if (th.fit != null) {
+        const f = th.fit;
+        if (typeof f.min !== 'number' || typeof f.max !== 'number' || typeof f.pad !== 'number' || !Array.isArray(f.sides)) bad();
+      }
+    }
+  }
+  CONT = {};
+  for (const row of CONTS) CONT[row.spec.type] = row.rank;
+}
+function contRow(n) {
+  if (!n) return null;
+  for (let i = 0; i < CONTS.length; i++) if (CONTS[i].spec.type === n.type) return CONTS[i];
+  return null;
+}
+function sideOf(n) {
+  const row = contRow(n);
+  if (!row) return null;
+  if (n.labelSide === 't' || n.labelSide === 'b' || n.labelSide === 'l' || n.labelSide === 'r') return n.labelSide;
+  return row.defaultSide;
+}
+function thickness(n, row) {
+  const th = row.thick, side = sideOf(n);
+  if (th.mode === 'fixed') return th.px;
+  if ((side === 't' || side === 'b') && th.bar != null) return th.bar;
+  return n[th.key] || th.fallback;
+}
+function contEat(n) {
+  const row = contRow(n);
+  if (!row) return { x: 0, y: 0 };
+  const side = sideOf(n), th = thickness(n, row);
+  if (side === 'l' || side === 'r') return { x: th, y: 0 };
+  return { x: 0, y: th };
+}
+function slabRect(n, side, thick) {
+  if (side === 'l') return { x: n.x, y: n.y, w: thick, h: n.h };
+  if (side === 'r') return { x: n.x + n.w - thick, y: n.y, w: thick, h: n.h };
+  if (side === 't') return { x: n.x, y: n.y, w: n.w, h: thick };
+  return { x: n.x, y: n.y + n.h - thick, w: n.w, h: thick };
+}
+function contentRect(n, side, thick) {
+  if (side === 'l') return { x: n.x + thick, y: n.y, w: Math.max(0, n.w - thick), h: n.h };
+  if (side === 'r') return { x: n.x, y: n.y, w: Math.max(0, n.w - thick), h: n.h };
+  if (side === 't') return { x: n.x, y: n.y + thick, w: n.w, h: Math.max(0, n.h - thick) };
+  return { x: n.x, y: n.y, w: n.w, h: Math.max(0, n.h - thick) };
+}
+function contColors(n) {
+  const row = contRow(n), t = T(), tone = t[row.tone], st = stStyle(n, t);
+  const fill = row.fill === 'node' ? (n.fill || tone.fill) : (st.fill === t.box.fill ? tone.fill : st.fill);
+  const stroke = row.stroke === 'node' ? (n.stroke || tone.stroke) : row.stroke === 'theme' ? tone.stroke : (st.stroke === t.box.stroke ? tone.stroke : st.stroke);
+  let titleFill = null;
+  if (row.slab === 'fill' && row.titleFill !== 'none') {
+    const head = tone.titleFill != null ? tone.titleFill : tone.stroke;
+    titleFill = n.status === 'base' ? head : (row.titleFill === 'statusTitle' ? st.title : st.stroke);
+  }
+  return { fill, stroke, titleFill, titleText: tone.titleText };
+}
+function titleLines(n, row, slab, color) {
+  const raw = String(n.text || '');
+  const glyphs = [...raw].filter(c => c.trim());
+  const vertical = slab.h > slab.w;
+  const wrapW = Math.max(8, slab.w - row.pad);
+  let lines, vert;
+  if (row.script === 'chars' && vertical) { lines = glyphs.length ? glyphs : ['']; vert = true; }
+  else if (row.script === 'chars') { lines = [glyphs.join('')]; vert = false; }
+  else if (wrapW < row.size * 2) { lines = glyphs.length ? glyphs : ['']; vert = true; }
+  else {
+    lines = wrap(raw, wrapW, row.size, row.bold);
+    if (row.script === 'line') lines = lines.slice(0, 1);
+    if (!lines.length) lines = [''];
+    vert = false;
+  }
+  return { raw, lines, size: row.size, bold: row.bold, color, cx: slab.x + slab.w / 2, cy: slab.y + slab.h / 2, vert };
+}
+function ruleLine(title, side, inset, stroke) {
+  if (side === 'l') return { x1: title.x + title.w, y1: title.y + inset, x2: title.x + title.w, y2: title.y + title.h - inset, stroke };
+  if (side === 'r') return { x1: title.x, y1: title.y + inset, x2: title.x, y2: title.y + title.h - inset, stroke };
+  if (side === 't') return { x1: title.x + inset, y1: title.y + title.h, x2: title.x + title.w - inset, y2: title.y + title.h, stroke };
+  return { x1: title.x + inset, y1: title.y, x2: title.x + title.w - inset, y2: title.y, stroke };
+}
+function editRect(title, side, row) {
+  if (row.edit === 'fixed') return { x: title.x, y: title.y, w: row.editW, h: row.editH };
+  if (row.edit === 'slab') return { x: title.x, y: title.y, w: title.w, h: title.h };
+  const extra = row.editExtra || 0;
+  if (side === 'b') return { x: title.x, y: title.y - extra, w: title.w, h: title.h + extra };
+  if (side === 'l') return { x: title.x, y: title.y, w: title.w + extra, h: title.h };
+  if (side === 'r') return { x: title.x - extra, y: title.y, w: title.w + extra, h: title.h };
+  return { x: title.x, y: title.y, w: title.w, h: title.h + extra };
+}
+function contFrame(n) {
+  const row = contRow(n);
+  if (!row) return null;
+  const side = sideOf(n), thick = thickness(n, row);
+  const title = slabRect(n, side, thick), content = contentRect(n, side, thick), colors = contColors(n);
+  return {
+    body: { x: n.x, y: n.y, w: n.w, h: n.h, rx: row.rx, fill: colors.fill, stroke: colors.stroke, sw: row.sw, dash: row.dash },
+    title: { x: title.x, y: title.y, w: title.w, h: title.h, fill: row.slab === 'fill' ? colors.titleFill : null },
+    rule: row.rule > 0 ? ruleLine(title, side, row.rule, colors.stroke) : null,
+    text: titleLines(n, row, title, colors.titleText),
+    content, edit: editRect(title, side, row)
+  };
+}
+function contBadge(n, p, pill) {
+  const row = contRow(n);
+  if (!row || !pill) return null;
+  const f = contFrame(n);
+  let x, y;
+  if (row.badge === 'in' && f.title.w < pill.w + 8) { x = f.content.x + row.badgePad; y = f.content.y + row.badgePad; }
+  else if (row.badge === 'out') {
+    x = f.content.x + row.badgePad; y = f.content.y + row.badgePad;
+    if (row.badgeLift && p && p.nodes && p.nodes.some(k => k.parent === n.id && isCont(k))) y = n.y - 7;
+  } else if (row.badgeAlign === 'center') { x = f.title.x + row.badgePad; y = f.title.y + (f.title.h - pill.h) / 2; }
+  else { x = f.title.x + row.badgePad; y = f.title.y + row.badgePad; }
+  return { x, y, w: pill.w, h: pill.h };
+}
+function slabPath(n, slab, side, rx, sw) {
+  const x = n.x, y = n.y, w = n.w, h = n.h, k = (side === 't' || side === 'b') ? slab.h : slab.w, i = sw / 2;
+  if (side === 't') return `M${x + i},${y + k} V${y + rx} Q${x + i},${y + i} ${x + rx},${y + i} H${x + w - rx} Q${x + w - i},${y + i} ${x + w - i},${y + rx} V${y + k} Z`;
+  if (side === 'b') { const yb = y + h; return `M${x + i},${yb - k} V${yb - rx} Q${x + i},${yb - i} ${x + rx},${yb - i} H${x + w - rx} Q${x + w - i},${yb - i} ${x + w - i},${yb - rx} V${yb - k} Z`; }
+  if (side === 'l') return `M${x + k},${y + i} H${x + rx} Q${x + i},${y + i} ${x + i},${y + rx} V${y + h - rx} Q${x + i},${y + h - i} ${x + rx},${y + h - i} H${x + k} Z`;
+  const xr = x + w;
+  return `M${xr - k},${y + i} H${xr - rx} Q${xr - i},${y + i} ${xr - i},${y + rx} V${y + h - rx} Q${xr - i},${y + h - i} ${xr - rx},${y + h - i} H${xr - k} Z`;
+}
+function paintCont(n, p) {
+  const row = contRow(n), f = contFrame(n), side = sideOf(n), b = f.body;
+  let s = `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}"`;
+  if (b.rx) s += ` rx="${b.rx}"`;
+  s += ` fill="${b.fill}" stroke="${b.stroke}" stroke-width="${b.sw}"`;
+  if (b.dash) s += ` stroke-dasharray="${b.dash}"`;
+  s += '/>';
+  if (f.title.fill) {
+    if (b.rx) s += `<path d="${slabPath(n, f.title, side, b.rx, b.sw)}" fill="${f.title.fill}"/>`;
+    else s += `<rect x="${f.title.x}" y="${f.title.y}" width="${f.title.w}" height="${f.title.h}" fill="${f.title.fill}"/>`;
+  }
+  if (f.rule) s += `<line x1="${f.rule.x1}" y1="${f.rule.y1}" x2="${f.rule.x2}" y2="${f.rule.y2}" stroke="${f.rule.stroke}" stroke-width="1"/>`;
+  let lines = f.text.lines, cx = f.text.cx;
+  if (row.dodge && !f.text.vert) {
+    const tg = codeTagOf(n, p);
+    const L0 = tg ? tg.x + tg.w + 6 : f.title.x + 6, avail = f.title.x + f.title.w - 6 - L0;
+    lines = wrap(n.text, Math.max(24, tg ? avail : f.title.w - row.pad), row.size, row.bold);
+    if (row.script === 'line') lines = lines.slice(0, 1);
+    if (!lines.length) lines = [''];
+    const tw0 = measure(lines[0] || '', row.size, row.bold);
+    if (tg && cx - tw0 / 2 < L0) cx = Math.min(L0 + tw0 / 2, f.title.x + f.title.w - 6 - tw0 / 2);
+  }
+  s += textBlock(lines, cx, f.text.cy, f.text.size, f.text.bold, f.text.color);
+  return s;
+}
+function exportCont(n, p, sink) {
+  const f = contFrame(n);
+  sink.body(f.body);
+  if (f.title.fill) sink.slab(f.title);
+  if (f.rule && sink.rule) sink.rule(f.rule);
+  sink.label(f.title, f.text);
+}
+function setLabelSide(n, side) {
+  if (!contRow(n)) return;
+  if (side !== 't' && side !== 'b' && side !== 'l' && side !== 'r') return;
+  const before = contFrame(n).content;
+  n.labelSide = side;
+  const after = contFrame(n).content;
+  const dx = after.x - before.x, dy = after.y - before.y;
+  if (!dx && !dy) return;
+  for (const k of kids(n.id)) for (const d of [k].concat(descendants(k.id))) { d.x += dx; d.y += dy; }
+}
+function contDialect(n) { const row = contRow(n); return row ? row.dialect : null; }
+function fitTitle(n, row) {
+  const fit = row.thick.fit, line = String(n.text || '').split('\n')[0];
+  n[row.thick.key] = snapv(clamp(measure(line, row.size, row.bold) + fit.pad, fit.min, fit.max));
+}
+function growForChars(n, row) {
+  if (!row || row.minChar == null) return;
+  const side = sideOf(n);
+  if (side !== 'l' && side !== 'r') return;
+  const chars = [...String(n.text || '')].filter(c => c.trim()).length;
+  n.h = snapv(Math.max(n.h, chars * row.minChar + row.minPad));
+}
+checkContRows();
 function pitem(label, payload, inner, isImg) {
   return `<div class="pitem" draggable="true" data-add='${esc(JSON.stringify(payload))}' title="拖到画布，或点击添加">${isImg ? `<img src="${inner}" alt="">` : `<svg viewBox="0 0 42 30">${inner}</svg>`}<span>${esc(label)}</span></div>`;
 }
@@ -1789,9 +2088,7 @@ function startEdit(n) {
   if (!n || n.type === 'legend' || n.type === 'tblock') return;
   editing = n; const ed = $('#editor'), r = svg.getBoundingClientRect(), sr = stage.getBoundingClientRect();
   let x = n.x, y = n.y, w = n.w, h = n.h;
-  if (n.type === 'band') { w = Math.max(160, BAND_TW); h = 60; }
-  if (n.type === 'lane') { w = laneTW(n); }
-  if (n.type === 'group') { h = GROUP_TH + 30; }
+  if (contRow(n)) { const e = contFrame(n).edit; x = e.x; y = e.y; w = e.w; h = e.h; }
   Object.assign(ed.style, { display: 'block', left: ((x - view.x) * view.k + r.left - sr.left) + 'px', top: ((y - view.y) * view.k + r.top - sr.top) + 'px', width: Math.max(120, w * view.k) + 'px', height: Math.max(40, h * view.k) + 'px', fontSize: Math.max(12, (n.size || 13) * view.k) + 'px', fontFamily: fontCSS(n) });
   ed.value = n.text || ''; ed.focus(); ed.select();
 }
@@ -1809,8 +2106,8 @@ $('#editor').addEventListener('blur', () => commitEdit());
 /* ---------- keyboard ---------- */
 let clipboard = null;
 const SHORTCUTS = [
-  ['文件', [['Ctrl+O', '打开工程／PPT／Visio'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
-  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
+  ['文件', [['Ctrl+O', '打开工程／图片／PPT／Visio（图片先进入导入校对）'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
+  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+X／Ctrl+C／Ctrl+V', '剪切／复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
   ['复合图标', [['Ctrl+G', '把所选元素组合为一个复合图标'], ['Ctrl+Shift+U', '拆分复合图标'], ['Ctrl+Shift+B', '编队生成器（同型装备按阵型合成）']]],
@@ -1826,7 +2123,7 @@ const closeHelp = () => { $('#help').style.display = 'none'; };
 function closePanels() { let c = false; for (const id of ['#modal', '#help', '#std-dlg', '#saveas']) { const x = $(id); if (x && x.style.display === 'flex') { x.style.display = 'none'; c = true; } } if (document.querySelector('.menu.open')) { closeMenus(); c = true; } return c; }
 const callMod = (fn, nm) => { if (typeof window[fn] === 'function') window[fn](); else toast(nm + '模块未加载'); };
 const zoomBy = f => { const r = svg.getBoundingClientRect(); zoomAt(view.k * f, r.left + r.width / 2, r.top + r.height / 2); };
-function doBeautify() { checkpoint(); beautify(); render(); toast('已按层级对齐、等距排布'); }
+function doBeautify() { checkpoint(); if (window.Compact) Compact.stamp(); beautify(); render(); toast('已按层级对齐、等距排布'); }
 function doReduce() { checkpoint(); const [a, b] = reduceCrossings(); render(); toast(b < a ? `交叉 ${a} → ${b}` : `交叉 ${a} → ${b}（已是较优排布）`); }
 function iconable(n) { return n && !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type); }
 document.addEventListener('keydown', e => {
@@ -1836,6 +2133,12 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { e.preventDefault(); closeSaveAs(); return; }
     if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); confirmSaveAs(); return; }
     if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault();
+    return;
+  }
+  const review = $('#img-review');
+  if (review && review.style.display === 'flex') {
+    if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault();
+    if (e.key === 'Escape') { e.preventDefault(); cancelImageReview(); }
     return;
   }
   const tag = (document.activeElement?.tagName || '').toLowerCase();
@@ -1873,6 +2176,7 @@ document.addEventListener('keydown', e => {
     if (k === 'y') return go(redo);
     if (k === 'a') return go(() => { selectNodes(P().nodes.map(n => n.id)); render(); });
     if (k === 'c') return copySel();
+    if (k === 'x') return cutSel();
     if (k === 'v') return paste();
     if (k === 'd') return go(() => { copySel(); paste(); });
     if (k === 's') return go(saveProject);
@@ -1917,12 +2221,12 @@ function reduceCrossings(p = P()) {
   const snap = () => JSON.stringify(p.nodes);
   beautify(p); let best = crossingCount(p), bestSnap = snap();
   const byId = new Map(p.nodes.map(n => [n.id, n]));
-  const conts = p.nodes.filter(n => n.type === 'lane' || n.type === 'group' || n.type === 'band');
+  const conts = p.nodes.filter(isCont);
   const cxOf = id => { const n = byId.get(id); return n ? n.x + n.w / 2 : 0; };
   for (let sweep = 0; sweep < 4; sweep++) {
     const order = [...conts].sort((a, b) => sweep % 2 ? (b.y - a.y) : (a.y - b.y));
     for (const C of order) {
-      const sibs = kids(C.id, p).filter(k => k.type !== 'lane' && !['text', 'note', 'legend'].includes(k.type));
+      const sibs = kids(C.id, p).filter(k => { const r = contRow(k); if (r && r.layout === 'row') return false; return !['text', 'note', 'legend'].includes(k.type); });
       if (sibs.length < 2) continue;
       const own = new Map(); for (const sb of sibs) { own.set(sb.id, sb); for (const d of descendants(sb.id, p)) own.set(d.id, sb); }
       const ext = new Map(sibs.map(sb => [sb.id, []])), par = new Map(sibs.map(sb => [sb.id, sb.id]));
@@ -1930,14 +2234,15 @@ function reduceCrossings(p = P()) {
       for (const l of p.links) {
         const a = own.get(l.from), b = own.get(l.to);
         if (a && !b) ext.get(a.id).push(cxOf(l.to)); else if (b && !a) ext.get(b.id).push(cxOf(l.from));
-        else if (a && b && a !== b && C.type !== 'group') par.set(find(a.id), find(b.id));
+        else if (a && b && a !== b && contRow(C).layout !== 'flow' && contRow(C).layout !== 'margin') par.set(find(a.id), find(b.id));
       }
       const bary = sb => { const v = ext.get(sb.id); return v.length ? v.reduce((t, x) => t + x, 0) / v.length : sb.x + sb.w / 2; };
       const blocks = new Map(); for (const sb of sibs) { const r = find(sb.id); if (!blocks.has(r)) blocks.set(r, []); blocks.get(r).push(sb); }
       const bl = [...blocks.values()].map(m => { m.sort((a, b) => a.x - b.x || a.y - b.y); const withExt = m.filter(x => ext.get(x.id).length); return { m, key: (withExt.length ? withExt : m).reduce((t, x) => t + bary(x), 0) / (withExt.length || m.length), x0: m[0].x }; });
       bl.sort((a, b) => a.key - b.key || a.x0 - b.x0);
       const newOrder = bl.flatMap(b => b.m);
-      const slots = [...sibs].sort(C.type === 'group' ? ((a, b) => a.y - b.y || a.x - b.x) : ((a, b) => a.x - b.x || a.y - b.y)).map(n => [n.x, n.y]);
+      const ySlot = contRow(C).layout === 'flow' || contRow(C).layout === 'margin';
+      const slots = [...sibs].sort(ySlot ? ((a, b) => a.y - b.y || a.x - b.x) : ((a, b) => a.x - b.x || a.y - b.y)).map(n => [n.x, n.y]);
       newOrder.forEach((n, i) => { const dx = slots[i][0] - n.x, dy = slots[i][1] - n.y; for (const d of [n, ...descendants(n.id, p)]) { d.x += dx; d.y += dy; } });
     }
     beautify(p);
@@ -1958,18 +2263,44 @@ function deleteSel() {
     render();
     return;
   }
-  if (!sel.size) return; checkpoint();
-  const kill = new Set(); for (const id of sel) { kill.add(id); descendants(id).forEach(d => kill.add(d.id)); }
-  let door = false;
-  for (const n of p.nodes) if (kill.has(n.id) && n.sub && doc.pages[n.sub]) door = true;
-  p.nodes = p.nodes.filter(n => !kill.has(n.id)); p.links = p.links.filter(l => !kill.has(l.from) && !kill.has(l.to));
-  clearSel(); render();
+  const snap = snapSel();
+  if (!snap) return;
+  const door = snap.nodes.some(n => n.sub && doc.pages[n.sub]);
+  checkpoint();
+  dropSnap(snap);
   if (door) toast('内部结构页还在，可从「子页」进入');
 }
+function snapSel() {
+  if (!sel.size) return null;
+  const ids = new Set();
+  for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
+  const page = P();
+  return {
+    nodes: page.nodes.filter(n => ids.has(n.id)).map(n => ({ ...n })),
+    links: page.links.filter(l => ids.has(l.from) && ids.has(l.to)).map(l => ({ ...l }))
+  };
+}
+function dropSnap(snap) {
+  const ids = new Set(snap.nodes.map(n => n.id));
+  const page = P();
+  page.nodes = page.nodes.filter(n => !ids.has(n.id));
+  page.links = page.links.filter(l => !ids.has(l.from) && !ids.has(l.to));
+  clearSel();
+  render();
+}
 function copySel() {
-  if (!sel.size) return; const ids = new Set(); for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
-  clipboard = { nodes: P().nodes.filter(n => ids.has(n.id)).map(n => ({ ...n })), links: P().links.filter(l => ids.has(l.from) && ids.has(l.to)).map(l => ({ ...l })) };
+  const snap = snapSel();
+  if (!snap) return;
+  clipboard = snap;
   toast(`已复制 ${clipboard.nodes.length} 个元素`);
+}
+function cutSel() {
+  const snap = snapSel();
+  if (!snap) return;
+  clipboard = snap;
+  checkpoint();
+  dropSnap(clipboard);
+  toast(`已剪切 ${clipboard.nodes.length} 个元素`);
 }
 function paste() {
   if (!clipboard) return; checkpoint(); const map = {};
@@ -2322,7 +2653,8 @@ $('#crumb').addEventListener('click', e => {
 });
 
 /* ---------- properties panel ---------- */
-const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏', band: '分组带', lane: '层（泳道）', group: '子容器' });
+const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏' });
+for (const row of CONTS) TYPE_NAME[row.spec.type] = row.name;
 const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
   ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate']]];
 function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
@@ -2335,14 +2667,23 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
-const FIELD_CAP = { status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
+const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
 const SHARED_REJECT = {};
 const NODE_FIELDS = {
+  labelSide: {
+    id: 'labelSide', kind: 'seg',
+    show: function (items) { return items.length > 0 && items.every(function (n) { return !!contRow(n); }); },
+    get: function (n) { return sideOf(n); },
+    set: function (n, v) { setLabelSide(n, v); },
+    options: function () { return [['t', '上'], ['b', '下'], ['l', '左'], ['r', '右']]; }
+  },
   status: {
     id: 'status', kind: 'seg',
     show: function (items) {
       if (items.length > 1) return true;
-      return ['text', 'note', 'legend', 'lane', 'tblock'].indexOf(items[0].type) < 0;
+      const row = contRow(items[0]);
+      if (row) return !!row.status;
+      return ['text', 'note', 'legend', 'tblock'].indexOf(items[0].type) < 0;
     },
     get: function (n) { return n.status || 'base'; },
     set: function (n, v) { n.status = v; },
@@ -2476,6 +2817,7 @@ function selectedNodes() {
 function parseShared(field, raw) {
   if (raw === null) return null;
   if (raw === '__mixed__') return SHARED_REJECT;
+  if (field.id === 'labelSide' && raw !== 't' && raw !== 'b' && raw !== 'l' && raw !== 'r') return SHARED_REJECT;
   if (field.id === 'status' && ['base', 'new', 'key'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'dir' && ['one', 'both', 'none'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'kind' && !LINK_KINDS[raw]) return SHARED_REJECT;
@@ -2605,7 +2947,8 @@ function renderProps() {
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
     }
     h += fieldsHTML([n], NODE_FIELDS);
-    if (n.type === 'lane') h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="40" max="300" value="${laneTW(n)}"></div>`;
+    const crow = contRow(n);
+    if (crow && crow.thick.mode === 'field' && (sideOf(n) === 'l' || sideOf(n) === 'r')) h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="${crow.thick.min}" max="${crow.thick.max}" value="${thickness(n, crow)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
     if (window.Combo && iconable(n)) {
       const cb = Combo.isCombo(n) && doc.custom[n.icon.slice(3)].combo;
@@ -2613,7 +2956,8 @@ function renderProps() {
       else if (n.icon && n.icon.startsWith('lib:')) h += `<hr><div class="row"><button id="p-form" style="border-color:var(--line);justify-content:center">⁂ 用此装备生成编队（Ctrl+Shift+B）</button></div>`;
     }
     if (window.Std) h += Std.propsHTML('node', n, p);
-    if (!['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type)) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
+    const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type);
+    if (showSub) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
@@ -2666,7 +3010,7 @@ function bindProps() {
   else if (sel.size) bindFields(selectedNodes(), NODE_FIELDS);
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
   on('#p-type', 'change', e => { checkpoint(); n.type = e.target.value; if (n.type === 'equip' && n.h < 72) { n.w = Math.max(n.w, 96); n.h = 96; } render(); });
-  on('#p-tw', 'input', e => { n.titleW = clamp(+e.target.value || 96, 40, 300); live(); });
+  on('#p-tw', 'input', e => { const row = contRow(n), th = row && row.thick.mode === 'field' ? row.thick : { key: 'titleW', min: 40, max: 300, fallback: 96 }; n[th.key] = clamp(+e.target.value || th.fallback, th.min, th.max); live(); });
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
@@ -2903,19 +3247,24 @@ async function exportPPTX() {
     const txt = (lines, o) => lines.join('\n');
     for (const n of drawOrder(p)) {
       const base = { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h) };
-      if (n.type === 'band') {
-        const st = stStyle(n, t);
-        slide.addShape(pptx.ShapeType.rect, { ...base, fill: { color: hex(n.fill || t.band.fill) }, line: { color: hex(t.band.stroke), width: LW(1.5) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(BAND_TW), h: S(n.h), fill: { color: hex(n.status === 'base' ? t.band.titleFill : st.stroke) }, color: hex(t.band.titleText), fontFace: fontFace(n), fontSize: PT(15), bold: true, align: 'center', valign: 'middle', vert: 'eaVert', margin: 0 });
-      } else if (n.type === 'lane') {
-        const tw = laneTW(n);
-        slide.addShape(pptx.ShapeType.rect, { ...base, fill: { color: hex(n.fill || t.lane.fill) }, line: { color: hex(t.lane.stroke), width: LW(1) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(tw), h: S(n.h), color: hex(t.lane.titleText), fontFace: fontFace(n), fontSize: PT(13.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
-        slide.addShape(pptx.ShapeType.line, { x: X(n.x + tw), y: Y(n.y + 6), w: 0, h: S(n.h - 12), line: { color: hex(t.lane.stroke), width: LW(1) } });
-      } else if (n.type === 'group') {
-        const st = stStyle(n, t);
-        slide.addShape(pptx.ShapeType.roundRect, { ...base, rectRadius: S(6), fill: { color: hex(st.fill === t.box.fill ? t.group.fill : st.fill) }, line: { color: hex(st.stroke === t.box.stroke ? t.group.stroke : st.stroke), width: LW(1.3) } });
-        addT(slide, String(n.text || ''), { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(GROUP_TH), fill: { color: hex(n.status === 'base' ? t.group.titleFill : st.title) }, color: hex(t.group.titleText), fontFace: fontFace(n), fontSize: PT(12.5), bold: true, align: 'center', valign: 'middle', margin: 1 });
+      if (contRow(n)) {
+        exportCont(n, p, {
+          body(b) {
+            const o = { x: X(b.x), y: Y(b.y), w: S(b.w), h: S(b.h), fill: { color: hex(b.fill) }, line: { color: hex(b.stroke), width: LW(b.sw) } };
+            if (b.dash) o.line.dashType = PPT_DASH[b.dash] || 'solid';
+            slide.addShape(b.rx ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, b.rx ? { ...o, rectRadius: S(b.rx) } : o);
+          },
+          slab(s) { slide.addShape(pptx.ShapeType.rect, { x: X(s.x), y: Y(s.y), w: S(s.w), h: S(s.h), fill: { color: hex(s.fill) }, line: { color: hex(s.fill), width: 0 } }); },
+          rule(r) {
+            const dx = r.x2 - r.x1, dy = r.y2 - r.y1;
+            slide.addShape(pptx.ShapeType.line, { x: X(Math.min(r.x1, r.x2)), y: Y(Math.min(r.y1, r.y2)), w: dx === 0 ? 0 : S(Math.abs(dx)), h: dy === 0 ? 0 : S(Math.abs(dy)), line: { color: hex(r.stroke), width: LW(1) } });
+          },
+          label(s, text) {
+            const o = { x: X(s.x), y: Y(s.y), w: S(s.w), h: S(s.h), color: hex(text.color), fontFace: fontFace(n), fontSize: PT(text.size), bold: !!text.bold, align: 'center', valign: 'middle', margin: text.vert ? 0 : 1 };
+            if (text.vert) o.vert = 'eaVert';
+            addT(slide, text.raw, o);
+          }
+        });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) {
           const o = { x: X(c.x), y: Y(c.y), w: S(c.w), h: S(c.h), line: { color: hex(c.stroke), width: LW(c.lw) }, ...(c.fill ? { fill: { color: hex(c.fill) } } : {}) };
@@ -3024,7 +3373,7 @@ async function exportVSDX(pageList) {
       const W = w * f, H = h * f;
       let s = `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(x) + W / 2))}${cell('PinY', num(Y(y) - H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('Angle', 0)}`;
       if (o.fill) s += cell('FillForegnd', o.fill) + cell('FillPattern', 1); else s += cell('FillPattern', 0);
-      if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', 1); else s += cell('LinePattern', 0);
+      if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', o.dash ? (VSD_PAT[o.dash] || 1) : 1); else s += cell('LinePattern', 0);
       if (o.round) s += cell('Rounding', num(o.round * f));
       s += cell('VerticalAlign', o.valign ?? 1) + cell('LeftMargin', num(2 * f)) + cell('RightMargin', num(2 * f)) + cell('TopMargin', num(1 * f)) + cell('BottomMargin', num(1 * f));
       if (o.text != null && o.type && GEO[o.type] && o.type !== 'rect') {
@@ -3038,17 +3387,12 @@ async function exportVSDX(pageList) {
       return s + '</Shape>';
     };
     for (const n of drawOrder(p)) {
-      if (n.type === 'band') {
-        const st = stStyle(n, t);
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: n.fill || t.band.fill, line: t.band.stroke, lw: 1.5 }));
-        shapes.push(box(n.x, n.y, BAND_TW, n.h, { fill: n.status === 'base' ? t.band.titleFill : st.stroke, text: n.text, size: 15, bold: true, color: t.band.titleText, vert: true, face: fontFace(n) }));
-      } else if (n.type === 'lane') {
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: n.fill || t.lane.fill, line: t.lane.stroke }));
-        shapes.push(box(n.x, n.y, laneTW(n), n.h, { text: n.text, size: 13.5, bold: true, color: t.lane.titleText, face: fontFace(n) }));
-      } else if (n.type === 'group') {
-        const st = stStyle(n, t);
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: st.fill === t.box.fill ? t.group.fill : st.fill, line: st.stroke === t.box.stroke ? t.group.stroke : st.stroke, lw: 1.3, round: 6 }));
-        shapes.push(box(n.x, n.y, n.w, GROUP_TH, { fill: n.status === 'base' ? t.group.titleFill : st.title, text: n.text, size: 12.5, bold: true, color: t.group.titleText, face: fontFace(n) }));
+      if (contRow(n)) {
+        exportCont(n, p, {
+          body(b) { shapes.push(box(b.x, b.y, b.w, b.h, { fill: b.fill, line: b.stroke, lw: b.sw, round: b.rx || 0, dash: b.dash })); },
+          slab(s) { shapes.push(box(s.x, s.y, s.w, s.h, { fill: s.fill })); },
+          label(s, text) { shapes.push(box(s.x, s.y, s.w, s.h, { text: text.raw, size: text.size, bold: text.bold, color: text.color, vert: text.vert, face: fontFace(n) })); }
+        });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) shapes.push(box(c.x, c.y, c.w, c.h, { fill: c.fill || null, line: c.stroke, lw: c.lw, ...(c.text ? { text: c.text, size: c.size, bold: c.bold, color: c.color, align: c.align, face: fontFace(n) } : {}) }));
       } else if (n.type === 'legend') {
@@ -3207,10 +3551,496 @@ $('#b-open').onclick = () => $('#f-open').click();
 $('#f-open').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   e.target.value = '';
+  if (/\.(png|jpe?g)$/i.test(f.name)) { openImageFile(f); return; }
   if (/\.(pptx|vsdx|ppt|vsd|drawio|xml)$/i.test(f.name)) { openForeign(f); return; }
-  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
+  rd.onload = () => { try { const o = JSON.parse(rd.result); const d = o.doc || o; if (!d.pages || !d.pages.root) throw 0; checkpoint(); loadDoc(d); shelfId = null; rememberShelf(f.name); toast('已打开：' + f.name); } catch (_) { toast('无法识别该文件，请选择织图工程文件（.json）、框图图片（.png／.jpg）、PowerPoint（.pptx）或 Visio（.vsdx）'); } };
   rd.readAsText(f);
 });
+function decodeImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!/\.(png|jpe?g)$/i.test(file.name || '')) { reject(new Error('不是图片')); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      URL.revokeObjectURL(url);
+      if (!w || !h) { reject(new Error('无法读取该图片')); return; }
+      if (w * h > 8000000) { reject(new Error('图片过大，请缩到 800 万像素以内再导入')); return; }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0);
+      resolve(g.getImageData(0, 0, w, h));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('无法读取该图片')); };
+    img.src = url;
+  });
+}
+async function openImageFile(file) {
+  if (!window.ImgImport) { toast('识图模块未加载'); return false; }
+  toast('正在识别 ' + file.name + ' …');
+  await new Promise(r => setTimeout(r, 30));
+  let image;
+  try { image = await decodeImageFile(file); }
+  catch (e) { toast((e && e.message) || '无法读取该图片'); return false; }
+  let draft;
+  try { draft = ImgImport.read(image); }
+  catch (e) { toast('导入失败：' + ((e && e.message) || e)); return false; }
+  if (!draft.page || !draft.page.nodes.length) { toast('没有识别到可编辑的框图'); return false; }
+  if (draft.notes && draft.notes.length) console.info('识图提示', draft.notes);
+  const url = URL.createObjectURL(file);
+  try {
+    return await showImageReview({
+      name: file.name.replace(/\.[^.]+$/, ''),
+      url: url,
+      width: image.width,
+      height: image.height,
+      page: draft.page,
+      notes: draft.notes
+    });
+  } finally { URL.revokeObjectURL(url); }
+}
+function showImageReview(spec) {
+  if (irSess) { const prev = irSess; irSess = null; prev.resolve(false); }
+  return new Promise(resolve => {
+    irSess = {
+      name: spec.name || '未命名',
+      url: spec.url,
+      w: spec.width || 1,
+      h: spec.height || 1,
+      nodes: (spec.page.nodes || []).map(n => Object.assign({}, n)),
+      links: (spec.page.links || []).map(k => Object.assign({}, k)),
+      sel: null,
+      mode: '',
+      linkFrom: null,
+      dragged: false,
+      resolve: resolve
+    };
+    const dlg = $('#img-review');
+    $('#ir-img').src = spec.url;
+    $('#ir-overlay').classList.remove('on');
+    dlg.classList.remove('overlay');
+    const note = (spec.notes && spec.notes.length) ? spec.notes.join('') : '';
+    $('#ir-msg').textContent = note + '点一个框改文字。选中连线后可反转、改箭头、拖两端圆点，或拆开交叉线。';
+    const toastEl = $('#toast');
+    if (toastEl) toastEl.classList.remove('show');
+    paintImageReview();
+    dlg.style.display = 'flex';
+  });
+}
+function finishImageReview(ok) {
+  const s = irSess;
+  irSess = null;
+  const dlg = $('#img-review');
+  if (dlg) { dlg.style.display = 'none'; dlg.classList.remove('overlay'); }
+  const ov = $('#ir-overlay');
+  if (ov) ov.classList.remove('on');
+  if (s) s.resolve(!!ok);
+}
+function cancelImageReview() {
+  if (!irSess) return;
+  toast('已取消导入');
+  finishImageReview(false);
+}
+function confirmImageReview() {
+  const s = irSess;
+  if (!s) return;
+  if (!s.nodes.length) { toast('没有可导入的图形'); return; }
+  const page = {
+    id: 'root', name: '总图', view: null,
+    nodes: s.nodes.map(n => mkNode(n)),
+    links: s.links.map(k => Object.assign({ dir: 'one', route: 'ortho', label: '' }, k))
+  };
+  const name = s.name, nn = page.nodes.length, nl = page.links.length;
+  checkpoint();
+  const d = {
+    name: name,
+    theme: doc.theme,
+    statusLabels: Object.assign({}, doc.statusLabels),
+    custom: {},
+    lastKind: 'data',
+    pages: { root: page }
+  };
+  finishImageReview(true);
+  loadDoc(d);
+  toast('已导入 ' + name + '：' + nn + ' 个图形，' + nl + ' 条连线。位置按图片保留，一键美化会改框的大小。');
+}
+function irNode(id) { return irSess && irSess.nodes.find(n => n.id === id); }
+function irSelectedNode() { return irSess && irSess.sel && irSess.sel.kind === 'node' ? irNode(irSess.sel.id) : null; }
+function irSelectedLink() { return irSess && irSess.sel && irSess.sel.kind === 'link' ? irSess.links.find(k => k.id === irSess.sel.id) : null; }
+function irWouldCycle(node, parentId) {
+  let id = parentId; const seen = {};
+  while (id) {
+    if (id === node.id || seen[id]) return true;
+    seen[id] = 1;
+    const p = irNode(id);
+    id = p ? p.parent : null;
+  }
+  return false;
+}
+function irSyncTools() {
+  const s = irSess;
+  const n = irSelectedNode();
+  const k = irSelectedLink();
+  const text = $('#ir-text');
+  if (document.activeElement !== text) text.value = n ? (n.text || '') : '';
+  text.disabled = !n;
+  const dir = $('#ir-dir');
+  dir.disabled = !k;
+  if (k) dir.value = k.dir || 'one';
+  const parent = $('#ir-parent');
+  const groups = s.nodes.filter(g => g.type === 'group' && (!n || g.id !== n.id));
+  parent.innerHTML = '<option value="">不归入</option>' + groups.map(g => '<option value="' + esc(g.id) + '">' + esc(g.text || '组合') + '</option>').join('');
+  parent.value = (n && n.parent && irNode(n.parent)) ? n.parent : '';
+  parent.disabled = !n;
+  const grp = $('#ir-group');
+  grp.disabled = !n;
+  grp.textContent = n && n.type === 'group' ? '取消组合' : '标为组合';
+  $('#ir-link').classList.toggle('on', s.mode === 'link');
+  $('#ir-add').classList.toggle('on', s.mode === 'add');
+  $('#ir-rev').disabled = !k;
+  $('#ir-split').disabled = !k;
+  $('#ir-split').classList.toggle('on', s.mode === 'split');
+  $('#ir-del').disabled = !(n || k);
+  $('#ir-file').textContent = s.name + '　' + s.nodes.length + ' 个图形，' + s.links.length + ' 条连线';
+}
+function irFont(n) {
+  const chars = Math.max(1, String(n.text || '').replace(/\s/g, '').length);
+  const byH = n.type === 'group' ? n.h * 0.075 : n.h * 0.42;
+  const byW = n.w * 0.86 / chars;
+  return Math.max(14, Math.min(byH, byW, 64));
+}
+function irBar(n) { return Math.min(Math.max(0, n.h - 8), Math.max(28, irFont(n) * 1.65)); }
+function irEdge(n, to) {
+  const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+  const dx = to.x - cx, dy = to.y - cy;
+  if (!dx && !dy) return { x: cx, y: cy };
+  const hx = Math.max(1, n.w / 2), hy = Math.max(1, n.h / 2);
+  const t = Math.abs(dx) / hx > Math.abs(dy) / hy ? hx / Math.abs(dx) : hy / Math.abs(dy);
+  return { x: cx + dx * t, y: cy + dy * t };
+}
+function irPolyline(a, b, nodes) {
+  const ca = { x: a.x + a.w / 2, y: a.y + a.h / 2 };
+  const cb = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+  const p1 = irEdge(a, cb), p2 = irEdge(b, ca);
+  const horiz = Math.abs(p1.y - p2.y) <= Math.abs(p1.x - p2.x);
+  const blocked = nodes.some(n => {
+    if (n.id === a.id || n.id === b.id || n.type === 'group' || n.type === 'band' || n.type === 'lane') return false;
+    if (horiz) {
+      const x0 = Math.min(p1.x, p2.x) + 2, x1 = Math.max(p1.x, p2.x) - 2, y = (p1.y + p2.y) / 2;
+      return n.x < x1 && n.x + n.w > x0 && y > n.y && y < n.y + n.h;
+    }
+    const y0 = Math.min(p1.y, p2.y) + 2, y1 = Math.max(p1.y, p2.y) - 2, x = (p1.x + p2.x) / 2;
+    return n.y < y1 && n.y + n.h > y0 && x > n.x && x < n.x + n.w;
+  });
+  if (!blocked) return [p1, p2];
+  if (horiz) {
+    let lane = Math.min(a.y, b.y) - 18;
+    const below = lane < 4;
+    if (below) lane = Math.max(a.y + a.h, b.y + b.h) + 18;
+    const t1 = { x: a.x + a.w / 2, y: below ? a.y + a.h : a.y };
+    const t2 = { x: b.x + b.w / 2, y: below ? b.y + b.h : b.y };
+    return [t1, { x: t1.x, y: lane }, { x: t2.x, y: lane }, t2];
+  }
+  let lane = Math.min(a.x, b.x) - 18;
+  const right = lane < 4;
+  if (right) lane = Math.max(a.x + a.w, b.x + b.w) + 18;
+  const t1 = { x: right ? a.x + a.w : a.x, y: a.y + a.h / 2 };
+  const t2 = { x: right ? b.x + b.w : b.x, y: b.y + b.h / 2 };
+  return [t1, { x: lane, y: t1.y }, { x: lane, y: t2.y }, t2];
+}
+function irShape(n, on) {
+  const x = n.x, y = n.y, w = Math.max(1, n.w), h = Math.max(1, n.h);
+  const mark = on ? ' ir-on' : '';
+  if (n.type === 'ellipse') return '<ellipse class="ir-sh' + mark + '" cx="' + (x + w / 2) + '" cy="' + (y + h / 2) + '" rx="' + (w / 2) + '" ry="' + (h / 2) + '"/>';
+  if (n.type === 'diamond') return '<polygon class="ir-sh' + mark + '" points="' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + ' ' + x + ',' + (y + h / 2) + '"/>';
+  if (n.type === 'text') return '<rect class="ir-sh ir-plain' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+  if (n.type === 'round') return '<rect class="ir-sh' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + Math.min(10, h / 3) + '"/>';
+  if (n.type === 'roundL' || n.type === 'roundR') {
+    const r = Math.min(14, h / 2, w / 2);
+    const d = n.type === 'roundL'
+      ? 'M' + (x + r) + ' ' + y + 'H' + (x + w) + 'V' + (y + h) + 'H' + (x + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + x + ' ' + (y + h - r) + 'V' + (y + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + r) + ' ' + y + 'Z'
+      : 'M' + x + ' ' + y + 'H' + (x + w - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) + 'V' + (y + h - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w - r) + ' ' + (y + h) + 'H' + x + 'Z';
+    return '<path class="ir-sh' + mark + '" d="' + d + '"/>';
+  }
+  if (n.type === 'group') {
+    const bar = irBar(n);
+    return '<rect class="ir-sh ir-group' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>' + (h > bar + 8 ? '<line class="ir-rule" x1="' + x + '" y1="' + (y + bar) + '" x2="' + (x + w) + '" y2="' + (y + bar) + '"/>' : '');
+  }
+  return '<rect class="ir-sh' + mark + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3"/>';
+}
+function paintImageReview() {
+  const s = irSess;
+  if (!s) return;
+  const box = $('#img-review');
+  const overlay = box && box.classList.contains('overlay');
+  const groups = s.nodes.filter(n => n.type === 'group' || n.type === 'band' || n.type === 'lane');
+  const rest = s.nodes.filter(n => n.type !== 'group' && n.type !== 'band' && n.type !== 'lane');
+  const nodeOf = id => s.nodes.find(n => n.id === id);
+  let body = '';
+  if (overlay) body += '<image href="' + esc(s.url) + '" xlink:href="' + esc(s.url) + '" x="0" y="0" width="' + s.w + '" height="' + s.h + '" opacity="0.5" preserveAspectRatio="none" pointer-events="none"/>';
+  const drawNode = n => {
+    const on = s.sel && s.sel.kind === 'node' && s.sel.id === n.id;
+    const ty = n.type === 'group' ? n.y + irBar(n) / 2 : n.y + n.h / 2;
+    const fs = irFont(n);
+    return '<g data-kind="node" data-id="' + esc(n.id) + '">' + irShape(n, on) +
+      '<text x="' + (n.x + n.w / 2) + '" y="' + ty + '" text-anchor="middle" dominant-baseline="middle" font-size="' + fs + '">' + esc(String(n.text || '').replace(/\n/g, ' ')) + '</text></g>';
+  };
+  body += groups.map(drawNode).join('');
+  body += s.links.map(k => {
+    const a = nodeOf(k.from), b = nodeOf(k.to);
+    if (!a || !b) return '';
+    const pts = irPolyline(a, b, s.nodes);
+    const on = s.sel && s.sel.kind === 'link' && s.sel.id === k.id;
+    const dir = k.dir || 'one';
+    const marker = dir === 'both' ? ' marker-start="url(#ir-start)" marker-end="url(#ir-end)"' : (dir === 'none' ? '' : ' marker-end="url(#ir-end)"');
+    const dash = k.kind === 'ctrl' ? ' ir-dash' : '';
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + p.x + ' ' + p.y).join('');
+    return '<path class="ir-link' + dash + (on ? ' ir-on' : '') + '" d="' + d + '"' + marker + '/>' +
+      '<path class="ir-hit" data-kind="link" data-id="' + esc(k.id) + '" data-from="' + esc(k.from) + '" data-to="' + esc(k.to) + '" data-dir="' + esc(dir) + '" d="' + d + '"/>';
+  }).join('');
+  body += rest.map(drawNode).join('');
+  const selLink = s.sel && s.sel.kind === 'link' ? s.links.find(k => k.id === s.sel.id) : null;
+  if (selLink) {
+    const a = nodeOf(selLink.from), b = nodeOf(selLink.to);
+    if (a && b) {
+      const pts = irPolyline(a, b, s.nodes);
+      const r = Math.max(16, Math.min(s.w, s.h) * 0.02);
+      const p0 = pts[0], p1 = pts[pts.length - 1];
+      body += '<circle class="ir-handle" data-kind="handle" data-end="from" data-id="' + esc(selLink.id) + '" cx="' + p0.x + '" cy="' + p0.y + '" r="' + r + '"/>';
+      body += '<circle class="ir-handle" data-kind="handle" data-end="to" data-id="' + esc(selLink.id) + '" cx="' + p1.x + '" cy="' + p1.y + '" r="' + r + '"/>';
+    }
+  }
+  const defs = '<defs><marker id="ir-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M0 0 L10 5 L0 10 Z"/></marker>' +
+    '<marker id="ir-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M10 0 L0 5 L10 10 Z"/></marker></defs>';
+  $('#ir-prev').innerHTML = '<svg id="ir-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ' + s.w + ' ' + s.h + '" preserveAspectRatio="xMidYMid meet">' + defs + body + '</svg>';
+  irSyncTools();
+}
+function irSvgPoint(e) {
+  const svg = $('#ir-svg');
+  if (!svg) return { x: 0, y: 0 };
+  const pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const m = svg.getScreenCTM();
+  if (!m) return { x: 0, y: 0 };
+  const p = pt.matrixTransform(m.inverse());
+  return { x: p.x, y: p.y };
+}
+function irConnectPair(a, b, msg) {
+  const s = irSess;
+  if (!s || a === b) return false;
+  if (s.links.some(k => (k.from === a && k.to === b) || (k.from === b && k.to === a))) {
+    $('#ir-msg').textContent = '这两框之间已经有连线。';
+    paintImageReview();
+    return false;
+  }
+  const kid = 'k' + uid();
+  s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
+  s.sel = { kind: 'link', id: kid };
+  $('#ir-msg').textContent = msg;
+  paintImageReview();
+  return true;
+}
+function irPreviewClick(e) {
+  const s = irSess;
+  if (!s) return;
+  if (s.dragged) { s.dragged = false; return; }
+  if (s.mode === 'add') {
+    const p = irSvgPoint(e);
+    const w = Math.max(80, s.w * 0.12), h = Math.max(36, s.h * 0.08);
+    const n = mkNode({ id: 'n' + uid(), type: 'rect', text: '新框', parent: null, w: w, h: h, x: Math.max(0, Math.min(Math.max(0, s.w - w), p.x - w / 2)), y: Math.max(0, Math.min(Math.max(0, s.h - h), p.y - h / 2)) });
+    s.nodes.push(n);
+    s.sel = { kind: 'node', id: n.id };
+    s.mode = '';
+    $('#ir-msg').textContent = '已添加矩形。可改文字，或归入组合。';
+    paintImageReview();
+    return;
+  }
+  const hit = e.target.closest ? e.target.closest('[data-kind]') : null;
+  if (hit && hit.getAttribute('data-kind') === 'handle') return;
+  if (s.mode === 'link' || s.mode === 'split') {
+    if (!hit || hit.getAttribute('data-kind') !== 'node') return;
+    const id = hit.getAttribute('data-id');
+    if (!s.linkFrom) {
+      s.linkFrom = id;
+      $('#ir-msg').textContent = s.mode === 'split' ? '再点这条线的终点。原线仍保留。' : '再点终点。';
+      return;
+    }
+    if (s.linkFrom === id) return;
+    const a = s.linkFrom, b = id, splitting = s.mode === 'split';
+    s.mode = ''; s.linkFrom = null;
+    irConnectPair(a, b, splitting ? '已拆出一条新线。可改箭头，或拖两端圆点。' : '已连上。可反转方向，改单向、双向或无箭头。');
+    return;
+  }
+  if (!hit) { s.sel = null; paintImageReview(); return; }
+  s.sel = { kind: hit.getAttribute('data-kind'), id: hit.getAttribute('data-id') };
+  if (s.sel.kind === 'node') $('#ir-msg').textContent = '正在改这个框的文字。也可以删除、标为组合，或归入别的组合。';
+  else $('#ir-msg').textContent = '可反转方向，改成单向、双向或无箭头。拖两端圆点改接到别的框，或拆开交叉线。';
+  paintImageReview();
+}
+function irReverse() {
+  const k = irSelectedLink();
+  if (!k) { $('#ir-msg').textContent = '先点选一条连线，再反转。'; return; }
+  const from = k.from;
+  k.from = k.to;
+  k.to = from;
+  if (k.label || k.labelBack) {
+    const lab = k.label || '';
+    k.label = k.labelBack || '';
+    k.labelBack = lab;
+  }
+  $('#ir-msg').textContent = '已反转方向。';
+  paintImageReview();
+}
+function irArmSplit() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'split') {
+    s.mode = ''; s.linkFrom = null;
+    $('#ir-msg').textContent = '点一个框改文字。选中连线后可反转、改箭头、拖两端圆点，或拆开交叉线。';
+    paintImageReview();
+    return;
+  }
+  if (!irSelectedLink()) { $('#ir-msg').textContent = '先点选被合并的那条线，再拆开。'; return; }
+  s.mode = 'split';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '原线保留。再点另一条线的起点和终点。';
+  paintImageReview();
+}
+function irHandleDown(e) {
+  const s = irSess;
+  if (!s) return;
+  const hit = e.target.closest ? e.target.closest('[data-kind="handle"]') : null;
+  if (!hit) return;
+  e.preventDefault();
+  s.pendingDrag = { id: hit.getAttribute('data-id'), end: hit.getAttribute('data-end') };
+}
+function irHandleUp(e) {
+  const s = irSess;
+  if (!s || !s.pendingDrag) return;
+  const drag = s.pendingDrag;
+  s.pendingDrag = null;
+  s.dragged = true;
+  setTimeout(function () { if (irSess) irSess.dragged = false; }, 0);
+  const k = s.links.find(x => x.id === drag.id);
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const node = el && el.closest ? el.closest('[data-kind="node"]') : null;
+  if (!k || !node) return;
+  const id = node.getAttribute('data-id');
+  const cur = drag.end === 'from' ? k.from : k.to;
+  if (id === cur) return;
+  const other = drag.end === 'from' ? k.to : k.from;
+  if (id === other) { $('#ir-msg').textContent = '两端不能是同一个框。'; return; }
+  const nextFrom = drag.end === 'from' ? id : k.from;
+  const nextTo = drag.end === 'to' ? id : k.to;
+  if (s.links.some(x => x.id !== k.id && ((x.from === nextFrom && x.to === nextTo) || (x.from === nextTo && x.to === nextFrom)))) {
+    $('#ir-msg').textContent = '这两框之间已经有连线。';
+    return;
+  }
+  k.from = nextFrom;
+  k.to = nextTo;
+  s.sel = { kind: 'link', id: k.id };
+  $('#ir-msg').textContent = '已改接到这个框。';
+  paintImageReview();
+}
+function irTextInput() {
+  const n = irSelectedNode();
+  if (!n) return;
+  n.text = $('#ir-text').value;
+  paintImageReview();
+}
+function irDirInput() {
+  const k = irSelectedLink();
+  if (!k) return;
+  k.dir = $('#ir-dir').value || 'one';
+  paintImageReview();
+}
+function irParentInput() {
+  const n = irSelectedNode();
+  if (!n) return;
+  const next = $('#ir-parent').value || null;
+  if ((n.parent || null) === next) return;
+  if (next && irWouldCycle(n, next)) {
+    $('#ir-parent').value = n.parent || '';
+    $('#ir-msg').textContent = '不能归入自己里面的组合。';
+    return;
+  }
+  n.parent = next;
+  $('#ir-msg').textContent = next ? '已归入所选组合。' : '已取消归入。';
+  paintImageReview();
+}
+function irToggleGroup() {
+  const s = irSess;
+  const n = irSelectedNode();
+  if (!s || !n) { $('#ir-msg').textContent = '先点选一个框，再标为组合。'; return; }
+  if (n.type === 'group') {
+    n.type = 'rect';
+    s.nodes.forEach(c => { if (c.parent === n.id) c.parent = null; });
+    $('#ir-msg').textContent = '已取消组合。里面的框不再归入它。';
+  } else {
+    n.type = 'group';
+    $('#ir-msg').textContent = '已标为组合。点里面的框，再用「归入」放进来。';
+  }
+  paintImageReview();
+}
+function irArmLink() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'link') { s.mode = ''; s.linkFrom = null; $('#ir-msg').textContent = '点一个框改文字。连线先点起点，再点终点。'; paintImageReview(); return; }
+  s.mode = 'link';
+  const n = irSelectedNode();
+  s.linkFrom = n ? n.id : null;
+  $('#ir-msg').textContent = s.linkFrom ? '再点终点。' : '先点起点，再点终点。';
+  paintImageReview();
+}
+function irArmAdd() {
+  const s = irSess;
+  if (!s) return;
+  if (s.mode === 'add') { s.mode = ''; $('#ir-msg').textContent = '点一个框改文字。连线先点起点，再点终点。'; paintImageReview(); return; }
+  s.mode = 'add';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '在右侧预览里点一处，放下新的矩形。';
+  paintImageReview();
+}
+function irDeleteSel() {
+  const s = irSess;
+  if (!s || !s.sel) { $('#ir-msg').textContent = '先点选要删的框或连线。'; return; }
+  if (s.sel.kind === 'link') s.links = s.links.filter(k => k.id !== s.sel.id);
+  else {
+    const id = s.sel.id;
+    s.nodes = s.nodes.filter(n => n.id !== id);
+    s.links = s.links.filter(k => k.from !== id && k.to !== id);
+    s.nodes.forEach(n => { if (n.parent === id) n.parent = null; });
+  }
+  s.sel = null;
+  s.mode = '';
+  s.linkFrom = null;
+  $('#ir-msg').textContent = '已删除。';
+  paintImageReview();
+}
+function irToggleOverlay() {
+  const dlg = $('#img-review');
+  const on = dlg.classList.toggle('overlay');
+  $('#ir-overlay').classList.toggle('on', on);
+  $('#ir-msg').textContent = on ? '原图叠在识别结果上。再点一次恢复左右对照。' : '左边是原图，右边是识别结果。';
+  paintImageReview();
+}
+$('#ir-ok').onclick = confirmImageReview;
+$('#ir-cancel').onclick = cancelImageReview;
+$('#ir-overlay').onclick = irToggleOverlay;
+$('#ir-del').onclick = irDeleteSel;
+$('#ir-link').onclick = irArmLink;
+$('#ir-add').onclick = irArmAdd;
+$('#ir-rev').onclick = irReverse;
+$('#ir-split').onclick = irArmSplit;
+$('#ir-group').onclick = irToggleGroup;
+$('#ir-text').oninput = irTextInput;
+$('#ir-dir').onchange = irDirInput;
+$('#ir-parent').onchange = irParentInput;
+$('#ir-prev').addEventListener('click', irPreviewClick);
+$('#ir-prev').addEventListener('pointerdown', irHandleDown);
+window.addEventListener('pointerup', irHandleUp);
+$('#img-review').addEventListener('click', e => { if (e.target.id === 'img-review') cancelImageReview(); });
 async function openForeign(f) {
   const dio = /\.(drawio|xml)$/i.test(f.name);
   if (dio ? !window.DrawIO : !window.Importer) { toast('导入模块未加载'); return; }
@@ -3238,7 +4068,7 @@ $('#b-new').onclick = () => {
   p.nodes.push(mkNode({ type: 'text', role: 'title', text: '体系架构图', size: 22, bold: true, x: 300, y: -60, w: 300, h: 34 }));
   const b = mkNode({ type: 'band', text: '分组', x: 0, y: 0, w: 1000, h: 140 }); p.nodes.push(b);
   p.nodes.push(mkNode({ type: 'lane', text: '第一层', parent: b.id, x: 40, y: 6, w: 950, h: 56 }));
-  loadDoc(d); beautify(); render(); fit();
+  loadDoc(d); if (window.Compact) Compact.stamp(); beautify(); render(); fit();
 };
 $('#z-in').onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(view.k * 1.2, r.left + r.width / 2, r.top + r.height / 2); };
 $('#z-out').onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(view.k / 1.2, r.left + r.width / 2, r.top + r.height / 2); };

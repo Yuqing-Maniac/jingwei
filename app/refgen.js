@@ -50,14 +50,23 @@
       if (n.sub && d.pages[n.sub] && !seen.has(n.sub) && depth < 2) sk.subs.push({ host: linkName(n) || it.name, sk: skeleton(d, n.sub, depth + 1, seen) });
       return it;
     };
-    const top = readingOrder(p.nodes.filter(n => (!n.parent || !byId.has(n.parent)) && !NON.includes(n.type)));
-    let bandNodes = top.filter(n => n.type === 'band');
-    if (!bandNodes.length) bandNodes = top.filter(n => isContainer(n));
+    const dialectOf = n => (typeof contDialect === 'function' ? contDialect(n) : null);
+    const liftSkip = list => {
+      const out = [];
+      for (const n of list) {
+        if (dialectOf(n) === 'skip') out.push(...liftSkip(readingOrder(kidsOf(n.id))));
+        else out.push(n);
+      }
+      return out;
+    };
+    const top = liftSkip(readingOrder(p.nodes.filter(n => (!n.parent || !byId.has(n.parent)) && !NON.includes(n.type))));
+    let bandNodes = top.filter(n => dialectOf(n) === 'band');
+    if (!bandNodes.length) bandNodes = top.filter(n => { const d = dialectOf(n); if (d === 'item' && n.type !== 'group') return false; return isContainer(n); });
     const loose = top.filter(n => !bandNodes.includes(n));
     for (const b of bandNodes) {
       const band = { node: b, name: safeName(b.text) || '分组', status: b.status || 'base', lanes: [], items: [] };
       for (const k of readingOrder(kidsOf(b.id))) {
-        if (k.type === 'lane') band.lanes.push({ node: k, name: safeName(k.text) || '层', items: readingOrder(kidsOf(k.id)).map(item) });
+        if (dialectOf(k) === 'lane') band.lanes.push({ node: k, name: safeName(k.text) || '层', items: readingOrder(kidsOf(k.id)).map(item) });
         else band.items.push(item(k));
       }
       sk.bands.push(band);
@@ -568,7 +577,7 @@
       if (!root.classList.contains('open') || root.contains(e.target)) return;
       e.stopPropagation();
       if (e.key === 'Escape') { e.preventDefault(); close(); }
-      else if (['Delete', 'Backspace', ' '].includes(e.key) || e.ctrlKey || e.metaKey) { if (!/^[cv]$/i.test(e.key)) e.preventDefault(); }
+      else if (['Delete', 'Backspace', ' '].includes(e.key) || e.ctrlKey || e.metaKey) { if (!/^[cvx]$/i.test(e.key)) e.preventDefault(); }
     }, true);
     root.addEventListener('mousedown', e => { if (e.target === root) close(); });
     q('#rg-close').onclick = close;

@@ -22,7 +22,6 @@
     return s;
   };
   const SKIP = new Set(['text', 'note', 'legend', 'tblock']);
-  const CONT = new Set(['band', 'lane', 'group']);
   const coll = new Intl.Collator('zh-Hans-CN', { numeric: true, sensitivity: 'base' });
 
   const esc = s => String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -139,7 +138,7 @@
     /* 1 元素清单 */
     const el = [];
     /* containers count as elements when they carry a type (分组带＝网络区域、子容器＝应用系统等) */
-    const isEl = n => !SKIP.has(n.type) && (!CONT.has(n.type) || !!n.etype);
+    const isEl = n => !SKIP.has(n.type) && (!isCont(n) || !!n.etype);
     const extra = NODE_COLS.filter(([k]) => pages.some(p => (p.nodes || []).some(n => isEl(n) && n.attrs && String(n.attrs[k] || '').trim())));
     pages.forEach(p => {
       const byId = {}; (p.nodes || []).forEach(n => byId[n.id] = n);
