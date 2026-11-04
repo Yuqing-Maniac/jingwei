@@ -599,7 +599,8 @@
     for (const { page } of built) {
       const had = doc.pages[page.id];
       doc.pages[page.id] = page;
-      try { if (opts.uncross && typeof reduceCrossings === 'function') reduceCrossings(page); else beautify(page); } finally { if (had) doc.pages[page.id] = had; else delete doc.pages[page.id]; }
+      try { if (opts.uncross && typeof reduceCrossings === 'function') reduceCrossings(page); else beautify(page); }
+      finally { if (had) doc.pages[page.id] = had; else delete doc.pages[page.id]; }
       /* same-named boxes (e.g. three “应用 APP”): connect the closest pair */
       const byId = Object.fromEntries(page.nodes.map(n => [n.id, n]));
       const ctr = n => [n.x + n.w / 2, n.y + n.h / 2];
@@ -1069,7 +1070,7 @@
     const [rootP, ...subs] = res.pages;
     checkpoint();
     if (mode === 'replace' && cur === 'root') {
-      const d = { name: res.title || doc.name || '体系图', layout: doc.layout, theme: doc.theme, statusLabels: { ...doc.statusLabels }, custom: doc.custom, lastKind: doc.lastKind || 'data', pages: {} };
+      const d = { name: res.title || doc.name || '体系图', layout: Compact.cfg(), theme: doc.theme, statusLabels: { ...doc.statusLabels }, custom: doc.custom, lastKind: doc.lastKind || 'data', pages: {} };
       rootP.id = 'root'; rootP.name = '总图';
       d.pages.root = rootP; subs.forEach(p => d.pages[p.id] = p);
       loadDoc(d);

@@ -1816,7 +1816,7 @@ const closeHelp = () => { $('#help').style.display = 'none'; };
 function closePanels() { let c = false; for (const id of ['#modal', '#help', '#std-dlg', '#saveas']) { const x = $(id); if (x && x.style.display === 'flex') { x.style.display = 'none'; c = true; } } if (document.querySelector('.menu.open')) { closeMenus(); c = true; } return c; }
 const callMod = (fn, nm) => { if (typeof window[fn] === 'function') window[fn](); else toast(nm + '模块未加载'); };
 const zoomBy = f => { const r = svg.getBoundingClientRect(); zoomAt(view.k * f, r.left + r.width / 2, r.top + r.height / 2); };
-function doBeautify() { checkpoint(); beautify(); render(); toast('已按层级对齐、等距排布'); }
+function doBeautify() { checkpoint(); if (window.Compact) Compact.stamp(); beautify(); render(); toast('已按层级对齐、等距排布'); }
 function doReduce() { checkpoint(); const [a, b] = reduceCrossings(); render(); toast(b < a ? `交叉 ${a} → ${b}` : `交叉 ${a} → ${b}（已是较优排布）`); }
 function iconable(n) { return n && !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type); }
 document.addEventListener('keydown', e => {
@@ -3426,7 +3426,7 @@ $('#b-new').onclick = () => {
   p.nodes.push(mkNode({ type: 'text', role: 'title', text: '体系架构图', size: 22, bold: true, x: 300, y: -60, w: 300, h: 34 }));
   const b = mkNode({ type: 'band', text: '分组', x: 0, y: 0, w: 1000, h: 140 }); p.nodes.push(b);
   p.nodes.push(mkNode({ type: 'lane', text: '第一层', parent: b.id, x: 40, y: 6, w: 950, h: 56 }));
-  loadDoc(d); beautify(); render(); fit();
+  loadDoc(d); if (window.Compact) Compact.stamp(); beautify(); render(); fit();
 };
 $('#z-in').onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(view.k * 1.2, r.left + r.width / 2, r.top + r.height / 2); };
 $('#z-out').onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(view.k / 1.2, r.left + r.width / 2, r.top + r.height / 2); };
