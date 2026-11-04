@@ -64,8 +64,9 @@
       for (var r = 0; r < gray.length; r++) if (gray[r] < 210) { bin[r] = 1; ink++; }
     }
     var plate = {
-      w: gw, h: gh, scaleX: scaleX, scaleY: scaleY, bin: bin, sw: 1, ink: ink,
+      w: gw, h: gh, scaleX: scaleX, scaleY: scaleY, bin: bin, gray: gray, sw: 1, ink: ink,
       src: imageData.data, srcW: sw0, srcH: sh0, drop: new Uint8Array(gw * gh),
+      textCut: textCut(gray, bin),
       notes: ink ? [] : ['没有可识别的线条']
     };
     if (!ink) return plate;
@@ -136,6 +137,26 @@
       if (v > max) { max = v; thr = u; }
     }
     return thr;
+  }
+
+  function textCut(gray, bin) {
+    var hist = new Uint32Array(256);
+    var n = 0, i, g;
+    for (i = 0; i < bin.length; i++) if (bin[i]) { hist[gray[i]]++; n++; }
+    if (n < 80) return 0;
+    var darkPeak = 0, darkAt = 0;
+    for (g = 0; g < 72; g++) if (hist[g] > darkPeak) { darkPeak = hist[g]; darkAt = g; }
+    if (darkPeak < 20) return 0;
+    var lightPeak = 0, lightAt = 0;
+    for (g = darkAt + 20; g < 160; g++) if (hist[g] > lightPeak) { lightPeak = hist[g]; lightAt = g; }
+    if (lightPeak < darkPeak * 0.35 || lightAt - darkAt < 24) return 0;
+    var valley = 1e9, valleyAt = 0;
+    for (var v = darkAt + 8; v < lightAt - 4; v++) {
+      var s = hist[v - 1] + hist[v] + hist[v + 1];
+      if (s < valley) { valley = s; valleyAt = v; }
+    }
+    if (!valleyAt || valley > darkPeak * 0.25 || valleyAt > 70) return 0;
+    return valleyAt;
   }
 
   function dt1d(f) {
@@ -460,6 +481,7 @@
       if (dist > rad || ix < 0 || iy < 0 || ix >= imgW || iy >= imgH) return;
       var i = iy * imgW + ix;
       if (seen[i] || !bin[i] || plate.dt[i] > plate.sw * 0.9) return;
+      if (plate.textCut && plate.gray[i] < plate.textCut) return;
       var lx = ix - solid.x, ly = iy - solid.y;
       if (lx >= 0 && ly >= 0 && lx < w && ly < h && mask[ly * w + lx]) return;
       seen[i] = 1;
@@ -1460,7 +1482,9 @@ function pixelsOf(bin, w, lab, id, box) {
         pts: polys[p].pts,
         dashed: polys[p].gaps >= 3,
         h0: !!polys[p].h0,
-        h1: !!polys[p].h1
+        h1: !!polys[p].h1,
+        tip0: polys[p].tip0 || null,
+        tip1: polys[p].tip1 || null
       });
     }
     marks.length = 0;
@@ -1507,6 +1531,31 @@ function pixelsOf(bin, w, lab, id, box) {
       if (!changed) break;
     }
     return a;
+  }
+
+  function extendFatEnd(pts, fromEnd, mask, mw, mh, ox, oy, sw) {
+    var n = pts.length;
+    if (n < 2) return;
+    var tip = fromEnd ? pts[n - 1] : pts[0];
+    var anchor = fromEnd ? pts[0] : pts[n - 1];
+    var span = polyLen(pts);
+    var rad = Math.min(Math.max(14, sw * 5), Math.max(4, span * 0.45));
+    var ex = Math.round(tip.x - ox), ey = Math.round(tip.y - oy);
+    var base = Math.hypot(tip.x - anchor.x, tip.y - anchor.y);
+    var best = null, bestOff = 8;
+    var yLo = Math.max(0, Math.round(ey - rad)), yHi = Math.min(mh - 1, Math.round(ey + rad));
+    var xLo = Math.max(0, Math.round(ex - rad)), xHi = Math.min(mw - 1, Math.round(ex + rad));
+    var rad2 = rad * rad;
+    for (var yy = yLo; yy <= yHi; yy++) for (var xx = xLo; xx <= xHi; xx++) {
+      var dx = xx - ex, dy = yy - ey;
+      if (dx * dx + dy * dy > rad2) continue;
+      if (!mask[yy * mw + xx]) continue;
+      var ix = ox + xx, iy = oy + yy;
+      if (Math.hypot(ix - anchor.x, iy - anchor.y) < base + 2) continue;
+      var off = distToPoly(ix, iy, pts);
+      if (off > bestOff) { bestOff = off; best = { x: ix, y: iy }; }
+    }
+    return best;
   }
 
   function skeletonPolys(mark, sw) {
@@ -1574,7 +1623,9 @@ function pixelsOf(bin, w, lab, id, box) {
       if (polyLen(pts) < Math.max(4, sw * 1.5)) continue;
       var fat0 = endFat(pts, false, dt, mark.x - pad, mark.y - pad, w, h, sw);
       var fat1 = endFat(pts, true, dt, mark.x - pad, mark.y - pad, w, h, sw);
-      out.push({ pts: pts, gaps: 0, h0: fat0, h1: fat1 });
+      var tip0 = fat0 ? extendFatEnd(pts, false, mask, w, h, mark.x - pad, mark.y - pad, sw) : null;
+      var tip1 = fat1 ? extendFatEnd(pts, true, mask, w, h, mark.x - pad, mark.y - pad, sw) : null;
+      out.push({ pts: pts, gaps: 0, h0: fat0, h1: fat1, tip0: tip0, tip1: tip1 });
     }
     return out;
   }
@@ -2103,14 +2154,22 @@ function pixelsOf(bin, w, lab, id, box) {
     }
     var gsum = 0;
     for (var g = 0; g < 256; g++) gsum += grid[g];
-    var best = 1e9, second = 1e9, hit = null;
+    var best = 1e9, second = 1e9, hit = null, other = 1e9;
     for (var c = 0; c < list.length; c++) {
       if (Math.abs(list[c].sum - gsum) > 880) continue;
       var s = sadAt(grid, bk.bytes, list[c].off);
-      if (s < best) { second = best; best = s; hit = list[c]; }
-      else if (s <= second) second = s;
+      if (s < best) {
+        if (hit && hit.ch !== list[c].ch && best < other) other = best;
+        second = best;
+        best = s;
+        hit = list[c];
+      } else {
+        if (s < second) second = s;
+        if (hit && list[c].ch !== hit.ch && s < other) other = s;
+      }
     }
-    var ok = hit && ((best <= 880 && best * 10 <= second * 9) || best <= 620);
+    var gate = other < 1e8 ? other : second;
+    var ok = hit && ((best <= 880 && best * 10 <= gate * 9) || best <= 620);
     return { ch: ok ? hit.ch : '\u25a1', face: ok ? hit.face : '' };
   }
 
@@ -2147,6 +2206,20 @@ function pixelsOf(bin, w, lab, id, box) {
         if (area < bestA) { bestA = area; best = fig; }
       }
       if (best && best.contains && best.contains.length && (cy - best.y) > best.h * 0.28) best = null;
+      if (!best && glyph.ch && glyph.ch !== '\u25a1' && glyph.w >= 8 && glyph.h >= 8) {
+        var spill = null, spillGap = 1e9;
+        for (var f2 = 0; f2 < figs.length; f2++) {
+          var fig2 = figs[f2];
+          var overlapX = Math.min(glyph.x + glyph.w, fig2.x + fig2.w) - Math.max(glyph.x, fig2.x);
+          if (overlapX < glyph.w * 0.55) continue;
+          if (cy <= fig2.y + fig2.h) continue;
+          var gap = glyph.y - (fig2.y + fig2.h);
+          if (gap < 0) gap = 0;
+          if (gap > Math.max(6, sw * 2)) continue;
+          if (gap < spillGap) { spillGap = gap; spill = fig2; }
+        }
+        if (spill) best = spill;
+      }
       if (best) { glyph.host = { kind: 'figure', fig: best }; continue; }
       var bd = 0.8 * glyph.h, bi = null;
       for (var s = 0; s < strokes.length; s++) {
@@ -2330,6 +2403,12 @@ function pixelsOf(bin, w, lab, id, box) {
     var lines = clusterLines(usable);
     var text = [];
     for (var L = 0; L < lines.length; L++) text.push(joinLine(lines[L]));
+    var glue = '\n';
+    if (lines.length > 1) {
+      var oneEach = true;
+      for (var s = 0; s < lines.length; s++) if (lines[s].gs.length !== 1) oneEach = false;
+      if (oneEach) glue = '';
+    }
     var heights = usable.map(function (g) { return g.h * plate.scaleY; });
     var size = Math.max(11, Math.min(28, Math.round(median(heights))));
     var faces = {};
@@ -2340,7 +2419,7 @@ function pixelsOf(bin, w, lab, id, box) {
     var face = '', best = 0;
     for (var name in faces) if (faces[name] > best) { best = faces[name]; face = name; }
     var mapped = FACE[face] || null;
-    return { text: text.join('\n'), size: size, font: mapped ? mapped.font : '', bold: mapped ? mapped.bold : false };
+    return { text: text.join(glue), size: size, font: mapped ? mapped.font : '', bold: mapped ? mapped.bold : false };
   }
 
   function clusterLines(glyphs) {
@@ -2487,7 +2566,20 @@ function pixelsOf(bin, w, lab, id, box) {
       if (s.kind !== 'stroke' || !s.pts || s.pts.length < 2) continue;
       var a = snapFig(s.pts[0], figs, lim);
       var b = snapFig(s.pts[s.pts.length - 1], figs, lim);
-      if (a < 0 || b < 0 || a === b) { dropped++; continue; }
+      if (a >= 0 && a === b) {
+        if (s.h1 && s.tip1) {
+          var b2 = snapFig(s.tip1, figs, lim);
+          if (b2 >= 0 && b2 !== a) b = b2;
+        }
+        if (a === b && s.h0 && s.tip0) {
+          var a2 = snapFig(s.tip0, figs, lim);
+          if (a2 >= 0 && a2 !== b) a = a2;
+        }
+      }
+      if (a < 0 || b < 0 || a === b) {
+        dropped++;
+        continue;
+      }
       var from = a, to = b, dir = 'none';
       if (s.h0 && s.h1) dir = 'both';
       else if (s.h1) dir = 'one';
