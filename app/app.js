@@ -1800,7 +1800,7 @@ $('#editor').addEventListener('blur', () => commitEdit());
 let clipboard = null;
 const SHORTCUTS = [
   ['文件', [['Ctrl+O', '打开工程／图片／PPT／Visio（图片先进入导入校对）'], ['Ctrl+Shift+O', '格式转换（PPT／Visio／draw.io 批量互转）'], ['Ctrl+S', '保存工程'], ['Ctrl+Shift+S', '另存为'], ['Ctrl+E', '打开导出菜单'], ['Ctrl+Shift+P', '导出透明 PNG（2 倍）']]],
-  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+C／Ctrl+V', '复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
+  ['编辑', [['Ctrl+Z', '撤销'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'], ['Ctrl+X／Ctrl+C／Ctrl+V', '剪切／复制／粘贴'], ['Ctrl+D', '原位复制一份'], ['Ctrl+A', '全选'], ['Ctrl+Shift+A', '选中同类'], ['Delete', '删除所选'], ['F2／双击', '改文字（连线改正向标签，双向时点靠近的一端）'], ['Ctrl+K', '为所选元素选图标'], ['方向键', '微移（Shift 加大步长）'], ['Alt+拖动', '临时关闭对齐吸附（吸附开关在图面设置）'], ['Esc', '取消正在拖的连线／取消选择／关闭面板']]],
   ['排版与生成', [['Ctrl+Shift+F', '一键美化（按图面设置中的排版：标准／紧凑／报告版心）'], ['Ctrl+Shift+X', '减少交叉'], ['Ctrl+Shift+G', '文字成图'], ['Ctrl+Shift+L', '参照生成（好图 + 新内容 → 同款新图）'], ['Ctrl+Shift+M', '模板']]],
   ['体系结构规范', [['Ctrl+Shift+K', '规范检查（视图类型、编号、属性、标题栏）']]],
   ['复合图标', [['Ctrl+G', '把所选元素组合为一个复合图标'], ['Ctrl+Shift+U', '拆分复合图标'], ['Ctrl+Shift+B', '编队生成器（同型装备按阵型合成）']]],
@@ -1869,6 +1869,7 @@ document.addEventListener('keydown', e => {
     if (k === 'y') return go(redo);
     if (k === 'a') return go(() => { selectNodes(P().nodes.map(n => n.id)); render(); });
     if (k === 'c') return copySel();
+    if (k === 'x') return cutSel();
     if (k === 'v') return paste();
     if (k === 'd') return go(() => { copySel(); paste(); });
     if (k === 's') return go(saveProject);
@@ -1954,15 +1955,42 @@ function deleteSel() {
     render();
     return;
   }
-  if (!sel.size) return; checkpoint();
-  const kill = new Set(); for (const id of sel) { kill.add(id); descendants(id).forEach(d => kill.add(d.id)); }
-  p.nodes = p.nodes.filter(n => !kill.has(n.id)); p.links = p.links.filter(l => !kill.has(l.from) && !kill.has(l.to));
-  clearSel(); render();
+  const snap = snapSel();
+  if (!snap) return;
+  checkpoint();
+  dropSnap(snap);
+}
+function snapSel() {
+  if (!sel.size) return null;
+  const ids = new Set();
+  for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
+  const page = P();
+  return {
+    nodes: page.nodes.filter(n => ids.has(n.id)).map(n => ({ ...n })),
+    links: page.links.filter(l => ids.has(l.from) && ids.has(l.to)).map(l => ({ ...l }))
+  };
+}
+function dropSnap(snap) {
+  const ids = new Set(snap.nodes.map(n => n.id));
+  const page = P();
+  page.nodes = page.nodes.filter(n => !ids.has(n.id));
+  page.links = page.links.filter(l => !ids.has(l.from) && !ids.has(l.to));
+  clearSel();
+  render();
 }
 function copySel() {
-  if (!sel.size) return; const ids = new Set(); for (const id of sel) { ids.add(id); descendants(id).forEach(d => ids.add(d.id)); }
-  clipboard = { nodes: P().nodes.filter(n => ids.has(n.id)).map(n => ({ ...n })), links: P().links.filter(l => ids.has(l.from) && ids.has(l.to)).map(l => ({ ...l })) };
+  const snap = snapSel();
+  if (!snap) return;
+  clipboard = snap;
   toast(`已复制 ${clipboard.nodes.length} 个元素`);
+}
+function cutSel() {
+  const snap = snapSel();
+  if (!snap) return;
+  clipboard = snap;
+  checkpoint();
+  dropSnap(clipboard);
+  toast(`已剪切 ${clipboard.nodes.length} 个元素`);
 }
 function paste() {
   if (!clipboard) return; checkpoint(); const map = {};
