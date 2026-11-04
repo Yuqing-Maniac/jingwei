@@ -22,6 +22,18 @@
   const home = h(`<button id="jw-home" title="首页（最近文件、新建、模板）">${IC.home}</button>`);
   fileChip.after(home);
   const w1 = wc(); H.appendChild(w1); bindWc(w1);
+  const helpBtn = $('#b-help');
+  if (helpBtn) {
+    const up = h('<button id="jw-patch" title="选择增量升级包（zip），按标记替换应用目录里的文件">增量升级</button>');
+    helpBtn.before(up);
+    up.onclick = async () => {
+      try {
+        const r = await D.applyPatch();
+        if (!r) return;
+        toast('已替换 ' + r.files.length + ' 个文件' + (r.to ? '，版本 ' + r.to : '') + '。请重启应用。');
+      } catch (e) { toast('增量升级失败：' + (e && e.message || e)); }
+    };
+  }
   H.addEventListener('dblclick', e => { if (e.target === H || e.target.closest('.brand,#jw-file,.spacer')) D.win('max'); });
   D.on('jw:win-state', s => {
     document.body.classList.toggle('jw-max', s.max);

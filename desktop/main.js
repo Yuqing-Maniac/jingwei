@@ -4,6 +4,7 @@ const { app, BrowserWindow, ipcMain, dialog, shell, Menu, screen, nativeImage, n
 const path = require('path');
 const fs = require('fs');
 const recentLib = require('./recent');
+const { applyPatch } = require('./patch');
 
 const isLinux = process.platform === 'linux', isWin = process.platform === 'win32';
 // 国产 GPU 驱动差异大：Linux 默认软件渲染，避免黑屏／花屏；可用 --gpu 强制开启
@@ -149,6 +150,17 @@ ipcMain.handle('jw:rename', (_e, p, name) => {
 });
 ipcMain.handle('jw:pending', () => { const a = pendingOpen; pendingOpen = []; return a; });
 ipcMain.handle('jw:info', () => ({ version: app.getVersion(), platform: process.platform, arch: process.arch, electron: process.versions.electron, chrome: process.versions.chrome }));
+ipcMain.handle('jw:patch', async () => {
+  let p = process.env.JW_TEST_PATCH || '';
+  if (!p) {
+    const r = await dialog.showOpenDialog(win, { title: '选择增量升级包', defaultPath: store.lastDir || app.getPath('documents'), properties: ['openFile'], filters: [{ name: '增量升级包', extensions: ['zip'] }] });
+    if (r.canceled || !r.filePaths[0]) return null;
+    p = r.filePaths[0];
+    store.lastDir = path.dirname(p); saveStore();
+  }
+  const root = process.env.JW_TEST_PATCH_ROOT || path.dirname(process.execPath);
+  return applyPatch(p, root);
+});
 ipcMain.handle('jw:confirm-close', async (_e, name) => {
   if (T) return process.env.JW_TEST_CLOSE || 'discard';
   const r = await dialog.showMessageBox(win, { type: 'question', title: '经纬织图', message: `“${name}”有未保存的修改，是否保存？`, buttons: ['保存', '不保存', '取消'], defaultId: 0, cancelId: 2, noLink: true });
@@ -285,6 +297,18 @@ ipcMain.handle('jw:backup-drop', async (_e, arg) => {
 pendingOpen = fileArgs(process.argv);
 app.on('open-file', (e, p) => { e.preventDefault(); if (win) win.webContents.send('jw:open-path', p); else pendingOpen.push(p); });
 app.whenReady().then(() => {
+  if (process.env.JW_TEST_PATCH_AUTO) {
+    const out = process.env.JW_TEST_PATCH_RESULT;
+    try {
+      const r = applyPatch(process.env.JW_TEST_PATCH, process.env.JW_TEST_PATCH_ROOT || path.dirname(process.execPath));
+      if (out) fs.writeFileSync(out, JSON.stringify(r));
+      app.exit(0);
+    } catch (e) {
+      if (out) fs.writeFileSync(out, JSON.stringify({ error: String(e && e.message || e) }));
+      app.exit(1);
+    }
+    return;
+  }
   nativeTheme.themeSource = 'light';   // 不跟随系统深色模式：图面与面板统一浅色，保证对比度
   Menu.setApplicationMenu(null);
   try { const ses = require('electron').session.defaultSession; ses.setSpellCheckerEnabled(false); ses.setSpellCheckerDictionaryDownloadURL('http://127.0.0.1:9/'); } catch (_) { }

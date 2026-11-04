@@ -1,5 +1,5 @@
-"""经纬织图 桌面版打包：Windows x64/ia32（绿色 zip + 免管理员安装包）、银河麒麟 deb（arm64 飞腾 / amd64）。
-用法：python3 build/desktop/build_all.py [win64 win32 deb-arm64 deb-amd64 ...]
+"""经纬织图 桌面版打包：Windows x64/ia32（绿色 zip + 免管理员安装包）、银河麒麟 deb 与免安装 zip。
+用法：python3 build/desktop/build_all.py [win64 win32 deb-arm64 deb-amd64 kylin-amd64 kylin-arm64 ...]
 前置：npm ci；bash build/fetch_runtime.sh（Electron 运行时 → _work/runtime）；apt 装 nsis、dpkg-dev。
 产物：_work/dist/（可用环境变量 JW_WORK 改工作目录）"""
 import os, sys, shutil, subprocess, zipfile, glob, json, time
@@ -10,7 +10,7 @@ RT = os.path.join(WORK, 'runtime'); OUT = os.path.join(WORK, 'dist'); TMP = os.p
 sys.path.insert(0, os.path.join(ROOT, 'build')); import brand; BRAND = brand.load()   # 机构标识：brand.local.json（不入库）> brand.example.json
 EV = '22.3.27'; ICO = os.path.join(ROOT, 'desktop', 'icon.ico'); PNGS = os.path.join(ROOT, 'assets', 'brand', 'out')
 run = lambda *a, **k: subprocess.run(list(a), check=True, **k)
-targets = sys.argv[1:] or ['win64', 'win32', 'deb-arm64', 'deb-amd64']
+targets = sys.argv[1:] or ['win64', 'win32', 'deb-arm64', 'deb-amd64', 'kylin-amd64', 'kylin-arm64']
 
 def stage_app():
     run('python3', os.path.join(ROOT, 'build', 'build_web.py'), '--desk', stdout=subprocess.DEVNULL)
@@ -47,6 +47,27 @@ def build_win(arch):
     nsi = NSI.replace('@VER@', V).replace('@SRC@', d).replace('@ICO@', ICO).replace('@OUT@', f'{OUT}/经纬织图_v{V}_Windows_{tag}_安装包.exe').replace('@ARCH@', tag).replace('@ORG@', BRAND['org']).replace('@COPYRIGHT@', BRAND['copyright'])
     open(f'{TMP}/{arch}/setup.nsi', 'w', encoding='utf-8-sig').write(nsi)
     run('makensis', '-V2', '-INPUTCHARSET', 'UTF8', f'{TMP}/{arch}/setup.nsi')
+
+def build_kylin_zip(arch):
+    za = {'kylin-arm64': 'linux-arm64', 'kylin-amd64': 'linux-x64'}[arch]
+    da = 'arm64' if arch.endswith('arm64') else 'x86_64'
+    d = f'{TMP}/{arch}/JingWeiZhiTu'; runtime(za, d)
+    shutil.copy(ASAR, f'{d}/resources/app.asar')
+    os.rename(f'{d}/electron', f'{d}/jingwei-zhitu')
+    if os.path.exists(f'{d}/chrome-sandbox'): os.remove(f'{d}/chrome-sandbox')
+    open(f'{d}/start.sh', 'w', newline='\n').write('#!/bin/sh\ncd "$(dirname "$0")"\nexec ./jingwei-zhitu --no-sandbox "$@"\n')
+    os.chmod(f'{d}/start.sh', 0o755); os.chmod(f'{d}/jingwei-zhitu', 0o755)
+    open(f'{d}/README.txt', 'w', encoding='utf-8').write(
+        f'经纬织图 v{V} 银河麒麟免安装\n解压后在本目录执行：sh start.sh\n无需安装。整个文件夹可拷到任意位置。\n')
+    zipdir(d, f'{OUT}/经纬织图_v{V}_银河麒麟_{da}_免安装.zip', 'JingWeiZhiTu')
+
+def write_patch():
+    meta = json.dumps({'format': 'jingwei-patch', 'version': 1, 'from': '3.3.13', 'to': V, 'files': ['resources/app.asar']}, ensure_ascii=False, indent=2)
+    zpath = f'{OUT}/经纬织图_v{V}_增量升级.zip'
+    if os.path.exists(zpath): os.remove(zpath)
+    with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+        z.writestr('jingwei-patch.json', meta)
+        z.write(ASAR, 'resources/app.asar')
 
 def build_deb(arch):
     za = {'deb-arm64': 'linux-arm64', 'deb-amd64': 'linux-x64'}[arch]; da = arch.split('-')[1]
@@ -235,6 +256,8 @@ os.makedirs(OUT, exist_ok=True)
 ASAR = stage_app()
 for t in targets:
     t0 = time.time()
-    (build_win if t.startswith('win') else build_deb)(t)
+    fn = build_win if t.startswith('win') else build_kylin_zip if t.startswith('kylin') else build_deb
+    fn(t)
     print('built', t, round(time.time() - t0), 's', flush=True)
+write_patch()
 for f in sorted(os.listdir(OUT)): print(f'{os.path.getsize(os.path.join(OUT, f)) / 2**20:7.1f} MB  {f}')

@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('jwDesk', {
   rename: (p, name) => ipcRenderer.invoke('jw:rename', p, name),
   pending: () => ipcRenderer.invoke('jw:pending'),
   info: () => ipcRenderer.invoke('jw:info'),
+  applyPatch: () => ipcRenderer.invoke('jw:patch'),
   confirmClose: name => ipcRenderer.invoke('jw:confirm-close', name),
   backupList: (scope, projectPath) => ipcRenderer.invoke('jw:backup-list', { scope: scope, projectPath: projectPath || null }),
   backupWrite: (projectPath, slot, doc, backedAt) => ipcRenderer.invoke('jw:backup-write', { projectPath: projectPath || null, slot: slot, doc: doc, backedAt: backedAt }),
