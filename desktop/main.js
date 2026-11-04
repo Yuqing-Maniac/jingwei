@@ -12,7 +12,7 @@ app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,Media
 if (isWin) app.setAppUserModelId('cn.ycq.jingwei-zhitu');
 
 const T = process.env.JW_TEST_DIR || '';   // 自动化测试：跳过系统对话框
-const OPENABLE = /\.(json|pptx|vsdx|drawio|xml)$/i;
+const OPENABLE = /\.(json|png|jpe?g|pptx|vsdx|drawio|xml)$/i;
 const DATA = app.getPath('userData');
 const STORE = path.join(DATA, 'desk.json');
 let store = { recent: [], lastDir: '', win: null };
@@ -123,7 +123,7 @@ ipcMain.handle('jw:read', async (_e, p) => {
 ipcMain.handle('jw:open-dialog', async () => {
   if (T) return process.env.JW_TEST_OPEN || null;
   const r = await dialog.showOpenDialog(win, { title: '打开', defaultPath: store.lastDir || app.getPath('documents'), properties: ['openFile'],
-    filters: [{ name: '可打开的文件', extensions: ['json', 'pptx', 'vsdx', 'drawio', 'xml'] }, { name: '经纬织图工程', extensions: ['json'] }, { name: 'PowerPoint', extensions: ['pptx'] }, { name: 'Visio', extensions: ['vsdx'] }, { name: 'draw.io', extensions: ['drawio', 'xml'] }] });
+    filters: [{ name: '可打开的文件', extensions: ['json', 'png', 'jpg', 'jpeg', 'pptx', 'vsdx', 'drawio', 'xml'] }, { name: '经纬织图工程', extensions: ['json'] }, { name: '框图图片', extensions: ['png', 'jpg', 'jpeg'] }, { name: 'PowerPoint', extensions: ['pptx'] }, { name: 'Visio', extensions: ['vsdx'] }, { name: 'draw.io', extensions: ['drawio', 'xml'] }] });
   if (r.canceled || !r.filePaths[0]) return null;
   store.lastDir = path.dirname(r.filePaths[0]); saveStore(); return r.filePaths[0];
 });

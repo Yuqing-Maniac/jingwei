@@ -1,0 +1,105 @@
+{
+  "name": "圆与圆角",
+  "nodes": [
+    {
+      "id": "c",
+      "type": "ellipse",
+      "text": "圆形",
+      "x": 88,
+      "y": 48,
+      "w": 128,
+      "h": 128
+    },
+    {
+      "id": "e",
+      "type": "ellipse",
+      "text": "椭圆",
+      "x": 328,
+      "y": 60,
+      "w": 340,
+      "h": 112
+    },
+    {
+      "id": "r",
+      "type": "round",
+      "text": "圆角",
+      "x": 788,
+      "y": 64,
+      "w": 240,
+      "h": 96
+    },
+    {
+      "id": "f",
+      "type": "round",
+      "text": "扁圆角",
+      "x": 88,
+      "y": 288,
+      "w": 420,
+      "h": 72
+    },
+    {
+      "id": "l",
+      "type": "roundL",
+      "text": "左圆角",
+      "x": 608,
+      "y": 268,
+      "w": 300,
+      "h": 104
+    },
+    {
+      "id": "g",
+      "type": "roundR",
+      "text": "右圆角",
+      "x": 1008,
+      "y": 260,
+      "w": 220,
+      "h": 128
+    },
+    {
+      "id": "s",
+      "type": "terminator",
+      "text": "开始",
+      "x": 88,
+      "y": 468,
+      "w": 280,
+      "h": 96
+    }
+  ],
+  "links": [
+    {
+      "id": "l1",
+      "from": "c",
+      "to": "e",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l2",
+      "from": "e",
+      "to": "r",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l3",
+      "from": "f",
+      "to": "l",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l4",
+      "from": "l",
+      "to": "g",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l5",
+      "from": "c",
+      "to": "s",
+      "dir": "one",
+      "cross": false
+    }
+  ]
+}

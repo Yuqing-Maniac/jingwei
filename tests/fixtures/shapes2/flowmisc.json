@@ -1,0 +1,121 @@
+{
+  "name": "其它流程形",
+  "nodes": [
+    {
+      "id": "a",
+      "type": "document",
+      "text": "文档",
+      "x": 48,
+      "y": 48,
+      "w": 260,
+      "h": 140
+    },
+    {
+      "id": "b",
+      "type": "delay",
+      "text": "延迟",
+      "x": 408,
+      "y": 60,
+      "w": 260,
+      "h": 112
+    },
+    {
+      "id": "c",
+      "type": "display",
+      "text": "显示",
+      "x": 768,
+      "y": 48,
+      "w": 280,
+      "h": 128
+    },
+    {
+      "id": "d",
+      "type": "predef",
+      "text": "过程",
+      "x": 1148,
+      "y": 60,
+      "w": 280,
+      "h": 104
+    },
+    {
+      "id": "e",
+      "type": "cylinder",
+      "text": "数据",
+      "x": 68,
+      "y": 348,
+      "w": 220,
+      "h": 160
+    },
+    {
+      "id": "f",
+      "type": "chevron",
+      "text": "阶段",
+      "x": 388,
+      "y": 368,
+      "w": 300,
+      "h": 112
+    },
+    {
+      "id": "g",
+      "type": "cube",
+      "text": "立方",
+      "x": 788,
+      "y": 340,
+      "w": 200,
+      "h": 160
+    },
+    {
+      "id": "h",
+      "type": "cloud",
+      "text": "云",
+      "x": 1088,
+      "y": 328,
+      "w": 300,
+      "h": 160
+    }
+  ],
+  "links": [
+    {
+      "id": "l1",
+      "from": "a",
+      "to": "b",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l2",
+      "from": "b",
+      "to": "c",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l3",
+      "from": "c",
+      "to": "d",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l4",
+      "from": "e",
+      "to": "f",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l5",
+      "from": "f",
+      "to": "g",
+      "dir": "one",
+      "cross": false
+    },
+    {
+      "id": "l6",
+      "from": "g",
+      "to": "h",
+      "dir": "one",
+      "cross": false
+    }
+  ]
+}
