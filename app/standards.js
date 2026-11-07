@@ -313,6 +313,7 @@
     if (p.nodes.some(n => n.type === 'legend')) return null;
     const main = bboxOf(p.nodes.filter(n => n.type !== 'tblock')) || { x0: 0, y1: 0 };
     const lg = mkNode({ type: 'legend', w: 200, h: 60, x: snapv(main.x0), y: snapv(main.y1 + 16) });
+    p.noLegend = false;
     p.nodes.push(lg); legendLayout(lg, p); return lg;
   }
   /* called after 一键美化: keep an existing title block below the content */
