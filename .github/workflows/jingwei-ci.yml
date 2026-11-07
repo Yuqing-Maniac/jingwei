@@ -14,6 +14,8 @@ jobs:
       JW_WORK: ${{ github.workspace }}/_work
     steps:
       - uses: actions/checkout@v4
+      - name: 校验发版资产名（唯一 ASCII，不含安装包）
+        run: bash tests/release_assets_test.sh
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

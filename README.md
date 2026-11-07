@@ -7,7 +7,7 @@
 | 形态 | 文件 | 运行方式 |
 |---|---|---|
 | 网页版（单文件） | `JingWeiZhiTu_v<版本>.html` | 用 Chromium 69+／Firefox 68+ 内核浏览器打开，无需安装 |
-| 桌面版（自带运行环境，不需要浏览器） | Windows 安装包／绿色版 zip；银河麒麟 deb | 双击运行；安装不需要管理员权限（Windows） |
+| 桌面版（自带运行环境，不需要浏览器） | Windows 绿色版 zip；银河麒麟免安装 zip | 解压后双击或执行启动脚本，无需安装 |
 
 ## 支持平台
 
@@ -27,14 +27,14 @@
 
 ## 下载
 
-到仓库 **Releases** 页面下载标签为 `jingwei-v<版本>` 的版本，附全部安装包与 `SHA256SUMS.txt`。
+到仓库 **Releases** 页面下载标签为 `jingwei-v<版本>` 的正式版。页面只挂免安装包、网页离线包、增量包和 `SHA256SUMS.txt`。下载文件名是 ASCII，例如 `jingwei_v3.3.14_windows_x64_portable.zip`；中文名只作显示名。不提供 deb 与 Windows 安装包。
 
-## 安装
+## 使用
 
-- **Windows 安装包**：双击 → 下一步 → 安装（装到当前用户目录，创建桌面与开始菜单快捷方式）。
-- **Windows 绿色版**：解压 zip，双击 `JingWeiZhiTu/JingWeiZhiTu.exe`。
-- **银河麒麟**：双击 deb 用“软件安装器”安装，或 `sudo dpkg -i 经纬织图_*_飞腾arm64.deb`；启动命令 `jingwei-zhitu`；卸载 `sudo dpkg -r jingwei-zhitu`。
-- **网页版**：解压离线包，双击 html 文件。
+- **Windows 绿色版**：解压 `jingwei_v<版本>_windows_x64_portable.zip` 或 `windows_x86_portable.zip`，双击 `JingWeiZhiTu/JingWeiZhiTu.exe`。
+- **银河麒麟免安装**：解压 `kylin_arm64_portable.zip` 或 `kylin_x86_64_portable.zip`，在目录里执行 `sh start.sh`。
+- **网页版**：解压 `web_offline.zip`，双击 html 文件。
+- **增量升级**：桌面版标题栏「增量升级」选择 `incremental.zip`。见 `docs/INCREMENT.md`。
 
 详细说明见 `docs/release-notes/Guide_v3.3.pdf`。
 
