@@ -33,7 +33,7 @@
     donut: 'ellipse;shape=doubleEllipse', plus: 'shape=cross', terminator: 'rounded=1;arcSize=50', arrowR: 'shape=singleArrow;direction=east', arrowL: 'shape=singleArrow;direction=west',
     arrowU: 'shape=singleArrow;direction=north', arrowD: 'shape=singleArrow;direction=south', arrowLR: 'shape=doubleArrow', arrowUD: 'shape=doubleArrow;direction=north',
   };
-  const DASH = { '6 4': 'dashed=1;dashPattern=6 4', '2 4': 'dashed=1;dashPattern=2 4', '10 4 2 4': 'dashed=1;dashPattern=10 4 2 4' };
+  const DASH = { '6 4': 'dashed=1;dashPattern=6 4', '2 4': 'dashed=1;dashPattern=2 4', '10 4 2 4': 'dashed=1;dashPattern=10 4 2 4', '4 2': 'dashed=1;dashPattern=4 2', '12 4': 'dashed=1;dashPattern=12 4' };
 
   /* ================= 导出 ================= */
   /* 页面级（视图类型）与文档级（主题、标题栏、状态名称、编号显示）设置存于根单元 0 的数据属性，draw.io 编辑保存后仍保留 */
@@ -133,7 +133,7 @@
     pages.forEach((p, i) => pageIds[p.id] = 'ht-' + (p.id === 'root' ? 'root' : p.id));
     let body = '';
     try {
-      for (const p of pages) { cur = p.id; body += `<diagram id="${xa(pageIds[p.id])}" name="${xa(p.name || '页面')}">${pageXML(p, pageIds).xml}</diagram>`; }
+      for (const p of pages) { if (typeof ensureLegend === 'function') ensureLegend(p); cur = p.id; body += `<diagram id="${xa(pageIds[p.id])}" name="${xa(p.name || '页面')}">${pageXML(p, pageIds).xml}</diagram>`; }
     } finally { cur = saved; }
     return `<?xml version="1.0" encoding="UTF-8"?>\n<mxfile host="jingwei" agent="经纬织图" version="24.0.0" type="device" pages="${pages.length}">${body}</mxfile>\n`;
   }

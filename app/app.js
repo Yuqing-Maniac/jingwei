@@ -50,7 +50,7 @@ const THEMES = {
     box: { fill: '#FFFFFF', stroke: '#4A5A70', text: '#1B2433' },
     st: { new: { fill: '#FDE8C8', stroke: '#D4861A', title: '#F7D29A' }, key: { fill: '#DDEBFF', stroke: '#2F6FDB', title: '#BCD5FA' } },
     note: { fill: '#F7F8FA', stroke: '#C9D1DC' },
-    link: { plain: '#4A5A70', data: '#2F6FDB', ctrl: '#D0562B', wired: '#2E3B4E', radio: '#7A45C9', sat: '#0E9F8E' } },
+    link: { plain: '#4A5A70', data: '#2F6FDB', ctrl: '#D0562B', wired: '#2E3B4E', radio: '#7A45C9', sat: '#0E9F8E', alarm: '#C0392B', sync: '#C48A12' } },
   command: { name: '指挥深色', bg: '#0B1520', text: '#E6F0FB', muted: '#8AA4BF',
     band: { fill: '#0F1E2D', stroke: '#2D5B82', titleFill: '#174069', titleText: '#DDEEFF' },
     lane: { fill: '#0E1B29', stroke: '#22405E', titleText: '#A9CDF2' },
@@ -58,7 +58,7 @@ const THEMES = {
     box: { fill: '#14304B', stroke: '#4C9BE0', text: '#E6F2FF' },
     st: { new: { fill: '#4A3413', stroke: '#F2A33A', title: '#6A4815' }, key: { fill: '#0F3A4A', stroke: '#2BD4C4', title: '#15505E' } },
     note: { fill: '#0F1E2D', stroke: '#2D5B82' },
-    link: { plain: '#8AA4BF', data: '#4CA8FF', ctrl: '#FF8A5B', wired: '#C3D2E3', radio: '#B58CFF', sat: '#2BD4C4' } },
+    link: { plain: '#8AA4BF', data: '#4CA8FF', ctrl: '#FF8A5B', wired: '#C3D2E3', radio: '#B58CFF', sat: '#2BD4C4', alarm: '#FF7A7A', sync: '#F0B429' } },
   ink: { name: '公文素雅', bg: '#FFFFFF', text: '#1E2A22', muted: '#5E6B61',
     band: { fill: '#F6F8F4', stroke: '#3F5B46', titleFill: '#3F5B46', titleText: '#FFFFFF' },
     lane: { fill: '#FFFFFF', stroke: '#CCD6CC', titleText: '#1E2A22' },
@@ -66,14 +66,15 @@ const THEMES = {
     box: { fill: '#FFFFFF', stroke: '#55665A', text: '#1E2A22' },
     st: { new: { fill: '#FBE6C8', stroke: '#C9822B', title: '#F3CF98' }, key: { fill: '#E3EEF8', stroke: '#3C6E9E', title: '#C9DDF0' } },
     note: { fill: '#F7F9F6', stroke: '#C9D3C9' },
-    link: { plain: '#55665A', data: '#3C6E9E', ctrl: '#B5532A', wired: '#2F3D33', radio: '#7A4FA8', sat: '#1F8C7A' } },
+    link: { plain: '#55665A', data: '#3C6E9E', ctrl: '#B5532A', wired: '#2F3D33', radio: '#7A4FA8', sat: '#1F8C7A', alarm: '#A33B32', sync: '#8A6418' } },
 };
 const LINK_KINDS = {
   plain: { name: '关联', dash: '' }, data: { name: '数据流', dash: '' }, ctrl: { name: '指令流', dash: '6 4' },
   wired: { name: '有线／光纤', dash: '', w: 2.4 }, radio: { name: '无线／数据链', dash: '2 4' }, sat: { name: '卫通链路', dash: '10 4 2 4' },
+  alarm: { name: '告警', dash: '4 2' }, sync: { name: '时统', dash: '12 4' },
 };
-const PPT_DASH = { '': 'solid', '6 4': 'dash', '2 4': 'sysDot', '10 4 2 4': 'lgDashDot' };
-const VSD_PAT = { '': 1, '6 4': 2, '2 4': 3, '10 4 2 4': 4 };
+const PPT_DASH = { '': 'solid', '6 4': 'dash', '2 4': 'sysDot', '10 4 2 4': 'lgDashDot', '4 2': 'sysDash', '12 4': 'lgDash' };
+const VSD_PAT = { '': 1, '6 4': 2, '2 4': 3, '10 4 2 4': 4, '4 2': 2, '12 4': 6 };
 /* 军标：[SIDC, 名称, 分组]；全部经 milsymbol isValid() 校验（2525C 15 位字母码；无人艇／无人潜航器／无人车用 2525D 20 位数字码） */
 const MS_LIST = [
   ['SFGPUCI---', '步兵分队', '分队'], ['SFGPUCIZ--', '机械化步兵', '分队'], ['SFGPUCA---', '装甲分队', '分队'], ['SFGPUCF---', '炮兵分队', '分队'],
@@ -380,10 +381,52 @@ function legendEntries(p) {
   for (const k of Object.keys(LINK_KINDS)) if (lk.has(k)) out.push({ kind: 'ln', k, label: LINK_KINDS[k].name });
   return out;
 }
+function legendBox(n, o) {
+  return n.x < o.x + o.w && n.x + n.w > o.x && n.y < o.y + o.h && n.y + n.h > o.y;
+}
+function nudgeLegendDown(n, p) {
+  for (let guard = 0; guard < 12; guard++) {
+    const hit = p.nodes.filter(o => o !== n && legendBox(n, o));
+    if (!hit.length) return;
+    n.y = snapv(Math.max(...hit.map(o => o.y + o.h)) + 16);
+  }
+}
+function placeFreshLegend(n, p) {
+  let x0 = Infinity, y1 = -Infinity, any = false;
+  for (const o of p.nodes) {
+    if (o === n) continue;
+    any = true;
+    x0 = Math.min(x0, o.x); y1 = Math.max(y1, o.y + o.h);
+  }
+  n.x = snapv(any ? x0 : 40);
+  n.y = snapv((any ? y1 : 40) + 16);
+  n.w = 0; n.h = 0;
+  legendLayout(n, p);
+  nudgeLegendDown(n, p);
+}
+function ensureLegend(p) {
+  if (!p || p.noLegend || !p.links || !p.links.length) return null;
+  const have = p.nodes.find(n => n.type === 'legend');
+  if (have) return have;
+  const n = mkNode({ type: 'legend', role: 'legend', w: 200, h: 60, text: '' });
+  p.nodes.push(n);
+  placeFreshLegend(n, p);
+  return n;
+}
 function legendLayout(n, p) {
   const e = legendEntries(p);
-  const rowH = 22, colW = 150, cols = e.length > 4 ? 2 : 1, rows = Math.ceil(e.length / cols);
-  n.w = Math.max(n.w || 0, cols * colW + 16); n.h = Math.max(28, rows * rowH + 14);
+  const rowH = 22;
+  let labelW = 96;
+  for (const it of e) labelW = Math.max(labelW, measure(it.label, 12, false));
+  const colW = Math.min(420, Math.max(150, Math.ceil(labelW + 48)));
+  const cols = e.length > 4 ? 2 : 1, rows = Math.max(1, Math.ceil((e.length || 1) / cols));
+  const needW = cols * colW + 16, needH = Math.max(28, rows * rowH + 14);
+  const prevW = n.w || 0, prevH = n.h || 0, wasPlaced = !!n.legendPlaced;
+  if (!wasPlaced && !n.legendLock && prevW > needW + 1) n.legendLock = true;
+  if (n.legendLock) { n.w = Math.max(prevW, needW); n.h = Math.max(prevH, needH); }
+  else { n.w = needW; n.h = needH; }
+  if (wasPlaced && (n.w > prevW + 0.5 || n.h > prevH + 0.5)) nudgeLegendDown(n, p);
+  n.legendPlaced = true;
   return e.map((it, i) => ({ ...it, x: n.x + 10 + Math.floor(i / rows) * colW, y: n.y + 7 + (i % rows) * rowH }));
 }
 
@@ -741,10 +784,18 @@ function swapLink(l) {
   swapLinkEnds(l);
   if (linkDir(l) === 'both') swapLinkCaptions(l);
 }
+function nextLinkKind(kind) {
+  const kinds = Object.keys(LINK_KINDS);
+  const i = kinds.indexOf(kind);
+  return kinds[(i < 0 ? 0 : i + 1) % kinds.length];
+}
 const LINK_KEYS = [
   { id: 'kind', chord: '1 – 6', label: '关联／数据流／指令流／有线／无线／卫通',
     match: function (e) { return /^[1-6]$/.test(e.key) && !e.repeat; },
     apply: function (l, e) { const kinds = Object.keys(LINK_KINDS); l.kind = kinds[+e.key - 1]; doc.lastKind = l.kind; toast('链路类型：' + LINK_KINDS[l.kind].name); } },
+  { id: 'cycle', chord: 'S', hint: 'S 切换链路类型', label: '链路类型向后循环，含告警、时统',
+    match: function (e) { return (e.key || '').toLowerCase() === 's' && !e.repeat && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey; },
+    apply: function (l) { const knd = nextLinkKind(l.kind); l.kind = knd; doc.lastKind = knd; toast('链路类型：' + LINK_KINDS[knd].name); } },
   { id: 'dir', chord: 'D', hint: 'D 切换箭头', label: '箭头：单向 → 双向 → 无',
     match: function (e) { return (e.key || '').toLowerCase() === 'd' && !e.repeat; },
     apply: function (l) { cycleLinkDir(l); toast('箭头：' + DIR_NAME[linkDir(l)]); } },
@@ -760,6 +811,13 @@ function applyLinkChord(links, bind, e) {
   if (bind.id === 'kind') {
     const knd = Object.keys(LINK_KINDS)[+e.key - 1];
     if (!knd) return;
+    links.forEach(l => { l.kind = knd; });
+    doc.lastKind = knd;
+    toast('链路类型：' + LINK_KINDS[knd].name);
+    return;
+  }
+  if (bind.id === 'cycle') {
+    const knd = nextLinkKind(links[0].kind);
     links.forEach(l => { l.kind = knd; });
     doc.lastKind = knd;
     toast('链路类型：' + LINK_KINDS[knd].name);
@@ -962,6 +1020,7 @@ function overlaySVG() {
   return `<g id="overlay">${s}</g>`;
 }
 function render(full = true) {
+  ensureLegend(P());
   const pb = contentBBox(), pp = 28;
   world.innerHTML = `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG();
   applyView(); applyHover();
@@ -1010,7 +1069,7 @@ function linkCanvasKeys() {
   return '选中连线后 ' + bits.join('，');
 }
 function linkPanelHint() {
-  return esc(linkSelToast()) + '<br><kbd>1</kbd>–<kbd>6</kbd> 切换链路类型';
+  return esc(linkSelToast()) + '<br><kbd>1</kbd>–<kbd>6</kbd> 指定前六种，<kbd>S</kbd> 循环全部';
 }
 function renderOverlay() { const o = $('#overlay'); if (o) o.outerHTML = overlaySVG(); }
 /* hover highlight (canvas only): links of the hovered node / the hovered link stay vivid, the rest dim */
@@ -1816,6 +1875,7 @@ function addNode(spec, wx, wy) {
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
+  if (n.type === 'legend') P().noLegend = false;
   selectNodes([n.id]); render();
 }
 
@@ -2056,7 +2116,7 @@ function endDrag(e) {
     const top = d.items.map(i => i.n).filter(n => !d.items.some(o => o.n.id === n.parent));
     for (const n of top) n.parent = findParent(n);
   }
-  if (d.mode === 'resize' && d.moved) { undoS.push(d.snap); redoS = []; }
+  if (d.mode === 'resize' && d.moved) { if (d.n && d.n.type === 'legend') d.n.legendLock = true; undoS.push(d.snap); redoS = []; }
   if (d.mode === 'link') {
     const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
@@ -2127,6 +2187,7 @@ function doBeautify() { checkpoint(); if (window.Compact) Compact.stamp(); beaut
 function doReduce() { checkpoint(); const [a, b] = reduceCrossings(); render(); toast(b < a ? `交叉 ${a} → ${b}` : `交叉 ${a} → ${b}（已是较优排布）`); }
 function iconable(n) { return n && !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type); }
 document.addEventListener('keydown', e => {
+  if (e.isComposing || e.key === 'Process' || e.keyCode === 229) return;
   if (document.getElementById('jw-bak')) return;
   const saveas = $('#saveas');
   if (saveas && saveas.style.display === 'flex') {
@@ -2142,7 +2203,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   const tag = (document.activeElement?.tagName || '').toLowerCase();
-  if (['input', 'textarea', 'select'].includes(tag)) { if (e.key === 'Escape' && document.activeElement.id !== 'editor') { if (!closePanels()) document.activeElement.blur(); } return; }
+  if (['input', 'textarea', 'select'].includes(tag) || document.activeElement?.isContentEditable) { if (e.key === 'Escape' && document.activeElement.id !== 'editor') { if (!closePanels()) document.activeElement.blur(); } return; }
   const ctrl = e.ctrlKey || e.metaKey, k = (e.key || '').toLowerCase(), sh = e.shiftKey;
   const go = fn => { e.preventDefault(); fn(); };
   if (e.key === 'F1' || (e.key === '?' && !ctrl)) return go(() => $('#help').style.display === 'flex' ? closeHelp() : openHelp());
@@ -2283,6 +2344,7 @@ function snapSel() {
 function dropSnap(snap) {
   const ids = new Set(snap.nodes.map(n => n.id));
   const page = P();
+  if (snap.nodes.some(n => n.type === 'legend')) page.noLegend = true;
   page.nodes = page.nodes.filter(n => !ids.has(n.id));
   page.links = page.links.filter(l => !ids.has(l.from) && !ids.has(l.to));
   clearSel();
@@ -2307,6 +2369,7 @@ function paste() {
   clipboard.nodes.forEach(n => map[n.id] = uid());
   const ns = clipboard.nodes.map(n => ({ ...n, id: map[n.id], parent: map[n.parent] || n.parent, x: n.x + 24, y: n.y + 24, sub: null }));
   P().nodes.push(...ns); P().links.push(...clipboard.links.map(l => ({ ...l, id: uid(), from: map[l.from], to: map[l.to] })));
+  if (ns.some(n => n.type === 'legend')) P().noLegend = false;
   selectNodes(ns.filter(n => !map[clipboard.nodes.find(o => map[o.id] === n.id)?.parent]).map(n => n.id));
   clipboard = { nodes: ns.map(n => ({ ...n })), links: [] };
   render();
@@ -3111,6 +3174,7 @@ const fname = ext => {
   return projectBaseName() + leaf + '.' + ext;
 };
 function exportSVGString(p, bg) {
+  ensureLegend(p);
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
   return { str: `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${inner}</svg>`, w, h };
@@ -3239,6 +3303,7 @@ async function exportPPTX() {
   pptx.defineLayout({ name: 'W', width: 13.333, height: 7.5 }); pptx.layout = 'W';
   const iconCache = new Map(); const getIcon = async u => { if (!iconCache.has(u)) iconCache.set(u, await iconPNG(u)); return iconCache.get(u); };
   for (const p of pagesInOrder()) {
+    ensureLegend(p);
     const slide = pptx.addSlide(); if (doc.theme === 'command') slide.background = { color: hex(t.bg) };
     const saved = cur; cur = p.id;
     const b = contentBBox(p), pad = 16, f = Math.min((13.333 - 0.5) / (b.w + pad * 2), (7.5 - 0.4) / (b.h + pad * 2));
@@ -3348,6 +3413,7 @@ async function exportVSDX(pageList) {
   const num = v => (+v).toFixed(6);
   const pageXml = [], pageRels = [];
   for (const p of pages) {
+    ensureLegend(p);
     const saved = cur; cur = p.id;
     const b = contentBBox(p), pad = 20, f = 1 / 96, PW = (b.w + pad * 2) * f, PH = (b.h + pad * 2) * f;
     const X = v => (v - b.x + pad) * f, Y = v => PH - (v - b.y + pad) * f;

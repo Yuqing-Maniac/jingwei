@@ -81,7 +81,7 @@
   }
 
   /* ================= 骨架 → 方言 ================= */
-  const KIND_TAG = { ctrl: ' [指令]', wired: ' [有线]', radio: ' [无线]', sat: ' [卫通]', plain: ' [关联]', data: '' };
+  const KIND_TAG = { ctrl: ' [指令]', wired: ' [有线]', radio: ' [无线]', sat: ' [卫通]', alarm: ' [告警]', sync: ' [时统]', plain: ' [关联]', data: '' };
   const OP = { one: '->', both: '<->', none: '--' };
   function itemLine(it, opt) {
     let s = it.name;
@@ -130,7 +130,7 @@
       lines.push(`${i + 1}. 「${b.name}」${b.lanes.length ? `含 ${b.lanes.length} 层（${b.lanes.map(l => `${l.name}×${cnt(l.items)}`).join('、')}）` : ''}${b.lanes.length ? '，' : ''}共 ${n} 个条目${groups ? `，其中 ${groups} 个容器` : ''}${e ? `，${e === n ? '全部' : e + ' 个'}画成装备图标卡` : ''}`);
     });
     if (sk.links.length) {
-      const by = {}; for (const l of sk.links) { const k = { one: '单向', both: '双向', none: '无箭头' }[l.dir] + '·' + ({ ctrl: '指令', wired: '有线', radio: '无线', sat: '卫通', plain: '关联', data: '数据' }[l.kind] || '数据'); by[k] = (by[k] || 0) + 1; }
+      const by = {}; for (const l of sk.links) { const k = { one: '单向', both: '双向', none: '无箭头' }[l.dir] + '·' + ({ ctrl: '指令', wired: '有线', radio: '无线', sat: '卫通', alarm: '告警', sync: '时统', plain: '关联', data: '数据' }[l.kind] || '数据'); by[k] = (by[k] || 0) + 1; }
       lines.push(`连线 ${sk.links.length} 条：` + Object.entries(by).map(([k, v]) => `${k} ${v}`).join('，'));
     } else lines.push('无连线');
     if (sk.subs.length) lines.push(`下钻内部构成页 ${sk.subs.length} 个：` + sk.subs.map(s => s.host).join('、'));

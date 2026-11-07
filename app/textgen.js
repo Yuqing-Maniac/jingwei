@@ -133,8 +133,10 @@
   }
 
   /* ---------------- 连接行 ---------------- */
-  const KIND_MARK = [[/指令|控制|命令/, 'ctrl'], [/有线|光纤|网线|光缆|以太网/, 'wired'], [/卫通|卫星/, 'sat'], [/无线|数据链|自组网|电台|微波/, 'radio'], [/数据/, 'data'], [/关联|无类型/, 'plain']];
+  const KIND_MARK = [[/告警|报警|警报/, 'alarm'], [/时统|授时|时间同步/, 'sync'], [/指令|控制|命令/, 'ctrl'], [/有线|光纤|网线|光缆|以太网/, 'wired'], [/卫通|卫星/, 'sat'], [/无线|数据链|自组网|电台|微波/, 'radio'], [/数据/, 'data'], [/关联|无类型/, 'plain']];
   function kindFromWords(s, allowCtrl = true) {
+    if (/告警|报警|警报/.test(s)) return 'alarm';
+    if (/时统|授时|时间同步/.test(s)) return 'sync';
     if (/光纤|有线|网线|以太网|专线|光缆|电缆/.test(s)) return 'wired';
     if (/卫通|卫星通信|卫星链路|卫星|天通/.test(s)) return 'sat';
     if (/数据链|无线|自组网|电台|微波|4G|5G|射频|超短波|短波|WiFi|Wi-Fi|中继/.test(s)) return 'radio';
@@ -429,7 +431,7 @@
     if (links.length) {
       out.push('', '## 连接');
       const opOf = l => l.dir === 'both' ? '<->' : l.dir === 'none' ? '--' : '->';
-      const kn = { ctrl: '指令', wired: '有线', radio: '无线', sat: '卫通', data: '', plain: '关联' };
+      const kn = { ctrl: '指令', wired: '有线', radio: '无线', sat: '卫通', alarm: '告警', sync: '时统', data: '', plain: '关联' };
       for (const l of links) out.push(`- ${l.a} ${opOf(l)} ${l.b}${l.label ? ' : ' + l.label : ''}${kn[l.kind] ? ' [' + kn[l.kind] + ']' : ''}`);
     }
     if (notes.length) out.push('', ...notes);
@@ -709,7 +711,7 @@
 <tr><td><code>A -&gt; B : 标签</code></td><td>单向连线（也可写 <code>→</code>），冒号后为线上文字</td></tr>
 <tr><td><code>A &lt;-&gt; B</code> · <code>A -- B</code></td><td>双向（<code>↔</code>）· 无箭头</td></tr>
 <tr><td><code>--&gt;</code> <code>==&gt;</code> <code>~&gt;</code></td><td>指令流 · 有线／光纤 · 无线／数据链（双向写 <code>&lt;--&gt;</code> <code>&lt;==&gt;</code> <code>&lt;~&gt;</code>）</td></tr>
-<tr><td><code>[指令] [有线] [光纤] [无线] [数据链] [卫通]</code></td><td>也可用方括号指定链路类型；默认为数据流</td></tr>
+<tr><td><code>[指令] [有线] [光纤] [无线] [数据链] [卫通] [告警] [时统]</code></td><td>也可用方括号指定链路类型；默认为数据流</td></tr>
 <tr><td><code>A -&gt; B, C, D</code></td><td>一对多连线</td></tr>
 <tr><td><code>## 连接</code></td><td>可选：把连线集中写在这一段</td></tr>
 <tr><td><code>## 展开：系统名</code></td><td>之后的内容画到该系统的内部结构页（⊕ 下钻）</td></tr>
