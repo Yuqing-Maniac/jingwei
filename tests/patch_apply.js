@@ -48,12 +48,12 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'jw-patch-'));
 const root = path.join(dir, 'app');
 fs.mkdirSync(path.join(root, 'resources'), { recursive: true });
 fs.writeFileSync(path.join(root, 'resources', 'app.asar'), 'old-asar');
-const mark = JSON.stringify({ format: 'jingwei-patch', version: 1, from: '3.3.13', to: '3.3.14', files: ['resources/app.asar'] });
+const mark = JSON.stringify({ format: 'jingwei-patch', version: 1, from: '3.3.14', to: '3.3.15', files: ['resources/app.asar'] });
 const zpath = path.join(dir, 'patch.zip');
 fs.writeFileSync(zpath, zip([['jingwei-patch.json', Buffer.from(mark)], ['resources/app.asar', Buffer.from('new-asar')]]));
 const r = applyPatch(zpath, root);
 assert.strictEqual(fs.readFileSync(path.join(root, 'resources', 'app.asar'), 'utf8'), 'new-asar');
-assert.strictEqual(r.to, '3.3.14');
+assert.strictEqual(r.to, '3.3.15');
 assert.strictEqual(r.restart, true);
 let threw = false;
 try { applyPatch(zpath, root); } catch (_) { threw = false; }

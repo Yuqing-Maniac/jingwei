@@ -62,7 +62,7 @@ def build_kylin_zip(arch):
     zipdir(d, f'{OUT}/经纬织图_v{V}_银河麒麟_{da}_免安装.zip', 'JingWeiZhiTu')
 
 def write_patch():
-    meta = json.dumps({'format': 'jingwei-patch', 'version': 1, 'from': '3.3.13', 'to': V, 'files': ['resources/app.asar']}, ensure_ascii=False, indent=2)
+    meta = json.dumps({'format': 'jingwei-patch', 'version': 1, 'from': '3.3.14', 'to': V, 'files': ['resources/app.asar']}, ensure_ascii=False, indent=2)
     zpath = f'{OUT}/经纬织图_v{V}_增量升级.zip'
     if os.path.exists(zpath): os.remove(zpath)
     with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
