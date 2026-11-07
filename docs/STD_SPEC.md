@@ -69,6 +69,7 @@ Uses container nesting (explicit or inferred type of ancestors), icon key (`lib:
   - DEPLOY: protocol 协议, port 端口, medium 链路／带宽
   - SEC: content 访问策略, protocol 协议／端口, medium 链路／介质
 - Existing fields stay: from, to, dir ('one'|'both'|'none'), kind, label, route.
+- `kind` is `plain` 关联, `data` 数据流, `ctrl` 指令流, `wired` 有线／光纤, `radio` 无线／数据链, `sat` 卫通链路, `alarm` 告警, or `sync` 时统.
 
 ## Title block node
 - `node.type === 'tblock'` (one per page, top-level, ~ 520×120). Rendering cells come from `Std.tblockCells(node, page)` → `[{x,y,w,h,text,size,bold,fill,align}]` (absolute coords). Data from doc.meta + page.name + page.view.

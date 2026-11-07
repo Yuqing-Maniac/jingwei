@@ -8,12 +8,12 @@ zip 根目录有 `jingwei-patch.json`：
 {
   "format": "jingwei-patch",
   "version": 1,
-  "from": "3.3.13",
-  "to": "3.3.14",
+  "from": "3.3.14",
+  "to": "3.3.15",
   "files": ["resources/app.asar"]
 }
 ```
 
 `files` 是相对应用目录的路径（Windows 绿色版、安装目录，或麒麟免安装目录、`/opt/jingwei-zhitu`）。路径不能以盘符或 `/` 开头，也不能含 `..`。列出的每个路径都要在 zip 里有同名文件。未列出的文件不会被改。
 
-本版增量包只带 `resources/app.asar`（界面与主进程）。Electron 运行时不在包里。基线是上一正式版 3.3.13。
+3.3.15 的增量包只带 `resources/app.asar`（界面与主进程）。Electron 运行时不在包里。基线是 3.3.14。
