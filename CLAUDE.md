@@ -45,10 +45,10 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 
 ## 3. 交付约定（用户的长期要求，必须遵守）
 - **本目录位于 GitHub `Yuqing-Maniac/toolbox` 的 `jingwei/` 下，先读仓库根目录 `CLAUDE.md`（总则与红线）。** 仓库在境外平台：不得提交型号、协议、装备参数、内部系统、真实业务数据；模板、示例、测试夹具只用虚构内容（如“边海防无人化巡逻体系”）。v3.3.2 起已把模板中的内部协议名换成通用名称，新增模板时同样处理。
-- 分支 `jingwei/<简述>`，经 PR 合入 `main`；发版标签 `jingwei-v<主.次.修>`，由用户在 Releases 页面发布，`jingwei-release` 工作流自动构建并挂包。
+- 分支 `jingwei/<简述>`，经 PR 合入 `main`；发版标签 `jingwei-v<主.次.修>`，由用户在 Releases 页面发布，`jingwei-release` 工作流自动构建并挂包。正式 Release 只上传免安装包、网页离线包、增量包和 `SHA256SUMS.txt`。资产名用唯一 ASCII（如 `jingwei_v3.3.14_windows_x64_portable.zip`），中文原名只作显示名。不上传 `.deb` 与 NSIS `.exe`。补传到已有标签时用工作流的 `upload_tag`，不新建、不移动标签。
 - **离线、免安装、无需管理员权限**；运行库全部内嵌。目标机常为不联网的银河麒麟 V10（国防版，飞腾 D2000）和 Windows 7～11 内网机。
-- **压缩包内文件名一律 ASCII**（用户机器上 UTF-8 与 GBK 文件名都出过乱码）；外层文件名可以用中文。zip 用 Python zipfile 写，`package_web.py` 会做 `.encode('ascii')` 校验。
-- 麒麟交付 **deb**（之前另一个工具的 tar 绿色版在用户的飞腾机上解压失败）。Windows 交付“安装包＋绿色版”两种，安装包装到 `%LOCALAPPDATA%\Programs`，只写 HKCU。
+- **压缩包内文件名一律 ASCII**（用户机器上 UTF-8 与 GBK 文件名都出过乱码）。GitHub Release 的外层资产名也必须是 ASCII：中文文件名会被抹成相同的 `_vX.Y.Z_.zip`，上传返回 422。zip 用 Python zipfile 写，`package_web.py` 会做 `.encode('ascii')` 校验。
+- 本地 `build/build_all.sh` 仍会生成麒麟 deb 与 Windows NSIS 安装包（安装包装到 `%LOCALAPPDATA%\Programs`，只写 HKCU）。这两类不进入正式 Release。正式交付是 Windows 绿色版 zip、麒麟免安装 zip、网页离线包和增量包。
 - 发布说明用公文版式（docx＋pdf，由 build/release_notes 生成）：全角标点、一级标题汉字编号、表题在上图题在下、观点句加粗、正文仿宋、括号内楷体。
 - 视频字幕：得意黑 55 号、单行。不要用用户自己的图作素材，示例统一用虚构的“边海防无人化巡逻体系”等。
 - **机构标识不入库**：仓库里不得出现真实单位名称。deb 维护者、exe 公司名与版权、NSIS 卸载信息发布者、桌面版 package.json 的 author、发布说明封面与 docx 作者、海报与片尾的“出品”，一律在构建时由 `build/brand.py`（Python）／`build/brand.js`（Node）读取：先读通用值 `brand.example.json`（“经纬织图开发组”），本地存在 `brand.local.json` 时逐字段覆盖。字段：`org`（单位名称）、`copyright`（版权）、`email`（deb 维护者邮箱）。
@@ -103,7 +103,7 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 5. **经典脚本共享全局作用域**：不改成 ES module 或 IIFE；重命名全局函数要同步改 `app/desk/desk.js`。
 6. **旧浏览器语法限制**：源码不用正则后行断言 `(?<!…)`，CSS 不用 `inset`、`:has`；`build_web.py` 的 es2019-fail 必须为 0。
 7. **Electron 固定 22.3.27**（最后支持 Windows 7 的版本），不升级。
-8. **压缩包内文件名一律 ASCII**、不含符号链接；外层文件名可用中文。
+8. **压缩包内文件名一律 ASCII**、不含符号链接。Release 资产名也用唯一 ASCII，中文只作显示名；正式版不上传 `.deb` 与安装包 `.exe`。
 
 ## 5. 构建与测试
 

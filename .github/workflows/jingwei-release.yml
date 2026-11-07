@@ -1,9 +1,17 @@
-# 经纬织图：在 Releases 页面发布标签为 jingwei-vX.Y.Z 的版本后，从零构建全部发布物并挂到该版本下
+# 经纬织图：在 Releases 页面发布标签为 jingwei-vX.Y.Z 的版本后，从零构建并挂上免安装包。
+# 正式版只上传免安装／网页离线／增量包和 SHA256SUMS.txt。资产名是唯一 ASCII，中文只作显示名。
+# 不上传 .deb 与 NSIS 安装包。手动运行默认只构建；填写 upload_tag 时上传到已有标签（不新建标签）。
 name: jingwei-release
 on:
   release:
     types: [published]
-  workflow_dispatch:   # 手动运行：只构建，不挂到 Releases，也不上传 Actions artifact
+  workflow_dispatch:
+    inputs:
+      upload_tag:
+        description: "上传到已有正式标签 jingwei-vX.Y.Z。留空则只构建，不上传。"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -22,13 +30,28 @@ jobs:
           node-version: "22"
       - name: 安装构建依赖
         run: sudo apt-get update -q && sudo apt-get install -y -q nsis dpkg-dev unzip
-      - name: 构建全部发布物（Windows x64/x86 安装包与绿色版、麒麟 deb、网页版离线包）
+      - name: 构建全部发布物（安装包会生成，但正式版不上传）
         run: bash build/build_all.sh
-      - name: 挂到 Releases
-        if: github.event_name == 'release'
+      - name: 挂到 Releases（ASCII 资产名，不含安装包）
+        if: github.event_name == 'release' || github.event.inputs.upload_tag
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || github.event.inputs.upload_tag }}
         run: |
-          cd _work/dist
-          gh release upload "${{ github.event.release.tag_name }}" --repo "$GITHUB_REPOSITORY" --clobber \
-            *.deb *.zip *.exe SHA256SUMS.txt
+          set -euo pipefail
+          if ! printf '%s' "$TAG" | grep -Eq '^jingwei-v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "只接受 jingwei-vX.Y.Z 标签，得到：${TAG}" >&2
+            exit 1
+          fi
+          bash build/release_assets.sh
+          line=$(grep '_windows_x64_portable.zip#' "$JW_WORK/assets/upload.list")
+          name=$(basename "${line%%#*}")
+          pkg=${name#jingwei_v}
+          pkg=${pkg%%_*}
+          if [ "${TAG#jingwei-v}" != "$pkg" ]; then
+            echo "标签 $TAG 与包版本 $pkg 不一致" >&2
+            exit 1
+          fi
+          mapfile -t SPECS < "$JW_WORK/assets/upload.list"
+          [ "${#SPECS[@]}" -gt 0 ]
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${SPECS[@]}"
