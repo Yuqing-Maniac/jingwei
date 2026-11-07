@@ -21,27 +21,43 @@
 - **文字成图**（Ctrl+Shift+G）：粘贴文字或 Markdown，自动生成分层架构图。
 - **参照生成**（Ctrl+Shift+L）：以一张好图为参照，填入新项目内容生成同款新图；可接内网 OpenAI 兼容大模型，也可离线。
 - **一键美化**（Ctrl+Shift+F）：对齐、等距；连线从框边中点出入、同边多线对称排布、绕开中间的框且拐弯最少；拖动吸附。
+- **链路类型**：选中连线后按 S，在关联、数据流、指令流、有线／光纤、无线／数据链、卫通链路、告警、时统之间循环。这一步可以撤销。数字键 1 到 6 直接选择前六类。告警是红色短虚线，时统是琥珀色长虚线。正在输入文字时不切换。
+- **图例**：页面上出现连线后自动添加。图例只列本页用到的状态和链路类型。增删或切换类型后，图例跟着变。图例可以拖动，导出时一并带上。手动删掉后不再自动补回。
 - **规范视图**：DoDAF（OV-1、OV-2、OV-5b、SV-1、SV-4）与信息系统六类架构视图，自动编号、规范检查、标题栏、规范表格（xlsx）。
 - **格式互通**（Ctrl+Shift+O）：打开 .pptx／.vsdx／.drawio；导出 PNG（透明、报告插图）、PPT、Visio、draw.io、SVG；Visio 批量转 PPT 时字体字号原样还原。
 - **报告版心**：按版心宽与图内字号排版，插入 Word 即为版心宽。
 
 ## 下载
 
-到仓库 **Releases** 页面下载标签为 `jingwei-v<版本>` 的正式版。页面只挂免安装包、网页离线包、增量包和 `SHA256SUMS.txt`。下载文件名是 ASCII，例如 `jingwei_v3.3.14_windows_x64_portable.zip`；中文名只作显示名。不提供 deb 与 Windows 安装包。
+当前版本是 3.3.15。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。
+
+到仓库 Releases 页面下载标签 `jingwei-v<版本>`。文件名是唯一 ASCII，中文只作显示名。发布时上传免安装 zip、网页离线 zip、增量 zip 和 `SHA256SUMS.txt`。
+
+`jingwei-v3.3.15` 这一版只有 `jingwei_v3.3.15_incremental.zip` 和 `SHA256SUMS.txt`。完整免安装包在 `jingwei-v3.3.14`。
+
+- `jingwei_v3.3.14_windows_x64_portable.zip`
+- `jingwei_v3.3.14_windows_x86_portable.zip`
+- `jingwei_v3.3.14_kylin_arm64_portable.zip`
+- `jingwei_v3.3.14_kylin_x86_64_portable.zip`
+- `jingwei_v3.3.14_web_offline.zip`
+- `jingwei_v3.3.14_incremental.zip`
+- `SHA256SUMS.txt`
 
 ## 使用
 
-- **Windows 绿色版**：解压 `jingwei_v<版本>_windows_x64_portable.zip` 或 `windows_x86_portable.zip`，双击 `JingWeiZhiTu/JingWeiZhiTu.exe`。
-- **银河麒麟免安装**：解压 `kylin_arm64_portable.zip` 或 `kylin_x86_64_portable.zip`，在目录里执行 `sh start.sh`。
-- **网页版**：解压 `web_offline.zip`，双击 html 文件。
-- **增量升级**：桌面版标题栏「增量升级」选择 `incremental.zip`。见 `docs/INCREMENT.md`。
+- **Windows 绿色版**：解压 `jingwei_v3.3.14_windows_x64_portable.zip` 或 `jingwei_v3.3.14_windows_x86_portable.zip`，双击 `JingWeiZhiTu/JingWeiZhiTu.exe`。
+- **银河麒麟免安装**：解压 `jingwei_v3.3.14_kylin_arm64_portable.zip` 或 `jingwei_v3.3.14_kylin_x86_64_portable.zip`，进入 `JingWeiZhiTu` 后执行 `sh start.sh`。
+- **网页版**：解压 `jingwei_v3.3.14_web_offline.zip`，双击 `JingWeiZhiTu_v3.3.14.html`。
+- **增量升级**：在 3.3.14 桌面版标题栏点「增量升级」，选择 `jingwei_v3.3.15_incremental.zip`。见 `docs/INCREMENT.md`。
 
-详细说明见 `docs/release-notes/Guide_v3.3.pdf`。
+使用说明见 `docs/release-notes/Guide_v3.3.pdf`。3.3.15 的链路类型、图例和下载文件以本页为准。
 
 ## 常用快捷键
 
-Ctrl+S 保存（桌面版直接写回当前文件），Ctrl+Shift+S 另存为（桌面版），Ctrl+O 打开，Ctrl+E 导出，F1 全部快捷键，F11 全屏（桌面版）。
+Ctrl+S 保存（桌面版直接写回当前文件），Ctrl+Shift+S 另存为（桌面版），Ctrl+O 打开，Ctrl+E 导出，F1 全部快捷键，F11 全屏（桌面版）。选中连线后按 S 循环链路类型。正在输入文字时 S 不切换类型。
 
 ## 从源码构建
 
-见 `CLAUDE.md` 第 5 节。一句话：`npm ci && bash build/build_all.sh`，产物在 `_work/dist/`。
+见 `CLAUDE.md` 第 5 节。本地完整构建是 `npm ci && bash build/build_all.sh`，产物在 `_work/dist/`。
+
+拉取请求上的 `jingwei-ci` 会构建界面，并运行 `tests/run_regression.sh`。完整打包在发布标签 `jingwei-v*` 或手动运行 `jingwei-release` 时进行。不要在每个拉取请求上再运行完整打包。
