@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: "22"
       - name: 安装构建依赖
-        run: sudo apt-get update -q && sudo apt-get install -y -q nsis dpkg-dev unzip
+        run: bash build/ci_apt.sh nsis dpkg-dev unzip
       - name: 构建全部发布物（安装包会生成，但正式版不上传）
         run: bash build/build_all.sh
       - name: 挂到 Releases（ASCII 资产名，不含安装包）
