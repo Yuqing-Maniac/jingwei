@@ -213,7 +213,9 @@ function restore(s) {
   const id = o.cur && doc.pages && doc.pages[o.cur] ? o.cur : 'root';
   if (ms0 !== msMode()) renderPalette();
   paintPage(id);
+  $('#b-theme').value = doc.theme;
   refreshDocTitle();
+  if (typeof window.jwTouch === 'function') window.jwTouch();
 }
 function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); }
 function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); }

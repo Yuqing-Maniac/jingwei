@@ -2,7 +2,6 @@
 (function () {
   const D = window.jwDesk; if (!D) return;
   document.body.classList.add('desk');
-  document.documentElement.setAttribute('data-theme', 'light');   // 固定浅色界面，不受系统深色模式影响
   const $ = s => document.querySelector(s);
   const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; };
   const IC = {
@@ -12,7 +11,7 @@
     close: '<svg viewBox="0 0 12 12"><path d="M1.5 1.5l9 9M10.5 1.5l-9 9" stroke="currentColor" stroke-width="1.2"/></svg>',
     home: '<svg viewBox="0 0 16 16" width="16" height="16"><path d="M2 7.5L8 2.5l6 5M3.8 6.3V13.5h3V10h2.4v3.5h3V6.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
   };
-  const wc = () => h(`<div class="jw-wc"><button data-w="min" title="最小化">${IC.min}</button><button data-w="max" title="最大化">${IC.max}</button><button data-w="close" class="x" title="关闭">${IC.close}</button></div>`);
+  const wc = () => h(`<div class="jw-wc"><button data-w="full" class="jw-full" title="切换全屏（F11）">全屏</button><button data-w="min" title="最小化">${IC.min}</button><button data-w="max" title="最大化">${IC.max}</button><button data-w="close" class="x" title="关闭">${IC.close}</button></div>`);
   const bindWc = el => el.addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (b) D.win(b.dataset.w); });
 
   /* ---------- 标题栏 ---------- */
@@ -35,15 +34,17 @@
     };
   }
   H.addEventListener('dblclick', e => { if (e.target === H || e.target.closest('.brand,#jw-file,.spacer')) D.win('max'); });
-  D.on('jw:win-state', s => {
+  function updateWindowState(s) {
     document.body.classList.toggle('jw-max', s.max);
-    document.querySelectorAll('.jw-wc [data-w=max]').forEach(b => { b.innerHTML = s.max ? IC.res : IC.max; b.title = s.max ? '还原' : '最大化'; });
-  });
+    document.querySelectorAll('.jw-wc [data-w=max]').forEach(b => { b.innerHTML = s.max || s.full ? IC.res : IC.max; b.title = s.full ? '退出全屏' : s.max ? '还原' : '最大化'; });
+    document.querySelectorAll('.jw-wc [data-w=full]').forEach(b => { b.textContent = s.full ? '退出全屏' : '全屏'; });
+  }
+  D.on('jw:win-state', updateWindowState);
 
   for (const id of ['b-undo', 'b-redo']) { const b = $('#' + id); if (b) { const m = b.textContent.trim().match(/^(\S+)\s+(.+)$/); if (m) b.innerHTML = `<i>${m[1]}</i><span>${m[2]}</span>`; } }
   /* 窄窗口：减少交叉、编队、规范收进“更多” */
   const more = h(`<div class="menu" id="jw-more"><button title="更多功能">更多 ▾</button><div class="dd"></div></div>`);
-  for (const id of ['b-cross', 'b-form', 'b-std']) { const o = $('#' + id); if (!o) continue; const c = h(`<button>${o.textContent}<small>${(o.title.match(/Ctrl\+[^；;，]+/) || [''])[0]}</small></button>`); c.onclick = () => { more.classList.remove('open'); o.click(); }; more.querySelector('.dd').appendChild(c); }
+  for (const id of ['b-cross', 'b-form', 'b-std', 'b-ref', 'b-text', 'b-tpl', 'b-conv', 'b-saveas']) { const o = $('#' + id); if (!o) continue; const c = h(`<button>${o.textContent}<small>${(o.title.match(/Ctrl\+[^；;，]+/) || [''])[0]}</small></button>`); c.onclick = () => { more.classList.remove('open'); o.click(); }; more.querySelector('.dd').appendChild(c); }
   more.firstChild.onclick = e => { e.stopPropagation(); more.classList.toggle('open'); };
   $('#m-export').before(more);
   /* ---------- 文档状态 ---------- */
@@ -62,7 +63,7 @@
   const _cp = window.checkpoint;
   window.checkpoint = checkpoint = function () { if (!dirty) { dirty = true; upd(); } return _cp.apply(this, arguments); };
   const _ld = window.loadDoc;
-  window.loadDoc = loadDoc = function () { const r = _ld.apply(this, arguments); curPath = null; dirty = false; upd(); return r; };
+  window.loadDoc = loadDoc = function () { const r = _ld.apply(this, arguments); curPath = null; dirty = true; upd(); return r; };
 
   /* ---------- 保存 ---------- */
   let batchDir = null;
@@ -78,11 +79,13 @@
   };
   async function saveProj(asNew) {
     const name = projectFileDefault();
-    const data = new TextEncoder().encode(projectJSON()).buffer;
+    const savedDoc = doc, savedText = projectJSON();
+    const data = new TextEncoder().encode(savedText).buffer;
     try {
       const p = await D.save(name, data, { path: asNew ? null : curPath, title: asNew ? '另存为' : '保存工程' });
       if (!p) { toast('已取消保存'); return null; }
-      curPath = p; dirty = false; upd();
+      if (doc !== savedDoc) return p;
+      curPath = p; dirty = projectJSON() !== savedText; upd();
       if (window.Backup) Backup.observeSave();
       toast('已保存：' + p); return p;
     } catch (e) { toast('保存失败：' + (e && e.message || e)); return null; }
@@ -111,8 +114,18 @@
   }, true);
 
   /* ---------- 打开 ---------- */
+  async function mayReplace() {
+    if (!dirty) return true;
+    const answer = await D.confirmClose(docTitle());
+    if (answer === 'discard') return true;
+    return answer === 'save' && !!(await saveProj(false)) && !dirty;
+  }
+  let opening = false;
   async function openPath(p) {
+    if (opening) return;
+    opening = true;
     try {
+      if (!(await mayReplace())) return;
       const r = await D.read(p);
       if (/\.json$/i.test(r.name)) {
         const o = JSON.parse(new TextDecoder().decode(r.data)); const d = o.doc || o;
@@ -131,6 +144,7 @@
       }
       hideStart();
     } catch (e) { toast('打开失败：' + (e && e.message || e)); }
+    finally { opening = false; }
   }
   async function openFlow() { const p = await D.openDialog(); if (p) openPath(p); }
   $('#b-open').onclick = openFlow;
@@ -152,7 +166,7 @@
     if (!dirty) return D.closeNow();
     const r = await D.confirmClose(docTitle());
     if (r === 'discard') D.closeNow();
-    else if (r === 'save') { const p = await saveProj(false); if (p) D.closeNow(); }
+    else if (r === 'save') { const p = await saveProj(false); if (p && !dirty) D.closeNow(); }
   });
 
   /* ---------- 首页 ---------- */
@@ -177,7 +191,9 @@
       <button class="card" data-a="demo">${SVG.demo}<b>打开示例</b><span>边海防无人化巡逻体系</span></button>
     </div><div class="hist" id="jw-hist" hidden><h2>最近工程</h2><div class="recent" id="jw-recent"></div></div></div></div>`);
   document.body.appendChild(S);
+  S.querySelector('.bar').appendChild(jwSkinSelect());
   const w2 = wc(); S.querySelector('.bar').appendChild(w2); bindWc(w2);
+  D.winState().then(updateWindowState);
   const KIND = { json: ['织图', '#2f7cf6', '#fff'], pptx: ['PPT', '#d2603a', '#fff'], vsdx: ['VSD', '#3a5fc8', '#fff'], drawio: ['DIO', '#f08705', '#fff'], xml: ['XML', '#6b7a90', '#fff'] };
   async function fillRecent() {
     const wrap = $('#jw-hist'), box = $('#jw-recent'); let list = [];
@@ -218,7 +234,7 @@
   window.jwShowStart = showStart;
   home.onclick = showStart;
   $('#jw-go').onclick = hideStart;
-  S.querySelector('.cards').addEventListener('click', e => {
+  S.querySelector('.cards').addEventListener('click', async e => {
     const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a;
     if (a === 'open') { openFlow(); return; }
     hideStart();
@@ -226,14 +242,14 @@
     else if (a === 'tpl') $('#b-tpl').click();
     else if (a === 'text') $('#b-text').click();
     else if (a === 'conv') $('#b-conv').click();
-    else if (a === 'demo') { _cp(); loadDoc(buildDemo()); fit(); }
+    else if (a === 'demo' && await mayReplace()) { _cp(); loadDoc(buildDemo()); fit(); }
   });
   D.info().then(i => {
     const plat = i.platform === 'win32' ? 'Windows' : i.platform === 'linux' ? '银河麒麟／Linux' : i.platform;
     $('#jw-ver').innerHTML = `版本 <b>v${i.version}</b> 桌面版　·　${plat}（${i.arch}）<br>单文件离线运行，无需浏览器，无需联网`;
   });
   // 新建清空路径
-  const nb = $('#b-new'), _nb = nb.onclick; nb.onclick = function () { const r = _nb.apply(this, arguments); curPath = null; dirty = false; upd(); return r; };
+  const nb = $('#b-new'), _nb = nb.onclick; nb.onclick = async function () { if (!(await mayReplace())) return; const r = _nb.apply(this, arguments); curPath = null; dirty = true; upd(); return r; };
 
   upd();
   if (window.Backup) Backup.install({

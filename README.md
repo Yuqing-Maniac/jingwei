@@ -17,6 +17,8 @@
 
 ## 主要功能
 
+- **界面皮肤**：经典蓝、青竹、暖纸、深空，工具栏和桌面首页均可切换，自动记住选择，不改变图面主题与导出配色。
+- **桌面启动**：经纬交织启动动画，默认全屏；点击「退出全屏」或按 F11 返回窗口。
 - **绘图**：分组带、层（泳道）、子容器；基础形状、流程图形、箭头；三百多个拟物化图标（无人、反无人、指控、感知通信等）与编队复合图标。
 - **文字成图**（Ctrl+Shift+G）：粘贴文字或 Markdown，自动生成分层架构图。
 - **参照生成**（Ctrl+Shift+L）：以一张好图为参照，填入新项目内容生成同款新图；可接内网 OpenAI 兼容大模型，也可离线。
@@ -29,7 +31,7 @@
 
 ## 下载
 
-当前版本是 3.3.15。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。
+当前源码版本是 3.3.16。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。以下是已发布的 3.3.15／3.3.14 下载说明。
 
 到仓库 Releases 页面下载标签 `jingwei-v<版本>`。文件名是唯一 ASCII，中文只作显示名。发布时上传免安装 zip、网页离线 zip、增量 zip 和 `SHA256SUMS.txt`。
 
@@ -59,5 +61,7 @@ Ctrl+S 保存（桌面版直接写回当前文件），Ctrl+Shift+S 另存为（
 ## 从源码构建
 
 见 `CLAUDE.md` 第 5 节。本地完整构建是 `npm ci && bash build/build_all.sh`，产物在 `_work/dist/`。
+
+仅构建四个平台免安装包（含增量包）：`python build/desktop/build_all.py --portable-only`；前置为 `npm ci` 和已校验的 Electron 22.3.27 运行时。网页版用 `python build/web/package_web.py` 打包。这条路径不需要 NSIS 或 dpkg。
 
 拉取请求上的 `jingwei-ci` 会构建界面，并运行 `tests/run_regression.sh`。完整打包在发布标签 `jingwei-v*` 或手动运行 `jingwei-release` 时进行。不要在每个拉取请求上再运行完整打包。

@@ -5,7 +5,7 @@
 - **网页版**：`app/` 下的模块拼成一个离线单文件 html，在 Chromium 69+／Firefox 68+ 中运行。
 - **桌面版**：Electron 22.3.27 外壳（`desktop/`）加载同一界面（多注入 `app/desk/`）。不依赖系统浏览器，支持 Windows 7～11 与银河麒麟 V10（飞腾 arm64、x86_64）。
 
-当前版本 **3.3.15**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
+当前版本 **3.3.16**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
 
 ## 2. 目录
 ```
@@ -86,7 +86,7 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 **桌面版（desktop/main.js、app/desk）**
 - 选 Electron 22.3.27，因为这是最后一个支持 Windows 7 的版本，不要随手升级。
 - 窗口无边框（frame:false），header 作为拖动区，按钮设为 no-drag。对话框遮罩的 top 改为 46px，避免盖住窗口按钮。
-- **固定浅色主题**：`nativeTheme.themeSource='light'`，根元素加 `data-theme="light"`。原因：用户机器开着系统深色模式时，app 会跟着变成浅色文字，而桌面版面板底色是浅色，图标和按钮几乎看不见（v3.3.1 修复）。不要在 desk.css 里写死面板颜色，一律用 CSS 变量。
+- **界面皮肤（3.3.16）**：`app/skins.js` 与 `skins.css` 提供经典蓝、青竹、暖纸、深空，`hongtu.uiSkin` 保存选择。默认经典蓝，不自动跟随系统；图面主题独立。所有面板颜色用 CSS 变量。桌面原生对话框保持浅色。
 - Linux 默认 `disableHardwareAcceleration()`，国产显卡兼容；加 `--gpu` 可开启。启动脚本 `/usr/bin/jingwei-zhitu` 带 `--no-sandbox`（deb 里删掉了 chrome-sandbox）。启动前先用 ldd 检查缺失的库，缺了就弹窗列出。
 - 拼写检查会去 redirector.gvt1.com 下载词典，必须关闭：`setSpellCheckerEnabled(false)`，并把词典下载地址指向本机无效地址。
 - 所有保存都走 IPC `jw:save`，并记住上次目录。批量转换先选一次文件夹，靠 MutationObserver 监听 `#cv-msg` 出现“已完成”来收尾。
