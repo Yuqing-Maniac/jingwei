@@ -2,7 +2,7 @@
 import os, json, zipfile, glob
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORK = os.environ.get('JW_WORK', os.path.join(ROOT, '_work')); OUT = os.path.join(WORK, 'dist'); os.makedirs(OUT, exist_ok=True)
-V = json.load(open(os.path.join(ROOT, 'desktop', 'package.json')))['version']
+V = json.load(open(os.path.join(ROOT, 'desktop', 'package.json'), encoding='utf-8'))['version']
 html = f'JingWeiZhiTu_v{V}.html'
 readme = open(os.path.join(ROOT, 'build', 'web', 'README.template.txt'), encoding='utf-8-sig').read()
 readme = readme.replace('V3.2.1', f'V{V}').replace('v3.2.1', f'v{V}')

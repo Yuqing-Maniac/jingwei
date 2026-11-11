@@ -21,7 +21,7 @@ try { store = Object.assign(store, JSON.parse(fs.readFileSync(STORE, 'utf8'))); 
 const saveStore = () => { try { fs.mkdirSync(DATA, { recursive: true }); fs.writeFileSync(STORE, JSON.stringify(store)); } catch (_) { } };
 const ICON = path.join(__dirname, isWin ? 'icon.ico' : 'icon.png');
 
-let win = null, splash = null, pendingOpen = [], forceClose = false;
+let win = null, splash = null, pendingOpen = [], forceClose = false, splashShownAt = 0;
 const fileArgs = argv => argv.slice(1).filter(a => !a.startsWith('-') && OPENABLE.test(a) && fs.existsSync(a)).map(a => path.resolve(a));
 
 if (!app.requestSingleInstanceLock()) { app.quit(); }
@@ -43,7 +43,7 @@ function createSplash() {
     skipTaskbar: false, backgroundColor: '#081a3a', icon: ICON, alwaysOnTop: false, webPreferences: { sandbox: true, spellcheck: false } });
   splash.setMenu(null);
   splash.loadFile(path.join(__dirname, 'splash.html'));
-  splash.once('ready-to-show', () => splash && splash.show());
+  splash.once('ready-to-show', () => { if (splash) { splashShownAt = Date.now(); splash.show(); } });
 }
 
 function createMain() {
@@ -58,12 +58,25 @@ function createMain() {
   win.setMenu(null);
   win.loadFile(path.join(__dirname, 'app', 'index.html'));
   win.once('ready-to-show', () => {
-    if (st.max) win.maximize();
-    win.show();
-    setTimeout(() => { if (splash) { splash.destroy(); splash = null; } }, 120);
+    setTimeout(() => {
+      if (!win || win.isDestroyed()) return;
+      if (st.max) win.maximize();
+      win.setFullScreen(true);
+      win.show();
+      sendState();
+      if (splash) { splash.destroy(); splash = null; }
+    }, T ? 0 : Math.max(0, 1600 - (Date.now() - (splashShownAt || Date.now()))));
   });
-  const sendState = () => win && win.webContents.send('jw:win-state', { max: win.isMaximized(), full: win.isFullScreen() });
-  win.on('maximize', sendState); win.on('unmaximize', sendState); win.on('enter-full-screen', sendState); win.on('leave-full-screen', sendState);
+  win.webContents.on('did-fail-load', (_e, code, message, _url, isMainFrame) => {
+    if (!isMainFrame || code === -3) return;
+    if (splash) { splash.destroy(); splash = null; }
+    dialog.showErrorBox('经纬织图启动失败', '界面未能加载：' + message + '。请重新解压完整程序包。');
+    app.exit(1);
+  });
+  const sendState = state => win && win.webContents.send('jw:win-state', Object.assign({ max: win.isMaximized(), full: win.isFullScreen() }, state || {}));
+  // Windows 的原生事件可能先于 isFullScreen() 更新，使用事件本身的目标状态。
+  win.on('maximize', () => sendState({ max: true })); win.on('unmaximize', () => sendState({ max: false }));
+  win.on('enter-full-screen', () => sendState({ full: true })); win.on('leave-full-screen', () => sendState({ full: false }));
   win.on('close', e => {
     const b = win.getNormalBounds(); store.win = { x: b.x, y: b.y, w: b.width, h: b.height, max: win.isMaximized() }; saveStore();
     if (forceClose) return;
@@ -150,6 +163,7 @@ ipcMain.handle('jw:rename', (_e, p, name) => {
 });
 ipcMain.handle('jw:pending', () => { const a = pendingOpen; pendingOpen = []; return a; });
 ipcMain.handle('jw:info', () => ({ version: app.getVersion(), platform: process.platform, arch: process.arch, electron: process.versions.electron, chrome: process.versions.chrome }));
+ipcMain.handle('jw:win-state', () => win ? { max: win.isMaximized(), full: win.isFullScreen() } : { max: false, full: false });
 ipcMain.handle('jw:patch', async () => {
   let p = process.env.JW_TEST_PATCH || '';
   if (!p) {
@@ -170,7 +184,7 @@ ipcMain.on('jw:close-now', () => { forceClose = true; win && win.close(); });
 ipcMain.on('jw:win', (_e, op) => {
   if (!win) return;
   if (op === 'min') win.minimize();
-  else if (op === 'max') win.isMaximized() ? win.unmaximize() : win.maximize();
+  else if (op === 'max') { if (win.isFullScreen()) win.setFullScreen(false); else win.isMaximized() ? win.unmaximize() : win.maximize(); }
   else if (op === 'close') win.close();
   else if (op === 'full') win.setFullScreen(!win.isFullScreen());
 });

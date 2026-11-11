@@ -5,16 +5,17 @@
 import os, sys, shutil, subprocess, zipfile, glob, json, time
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORK = os.environ.get('JW_WORK', os.path.join(ROOT, '_work'))
-V = json.load(open(os.path.join(ROOT, 'desktop', 'package.json')))['version']
+V = json.load(open(os.path.join(ROOT, 'desktop', 'package.json'), encoding='utf-8'))['version']
 RT = os.path.join(WORK, 'runtime'); OUT = os.path.join(WORK, 'dist'); TMP = os.path.join(WORK, 'build'); TOOLS = os.path.join(ROOT, 'build', 'desktop')
 sys.path.insert(0, os.path.join(ROOT, 'build')); import brand; BRAND = brand.load()   # 机构标识：brand.local.json（不入库）> brand.example.json
 EV = '22.3.27'; ICO = os.path.join(ROOT, 'desktop', 'icon.ico'); PNGS = os.path.join(ROOT, 'assets', 'brand', 'out')
 run = lambda *a, **k: subprocess.run(list(a), check=True, **k)
-targets = sys.argv[1:] or ['win64', 'win32', 'deb-arm64', 'deb-amd64', 'kylin-amd64', 'kylin-arm64']
+portable_only = '--portable-only' in sys.argv
+targets = [a for a in sys.argv[1:] if a != '--portable-only'] or (['win64', 'win32', 'kylin-amd64', 'kylin-arm64'] if portable_only else ['win64', 'win32', 'deb-arm64', 'deb-amd64', 'kylin-amd64', 'kylin-arm64'])
 
 def stage_app():
-    run('python3', os.path.join(ROOT, 'build', 'build_web.py'), '--desk', stdout=subprocess.DEVNULL)
-    run('python3', f'{TOOLS}/stage.py')
+    run(sys.executable, os.path.join(ROOT, 'build', 'build_web.py'), '--desk', stdout=subprocess.DEVNULL)
+    run(sys.executable, f'{TOOLS}/stage.py')
     asar = f'{TMP}/app.asar'; os.makedirs(TMP, exist_ok=True)
     run('node', os.path.join(ROOT, 'node_modules', '@electron', 'asar', 'bin', 'asar.js'), 'pack', os.path.join(WORK, 'stage', 'app'), asar)
     return asar
@@ -33,8 +34,12 @@ def zipdir(src, zpath, top):
     with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for dp, _, fs in os.walk(src):
             for f in sorted(fs):
-                full = os.path.join(dp, f); arc = os.path.join(top, os.path.relpath(full, src))
+                full = os.path.join(dp, f); arc = os.path.join(top, os.path.relpath(full, src)).replace('\\', '/')
+                arc.encode('ascii')
                 zi = zipfile.ZipInfo.from_file(full, arc); zi.compress_type = zipfile.ZIP_DEFLATED
+                if os.path.exists(os.path.join(src, 'start.sh')):
+                    zi.create_system = 3
+                    zi.external_attr = (0o100755 if f in ('start.sh', 'jingwei-zhitu', 'chrome_crashpad_handler') else 0o100644) << 16
                 with open(full, 'rb') as fh: z.writestr(zi, fh.read(), compresslevel=9)
 
 def build_win(arch):
@@ -44,6 +49,7 @@ def build_win(arch):
     run('node', f'{TOOLS}/winexe.mjs', f'{d}/electron.exe', f'{d}/JingWeiZhiTu.exe', ICO, V); os.remove(f'{d}/electron.exe')
     open(f'{d}/README.txt', 'w', encoding='utf-8-sig', newline='\r\n').write(README_WIN)
     zipdir(d, f'{OUT}/经纬织图_v{V}_Windows_{tag}_绿色版.zip', 'JingWeiZhiTu')
+    if portable_only: return
     nsi = NSI.replace('@VER@', V).replace('@SRC@', d).replace('@ICO@', ICO).replace('@OUT@', f'{OUT}/经纬织图_v{V}_Windows_{tag}_安装包.exe').replace('@ARCH@', tag).replace('@ORG@', BRAND['org']).replace('@COPYRIGHT@', BRAND['copyright'])
     open(f'{TMP}/{arch}/setup.nsi', 'w', encoding='utf-8-sig').write(nsi)
     run('makensis', '-V2', '-INPUTCHARSET', 'UTF8', f'{TMP}/{arch}/setup.nsi')

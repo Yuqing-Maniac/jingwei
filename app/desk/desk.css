@@ -34,7 +34,7 @@ body.desk #b-undo i,body.desk #b-redo i{font-style:normal}
 @media (max-width:1380px){body.desk header>button,body.desk header .menu>button:not(.primary){padding:5px 6px;font-size:12.5px}body.desk header .sep{margin:0 2px}#jw-file{max-width:140px}}
 @media (max-width:1180px){#jw-file,body.desk header .sep{display:none}body.desk header>button{padding:5px 5px}}
 /* 面板细化 */
-body.desk{--bg:#E9EDF3;--canvas:#F5F7FA}
+/* 界面颜色继承所选皮肤，避免深色文字／底色混搭。 */
 body.desk #palette,body.desk #props{background:var(--panel)}
 body.desk .psec h4{color:#4a5a70;font-weight:700}
 body.desk #crumb,body.desk #zoombox{box-shadow:0 2px 10px rgba(16,40,80,.08);border-radius:10px}
