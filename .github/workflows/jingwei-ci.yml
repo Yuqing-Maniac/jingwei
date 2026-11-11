@@ -24,10 +24,15 @@ jobs:
           python-version: "3.13"
       - name: 安装依赖
         run: |
-          bash build/ci_apt.sh fonts-noto-cjk
           npm ci
           pip install playwright websocket-client
-          python -m playwright install --with-deps chromium
+          # ubuntu-24.04 hosted runner 已含浏览器系统库，避免 apt 镜像故障阻塞测试。
+          python -m playwright install chromium
+          mkdir -p ~/.local/share/fonts
+          curl -fL --retry 3 --connect-timeout 20 --max-time 180 \
+            https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf \
+            -o ~/.local/share/fonts/NotoSansCJKsc-Regular.otf
+          fc-cache -f
       - name: 构建网页版与桌面版界面（含 ES2019 降级校验）
         run: python3 build/build_web.py --desk
       - name: 准备测试环境（公开样例、可移植目录结构）

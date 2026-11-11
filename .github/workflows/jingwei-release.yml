@@ -28,10 +28,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: 安装构建依赖
-        run: bash build/ci_apt.sh nsis dpkg-dev unzip
-      - name: 构建全部发布物（安装包会生成，但正式版不上传）
-        run: bash build/build_all.sh
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: 构建正式发布物（四个平台免安装包、网页离线包和增量包）
+        run: |
+          npm ci
+          bash build/fetch_runtime.sh
+          python build/desktop/build_all.py --portable-only
+          python build/web/package_web.py
       - name: 挂到 Releases（ASCII 资产名，不含安装包）
         if: github.event_name == 'release' || github.event.inputs.upload_tag
         env:
