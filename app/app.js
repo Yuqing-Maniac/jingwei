@@ -105,7 +105,26 @@ const MS_ALIAS = { 'SFSPCA----': '航空母舰' };
 /* ---------- utilities ---------- */
 const $ = s => document.querySelector(s);
 const uid = () => Math.random().toString(36).slice(2, 9);
-const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+/* Project data reaches HTML and SVG through several previews, not just the canvas.
+   Keep one offline sanitizer at those DOM boundaries and at SVG export. */
+function safeMarkup(html, svgFragment) {
+  const opt = { USE_PROFILES: { html: !svgFragment, svg: true, svgFilters: true }, FORBID_TAGS: ['foreignObject'] };
+  if (svgFragment) {
+    /* Parse inside an SVG wrapper in HTML mode: malformed imported attributes
+       must not make an XML fragment parser discard the entire drawing. */
+    opt.RETURN_DOM_FRAGMENT = true;
+    const fragment = DOMPurify.sanitize('<svg xmlns="http://www.w3.org/2000/svg">' + html + '</svg>', opt);
+    const root = fragment.firstElementChild;
+    return root && root.localName === 'svg' ? root.innerHTML : '';
+  }
+  return DOMPurify.sanitize(String(html == null ? '' : html), opt);
+}
+function setMarkup(el, html, outer) {
+  const clean = safeMarkup(html, el.namespaceURI === 'http://www.w3.org/2000/svg');
+  if (outer) el.outerHTML = clean;
+  else el.innerHTML = clean;
+}
 const snapv = v => Math.round(v / GRID) * GRID;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const mctx = document.createElement('canvas').getContext('2d');
@@ -455,12 +474,12 @@ function nodeSVG(n, p, exp) {
     else if (n.type !== 'text' && !n.noBox) { const st = stStyle(n, t); s += shapeMarkup(n.type, n.x, n.y, n.w, n.h, st.fill, st.stroke); }
     else if (n.type === 'equip' && n.noBox && n.status !== 'base') { const st = stStyle(n, t); s += shapeMarkup('equip', n.x, n.y, n.w, n.h, st.fill, st.stroke, 1); }
     const L = nodeLayout(n);
-    if (L.icon) s += `<image href="${L.icon.uri}" x="${L.icon.x.toFixed(1)}" y="${L.icon.y.toFixed(1)}" width="${(L.icon.w || L.icon.s).toFixed(1)}" height="${(L.icon.h || L.icon.s).toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
+    if (L.icon) s += `<image href="${esc(L.icon.uri)}" x="${L.icon.x.toFixed(1)}" y="${L.icon.y.toFixed(1)}" width="${(L.icon.w || L.icon.s).toFixed(1)}" height="${(L.icon.h || L.icon.s).toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
     if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
   }
   if (window.Std) s += Std.codeTagSVG(n, p);
-  if (!exp && n.sub) s += `<g data-enter="${n.id}" style="cursor:pointer"><title>进入内部结构</title><circle cx="${n.x + n.w - 2}" cy="${n.y + 2}" r="8" fill="#2F80ED"/><path d="M${n.x + n.w - 6},${n.y + 2} h8 M${n.x + n.w - 2},${n.y - 2} v8" stroke="#fff" stroke-width="1.8"/></g>`;
-  return `<g data-id="${n.id}">${s}</g>`;
+  if (!exp && n.sub) s += `<g data-enter="${esc(n.id)}" style="cursor:pointer"><title>进入内部结构</title><circle cx="${n.x + n.w - 2}" cy="${n.y + 2}" r="8" fill="#2F80ED"/><path d="M${n.x + n.w - 6},${n.y + 2} h8 M${n.x + n.w - 2},${n.y - 2} v8" stroke="#fff" stroke-width="1.8"/></g>`;
+  return `<g data-id="${esc(n.id)}">${s}</g>`;
 }
 
 /* ---------- link routing ----------
@@ -967,7 +986,7 @@ function linkSVG(l, p, exp, pre, part) {
   const own = paint.ownMarker && l.dir !== 'none' ? ownMarkerDefs(l, pre, paint.color) : '';
   let s = `${own}<path class="lv" d="${d}" fill="none" stroke="${paint.color}" stroke-width="${paint.width}" ${paint.dash ? `stroke-dasharray="${paint.dash}"` : ''} stroke-linejoin="round" ${me} ${ms}/>`;
   if (pills.length && part !== 'line') s += pills.map(pill => pillMarkup(pill, t.bg, paint.color)).join('');
-  if (!exp) return `<g class="lk" data-lk="${l.id}" data-a="${l.from}" data-b="${l.to}"><path d="${dHit}" fill="none" stroke="transparent" stroke-width="12" data-link="${l.id}" style="cursor:pointer"/>${s}</g>`;
+  if (!exp) return `<g class="lk" data-lk="${esc(l.id)}" data-a="${esc(l.from)}" data-b="${esc(l.to)}"><path d="${dHit}" fill="none" stroke="transparent" stroke-width="12" data-link="${esc(l.id)}" style="cursor:pointer"/>${s}</g>`;
   return `<g>${s}</g>`;
 }
 function drawOrder(p) {
@@ -1014,7 +1033,7 @@ function overlaySVG() {
   if (portFor && portFor.type !== 'legend' && portFor.type !== 'tblock') {
     const n = portFor, r = 5 / view.k;
     for (const [x, y] of [[n.x + n.w / 2, n.y], [n.x + n.w, n.y + n.h / 2], [n.x + n.w / 2, n.y + n.h], [n.x, n.y + n.h / 2]])
-      s += `<circle data-port="${n.id}" cx="${x}" cy="${y}" r="${r}" fill="${A}" stroke="#fff" stroke-width="${1.5 / view.k}" style="cursor:crosshair"><title>拖动以连线</title></circle>`;
+      s += `<circle data-port="${esc(n.id)}" cx="${x}" cy="${y}" r="${r}" fill="${A}" stroke="#fff" stroke-width="${1.5 / view.k}" style="cursor:crosshair"><title>拖动以连线</title></circle>`;
   }
   if (ui.marquee) { const m = ui.marquee; s += `<rect x="${Math.min(m.x0, m.x1)}" y="${Math.min(m.y0, m.y1)}" width="${Math.abs(m.x1 - m.x0)}" height="${Math.abs(m.y1 - m.y0)}" fill="${A}" fill-opacity=".08" stroke="${A}" stroke-width="${1 / view.k}"/>`; }
   s += guidesSVG();
@@ -1024,7 +1043,7 @@ function overlaySVG() {
 function render(full = true) {
   ensureLegend(P());
   const pb = contentBBox(), pp = 28;
-  world.innerHTML = `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG();
+  setMarkup(world, `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG());
   applyView(); applyHover();
   if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
   if (window.Backup) Backup.poke();
@@ -1073,7 +1092,7 @@ function linkCanvasKeys() {
 function linkPanelHint() {
   return esc(linkSelToast()) + '<br><kbd>1</kbd>–<kbd>6</kbd> 指定前六种，<kbd>S</kbd> 循环全部';
 }
-function renderOverlay() { const o = $('#overlay'); if (o) o.outerHTML = overlaySVG(); }
+function renderOverlay() { const o = $('#overlay'); if (o) setMarkup(o, overlaySVG(), true); }
 /* hover highlight (canvas only): links of the hovered node / the hovered link stay vivid, the rest dim */
 function applyHover() {
   let any = false;
@@ -1855,7 +1874,7 @@ function renderPalette() {
   if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
   h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
-  $('#palette').innerHTML = h;
+  setMarkup($('#palette'), h);
   const qi = $('#pal-q'); qi.oninput = () => { const pos = qi.selectionStart; renderPalette(); const n = $('#pal-q'); n.focus(); n.setSelectionRange(pos, pos); };
   const pf = $('#pal-form'); if (pf) pf.onclick = () => window.Combo ? Combo.open(null) : toast('复合图标模块未加载');
   const up = $('#pal-up'); if (up) up.onclick = () => { iconTarget = null; $('#f-icon').click(); };
@@ -1965,7 +1984,7 @@ function ensureCtx() {
   if (m) return m;
   m = document.createElement('div');
   m.id = 'ctx';
-  m.innerHTML = '<button type="button" id="ctx-same">选中同类</button>';
+  setMarkup(m, '<button type="button" id="ctx-same">选中同类</button>');
   document.body.appendChild(m);
   m.querySelector('#ctx-same').addEventListener('click', () => {
     const hit = m._hit;
@@ -2178,7 +2197,7 @@ const SHORTCUTS = [
 ];
 function openHelp() {
   const kb = k => k.split(/(\+|／| – | ／ )/).map(t => /^(\+|／| – | ／ )$/.test(t) ? `<span class="ks">${t.trim()}</span>` : `<kbd>${esc(t)}</kbd>`).join('');
-  $('#help-body').innerHTML = SHORTCUTS.map(([g, list]) => `<section><h5>${g}</h5>${list.map(([k, d]) => `<div class="kr"><span class="kk">${kb(k)}</span><span>${esc(d)}</span></div>`).join('')}</section>`).join('');
+  setMarkup($('#help-body'), SHORTCUTS.map(([g, list]) => `<section><h5>${g}</h5>${list.map(([k, d]) => `<div class="kr"><span class="kk">${kb(k)}</span><span>${esc(d)}</span></div>`).join('')}</section>`).join(''));
   $('#help').style.display = 'flex';
 }
 const closeHelp = () => { $('#help').style.display = 'none'; };
@@ -2706,7 +2725,7 @@ function renderCrumb() {
   for (let i = 0; i < kids.length; i++) kid += chip(kids[i]);
   kid += '<button type="button" data-add="child">＋子页</button>';
   h += `<div class="cr">${sib}</div><div class="cr">${kid}</div>`;
-  $('#crumb').innerHTML = h;
+  setMarkup($('#crumb'), h);
 }
 $('#crumb').addEventListener('click', e => {
   const add = e.target.closest('[data-add]');
@@ -3055,7 +3074,7 @@ function renderProps() {
       · 滚轮平移 · <kbd>Ctrl</kbd>+滚轮缩放 · 按住<kbd>空格</kbd>拖动画布<br>
       · 按 <kbd>F1</kbd> 或 <kbd>?</kbd> 查看全部快捷键</div>`;
   }
-  el.innerHTML = h; bindProps();
+  setMarkup(el, h); bindProps();
 }
 let propSnap = null;
 function bindProps() {
@@ -3112,7 +3131,7 @@ function renderPicker() {
   const q = $('#ic-q').value.trim();
   const secs = iconSections(), tabs = secs.map(x => x[0]).concat(window.ms ? ['军标'] : [], ['自定义']);
   if (!tabs.includes(icTab)) icTab = tabs[0];
-  $('#ic-tabs').innerHTML = tabs.map(t => `<button data-tab="${t}" class="${!q && t === icTab ? 'on' : ''}">${t}</button>`).join('');
+  setMarkup($('#ic-tabs'), tabs.map(t => `<button data-tab="${t}" class="${!q && t === icTab ? 'on' : ''}">${t}</button>`).join(''));
   let items = [];
   const m = s => !q || s.includes(q);
   if (q) { for (const i of ICONS) if (m(i.name) || iconCats(i).some(m)) items.push(['lib:' + i.key, i.name]); }
@@ -3121,7 +3140,7 @@ function renderPicker() {
   if (q || icTab === '自定义') for (const [id, v] of Object.entries(doc.custom)) if (m(v.name)) items.push(['cu:' + id, v.name]);
   let h = items.map(([k, nm]) => `<button data-ic="${k}"><img src="${iconURI(k)}" alt=""><span>${esc(nm)}</span></button>`).join('');
   if (icTab === '自定义' && !q) h += `<button id="ic-up"><svg viewBox="0 0 42 30" width="52" height="40"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传 SVG／PNG</span></button>`;
-  $('#ic-grid').innerHTML = h || '<div class="hint">没有匹配的图标</div>';
+  setMarkup($('#ic-grid'), h || '<div class="hint">没有匹配的图标</div>');
 }
 $('#ic-tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { icTab = b.dataset.tab; $('#ic-q').value = ''; renderPicker(); } });
 $('#ic-q').addEventListener('input', renderPicker);
@@ -3179,7 +3198,7 @@ function exportSVGString(p, bg) {
   ensureLegend(p);
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
-  return { str: `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${inner}</svg>`, w, h };
+  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${inner}</svg>`), w, h };
 }
 function rasterize(svgStr, w, h, scale) {
   return new Promise((res, rej) => {
@@ -3607,7 +3626,7 @@ $('#b-tpl').onclick = () => callMod('openTemplates', '模板');
 $('#b-help').onclick = openHelp;
 $('#help-close').onclick = closeHelp;
 $('#help').addEventListener('click', e => { if (e.target.id === 'help') closeHelp(); });
-$('#b-theme').innerHTML = Object.entries(THEMES).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
+setMarkup($('#b-theme'), Object.entries(THEMES).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join(''));
 $('#b-theme').onchange = e => setTheme(e.target.value);
 $('#b-save').onclick = saveProject;
 $('#b-saveas').onclick = saveProjectAs;
@@ -3758,7 +3777,7 @@ function irSyncTools() {
   if (k) dir.value = k.dir || 'one';
   const parent = $('#ir-parent');
   const groups = s.nodes.filter(g => g.type === 'group' && (!n || g.id !== n.id));
-  parent.innerHTML = '<option value="">不归入</option>' + groups.map(g => '<option value="' + esc(g.id) + '">' + esc(g.text || '组合') + '</option>').join('');
+  setMarkup(parent, '<option value="">不归入</option>' + groups.map(g => '<option value="' + esc(g.id) + '">' + esc(g.text || '组合') + '</option>').join(''));
   parent.value = (n && n.parent && irNode(n.parent)) ? n.parent : '';
   parent.disabled = !n;
   const grp = $('#ir-group');
@@ -3881,7 +3900,7 @@ function paintImageReview() {
   }
   const defs = '<defs><marker id="ir-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M0 0 L10 5 L0 10 Z"/></marker>' +
     '<marker id="ir-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ir-head" d="M10 0 L0 5 L10 10 Z"/></marker></defs>';
-  $('#ir-prev').innerHTML = '<svg id="ir-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ' + s.w + ' ' + s.h + '" preserveAspectRatio="xMidYMid meet">' + defs + body + '</svg>';
+  setMarkup($('#ir-prev'), '<svg id="ir-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ' + s.w + ' ' + s.h + '" preserveAspectRatio="xMidYMid meet">' + defs + body + '</svg>');
   irSyncTools();
 }
 function irSvgPoint(e) {
@@ -4157,14 +4176,33 @@ function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view
 const SHELF_KEY = 'hongtu.shelf';
 let shelfId = null;
 function readShelf() { try { const a = JSON.parse(localStorage.getItem(SHELF_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (_) { return []; } }
-function writeShelf(a) { try { localStorage.setItem(SHELF_KEY, JSON.stringify(a.slice(0, 8))); } catch (_) { } }
+function shelfWarning(show) {
+  let el = $('#shelf-warning');
+  if (!show) { if (el) el.remove(); return; }
+  if (el) return;
+  el = document.createElement('div'); el.id = 'shelf-warning'; el.setAttribute('role', 'alert');
+  el.style.cssText = 'position:fixed;bottom:48px;right:16px;max-width:360px;padding:12px;background:#FFF3CD;color:#553C00;border:1px solid #C98A19;border-radius:6px;z-index:10000';
+  el.textContent = '最近工程未能保存在浏览器中。请点击“保存”下载工程文件，避免关闭后无法从最近工程找回。';
+  const close = document.createElement('button'); close.type = 'button'; close.textContent = '知道了';
+  close.onclick = () => el.remove(); el.appendChild(close); document.body.appendChild(el);
+}
+function writeShelf(a) {
+  const items = a.slice(0, 8);
+  for (;;) {
+    try { localStorage.setItem(SHELF_KEY, JSON.stringify(items)); shelfWarning(false); return true; }
+    catch (e) {
+      const quota = e && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.code === 22 || e.code === 1014);
+      if (quota && items.length > 1) { items.pop(); continue; }
+      shelfWarning(true); return false;
+    }
+  }
+}
 function rememberShelf(nameHint) {
   if (window.jwDesk || !doc || !doc.pages) return;
   const raw = String(nameHint || doc.name || (doc.pages.root && doc.pages.root.name) || '未命名');
   const name = raw.replace(/\.jingwei\.json$/i, '').replace(/\.json$/i, '') || '未命名';
   const item = { id: shelfId || ('s' + uid()), name, path: '浏览器本地存储', t: Date.now(), doc: JSON.parse(JSON.stringify(doc)) };
-  shelfId = item.id;
-  writeShelf([item, ...readShelf().filter(x => x.id !== item.id && x.name !== name)]);
+  if (writeShelf([item, ...readShelf().filter(x => x.id !== item.id && x.name !== name)])) shelfId = item.id;
 }
 function fmtWhen(t) { const d = new Date(t), p = x => String(x).padStart(2, '0'); return isNaN(d.getTime()) ? '' : `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
 function editInline(host, value, onCommit) {
@@ -4189,18 +4227,18 @@ function renderWebHist() {
   let el = $('#jw-webhist');
   if (!el) {
     el = document.createElement('div'); el.id = 'jw-webhist'; el.hidden = true;
-    el.innerHTML = '<div class="box"><h2>最近工程</h2><div class="list" id="jw-webhist-list"></div><button type="button" id="jw-webhist-go">进入画布</button></div>';
+    setMarkup(el, '<div class="box"><h2>最近工程</h2><div class="list" id="jw-webhist-list"></div><button type="button" id="jw-webhist-go">进入画布</button></div>');
     document.body.appendChild(el);
     el.querySelector('#jw-webhist-go').onclick = hideWebHist;
   }
   const list = readShelf().filter(it => it && it.doc && it.doc.pages && it.doc.pages.root);
   const box = el.querySelector('.list');
-  if (!list.length) { el.hidden = true; box.innerHTML = ''; return; }
-  el.hidden = false; box.innerHTML = '';
+  if (!list.length) { el.hidden = true; setMarkup(box, ''); return; }
+  el.hidden = false; setMarkup(box, '');
   for (const it of list) {
     const row = document.createElement('div');
     row.className = 'ri'; row.tabIndex = 0;
-    row.innerHTML = '<div class="meta"><div class="nm" title="单击改名"></div><div class="dir"></div></div><div class="tm"></div>';
+    setMarkup(row, '<div class="meta"><div class="nm" title="单击改名"></div><div class="dir"></div></div><div class="tm"></div>');
     row.querySelector('.nm').textContent = it.name;
     row.querySelector('.dir').textContent = it.path;
     row.querySelector('.tm').textContent = fmtWhen(it.t);
@@ -4215,7 +4253,7 @@ function renderWebHist() {
       editInline(e.currentTarget, it.name, name => {
         if (!name) { renderWebHist(); return; }
         const a = readShelf(); const hit = a.find(x => x.id === it.id);
-        if (hit) { hit.name = name; if (hit.doc) hit.doc.name = name; hit.t = Date.now(); writeShelf(a); if (shelfId === it.id) doc.name = name; }
+        if (hit) { hit.name = name; if (hit.doc) hit.doc.name = name; hit.t = Date.now(); if (writeShelf(a) && shelfId === it.id) doc.name = name; }
         renderWebHist();
       });
     });

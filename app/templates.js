@@ -404,10 +404,10 @@
     if (!document.getElementById('tpl-css')) { const s = document.createElement('style'); s.id = 'tpl-css'; s.textContent = CSS; document.head.appendChild(s); }
     if (!thumbs) thumbs = window.TEMPLATES.map(thumbFor);
     const ov = document.createElement('div'); ov.className = 'tpl-ov'; ov.id = 'tpl-ov';
-    ov.innerHTML = `<div class="tpl-box" role="dialog" aria-label="版式模板"><div class="tpl-h"><h3>版式模板</h3><span class="sub">选择一个版式，在其基础上修改内容，免去从零绘制</span><button class="tpl-x" id="tpl-close" aria-label="关闭">✕</button></div>
+    setMarkup(ov, `<div class="tpl-box" role="dialog" aria-label="版式模板"><div class="tpl-h"><h3>版式模板</h3><span class="sub">选择一个版式，在其基础上修改内容，免去从零绘制</span><button class="tpl-x" id="tpl-close" aria-label="关闭">✕</button></div>
 <div class="tpl-b">${(() => { const G = []; window.TEMPLATES.forEach((t, i) => { const g = t.group || '通用版式'; let x = G.find(o => o.g === g); if (!x) G.push(x = { g, ids: [] }); x.ids.push(i); });
       return G.map(x => `<div class="tpl-gh">${esc(x.g)}<span>${x.ids.length} 个</span></div>` + x.ids.map(i => { const t = window.TEMPLATES[i]; return `<div class="tpl-card" tabindex="0" role="button" data-i="${i}"><div class="tpl-th">${thumbs[i]}</div><div class="tpl-t"><b>${esc(t.name)}</b><span>${esc(t.desc)}</span></div></div>`; }).join('')).join(''); })()}</div>
-<div class="tpl-bar" id="tpl-bar" style="display:none"><span class="msg" id="tpl-msg"></span><button class="primary" id="tpl-use">使用此模板</button><button id="tpl-add">作为新页面插入</button><button id="tpl-cancel">取消</button></div></div>`;
+<div class="tpl-bar" id="tpl-bar" style="display:none"><span class="msg" id="tpl-msg"></span><button class="primary" id="tpl-use">使用此模板</button><button id="tpl-add">作为新页面插入</button><button id="tpl-cancel">取消</button></div></div>`);
     document.body.appendChild(ov);
     let pick = -1;
     const close = () => { document.removeEventListener('keydown', onKey, true); ov.remove(); };
@@ -416,7 +416,7 @@
     const select = i => {
       pick = i; ov.querySelectorAll('.tpl-card').forEach(c => c.classList.toggle('sel', +c.dataset.i === i));
       const bar = ov.querySelector('#tpl-bar'); bar.style.display = i < 0 ? 'none' : 'flex';
-      if (i >= 0) ov.querySelector('#tpl-msg').innerHTML = `已选“<b>${esc(window.TEMPLATES[i].name)}</b>”：将替换当前图，可用 Ctrl+Z 撤销`;
+      if (i >= 0) setMarkup(ov.querySelector('#tpl-msg'), `已选“<b>${esc(window.TEMPLATES[i].name)}</b>”：将替换当前图，可用 Ctrl+Z 撤销`);
     };
     ov.addEventListener('click', e => {
       if (e.target === ov || e.target.closest('#tpl-close')) { close(); return; }

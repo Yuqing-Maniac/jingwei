@@ -5,7 +5,7 @@
 - **网页版**：`app/` 下的模块拼成一个离线单文件 html，在 Chromium 69+／Firefox 68+ 中运行。
 - **桌面版**：Electron 22.3.27 外壳（`desktop/`）加载同一界面（多注入 `app/desk/`）。不依赖系统浏览器，支持 Windows 7～11 与银河麒麟 V10（飞腾 arm64、x86_64）。
 
-当前版本 **3.3.16**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
+当前版本 **3.3.17**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
 
 ## 2. 目录
 ```
@@ -44,7 +44,7 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 ```
 
 ## 3. 交付约定（用户的长期要求，必须遵守）
-- **本目录位于 GitHub `Yuqing-Maniac/toolbox` 的 `jingwei/` 下，先读仓库根目录 `CLAUDE.md`（总则与红线）。** 仓库在境外平台：不得提交型号、协议、装备参数、内部系统、真实业务数据；模板、示例、测试夹具只用虚构内容（如“边海防无人化巡逻体系”）。v3.3.2 起已把模板中的内部协议名换成通用名称，新增模板时同样处理。
+- **当前为独立仓库 `Yuqing-Maniac/jingwei`（原 `toolbox/jingwei`）。本文件为当前仓库维护指南。** 仓库在境外平台：不得提交型号、协议、装备参数、内部系统、真实业务数据；模板、示例、测试夹具只用虚构内容（如“边海防无人化巡逻体系”）。v3.3.2 起已把模板中的内部协议名换成通用名称，新增模板时同样处理。
 - 分支 `jingwei/<简述>`，经 PR 合入 `main`；发版标签 `jingwei-v<主.次.修>`，由用户在 Releases 页面发布，`jingwei-release` 工作流自动构建并挂包。正式 Release 只上传免安装包、网页离线包、增量包和 `SHA256SUMS.txt`。资产名用唯一 ASCII（如 `jingwei_v3.3.14_windows_x64_portable.zip`），中文原名只作显示名。不上传 `.deb` 与 NSIS `.exe`。补传到已有标签时用工作流的 `upload_tag`，不新建、不移动标签。
 - **离线、免安装、无需管理员权限**；运行库全部内嵌。目标机常为不联网的银河麒麟 V10（国防版，飞腾 D2000）和 Windows 7～11 内网机。
 - **压缩包内文件名一律 ASCII**（用户机器上 UTF-8 与 GBK 文件名都出过乱码）。GitHub Release 的外层资产名也必须是 ASCII：中文文件名会被抹成相同的 `_vX.Y.Z_.zip`，上传返回 422。zip 用 Python zipfile 写，`package_web.py` 会做 `.encode('ascii')` 校验。
@@ -65,6 +65,10 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 - 麒麟上的老版浏览器：源码里不要用正则后行断言 `(?<!…)`，esbuild 不会转换，旧版火狐会解析失败导致整页白屏。CSS 不要用 `inset`（Chrome 87+）和 `:has`。运行时接口缺失由 compat.js 补齐。`build_web.py` 默认会做语法降级，加 `--modern` 可跳过。
 - 不要把 U+2028 字符原样写进 JS 字符串，要用转义。
 - `app/desk/desk.css` 内嵌了 brand.woff（得意黑子集）的 base64。改字体子集后要重新生成并替换。
+
+**工程内容与渲染**
+- 向 DOM 写入动态 HTML／SVG 时使用 `setMarkup`，导出 SVG 用 `safeMarkup`。DOMPurify 随离线 HTML 内嵌，不依赖网络。属性值仍须用 `esc` 转义，不能用清理器替代正确编码。
+- 最近工程写入失败必须显示提示；容量不足可减少旧记录，不能先删除已有存储再尝试写入。
 
 **连线与美化（app.js、compact.js）**
 - 连线从框边中点出入；同一条边上有多条线时以中点为中心对称排开，间距不超过 24。两端中点相差 4 以内就画直线，否则画 Z 形线；只差 12 以内时也会拉直。
@@ -116,7 +120,7 @@ Playwright 需要 Chromium，沙箱里预装在 /opt/pw-browsers；新机器上�
 
 **从零构建全部发布物**（以下命令都在 `jingwei/` 目录下执行）
 ```
-npm ci                              # 按 package-lock 安装（jszip 3.10.1、pptxgenjs 3.12.0、milsymbol 2.2.0、esbuild、acorn、asar、resedit、docx）
+npm ci                              # 按 package-lock 安装（DOMPurify 3.4.17、jszip 3.10.1、pptxgenjs 3.12.0、milsymbol 2.2.0、esbuild、acorn、asar、resedit、docx）
 bash build/build_all.sh             # = fetch_runtime + build_web --desk + package_web + desktop/build_all，产物与 SHA256SUMS.txt 在 _work/dist/
 ```
 分步命令：
@@ -130,7 +134,7 @@ bash build/build_all.sh             # = fetch_runtime + build_web --desk + packa
 ```
 python3 build/build_web.py --desk && python3 build/desktop/stage.py
 bash build/fetch_runtime.sh && bash tests/fixtures/fetch_public.sh
-bash tests/legacy_layout.sh         # 用符号链接建 /home/claude/{drawtool,vfx,desk,brand_jw}；已存在的真实目录会跳过
+bash tests/legacy_layout.sh         # 用符号链接建仓库内 _legacy/{drawtool,vfx,desk,brand_jw}；已存在的真实目录会跳过
 bash tests/run_regression.sh        # 核心回归：导出、规范检查、路由、吸附、格式转换、Visio 原样转换、单侧圆角、旧浏览器模拟
 ```
 其他测试：

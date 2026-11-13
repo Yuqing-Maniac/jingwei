@@ -31,7 +31,7 @@
 
 ## 下载
 
-当前源码版本是 3.3.16。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。以下是已发布的 3.3.15／3.3.14 下载说明。
+当前源码版本是 3.3.17。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。以下是已发布的 3.3.15／3.3.14 下载说明。
 
 到仓库 Releases 页面下载标签 `jingwei-v<版本>`。文件名是唯一 ASCII，中文只作显示名。发布时上传免安装 zip、网页离线 zip、增量 zip 和 `SHA256SUMS.txt`。
 

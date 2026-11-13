@@ -3,6 +3,7 @@ const assert = require('assert');
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const acorn = require('acorn');
 
 const root = path.join(__dirname, '..');
 const stage = path.join(process.env.JW_WORK || path.join(root, '_work'), 'stage', 'app');
@@ -11,6 +12,13 @@ const staged = spawnSync('python3', [path.join(root, 'build', 'desktop', 'stage.
   env: process.env,
 });
 assert.strictEqual(staged.status, 0, staged.stderr || staged.stdout);
+const html = fs.readFileSync(path.join(stage, 'app', 'index.html'), 'utf8');
+let scripts = 0;
+for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) {
+  acorn.parse(match[1], { ecmaVersion: 'latest' });
+  scripts++;
+}
+assert(scripts > 0, 'staged HTML contains no scripts');
 
 const pkg = JSON.parse(fs.readFileSync(path.join(stage, 'package.json'), 'utf8'));
 const mainRel = pkg.main || 'index.js';

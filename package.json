@@ -1,7 +1,7 @@
 {
   "name": "jingwei-zhitu-build",
   "private": true,
-  "version": "3.3.16",
+  "version": "3.3.17",
   "description": "经纬织图 构建依赖（网页版内联库、语法降级、桌面版打包、发布说明生成）",
   "overrides": {
     "image-size": "2.0.4"
@@ -10,6 +10,7 @@
     "@electron/asar": "3.4.1",
     "acorn": "8.19.0",
     "docx": "9.7.1",
+    "dompurify": "3.4.17",
     "esbuild": "0.28.2",
     "jszip": "3.10.1",
     "milsymbol": "2.2.0",

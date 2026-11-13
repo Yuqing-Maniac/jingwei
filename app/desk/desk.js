@@ -3,7 +3,7 @@
   const D = window.jwDesk; if (!D) return;
   document.body.classList.add('desk');
   const $ = s => document.querySelector(s);
-  const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; };
+  const h = (html) => { const t = document.createElement('template'); setMarkup(t, html.trim()); return t.content.firstChild; };
   const IC = {
     min: '<svg viewBox="0 0 12 12"><path d="M1 6.5h10" stroke="currentColor" stroke-width="1.2"/></svg>',
     max: '<svg viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
@@ -36,12 +36,12 @@
   H.addEventListener('dblclick', e => { if (e.target === H || e.target.closest('.brand,#jw-file,.spacer')) D.win('max'); });
   function updateWindowState(s) {
     document.body.classList.toggle('jw-max', s.max);
-    document.querySelectorAll('.jw-wc [data-w=max]').forEach(b => { b.innerHTML = s.max || s.full ? IC.res : IC.max; b.title = s.full ? '退出全屏' : s.max ? '还原' : '最大化'; });
+    document.querySelectorAll('.jw-wc [data-w=max]').forEach(b => { setMarkup(b, s.max || s.full ? IC.res : IC.max); b.title = s.full ? '退出全屏' : s.max ? '还原' : '最大化'; });
     document.querySelectorAll('.jw-wc [data-w=full]').forEach(b => { b.textContent = s.full ? '退出全屏' : '全屏'; });
   }
   D.on('jw:win-state', updateWindowState);
 
-  for (const id of ['b-undo', 'b-redo']) { const b = $('#' + id); if (b) { const m = b.textContent.trim().match(/^(\S+)\s+(.+)$/); if (m) b.innerHTML = `<i>${m[1]}</i><span>${m[2]}</span>`; } }
+  for (const id of ['b-undo', 'b-redo']) { const b = $('#' + id); if (b) { const m = b.textContent.trim().match(/^(\S+)\s+(.+)$/); if (m) setMarkup(b, `<i>${m[1]}</i><span>${m[2]}</span>`); } }
   /* 窄窗口：减少交叉、编队、规范收进“更多” */
   const more = h(`<div class="menu" id="jw-more"><button title="更多功能">更多 ▾</button><div class="dd"></div></div>`);
   for (const id of ['b-cross', 'b-form', 'b-std', 'b-ref', 'b-text', 'b-tpl', 'b-conv', 'b-saveas']) { const o = $('#' + id); if (!o) continue; const c = h(`<button>${o.textContent}<small>${(o.title.match(/Ctrl\+[^；;，]+/) || [''])[0]}</small></button>`); c.onclick = () => { more.classList.remove('open'); o.click(); }; more.querySelector('.dd').appendChild(c); }
@@ -199,8 +199,8 @@
     const wrap = $('#jw-hist'), box = $('#jw-recent'); let list = [];
     try { list = await D.recent(); } catch (_) { }
     if (!wrap || !box) return;
-    if (!list || !list.length) { wrap.hidden = true; box.innerHTML = ''; return; }
-    wrap.hidden = false; box.innerHTML = '';
+    if (!list || !list.length) { wrap.hidden = true; setMarkup(box, ''); return; }
+    wrap.hidden = false; setMarkup(box, '');
     for (const it of list.slice(0, 12)) {
       const ext = (it.name.match(/\.([^.]+)$/) || [, ''])[1].toLowerCase(), k = KIND[ext] || KIND.xml;
       const shown = it.name.replace(/\.jingwei\.json$/i, '');
@@ -246,7 +246,7 @@
   });
   D.info().then(i => {
     const plat = i.platform === 'win32' ? 'Windows' : i.platform === 'linux' ? '银河麒麟／Linux' : i.platform;
-    $('#jw-ver').innerHTML = `版本 <b>v${i.version}</b> 桌面版　·　${plat}（${i.arch}）<br>单文件离线运行，无需浏览器，无需联网`;
+    setMarkup($('#jw-ver'), `版本 <b>v${i.version}</b> 桌面版　·　${plat}（${i.arch}）<br>单文件离线运行，无需浏览器，无需联网`);
   });
   // 新建清空路径
   const nb = $('#b-new'), _nb = nb.onclick; nb.onclick = async function () { if (!(await mayReplace())) return; const r = _nb.apply(this, arguments); curPath = null; dirty = true; upd(); return r; };
