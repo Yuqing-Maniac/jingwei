@@ -1,0 +1,102 @@
+{
+  "id": "29",
+  "icons": [
+    {
+      "key": "ext_04_01",
+      "name": "救助拖轮",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_02",
+      "name": "浮船坞",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_03",
+      "name": "干船坞",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_04",
+      "name": "海上补给浮台",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_05",
+      "name": "深海着陆器",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_06",
+      "name": "海底观测网节点",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_07",
+      "name": "海洋水文剖面浮标",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_08",
+      "name": "海流测量仪",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_09",
+      "name": "多波束测深仪",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_10",
+      "name": "侧扫声呐",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_11",
+      "name": "海底电缆",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_12",
+      "name": "水下光通信终端",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_13",
+      "name": "水下充电坞",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_14",
+      "name": "潜航器布放回收架",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_15",
+      "name": "海事救援直升机",
+      "cat": "海洋保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_04_16",
+      "name": "海上风电运维船",
+      "cat": "海洋保障",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-29.png"
+}

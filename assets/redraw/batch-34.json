@@ -1,0 +1,102 @@
+{
+  "id": "34",
+  "icons": [
+    {
+      "key": "ext_09_01",
+      "name": "空气质量监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_02",
+      "name": "水质监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_03",
+      "name": "辐射监测仪",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_04",
+      "name": "有毒气体探测器",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_05",
+      "name": "土壤监测探针",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_06",
+      "name": "雨量计",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_07",
+      "name": "能见度测量仪",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_08",
+      "name": "激光测风雷达",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_09",
+      "name": "云高仪",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_10",
+      "name": "雷电监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_11",
+      "name": "自动地震监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_12",
+      "name": "水位监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_13",
+      "name": "地质灾害监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_14",
+      "name": "森林火情监测塔",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_15",
+      "name": "海雾监测站",
+      "cat": "环境感知",
+      "status": "pending"
+    },
+    {
+      "key": "ext_09_16",
+      "name": "生态声学监测器",
+      "cat": "环境感知",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-34.png"
+}

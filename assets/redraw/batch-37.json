@@ -1,0 +1,102 @@
+{
+  "id": "37",
+  "icons": [
+    {
+      "key": "ext_12_01",
+      "name": "数据质量检测",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_02",
+      "name": "数据血缘追踪",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_03",
+      "name": "数据标准管理",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_04",
+      "name": "数据脱敏服务",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_05",
+      "name": "数据标注平台",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_06",
+      "name": "数据资产登记",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_07",
+      "name": "数据授权共享",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_08",
+      "name": "数据交换平台",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_09",
+      "name": "数据溯源审计",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_10",
+      "name": "元数据管理平台",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_11",
+      "name": "特征数据仓库",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_12",
+      "name": "数据版本管理",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_13",
+      "name": "数据集市",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_14",
+      "name": "向量数据库",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_15",
+      "name": "关系型数据库",
+      "cat": "数据治理",
+      "status": "pending"
+    },
+    {
+      "key": "ext_12_16",
+      "name": "数据沙箱",
+      "cat": "数据治理",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-37.png"
+}

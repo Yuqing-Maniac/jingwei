@@ -1,0 +1,102 @@
+{
+  "id": "32",
+  "icons": [
+    {
+      "key": "ext_07_01",
+      "name": "六轴工业机械臂",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_02",
+      "name": "协作机械臂",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_03",
+      "name": "数控加工中心",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_04",
+      "name": "金属增材制造机",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_05",
+      "name": "电子装联工作台",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_06",
+      "name": "自动焊接机器人",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_07",
+      "name": "工业视觉检测台",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_08",
+      "name": "自动化生产线",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_09",
+      "name": "工业控制柜",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_10",
+      "name": "可编程逻辑控制器PLC",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_11",
+      "name": "工业物联网网关",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_12",
+      "name": "工业触摸屏HMI",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_13",
+      "name": "数字化工厂",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_14",
+      "name": "精密测量三坐标",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_15",
+      "name": "激光切割机",
+      "cat": "工业制造",
+      "status": "pending"
+    },
+    {
+      "key": "ext_07_16",
+      "name": "复合材料成型设备",
+      "cat": "工业制造",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-32.png"
+}

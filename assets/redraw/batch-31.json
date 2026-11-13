@@ -1,0 +1,102 @@
+{
+  "id": "31",
+  "icons": [
+    {
+      "key": "ext_06_01",
+      "name": "桥梁检测无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_02",
+      "name": "输电巡检无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_03",
+      "name": "森林巡护无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_04",
+      "name": "植保无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_05",
+      "name": "消防灭火无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_06",
+      "name": "空中采样无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_07",
+      "name": "重载多旋翼无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_08",
+      "name": "室内防撞无人机",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_09",
+      "name": "管道检测机器人",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_10",
+      "name": "磁吸爬壁机器人",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_11",
+      "name": "缆索攀爬机器人",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_12",
+      "name": "水面清洁机器人",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_13",
+      "name": "水下清洗机器人",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_14",
+      "name": "自主仓储搬运车",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_15",
+      "name": "无人配送车",
+      "cat": "无人作业",
+      "status": "pending"
+    },
+    {
+      "key": "ext_06_16",
+      "name": "机械臂移动平台",
+      "cat": "无人作业",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-31.png"
+}

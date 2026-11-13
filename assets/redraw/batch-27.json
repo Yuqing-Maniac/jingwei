@@ -1,0 +1,102 @@
+{
+  "id": "27",
+  "icons": [
+    {
+      "key": "ext_02_01",
+      "name": "柴油发电机",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_02",
+      "name": "移动电源车",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_03",
+      "name": "储能电池柜",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_04",
+      "name": "太阳能供电阵列",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_05",
+      "name": "风力发电机",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_06",
+      "name": "变压器",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_07",
+      "name": "配电柜",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_08",
+      "name": "不间断电源UPS",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_09",
+      "name": "充电桩",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_10",
+      "name": "无人机换电站",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_11",
+      "name": "氢燃料电池",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_12",
+      "name": "燃料电池供能车",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_13",
+      "name": "微电网控制器",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_14",
+      "name": "高压输电塔",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_15",
+      "name": "电缆卷盘",
+      "cat": "能源动力",
+      "status": "pending"
+    },
+    {
+      "key": "ext_02_16",
+      "name": "移动变电站",
+      "cat": "能源动力",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-27.png"
+}

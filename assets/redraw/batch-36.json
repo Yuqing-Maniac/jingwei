@@ -1,0 +1,102 @@
+{
+  "id": "36",
+  "icons": [
+    {
+      "key": "ext_11_01",
+      "name": "光传输设备OTN",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_02",
+      "name": "工业以太网交换机",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_03",
+      "name": "无线接入点AP",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_04",
+      "name": "移动通信核心网设备",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_05",
+      "name": "5G小型基站",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_06",
+      "name": "软件定义网络控制器",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_07",
+      "name": "网络功能虚拟化平台",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_08",
+      "name": "边缘云机柜",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_09",
+      "name": "模块化数据机房",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_10",
+      "name": "液冷计算机柜",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_11",
+      "name": "高性能计算集群",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_12",
+      "name": "光纤配线架",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_13",
+      "name": "网络时间服务器",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_14",
+      "name": "域名解析服务DNS",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_15",
+      "name": "动态地址服务DHCP",
+      "cat": "云网基础",
+      "status": "pending"
+    },
+    {
+      "key": "ext_11_16",
+      "name": "服务网格代理",
+      "cat": "云网基础",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-36.png"
+}

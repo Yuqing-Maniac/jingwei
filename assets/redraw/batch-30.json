@@ -1,0 +1,102 @@
+{
+  "id": "30",
+  "icons": [
+    {
+      "key": "ext_05_01",
+      "name": "运载火箭",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_02",
+      "name": "可回收火箭助推器",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_03",
+      "name": "航天发射塔架",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_04",
+      "name": "空间站",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_05",
+      "name": "载人飞船",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_06",
+      "name": "货运飞船",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_07",
+      "name": "轨道服务机器人",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_08",
+      "name": "地球观测微卫星",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_09",
+      "name": "立方星",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_10",
+      "name": "卫星地面测控天线",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_11",
+      "name": "光学测轨望远镜",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_12",
+      "name": "空间目标监视雷达",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_13",
+      "name": "卫星激光测距站",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_14",
+      "name": "卫星数据接收机",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_15",
+      "name": "星载计算载荷",
+      "cat": "航天测控",
+      "status": "pending"
+    },
+    {
+      "key": "ext_05_16",
+      "name": "深空测控站",
+      "cat": "航天测控",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-30.png"
+}

@@ -5,7 +5,7 @@
 - **网页版**：`app/` 下的模块拼成一个离线单文件 html，在 Chromium 69+／Firefox 68+ 中运行。
 - **桌面版**：Electron 22.3.27 外壳（`desktop/`）加载同一界面（多注入 `app/desk/`）。不依赖系统浏览器，支持 Windows 7～11 与银河麒麟 V10（飞腾 arm64、x86_64）。
 
-当前版本 **3.4.0**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
+当前版本 **3.5.0**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
 
 ## 2. 目录
 ```

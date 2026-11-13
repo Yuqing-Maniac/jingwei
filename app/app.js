@@ -1868,10 +1868,10 @@ function renderPalette() {
     if (!items.length && !extra.length) return ''; const c = !openSecs.has(title) && !q;
     return `<div class="psec${c ? '' : ' open'}"><h4 data-sec="${esc(title)}"><span>${esc(title)}</span><span class="cnt">${items.length}<i>${c ? '▸' : '▾'}</i></span></h4>${c ? '' : `<div class="pgrid">${items.concat(extra).join('')}</div>`}</div>`;
   };
-  const m = s => !q || s.includes(q);
+  const m = s => !q || String(s).toLocaleLowerCase().includes(q.toLocaleLowerCase());
   for (const g of ['基础形状', '流程与标注', '箭头']) h += sec(g, SHAPES.filter(s => s.grp === g && (m(s.name) || m(g))).map(s => pitem(s.name, s.spec, s.svg)));
   h += sec('容器与层级', CONTS.filter(s => m(s.name)).map(s => pitem(s.name, s.spec, s.svg)));
-  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c)).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key), true)));
+  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c) || (i.keywords || []).some(m)).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key), true)));
   if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
   h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
@@ -3136,8 +3136,8 @@ function renderPicker() {
   if (!tabs.includes(icTab)) icTab = tabs[0];
   setMarkup($('#ic-tabs'), tabs.map(t => `<button data-tab="${t}" class="${!q && t === icTab ? 'on' : ''}">${t}</button>`).join(''));
   let items = [];
-  const m = s => !q || s.includes(q);
-  if (q) { for (const i of ICONS) if (m(i.name) || iconCats(i).some(m)) items.push(['lib:' + i.key, i.name]); }
+  const m = s => !q || String(s).toLocaleLowerCase().includes(q.toLocaleLowerCase());
+  if (q) { for (const i of ICONS) if (m(i.name) || iconCats(i).some(m) || (i.keywords || []).some(m)) items.push(['lib:' + i.key, i.name]); }
   else for (const i of (secs.find(x => x[0] === icTab) || [, []])[1]) items.push(['lib:' + i.key, i.name]);
   if (window.ms && (q || icTab === '军标')) for (const x of MS_LIST) if (!q || m(x[1]) || m('军标') || m(x[2])) items.push(['ms:' + x[0], x[1]]);
   if (q || icTab === '自定义') for (const [id, v] of Object.entries(doc.custom)) if (m(v.name)) items.push(['cu:' + id, v.name]);
