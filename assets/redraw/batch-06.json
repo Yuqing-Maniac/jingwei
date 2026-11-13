@@ -1,0 +1,102 @@
+{
+  "id": "06",
+  "icons": [
+    {
+      "key": "hpm",
+      "name": "高能微波武器",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "mortar",
+      "name": "迫击炮",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "spaa",
+      "name": "弹炮结合防空车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_tracked",
+      "name": "履带无人车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "eod_robot",
+      "name": "排爆机器人",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "airbase",
+      "name": "机场",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "port",
+      "name": "港口",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "barracks",
+      "name": "营区",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "depot",
+      "name": "仓库",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "launch_site",
+      "name": "发射阵地",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "radar_station",
+      "name": "雷达站",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "command_center",
+      "name": "指挥中心",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "power_station",
+      "name": "电站",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "fuel_depot",
+      "name": "油库",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "island",
+      "name": "岛礁",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "commander",
+      "name": "指挥员",
+      "cat": "人员",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-06.png"
+}

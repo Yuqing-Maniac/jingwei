@@ -1,0 +1,102 @@
+{
+  "id": "21",
+  "icons": [
+    {
+      "key": "it_batch",
+      "name": "批处理",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_tsdb",
+      "name": "时序数据库",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_graphdb",
+      "name": "图数据库",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_search",
+      "name": "搜索引擎",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_file_server",
+      "name": "文件服务器",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_backup",
+      "name": "备份",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_dr",
+      "name": "灾备中心",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_metadata",
+      "name": "数据目录",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_master_data",
+      "name": "主数据",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_data_service",
+      "name": "数据服务",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_business_obj",
+      "name": "业务对象",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "air_phased_radar",
+      "name": "机载相控阵雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "ship_mesh_datalink",
+      "name": "舰载自组网数据链",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "air_mesh_datalink",
+      "name": "机载自组网数据链",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "uav_ttc",
+      "name": "无人机测控站",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "loiter_ttc",
+      "name": "巡飞弹测控站",
+      "cat": "指控信息",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-21.png"
+}

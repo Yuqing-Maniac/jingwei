@@ -1,0 +1,102 @@
+{
+  "id": "01",
+  "icons": [
+    {
+      "key": "fighter",
+      "name": "战斗机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "bomber",
+      "name": "轰炸机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "transport",
+      "name": "运输机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "awacs",
+      "name": "预警机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "helicopter",
+      "name": "武装直升机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "uav_fixed",
+      "name": "固定翼无人机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "uav_male",
+      "name": "察打一体无人机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "uav_quad",
+      "name": "四旋翼无人机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "uav_vtol",
+      "name": "垂起固定翼无人机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "loitering",
+      "name": "巡飞弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "cruise_missile",
+      "name": "巡航导弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "ballistic_missile",
+      "name": "弹道导弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "carrier",
+      "name": "航空母舰",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "destroyer",
+      "name": "驱逐舰",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "frigate",
+      "name": "护卫舰",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "patrol_boat",
+      "name": "巡逻作战艇",
+      "cat": "海上",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-01.png"
+}

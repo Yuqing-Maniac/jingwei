@@ -1,0 +1,102 @@
+{
+  "id": "15",
+  "icons": [
+    {
+      "key": "marine",
+      "name": "海军陆战队员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "paratrooper",
+      "name": "空降兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "af_ground_crew",
+      "name": "空军地勤",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "rocket_force",
+      "name": "火箭军操作号手",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "logistics_soldier",
+      "name": "后勤保障兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "mp_soldier",
+      "name": "警卫兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cyber_operator",
+      "name": "网络空间作战员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_army",
+      "name": "陆军指挥员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_navy",
+      "name": "海军指挥员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_air",
+      "name": "空军指挥员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_rocket",
+      "name": "火箭军指挥员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_joint",
+      "name": "联合作战指挥员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_army",
+      "name": "陆军参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_navy",
+      "name": "海军参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_air",
+      "name": "空军参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_rocket",
+      "name": "火箭军参谋",
+      "cat": "人员",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-15.png"
+}

@@ -1,0 +1,102 @@
+{
+  "id": "13",
+  "icons": [
+    {
+      "key": "cuas_jammer_gun",
+      "name": "手持干扰枪",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_jammer_backpack",
+      "name": "背负式干扰器",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_jammer_omni",
+      "name": "全向干扰站",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_jammer_directional",
+      "name": "定向干扰器",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_spoofer",
+      "name": "导航诱骗设备",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_takeover",
+      "name": "协议破解接管设备",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_laser_vehicle",
+      "name": "激光拦截车",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_hpm_vehicle",
+      "name": "高功率微波车",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_net_gun",
+      "name": "捕网发射器",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_net_drone",
+      "name": "网捕无人机",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_interceptor_drone",
+      "name": "拦截无人机",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_gun",
+      "name": "小口径近防炮",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_programmable_ammo",
+      "name": "可编程空爆弹",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_manpads",
+      "name": "便携式防空导弹",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_missile_launcher",
+      "name": "小型拦截弹发射架",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_rws",
+      "name": "遥控武器站",
+      "cat": "反无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-13.png"
+}

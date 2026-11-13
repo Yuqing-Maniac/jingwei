@@ -1,0 +1,102 @@
+{
+  "id": "03",
+  "icons": [
+    {
+      "key": "radar",
+      "name": "雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "phased_radar",
+      "name": "相控阵雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "eo_turret",
+      "name": "光电转塔",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "satellite",
+      "name": "卫星",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "comm_tower",
+      "name": "通信基站",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "datalink",
+      "name": "数据链电台",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "sat_station",
+      "name": "卫通站",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "mesh",
+      "name": "自组网",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "jammer",
+      "name": "干扰设备",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "command_post",
+      "name": "指挥所",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "gcs",
+      "name": "地面控制站",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "console",
+      "name": "指控席位",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "operator",
+      "name": "操作员",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "server",
+      "name": "服务器",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "cloud",
+      "name": "云平台",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "database",
+      "name": "数据库",
+      "cat": "指控信息",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-03.png"
+}

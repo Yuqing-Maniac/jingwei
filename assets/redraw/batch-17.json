@@ -1,0 +1,102 @@
+{
+  "id": "17",
+  "icons": [
+    {
+      "key": "fire_control_radar",
+      "name": "火控雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "hull_sonar",
+      "name": "舰壳声呐",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "towed_array",
+      "name": "拖曳阵声呐",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "sonar_station",
+      "name": "岸基声呐站",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "ugs",
+      "name": "无人值守地面传感器",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "seismic_sensor",
+      "name": "振动地磁传感器",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "satcom_otm",
+      "name": "动中通卫星终端",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "troposcatter",
+      "name": "散射通信设备",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "hf_radio",
+      "name": "短波电台",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "vhf_radio",
+      "name": "超短波电台",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "laser_comm",
+      "name": "激光通信终端",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "microwave_relay",
+      "name": "微波接力站",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "leo_constellation",
+      "name": "低轨卫星星座",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_shelter",
+      "name": "指挥方舱",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_hall",
+      "name": "联合指挥大厅",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "duty_console",
+      "name": "作战值班席",
+      "cat": "指控信息",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-17.png"
+}

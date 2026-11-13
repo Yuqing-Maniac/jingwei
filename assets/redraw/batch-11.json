@@ -1,0 +1,102 @@
+{
+  "id": "11",
+  "icons": [
+    {
+      "key": "usv_survey",
+      "name": "测量无人船（双体）",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_jetski",
+      "name": "摩托艇式无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_xl",
+      "name": "超大型无人潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "auv_portable",
+      "name": "便携式自主潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "rov",
+      "name": "遥控潜水器ROV",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "wave_glider",
+      "name": "波浪滑翔器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_seabed",
+      "name": "海底驻留无人平台",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_armed",
+      "name": "武装轮式无人车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_logistics",
+      "name": "无人运输车（物资）",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_mineclear",
+      "name": "无人扫雷车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_recon_small",
+      "name": "小型侦察机器人（可抛投）",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "robodog_armed",
+      "name": "武装四足机器人",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "humanoid",
+      "name": "人形机器人",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "unmanned_tank",
+      "name": "无人坦克",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_firefight",
+      "name": "消防救援无人车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_radar_lowalt",
+      "name": "低空监视雷达",
+      "cat": "反无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-11.png"
+}

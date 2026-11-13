@@ -1,0 +1,2393 @@
+{
+  "style": "realistic-team-paint",
+  "icons": [
+    {
+      "key": "fighter",
+      "name": "战斗机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "bomber",
+      "name": "轰炸机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "transport",
+      "name": "运输机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "awacs",
+      "name": "预警机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "helicopter",
+      "name": "武装直升机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_fixed",
+      "name": "固定翼无人机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_male",
+      "name": "察打一体无人机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_quad",
+      "name": "四旋翼无人机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_vtol",
+      "name": "垂起固定翼无人机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "loitering",
+      "name": "巡飞弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cruise_missile",
+      "name": "巡航导弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ballistic_missile",
+      "name": "弹道导弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "carrier",
+      "name": "航空母舰",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "destroyer",
+      "name": "驱逐舰",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "frigate",
+      "name": "护卫舰",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "patrol_boat",
+      "name": "巡逻作战艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "missile_boat",
+      "name": "导弹快艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv",
+      "name": "无人艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "submarine",
+      "name": "潜艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv",
+      "name": "无人潜航器",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sonar_buoy",
+      "name": "声呐浮标",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "tank",
+      "name": "主战坦克",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ifv",
+      "name": "步兵战车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sp_howitzer",
+      "name": "自行火炮",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "towed_gun",
+      "name": "牵引火炮",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mlrs",
+      "name": "远程火箭炮",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "tel",
+      "name": "导弹发射车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sam",
+      "name": "防空导弹车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "truck",
+      "name": "运输保障车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv",
+      "name": "无人车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "robodog",
+      "name": "无人狗（四足）",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "soldier",
+      "name": "单兵",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "radar",
+      "name": "雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "phased_radar",
+      "name": "相控阵雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "eo_turret",
+      "name": "光电转塔",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "satellite",
+      "name": "卫星",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "comm_tower",
+      "name": "通信基站",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "datalink",
+      "name": "数据链电台",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sat_station",
+      "name": "卫通站",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mesh",
+      "name": "自组网",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "jammer",
+      "name": "干扰设备",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "command_post",
+      "name": "指挥所",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "gcs",
+      "name": "地面控制站",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "console",
+      "name": "指控席位",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "operator",
+      "name": "操作员",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "server",
+      "name": "服务器",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cloud",
+      "name": "云平台",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "database",
+      "name": "数据库",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ai_agent",
+      "name": "智能体",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "security",
+      "name": "安全防护",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "app",
+      "name": "应用",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "switch",
+      "name": "网络交换机",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "tanker",
+      "name": "空中加油机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ew_aircraft",
+      "name": "电子战飞机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "recon_aircraft",
+      "name": "侦察机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "transport_heli",
+      "name": "运输直升机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_heli",
+      "name": "无人直升机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "hale_uav",
+      "name": "高空长航时无人机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "swarm",
+      "name": "无人机蜂群",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "target_drone",
+      "name": "靶机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "airship",
+      "name": "浮空器",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "hypersonic",
+      "name": "高超声速飞行器",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "interceptor",
+      "name": "拦截弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "amphibious",
+      "name": "两栖攻击舰",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "supply_ship",
+      "name": "综合补给舰",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "landing_craft",
+      "name": "气垫登陆艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "minesweeper",
+      "name": "扫雷舰艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_mother",
+      "name": "无人艇母船",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "glider",
+      "name": "水下滑翔机",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "torpedo",
+      "name": "鱼雷",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mine",
+      "name": "水雷",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "research_vessel",
+      "name": "科考船",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "recon_vehicle",
+      "name": "装甲侦察车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "command_vehicle",
+      "name": "指挥车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "comm_vehicle",
+      "name": "通信车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "engineering",
+      "name": "工程车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "fuel_truck",
+      "name": "油料保障车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ambulance",
+      "name": "救护车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas",
+      "name": "反无人机系统",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "laser_weapon",
+      "name": "激光武器",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "hpm",
+      "name": "高能微波武器",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mortar",
+      "name": "迫击炮",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "spaa",
+      "name": "弹炮结合防空车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_tracked",
+      "name": "履带无人车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "eod_robot",
+      "name": "排爆机器人",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "airbase",
+      "name": "机场",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "port",
+      "name": "港口",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "barracks",
+      "name": "营区",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "depot",
+      "name": "仓库",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "launch_site",
+      "name": "发射阵地",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "radar_station",
+      "name": "雷达站",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "command_center",
+      "name": "指挥中心",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "power_station",
+      "name": "电站",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "fuel_depot",
+      "name": "油库",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "island",
+      "name": "岛礁",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "commander",
+      "name": "指挥员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_officer",
+      "name": "参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "pilot",
+      "name": "飞行员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "drone_pilot",
+      "name": "无人机飞手",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "engineer",
+      "name": "工程师",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "maintainer",
+      "name": "维修保障人员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "analyst",
+      "name": "情报分析员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "expert_group",
+      "name": "专家组",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "squad",
+      "name": "作战小组",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sailor",
+      "name": "水兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "driver",
+      "name": "驾驶员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "medic",
+      "name": "卫生员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "trainee",
+      "name": "学员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "user_group",
+      "name": "用户群体",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ir_sensor",
+      "name": "红外探测器",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "acoustic",
+      "name": "声学探测阵列",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "rf_detector",
+      "name": "无线电侦测设备",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "laser_rangefinder",
+      "name": "激光测距仪",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "antenna_array",
+      "name": "天线阵",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "relay",
+      "name": "中继站",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "router",
+      "name": "路由器",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "firewall",
+      "name": "防火墙",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "fiber",
+      "name": "光纤／光端机",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "beidou",
+      "name": "北斗终端",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "weather",
+      "name": "气象站",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "camera",
+      "name": "监控摄像机",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "big_screen",
+      "name": "指挥大屏",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "laptop",
+      "name": "便携计算机",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "tablet",
+      "name": "平板终端",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "handheld",
+      "name": "手持终端",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "data_center",
+      "name": "数据中心",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "algorithm",
+      "name": "算法模型",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "knowledge_graph",
+      "name": "知识图谱",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "document",
+      "name": "文档报告",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "video",
+      "name": "视频流",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "clock",
+      "name": "时统设备",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "simulation",
+      "name": "仿真推演",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "gpu",
+      "name": "算力（GPU）",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "storage",
+      "name": "存储阵列",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "api",
+      "name": "接口服务",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "message_bus",
+      "name": "消息总线",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "map",
+      "name": "电子地图",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "workflow",
+      "name": "流程编排",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_flying_wing",
+      "name": "飞翼无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_ucav",
+      "name": "无人作战飞机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_tiltrotor",
+      "name": "倾转旋翼无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_hexa",
+      "name": "六旋翼无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_fpv",
+      "name": "FPV穿越机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_cargo",
+      "name": "物流运输无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_tethered",
+      "name": "系留无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_micro",
+      "name": "微型扑翼无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_solar",
+      "name": "太阳能长航时无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_catapult",
+      "name": "弹射起飞无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_coaxial",
+      "name": "共轴双旋翼无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_ducted",
+      "name": "涵道风扇无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_seaplane",
+      "name": "水上起降无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_ew",
+      "name": "电子战无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_relay",
+      "name": "通信中继无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_recon_small",
+      "name": "手抛式侦察无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "drone_nest",
+      "name": "无人机机巢",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "drone_launcher",
+      "name": "无人机集群发射车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_armed",
+      "name": "武装无人艇（遥控武器站）",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_interceptor",
+      "name": "高速无人拦截艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_kamikaze",
+      "name": "自杀式无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_large",
+      "name": "大型无人水面舰（三体船）",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_survey",
+      "name": "测量无人船（双体）",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_jetski",
+      "name": "摩托艇式无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_xl",
+      "name": "超大型无人潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "auv_portable",
+      "name": "便携式自主潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "rov",
+      "name": "遥控潜水器ROV",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "wave_glider",
+      "name": "波浪滑翔器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_seabed",
+      "name": "海底驻留无人平台",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_armed",
+      "name": "武装轮式无人车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_logistics",
+      "name": "无人运输车（物资）",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_mineclear",
+      "name": "无人扫雷车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_recon_small",
+      "name": "小型侦察机器人（可抛投）",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "robodog_armed",
+      "name": "武装四足机器人",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "humanoid",
+      "name": "人形机器人",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "unmanned_tank",
+      "name": "无人坦克",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_firefight",
+      "name": "消防救援无人车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_radar_lowalt",
+      "name": "低空监视雷达",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_radar_4face",
+      "name": "四面阵相控阵雷达",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_radar_vehicle",
+      "name": "车载探测雷达",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_passive",
+      "name": "无源频谱侦测站",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_df",
+      "name": "无线电测向站",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_eo",
+      "name": "光电搜索跟踪转塔",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_irst",
+      "name": "红外全景搜索系统",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_acoustic_array",
+      "name": "声学阵列",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_remote_id",
+      "name": "远程识别接收器",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_mast",
+      "name": "一体化探测塔",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_detector_handheld",
+      "name": "手持式无人机侦测仪",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_detector_portable",
+      "name": "便携箱式侦测设备",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_shelter",
+      "name": "方舱式反无人系统",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_c2",
+      "name": "反无人指控终端",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_fence",
+      "name": "电子围栏",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_lidar",
+      "name": "激光雷达探测器",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_ads_b",
+      "name": "ADS-B／航迹接收站",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_jammer_gun",
+      "name": "手持干扰枪",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_jammer_backpack",
+      "name": "背负式干扰器",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_jammer_omni",
+      "name": "全向干扰站",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_jammer_directional",
+      "name": "定向干扰器",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_spoofer",
+      "name": "导航诱骗设备",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_takeover",
+      "name": "协议破解接管设备",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_laser_vehicle",
+      "name": "激光拦截车",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_hpm_vehicle",
+      "name": "高功率微波车",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_net_gun",
+      "name": "捕网发射器",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_net_drone",
+      "name": "网捕无人机",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_interceptor_drone",
+      "name": "拦截无人机",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_gun",
+      "name": "小口径近防炮",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_programmable_ammo",
+      "name": "可编程空爆弹",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_manpads",
+      "name": "便携式防空导弹",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_missile_launcher",
+      "name": "小型拦截弹发射架",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_rws",
+      "name": "遥控武器站",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_shield_net",
+      "name": "防护网",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_raptor",
+      "name": "猛禽驯化拦截",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_decoy",
+      "name": "诱饵假目标",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "inf_rifleman",
+      "name": "步兵（步枪手）",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "inf_mg",
+      "name": "机枪手",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "tank_crew",
+      "name": "装甲兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "artillery_crew",
+      "name": "炮兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ad_soldier",
+      "name": "防空兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "recon_soldier",
+      "name": "侦察兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sof_operator",
+      "name": "特战队员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sniper",
+      "name": "狙击手",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "engineer_soldier",
+      "name": "工兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "signal_soldier",
+      "name": "通信兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ew_soldier",
+      "name": "电子对抗兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cbrn_soldier",
+      "name": "防化兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "drone_operator_army",
+      "name": "陆军无人机操作手",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "marine",
+      "name": "海军陆战队员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "paratrooper",
+      "name": "空降兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "af_ground_crew",
+      "name": "空军地勤",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "rocket_force",
+      "name": "火箭军操作号手",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "logistics_soldier",
+      "name": "后勤保障兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mp_soldier",
+      "name": "警卫兵",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cyber_operator",
+      "name": "网络空间作战员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_army",
+      "name": "陆军指挥员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_navy",
+      "name": "海军指挥员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_air",
+      "name": "空军指挥员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_rocket",
+      "name": "火箭军指挥员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_joint",
+      "name": "联合作战指挥员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_army",
+      "name": "陆军参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_navy",
+      "name": "海军参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_air",
+      "name": "空军参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_rocket",
+      "name": "火箭军参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_info",
+      "name": "信息支援参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_logistics",
+      "name": "联勤保障参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_intel",
+      "name": "情报参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "staff_plan",
+      "name": "作战计划参谋",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "op_navy_cic",
+      "name": "舰艇作战情报中心操作员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "op_air_controller",
+      "name": "空中引导员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "op_space",
+      "name": "航天测控员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "op_satcom",
+      "name": "卫通值守员",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "officer_female",
+      "name": "女军官",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "civilian_engineer",
+      "name": "军队文职／工程师",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "liaison",
+      "name": "联络官",
+      "cat": "人员",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sar_radar",
+      "name": "合成孔径雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "otH_radar",
+      "name": "超视距雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ship_radar",
+      "name": "舰载雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "aew_pod",
+      "name": "机载预警雷达吊舱",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "weather_radar",
+      "name": "气象雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "fire_control_radar",
+      "name": "火控雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "hull_sonar",
+      "name": "舰壳声呐",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "towed_array",
+      "name": "拖曳阵声呐",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sonar_station",
+      "name": "岸基声呐站",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugs",
+      "name": "无人值守地面传感器",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "seismic_sensor",
+      "name": "振动地磁传感器",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "satcom_otm",
+      "name": "动中通卫星终端",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "troposcatter",
+      "name": "散射通信设备",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "hf_radio",
+      "name": "短波电台",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "vhf_radio",
+      "name": "超短波电台",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "laser_comm",
+      "name": "激光通信终端",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "microwave_relay",
+      "name": "微波接力站",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "leo_constellation",
+      "name": "低轨卫星星座",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_shelter",
+      "name": "指挥方舱",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_hall",
+      "name": "联合指挥大厅",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "duty_console",
+      "name": "作战值班席",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sit_3d",
+      "name": "三维态势显示",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "rugged_pc",
+      "name": "加固计算机",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "vehicle_terminal",
+      "name": "车载指控终端",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ar_glasses",
+      "name": "AR 眼镜",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cmd_software",
+      "name": "指挥软件",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mission_planning",
+      "name": "任务规划",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "data_lake",
+      "name": "数据湖",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "edge_node",
+      "name": "边缘计算节点",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "gateway",
+      "name": "安全网关",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "crypto",
+      "name": "密码机",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "identity",
+      "name": "身份认证",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "audit_log",
+      "name": "日志审计",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "llm",
+      "name": "大模型",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "agent_platform",
+      "name": "智能体平台",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "video_conf",
+      "name": "视频会议终端",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "digital_twin",
+      "name": "数字孪生",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "dashboard",
+      "name": "数据看板",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ops_monitor",
+      "name": "运维监控",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "scheduler",
+      "name": "任务调度",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "spatiotemporal",
+      "name": "时空基准",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "model_repo",
+      "name": "模型仓库",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_k8s",
+      "name": "容器集群",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_container",
+      "name": "容器",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_vm",
+      "name": "虚拟机",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_xc_server",
+      "name": "信创服务器",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_rack",
+      "name": "服务器机柜",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_lb",
+      "name": "负载均衡",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_core_switch",
+      "name": "核心交换机",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_gap",
+      "name": "网闸（隔离装置）",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_bastion",
+      "name": "堡垒机",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_ids",
+      "name": "入侵检测",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_vpn",
+      "name": "VPN 网关",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_waf",
+      "name": "Web 应用防火墙",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_ca",
+      "name": "CA 证书",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_mq",
+      "name": "消息队列",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_cache",
+      "name": "缓存",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_middleware",
+      "name": "应用中间件",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_microservice",
+      "name": "微服务",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_registry",
+      "name": "镜像仓库",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_cicd",
+      "name": "持续集成",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_os",
+      "name": "国产操作系统",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_web",
+      "name": "门户网站",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_mobile",
+      "name": "移动应用",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_object_store",
+      "name": "对象存储",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_dw",
+      "name": "数据仓库",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_lakehouse",
+      "name": "湖仓一体",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_etl",
+      "name": "数据集成",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_stream",
+      "name": "流计算",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_batch",
+      "name": "批处理",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_tsdb",
+      "name": "时序数据库",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_graphdb",
+      "name": "图数据库",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_search",
+      "name": "搜索引擎",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_file_server",
+      "name": "文件服务器",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_backup",
+      "name": "备份",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_dr",
+      "name": "灾备中心",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_metadata",
+      "name": "数据目录",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_master_data",
+      "name": "主数据",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_data_service",
+      "name": "数据服务",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "it_business_obj",
+      "name": "业务对象",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "air_phased_radar",
+      "name": "机载相控阵雷达",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ship_mesh_datalink",
+      "name": "舰载自组网数据链",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "air_mesh_datalink",
+      "name": "机载自组网数据链",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_ttc",
+      "name": "无人机测控站",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "loiter_ttc",
+      "name": "巡飞弹测控站",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "cuas_detect_jam",
+      "name": "侦测干扰一体反无人设备",
+      "cat": "反无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "beidou_timing",
+      "name": "北斗授时系统",
+      "cat": "指控信息",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "eo_composite",
+      "name": "复合光电系统",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "compute_platform",
+      "name": "新架构算力平台",
+      "cat": "信息技术",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_decoy",
+      "name": "诱饵无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uav_asw",
+      "name": "反潜无人机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_recon",
+      "name": "侦察无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_strike",
+      "name": "打击无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_ew",
+      "name": "电子战无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_relay",
+      "name": "中继无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_cargo",
+      "name": "运输无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_decoy",
+      "name": "诱饵无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ruav_target",
+      "name": "靶标无人直升机",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "loiter_recon",
+      "name": "侦察巡飞弹",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "loiter_ew",
+      "name": "干扰巡飞弹",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "loiter_relay",
+      "name": "中继巡飞弹",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "loiter_decoy",
+      "name": "诱饵巡飞弹",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_recon",
+      "name": "侦察无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_ew",
+      "name": "干扰无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_relay",
+      "name": "中继无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_cargo",
+      "name": "运输无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_decoy",
+      "name": "诱饵无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_target",
+      "name": "靶标无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "usv_minelayer",
+      "name": "布雷无人艇",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_strike",
+      "name": "打击无人潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_ew",
+      "name": "水声干扰潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_relay",
+      "name": "水下中继潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_cargo",
+      "name": "运输无人潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_decoy",
+      "name": "声学诱饵潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "uuv_target",
+      "name": "靶标潜航器",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_ew",
+      "name": "干扰无人车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_relay",
+      "name": "中继无人车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_decoy",
+      "name": "诱饵无人车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ugv_target",
+      "name": "靶标无人车",
+      "cat": "无人",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "asw_patrol",
+      "name": "反潜巡逻机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "carrier_fighter",
+      "name": "舰载战斗机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "attack_aircraft",
+      "name": "强击机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "asw_heli",
+      "name": "反潜直升机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "aew_heli",
+      "name": "预警直升机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "elint_aircraft",
+      "name": "电子侦察机",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ssbn",
+      "name": "战略导弹潜艇",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "elint_ship",
+      "name": "电子侦察船",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "lsd",
+      "name": "船坞登陆舰",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "depth_charge_rl",
+      "name": "火箭深弹",
+      "cat": "海上",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "vls",
+      "name": "垂发装置",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "aaa_gun",
+      "name": "高射炮",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "atgm_vehicle",
+      "name": "反坦克导弹车",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "coastal_battery",
+      "name": "岸舰导弹",
+      "cat": "陆地",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "mad_sensor",
+      "name": "磁探仪",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "dipping_sonar",
+      "name": "吊放声呐",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "iff_transponder",
+      "name": "敌我识别",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "rwr",
+      "name": "雷达告警",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sat_recon",
+      "name": "侦察卫星",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sat_relay",
+      "name": "通信中继卫星",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sat_nav",
+      "name": "导航卫星",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "sat_ewarn",
+      "name": "导弹预警卫星",
+      "cat": "感知通信",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ashm",
+      "name": "反舰导弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "aam",
+      "name": "空空导弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "arm",
+      "name": "反辐射导弹",
+      "cat": "空中",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "atc_tower",
+      "name": "塔台",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "hangar",
+      "name": "机库",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    },
+    {
+      "key": "ammo_bunker",
+      "name": "弹药库",
+      "cat": "设施",
+      "status": "reviewed-first-pass"
+    }
+  ]
+}

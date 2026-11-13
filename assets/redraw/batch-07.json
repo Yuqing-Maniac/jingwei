@@ -1,0 +1,102 @@
+{
+  "id": "07",
+  "icons": [
+    {
+      "key": "staff_officer",
+      "name": "参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "pilot",
+      "name": "飞行员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "drone_pilot",
+      "name": "无人机飞手",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "engineer",
+      "name": "工程师",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "maintainer",
+      "name": "维修保障人员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "analyst",
+      "name": "情报分析员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "expert_group",
+      "name": "专家组",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "squad",
+      "name": "作战小组",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "sailor",
+      "name": "水兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "driver",
+      "name": "驾驶员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "medic",
+      "name": "卫生员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "trainee",
+      "name": "学员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "user_group",
+      "name": "用户群体",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "ir_sensor",
+      "name": "红外探测器",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "acoustic",
+      "name": "声学探测阵列",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "rf_detector",
+      "name": "无线电侦测设备",
+      "cat": "感知通信",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-07.png"
+}

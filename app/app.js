@@ -162,12 +162,13 @@ const ICONS = (typeof ICON_LIB !== 'undefined' ? ICON_LIB : []);
 const ICON_MAP = Object.fromEntries(ICONS.map(i => [i.key, i]));
 const uriCache = new Map();
 const svgUri = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
-function iconURI(key) {
+function iconURI(key, affiliation) {
   if (!key) return null;
-  const ck = key.startsWith('ms:') ? key + '|' + msMode() : key;
+  const side = ['red', 'blue'].includes(affiliation) ? affiliation : 'neutral';
+  const ck = key.startsWith('ms:') ? key + '|' + msMode() : key + '|' + side;
   if (uriCache.has(ck)) return uriCache.get(ck);
   let u = null;
-  if (key.startsWith('lib:')) { const i = ICON_MAP[key.slice(4)]; if (i) u = svgUri(i.svg); }
+  if (key.startsWith('lib:')) { const i = ICON_MAP[key.slice(4)]; if (i) u = svgUri(i.variants ? i.variants[side] : i.svg); }
   else if (key.startsWith('ms:')) {
     try { if (window.ms) u = svgUri(new ms.Symbol(key.slice(3), msOptions()).asSVG()); } catch (e) { }
   } else if (key.startsWith('cu:')) { const c = doc.custom[key.slice(3)]; if (c) u = c.uri; }
@@ -264,7 +265,7 @@ function nodeLayout(n) {
     L.text = { lines, x: left ? n.x + pad : n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: left ? 'start' : 'middle', family, box: [n.x + pad, n.y, n.w - pad * 2, n.h] };
     return L;
   }
-  const uri = iconURI(n.icon);
+  const uri = iconURI(n.icon, n.affiliation);
   const ib = innerBox(n), pd = ib ? 0 : 5;
   if (ib) n = Object.assign({}, n, ib);
   const top = uri && (n.type === 'equip' || (n.h >= 64 && n.h >= n.w * 0.6));
@@ -3027,9 +3028,10 @@ function renderProps() {
     if (n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>${isCont(n) ? '标题' : '文字'}</label><textarea id="p-text" rows="2">${esc(n.text)}</textarea></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) h += `<div class="row"><label>形状</label><select id="p-type">${SHAPE_GROUPS.map(([g, ts]) => `<optgroup label="${g}">${ts.map(t => `<option value="${t}" ${t === n.type ? 'selected' : ''}>${TYPE_NAME[t]}</option>`).join('')}</optgroup>`).join('')}</select></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) {
-      const u = iconURI(n.icon);
+      const u = iconURI(n.icon, n.affiliation);
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
     }
+    if (n.icon && n.icon.startsWith('lib:')) h += `<div class="row"><label>阵营涂装</label><select id="p-affiliation">${[['neutral', '原色'], ['blue', '蓝方'], ['red', '红方']].map(([k,v]) => `<option value="${k}" ${(n.affiliation || 'neutral') === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`;
     h += fieldsHTML([n], NODE_FIELDS);
     const crow = contRow(n);
     if (crow && crow.thick.mode === 'field' && (sideOf(n) === 'l' || sideOf(n) === 'r')) h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="${crow.thick.min}" max="${crow.thick.max}" value="${thickness(n, crow)}"></div>`;
@@ -3098,6 +3100,7 @@ function bindProps() {
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
+  on('#p-affiliation', 'change', e => { checkpoint(); n.affiliation = e.target.value; render(); });
   on('#p-icon', 'click', () => openIconPicker(n));
   on('#p-noicon', 'click', () => { checkpoint(); n.icon = null; if (n.type === 'equip') n.type = 'round'; render(); });
   on('#p-sub', 'click', () => enterSub(n.id));

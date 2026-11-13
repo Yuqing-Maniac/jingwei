@@ -1,0 +1,102 @@
+{
+  "id": "09",
+  "icons": [
+    {
+      "key": "document",
+      "name": "文档报告",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "video",
+      "name": "视频流",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "clock",
+      "name": "时统设备",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "simulation",
+      "name": "仿真推演",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "gpu",
+      "name": "算力（GPU）",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "storage",
+      "name": "存储阵列",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "api",
+      "name": "接口服务",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "message_bus",
+      "name": "消息总线",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "map",
+      "name": "电子地图",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "workflow",
+      "name": "流程编排",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "uav_flying_wing",
+      "name": "飞翼无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_ucav",
+      "name": "无人作战飞机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_tiltrotor",
+      "name": "倾转旋翼无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_hexa",
+      "name": "六旋翼无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_fpv",
+      "name": "FPV穿越机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_cargo",
+      "name": "物流运输无人机",
+      "cat": "无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-09.png"
+}

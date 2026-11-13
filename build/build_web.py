@@ -18,6 +18,8 @@ body = ('<script>try { var skin = localStorage.getItem("hongtu.uiSkin"); '
 parts = [rd('icons.js')] + [rd(os.path.basename(p)) for p in sorted(glob.glob(os.path.join(APP, 'icons_*.js')))]
 MODS = ['app.js', 'skins.js', 'glyphbook.js', 'imgimport.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
         'importers.js', 'vsdxraw.js', 'drawio.js', 'refgen.js', 'convert.js']
+if os.path.exists(os.path.join(APP, 'redrawn.js')):
+    parts.append(rd('redrawn.js'))
 mods = [rd(m) for m in MODS]
 own = "<script>\n" + "\n".join(parts) + "\n</script>\n<script>\n" + "\n".join(mods) + "\n" + rd('demo.js') + "\nloadDoc(buildDemo());\nif (!window.jwDesk) Backup.offer();\n</script>\n"
 cdn = ('<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>\n'

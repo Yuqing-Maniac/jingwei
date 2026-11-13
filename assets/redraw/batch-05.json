@@ -1,0 +1,102 @@
+{
+  "id": "05",
+  "icons": [
+    {
+      "key": "supply_ship",
+      "name": "综合补给舰",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "landing_craft",
+      "name": "气垫登陆艇",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "minesweeper",
+      "name": "扫雷舰艇",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "usv_mother",
+      "name": "无人艇母船",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "glider",
+      "name": "水下滑翔机",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "torpedo",
+      "name": "鱼雷",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "mine",
+      "name": "水雷",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "research_vessel",
+      "name": "科考船",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "recon_vehicle",
+      "name": "装甲侦察车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "command_vehicle",
+      "name": "指挥车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "comm_vehicle",
+      "name": "通信车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "engineering",
+      "name": "工程车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "fuel_truck",
+      "name": "油料保障车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "ambulance",
+      "name": "救护车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "cuas",
+      "name": "反无人机系统",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "laser_weapon",
+      "name": "激光武器",
+      "cat": "陆地",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-05.png"
+}

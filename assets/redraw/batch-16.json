@@ -1,0 +1,102 @@
+{
+  "id": "16",
+  "icons": [
+    {
+      "key": "staff_info",
+      "name": "信息支援参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_logistics",
+      "name": "联勤保障参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_intel",
+      "name": "情报参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "staff_plan",
+      "name": "作战计划参谋",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "op_navy_cic",
+      "name": "舰艇作战情报中心操作员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "op_air_controller",
+      "name": "空中引导员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "op_space",
+      "name": "航天测控员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "op_satcom",
+      "name": "卫通值守员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "officer_female",
+      "name": "女军官",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "civilian_engineer",
+      "name": "军队文职／工程师",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "liaison",
+      "name": "联络官",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "sar_radar",
+      "name": "合成孔径雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "otH_radar",
+      "name": "超视距雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "ship_radar",
+      "name": "舰载雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "aew_pod",
+      "name": "机载预警雷达吊舱",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "weather_radar",
+      "name": "气象雷达",
+      "cat": "感知通信",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-16.png"
+}

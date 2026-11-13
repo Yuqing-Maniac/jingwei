@@ -1,0 +1,102 @@
+{
+  "id": "19",
+  "icons": [
+    {
+      "key": "dashboard",
+      "name": "数据看板",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "ops_monitor",
+      "name": "运维监控",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "scheduler",
+      "name": "任务调度",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "spatiotemporal",
+      "name": "时空基准",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "model_repo",
+      "name": "模型仓库",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "it_k8s",
+      "name": "容器集群",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_container",
+      "name": "容器",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_vm",
+      "name": "虚拟机",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_xc_server",
+      "name": "信创服务器",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_rack",
+      "name": "服务器机柜",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_lb",
+      "name": "负载均衡",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_core_switch",
+      "name": "核心交换机",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_gap",
+      "name": "网闸（隔离装置）",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_bastion",
+      "name": "堡垒机",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_ids",
+      "name": "入侵检测",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_vpn",
+      "name": "VPN 网关",
+      "cat": "信息技术",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-19.png"
+}

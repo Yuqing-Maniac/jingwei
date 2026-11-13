@@ -1,0 +1,90 @@
+{
+  "id": "25",
+  "icons": [
+    {
+      "key": "mad_sensor",
+      "name": "磁探仪",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "dipping_sonar",
+      "name": "吊放声呐",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "iff_transponder",
+      "name": "敌我识别",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "rwr",
+      "name": "雷达告警",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "sat_recon",
+      "name": "侦察卫星",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "sat_relay",
+      "name": "通信中继卫星",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "sat_nav",
+      "name": "导航卫星",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "sat_ewarn",
+      "name": "导弹预警卫星",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "ashm",
+      "name": "反舰导弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "aam",
+      "name": "空空导弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "arm",
+      "name": "反辐射导弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "atc_tower",
+      "name": "塔台",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "hangar",
+      "name": "机库",
+      "cat": "设施",
+      "status": "pending"
+    },
+    {
+      "key": "ammo_bunker",
+      "name": "弹药库",
+      "cat": "设施",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-25.png"
+}

@@ -11,6 +11,7 @@ run(){ local name=$1; shift; echo "== $name"; local out; out=$("$@" 2>&1); local
   if [ $rc -ne 0 ] || echo "$out" | grep -qE "Traceback|ERR \[[^]]|errs \[[^]]|page errors: \[[^]]"; then echo "!! $name 失败"; fail=1; fi; }
 run "桌面版入口 stage_entry"      node "$ROOT/tests/stage_entry_test.js"
 run "工程内容与存储防护"         python3 "$ROOT/tests/content_safety_test.py"
+run "全库重绘与阵营涂装"         python3 "$ROOT/tests/redrawn_icons_test.py"
 cd "$D"
 run "导出全格式 test.py"          python3 test.py
 run "规范检查 stdcheck.py"        python3 stdcheck.py
