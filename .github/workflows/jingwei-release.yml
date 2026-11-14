@@ -32,6 +32,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      - name: 安装 Windows x64 启动器交叉编译工具
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64
       - name: 构建本次发布的免安装包（Windows x64 与麒麟 ARM64）
         run: |
           npm ci

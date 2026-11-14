@@ -21,6 +21,17 @@ with sync_playwright() as pw:
     assert page.evaluate("selectedNodes()[0].affiliation")=='blue'
     us=page.evaluate('nodeLayout(selectedNodes()[0]).icon.uri')
     assert cn!=us
+    page.select_option('#p-affiliation','neutral')
+    assert page.evaluate("selectedNodes()[0].affiliation")=='neutral'
+    assert page.evaluate("nodeLayout(selectedNodes()[0]).icon.uri===svgUri(ICON_MAP.fighter.countries.us.variants.neutral)")
+    roundtrip=page.evaluate('''async () => {
+      const n=selectedNodes()[0];n.flipX=true;n.flipY=true;render();
+      const got=await DrawIO.importText(DrawIO.exportString([P()]));
+      const back=got.pages[0].nodes.find(x=>x.icon==='lib:fighter'&&x.appearance==='us');
+      return {appearance:back.appearance,paint:back.affiliation,x:back.flipX,y:back.flipY};
+    }''')
+    assert roundtrip==dict(appearance='us',paint='neutral',x=True,y=True),roundtrip
+    page.select_option('#p-affiliation','blue')
     page.select_option('#p-affiliation','red')
     assert page.evaluate('nodeLayout(selectedNodes()[0]).icon.uri')!=us
     page.evaluate('undo()')
@@ -40,7 +51,21 @@ with sync_playwright() as pw:
     page.evaluate('Combo.ungroup()')
     assert page.evaluate('selectedNodes().map(n=>[n.appearance,n.affiliation])')==members
     assert page.evaluate("exportSVGString(P(),false).str.includes(iconURI('lib:fighter','blue','cn'))")
-    out=ROOT/'_work/country-test';out.mkdir(parents=True,exist_ok=True)
+    # Mixed effective defaults must remain mixed when grouping; outer neutral overrides both.
+    mixed=page.evaluate("""() => {
+      const a=mkNode({icon:'lib:fighter',appearance:'cn',affiliation:'red',flipX:true,x:100,y:100}),b=mkNode({icon:'lib:fighter',appearance:'us',x:300,y:100});
+      P().nodes.push(a,b);selectNodes([a.id,b.id]);render();Combo.groupSelection();
+      const n=selectedNodes()[0],spec=doc.custom[n.icon.slice(3)].combo;
+      const original=iconURI(n.icon),neu=iconURI(n.icon,'neutral');
+      const expected=Combo.tinted(spec,'neutral');
+      const mirrored=decodeURIComponent(original).includes('scale(-1 1)');
+      const red=iconURI(n.icon,'red');checkpoint();spec.members[0].appearance='us';doc.custom[n.icon.slice(3)].uri=svgUri(Combo.buildSVG(spec).svg);const changed=iconURI(n.icon,'red');undo();
+      const restored=iconURI(n.icon,'red')===red;
+      selectNodes([n.id]);Combo.ungroup();
+      return {mixed:!n.affiliation,neutral:neu===expected&&neu!==original,mirrored,uncached:changed!==red,restored,back:selectedNodes().map(x=>[x.appearance,x.flipX||false])};
+    }""")
+    assert mixed==dict(mixed=True,neutral=True,mirrored=True,uncached=True,restored=True,back=[['cn',True],['us',False]]),mixed
+    out=ROOT/'_work/country-test' ;out.mkdir(parents=True,exist_ok=True)
     for kind,call in [('png','exportPNG(1,false)'),('pptx','exportPPTX()'),('vsdx','exportVSDX()')]:
         with page.expect_download(timeout=90000) as dl:
             page.evaluate('async () => { await '+call+'; }')

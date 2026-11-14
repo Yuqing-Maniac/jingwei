@@ -1,10 +1,14 @@
 """免安装包的形状：顶层只有一个文件夹和一个入口，缺文件或缺图标就失败。"""
 import os
+import contextlib
+import importlib.util
+import io
 import shutil
 import subprocess
 import sys
 import tempfile
 import zipfile
+from unittest import mock
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'launcher'))
@@ -142,12 +146,84 @@ def test_launcher_binary():
         shutil.rmtree(tmp)
 
 
+def load_builder():
+    spec = importlib.util.spec_from_file_location('jingwei_build_all', os.path.join(ROOT, 'build', 'desktop', 'build_all.py'))
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    return builder
+
+
+def test_build_options():
+    builder = load_builder()
+    portable = ['win64', 'win32', 'kylin-amd64', 'kylin-arm64']
+    assert builder.parse_args(['--portable-only', '--patch']).targets == portable
+    assert builder.parse_args(['win64', '--patch', 'win32', '--installers']).targets == ['win64', 'win32']
+    assert builder.parse_args(['--installers', '--patch']).targets == ['win64', 'win32', 'deb-arm64', 'deb-amd64', 'kylin-amd64', 'kylin-arm64']
+    for argv in (['--unknown'], ['typo-target']):
+        with contextlib.redirect_stderr(io.StringIO()):
+            try:
+                builder.parse_args(argv)
+            except SystemExit as exc:
+                assert exc.code == 2
+            else:
+                fail('invalid build option was accepted: ' + str(argv))
+    with tempfile.TemporaryDirectory() as tmp:
+        with mock.patch.multiple(builder, OUT=tmp, ASAR=None, create=True), \
+                mock.patch.object(builder, 'stage_app', return_value='test.asar'), \
+                mock.patch.object(builder, 'build_win') as windows, \
+                mock.patch.object(builder, 'build_deb') as deb, \
+                mock.patch.object(builder, 'build_kylin_zip') as kylin, \
+                mock.patch.object(builder, 'write_patch') as patch:
+            builder.main(['--portable-only', '--patch', 'win64', 'kylin-arm64'])
+            windows.assert_called_once_with('win64', True, False)
+            kylin.assert_called_once_with('kylin-arm64')
+            deb.assert_not_called()
+            patch.assert_called_once_with()
+            windows.reset_mock()
+            patch.reset_mock()
+            builder.main(['win32', '--installers'])
+            windows.assert_called_once_with('win32', False, True)
+            patch.assert_not_called()
+
+
+def test_deb_trimmed_sandbox():
+    builder = load_builder()
+    with tempfile.TemporaryDirectory() as tmp:
+        runtime_dir = os.path.join(tmp, 'runtime')
+        os.makedirs(runtime_dir)
+        asar = os.path.join(tmp, 'app.asar')
+        with open(asar, 'wb') as stream:
+            stream.write(b'test app')
+        for target in ('linux-x64', 'linux-arm64'):
+            with zipfile.ZipFile(os.path.join(runtime_dir, 'electron-v' + builder.EV + '-' + target + '.zip'), 'w') as archive:
+                archive.writestr('electron', b'test binary')
+                archive.writestr('chrome-sandbox', b'trim me')
+                archive.writestr('resources/default_app.asar', b'trim me')
+        def fake_dpkg(*args, **kwargs):
+            assert args[0] == 'dpkg-deb'
+            with open(args[-1], 'wb') as stream:
+                stream.write(b'test deb')
+        output = os.path.join(tmp, 'out')
+        os.makedirs(output)
+        with mock.patch.multiple(builder, RT=runtime_dir, TMP=os.path.join(tmp, 'build'), OUT=output, ASAR=asar, create=True), \
+                mock.patch.object(builder, 'run', side_effect=fake_dpkg) as dpkg:
+            for arch in ('deb-amd64', 'deb-arm64'):
+                builder.build_deb(arch)
+                app = os.path.join(builder.TMP, arch, 'root', 'opt', 'jingwei-zhitu')
+                assert not os.path.exists(os.path.join(app, 'chrome-sandbox'))
+                assert os.path.isfile(os.path.join(app, 'resources', 'app.asar'))
+                assert os.access(os.path.join(app, 'jingwei-zhitu'), os.X_OK)
+            assert dpkg.call_count == 2
+
+
 def main():
     test_icon_gate()
     test_required_set()
     test_archive_shape()
     test_linux_entry_shortcut()
     test_launcher_binary()
+    test_build_options()
+    test_deb_trimmed_sandbox()
     print('package_layout_test ok')
 
 

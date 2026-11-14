@@ -3,7 +3,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-SHOT = Path(os.environ.get('JW_SHOT', '/opt/cursor/artifacts'))
+SHOT = Path(os.environ.get('JW_SHOT', str(ROOT / '_work' / 'qa-results' / 'ruler')))
 
 
 def main():
