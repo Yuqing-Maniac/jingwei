@@ -206,6 +206,32 @@ def main():
           size: document.getElementById('gd-size').value
         })""")
         check('defaults survive reload', held['on'] == '不带框' and held['side'] == '红方' and held['size'] == '14', str(held))
+
+        pg.evaluate("""() => {
+          const el = document.getElementById('gd-stroke');
+          el.value = '#336699';
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        }""")
+        pg.wait_for_timeout(40)
+        arrow = pg.evaluate("""() => {
+          const before = P().nodes.map(n => n.id);
+          addNode({ type: 'dimArrow', w: 160, h: 48, text: '', rulerStep: 10, rulerGap: 48 }, 200, 360);
+          const n = P().nodes.find(x => before.indexOf(x.id) < 0);
+          const svg = nodeSVG(n, P(), true);
+          n.headColor = '#aa0044';
+          selectNodes([n.id]);
+          render();
+          return { id: n.id, stroke: n.stroke, head: n.headColor || '', svg: svg.indexOf('stroke="#336699"') >= 0 && svg.indexOf('fill="#336699"') >= 0 && svg.indexOf('fill="#aa0044"') < 0 };
+        }""")
+        check('new arrow takes the default line color on shaft and head', arrow['stroke'] == '#336699' and arrow['head'] == '#aa0044' and arrow['svg'] is True, str(arrow))
+        pg.click('#gd-sel')
+        pg.wait_for_timeout(40)
+        applied_arrow = pg.evaluate("""() => {
+          const n = P().nodes.find(x => x.type === 'dimArrow');
+          const svg = nodeSVG(n, P(), true);
+          return { stroke: n.stroke, head: n.headColor || '', svg: svg.indexOf('fill="#336699"') >= 0 && svg.indexOf('#aa0044') < 0 };
+        }""")
+        check('apply default line color clears a separate arrowhead', applied_arrow['stroke'] == '#336699' and applied_arrow['head'] == '' and applied_arrow['svg'] is True, str(applied_arrow))
         check('no page errors', not errs, str(errs[:2]))
         browser.close()
     if fails:

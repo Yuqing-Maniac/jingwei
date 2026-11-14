@@ -48,16 +48,23 @@ def main():
               side.dispatchEvent(new Event('change', { bubbles: true }));
               const dim = nodes.find(n => n.type === 'dimArrow');
               selectNodes([dim.id]); render();
+              const shown = dimLabel(dim);
               const dist = document.getElementById('p-dist');
+              const panel = dist.value;
               dist.value = '3 km';
               dist.dispatchEvent(new Event('input', { bubbles: true }));
+              render();
               const svg = exportSVGString(P(), true).str;
               return {
                 name: t.name,
                 group: t.group,
                 edited: one.text,
                 side: one.affiliation || 'neutral',
-                dist: dim.distText,
+                dist: shown,
+                panel: panel,
+                after: document.getElementById('p-dist').value,
+                stuck: dim.distText || '',
+                svgHas: svg.indexOf(shown) >= 0 && svg.indexOf('3 km') < 0,
                 blue: nodes.some(n => n.affiliation === 'blue'),
                 red: nodes.some(n => n.affiliation === 'red'),
                 ms: nodes.some(n => n.icon && n.icon.indexOf('ms:') === 0),
@@ -82,7 +89,7 @@ def main():
                 info['group'] == '作战场景' and info['name'] in gallery['titles'] and gallery['bad'] == 0,
                 info['edited'] == '已改标注',
                 info['side'] in ('red', 'blue'),
-                info['dist'] == '3 km' and '3 km' in info['svg'],
+                info['dist'] and info['panel'] == info['dist'] and info['after'] == info['dist'] and info['stuck'] == '' and info['svgHas'],
                 info['blue'] and info['red'] and info['ms'] and info['lib'] > 0,
                 info['std'] and info['dim'] and info['shape'],
                 '<polygon' in info['svg'] and '<image' in info['svg'],
