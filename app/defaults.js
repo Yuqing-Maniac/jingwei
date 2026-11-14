@@ -63,6 +63,7 @@ var JwDefaults = (function () {
     if (inkBody(n)) {
       if (!own(spec, 'stroke') && d.stroke) n.stroke = d.stroke;
       if (!own(spec, 'noLine') && d.noLine) n.noLine = true;
+      if (isLineArrow(n) && !own(spec, 'headColor')) delete n.headColor;
     }
   }
   function stampLink(l) {
@@ -88,6 +89,7 @@ var JwDefaults = (function () {
     if (inkBody(n)) {
       if (d.stroke) n.stroke = d.stroke; else delete n.stroke;
       if (d.noLine) n.noLine = true; else delete n.noLine;
+      if (isLineArrow(n)) delete n.headColor;
     }
   }
   function applyLink(l, d) {
