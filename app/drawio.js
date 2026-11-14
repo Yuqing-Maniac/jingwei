@@ -153,7 +153,10 @@
       out.push(`<UserObject label="${xa(label)}" id="e${l.id}"${meta(ht)}><mxCell style="${xa(style)}" edge="1" parent="1" source="${cid(l.from)}" target="${cid(l.to)}"><mxGeometry relative="1" as="geometry">${way}</mxGeometry></mxCell></UserObject>`);
     }
     const b = contentBBox(p);
-    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${t.bg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${out.join('')}</root></mxGraphModel>` };
+    const sheet = window.CanvasBg ? CanvasBg.drawio(p) : null;
+    const sheetBg = sheet && /^#[0-9A-Fa-f]{6}$/.test(sheet.background || '') ? sheet.background : t.bg;
+    const sheetCells = sheet && sheet.cells ? sheet.cells : '';
+    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.join('')}</root></mxGraphModel>` };
   }
   function exportString(pageList) {
     const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
