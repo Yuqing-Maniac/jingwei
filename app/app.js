@@ -1424,7 +1424,7 @@ function diagramSVG(p, exp, pre = 'm') {
   const t = T();
   /* 容器在下、连线居中、框与装备在上：连线穿过的框遮住线段，不再压字 */
   const ord = drawOrder(p), conts = ord.filter(n => isCont(n)), rest = ord.filter(n => !isCont(n));
-  return markerDefs(t, pre) + conts.map(n => nodeSVG(n, p, exp)).join('') + p.links.map(l => linkSVG(l, p, exp, pre, 'line')).join('') + rest.map(n => nodeSVG(n, p, exp)).join('') + p.links.map(l => linkSVG(l, p, exp, pre, 'label')).join('');
+  return markerDefs(t, pre) + conts.map(n => nodeSVG(n, p, exp)).join('') + (window.Payloads ? Payloads.markup(p,{exporting:!!exp,prefix:pre+'payload'}) : '') + p.links.map(l => linkSVG(l, p, exp, pre, 'line')).join('') + rest.map(n => nodeSVG(n, p, exp)).join('') + p.links.map(l => linkSVG(l, p, exp, pre, 'label')).join('');
 }
 
 /* ---------- view / render ---------- */
@@ -1561,6 +1561,8 @@ function contentBBox(p = P()) {
   const region = window.CanvasBg && CanvasBg.regionBox ? CanvasBg.regionBox(p) : null;
   if (!p.nodes.length) return region || { x: 0, y: 0, w: 400, h: 300 };
   let x0 = region ? region.x : Infinity, y0 = region ? region.y : Infinity, x1 = region ? region.x + region.w : -Infinity, y1 = region ? region.y + region.h : -Infinity;
+  const effects=window.Payloads?Payloads.bounds(p):null;
+  if(effects){x0=Math.min(x0,effects.x);y0=Math.min(y0,effects.y);x1=Math.max(x1,effects.x+effects.w);y1=Math.max(y1,effects.y+effects.h);}
   for (const n of p.nodes) {
     if (n.type === 'legend') legendLayout(n, p);
     let nx0 = n.x, ny0 = n.y, nx1 = n.x + n.w, ny1 = n.y + n.h;
@@ -1599,12 +1601,12 @@ function fit() {
 }
 function fitView(p) {
   const b = contentBBox(p || P()), r = svg.getBoundingClientRect();
-  const k = clamp(Math.min((r.width - 60) / b.w, (r.height - 80) / b.h), 0.15, 2);
+  const k = clamp(Math.min((r.width - 60) / b.w, (r.height - 80) / b.h), 1e-12, 2);
   return { x: b.x - (r.width / k - b.w) / 2, y: b.y - (r.height / k - b.h) / 2 + 10 / k, k: k };
 }
 function zoomAt(k2, cx, cy) {
   const w = clientToWorld(cx, cy), r = svg.getBoundingClientRect();
-  view.k = clamp(k2, 0.15, 4); view.x = w.x - (cx - r.left) / view.k; view.y = w.y - (cy - r.top) / view.k; applyView(); renderOverlay();
+  view.k = clamp(k2, 1e-12, 4); view.x = w.x - (cx - r.left) / view.k; view.y = w.y - (cy - r.top) / view.k; applyView(); renderOverlay();
 }
 
 /* ---------- parent assignment ---------- */
@@ -2421,6 +2423,7 @@ function addNode(spec, wx, wy) {
   checkpoint();
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
   if (window.JwDefaults) JwDefaults.stampNode(n, spec);
+  if(window.Payloads)Payloads.normalizeNode(n);
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
   if (n.type === 'legend') P().noLegend = false;
@@ -3823,6 +3826,7 @@ function renderProps() {
       if (cb) h += `<hr><div class="hint">复合图标（${cb.kind === 'formation' ? '编队' : '组合'}，${cb.members.length} 个成员）</div><div class="grid2">${cb.kind === 'formation' ? '<button id="p-cbedit">编辑编队</button>' : ''}<button id="p-ungroup">拆分（Ctrl+Shift+U）</button></div>`;
       else if (n.icon && n.icon.startsWith('lib:')) h += `<hr><div class="row"><button id="p-form" style="border-color:var(--line);justify-content:center">⁂ 用此装备生成编队（Ctrl+Shift+B）</button></div>`;
     }
+    if(window.Payloads)h+=Payloads.propsHTML(n);
     if (window.Std) h += Std.propsHTML('node', n, p);
     const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type);
     if (showSub) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
@@ -3912,6 +3916,7 @@ function bindProps() {
   if (window.Compact && !l && !n && !links.length) Compact.bind($('#props'));
   if (window.JwDefaults) JwDefaults.bind($('#props'));
   if (window.Std && links.length < 2) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
+  if(n&&window.Payloads)Payloads.bindProps(n);
   on('#d-ms', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.msColor = b.dataset.v; renderPalette(); render(); if ($('#modal').style.display === 'flex') renderPicker(); });
 }
 function setTheme(k) { checkpoint(); doc.theme = k; $('#b-theme').value = k; render(); }
@@ -4029,12 +4034,36 @@ function exportSVGString(p, bg) {
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
   const sheet = window.CanvasBg ? CanvasBg.markup(p, { x, y, w, h }) : '';
-  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${sheet}${inner}</svg>`), w, h };
+  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${sheet}${inner}</svg>`), w, h };
+}
+/* Payload effects have one world-coordinate source across screen and exports.
+ * Snapshot padding includes stroke edges; model distances are never rescaled. */
+function payloadEffectsSVG(page) {
+  if(!window.Payloads)return null;
+  const bounds=Payloads.bounds(page);if(!bounds)return null;
+  const body=Payloads.markup(page,{exporting:true,prefix:'payloadExport'+String(page.id).replace(/[^a-z0-9_-]/gi,'')});
+  if(!body)return null;
+  const pad=Math.max(2,Math.max(bounds.w,bounds.h)/4096*2);
+  const box={x:bounds.x-pad,y:bounds.y-pad,w:Math.max(1,bounds.w+2*pad),h:Math.max(1,bounds.h+2*pad)};
+  return {box,str:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${box.w}" height="${box.h}" viewBox="${box.x} ${box.y} ${box.w} ${box.h}" font-family="${esc(FONT)}">${body}</svg>`};
+}
+async function payloadEffectsPNG(page) {
+  const picture=payloadEffectsSVG(page);if(!picture)return null;
+  const b=picture.box,scale=Math.min(1,4096/Math.max(b.w,b.h));
+  const blob=await rasterize(picture.str,b.w,b.h,scale);
+  picture.uri=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('载荷效果导出失败'));reader.readAsDataURL(blob);});
+  return picture;
 }
 function rasterize(svgStr, w, h, scale) {
   return new Promise((res, rej) => {
+    scale=Math.min(scale,8192/Math.max(w,h),Math.sqrt(32*1024*1024/(w*h)));
+    let pixelW=Math.max(1,Math.round(w*scale)),pixelH=Math.max(1,Math.round(h*scale));
+    if(pixelW*pixelH>32*1024*1024){const k=Math.sqrt(32*1024*1024/(pixelW*pixelH));pixelW=Math.max(1,Math.floor(pixelW*k));pixelH=Math.max(1,Math.floor(pixelH*k));}
+    // A large world viewBox must not become a huge intrinsic SVG bitmap.
+    // Keep world geometry intact and sample the complete source at output size.
+    if(w>32767||h>32767){const xml=new DOMParser().parseFromString(svgStr,'image/svg+xml'),root=xml.documentElement;root.setAttribute('width',String(pixelW));root.setAttribute('height',String(pixelH));svgStr=new XMLSerializer().serializeToString(root);}
     const img = new Image(); const url = URL.createObjectURL(new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' }));
-    img.onload = () => { const c = document.createElement('canvas'); c.width = Math.round(w * scale); c.height = Math.round(h * scale); const g = c.getContext('2d'); g.scale(scale, scale); g.drawImage(img, 0, 0, w, h); URL.revokeObjectURL(url); c.toBlob(b => b ? res(b) : rej(new Error('PNG 生成失败')), 'image/png'); };
+    img.onload = () => { const c = document.createElement('canvas'); c.width = pixelW; c.height = pixelH; const g = c.getContext('2d'); g.drawImage(img, 0, 0, pixelW, pixelH); URL.revokeObjectURL(url); c.toBlob(b => b ? res(b) : rej(new Error('PNG 生成失败')), 'image/png'); };
     img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('图像渲染失败')); }; img.src = url;
   });
 }
@@ -4167,6 +4196,7 @@ async function exportPPTX() {
     const X = v => ox + (v - b.x + pad) * f, Y = v => oy + (v - b.y + pad) * f, S = v => Math.max(0.001, v * f), PT = px => Math.max(5, +(px * f * 72).toFixed(1)), LW = px => Math.max(0.25, +(px * f * 72).toFixed(2));
     const txt = (lines, o) => lines.join('\n');
     if (window.CanvasBg) await CanvasBg.paintPptx(slide, pptx, p, { X, Y, S, box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 } });
+    const payloadPicture=await payloadEffectsPNG(p);
     let rotatingNode = null;
     const turnPpt = o => {
       if (!rotatingNode || !rotOf(rotatingNode) || !o || !isFinite(o.x) || !isFinite(o.y)) return o;
@@ -4180,7 +4210,10 @@ async function exportPPTX() {
     slide.addShape = (type, o) => addShape0(type, turnPpt(o));
     slide.addText = (text, o) => addText0(text, turnPpt(o));
     slide.addImage = o => addImage0(turnPpt(o));
+    let payloadDrawn=false;
+    const drawPayload=()=>{if(!payloadDrawn&&payloadPicture){const box=payloadPicture.box;addImage0({data:payloadPicture.uri,x:X(box.x),y:Y(box.y),w:S(box.w),h:S(box.h),altText:'PayloadEffects'});}payloadDrawn=true;};
     for (const n of drawOrder(p)) {
+      if(!isCont(n))drawPayload();
       rotatingNode = canRotate(n) && !isLineArrow(n) ? n : null;
       const base = { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h) };
       if (contRow(n)) {
@@ -4270,6 +4303,7 @@ async function exportPPTX() {
       const tg = codeTagOf(n, p);
       if (tg) addT(slide, tg.text, { x: X(tg.x), y: Y(tg.y), w: S(tg.w), h: S(tg.h), shape: pptx.ShapeType.roundRect, rectRadius: 0.02, fill: { color: hex(tg.fill) }, line: { color: hex(tg.stroke), width: LW(0.7) }, color: hex(tg.color), fontFace: fontFace(n), fontSize: PT(tg.size), bold: true, align: 'center', valign: 'middle', margin: 0, wrap: false });
     }
+    drawPayload();
     rotatingNode = null;
     for (const l of p.links) {
       const pts = linkPoints(l, p); if (!pts) continue;
@@ -4360,6 +4394,14 @@ async function exportVSDX(pageList) {
       const sheetShapes = CanvasBg.vsdxShapes(p, { box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 }, f, X, Y, cell, num, id: () => sid++, zip, rels });
       if (sheetShapes && sheetShapes.length) shapes.unshift(...sheetShapes);
     }
+    const payloadPicture=await payloadEffectsPNG(p);
+    let payloadShape='';
+    if(payloadPicture){
+      const box=payloadPicture.box,W=box.w*f,H=box.h*f,fn='payload-effects-'+(++imgN)+'.png',rid='rId'+(rels.length+1);
+      zip.file('visio/media/'+fn,payloadPicture.uri.split(',')[1],{base64:true});
+      rels.push(`<Relationship Id='${rid}' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/image' Target='../media/${fn}'/>`);
+      payloadShape=`<Shape ID='${sid++}' Type='Foreign' NameU='PayloadEffects' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX',num(X(box.x)+W/2))}${cell('PinY',num(Y(box.y)-H/2))}${cell('Width',num(W))}${cell('Height',num(H))}${cell('LocPinX',num(W/2))}${cell('LocPinY',num(H/2))}${cell('ImgOffsetX',0)}${cell('ImgOffsetY',0)}${cell('ImgWidth',num(W))}${cell('ImgHeight',num(H))}${cell('LinePattern',0)}${cell('FillPattern',0)}<ForeignData ForeignType='Bitmap' CompressionType='PNG'><Rel r:id='${rid}'/></ForeignData></Shape>`;
+    }
     const charSec = (size, color, bold, face) => `<Section N='Character'><Row IX='0'>${cell('Font', face || fontFace(null))}${cell('Color', color)}${cell('Size', num(size * 0.75 / 72), 'PT')}${cell('Style', bold ? 1 : 0)}</Row></Section>`;
     const paraSec = al => `<Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', al === 'left' ? 0 : 1)}</Row></Section>`;
     const rectGeom = (w, h) => `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(w))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section>`;
@@ -4402,6 +4444,7 @@ async function exportVSDX(pageList) {
       return s + '</Shape>';
     };
     for (const n of drawOrder(p)) {
+      if(!isCont(n)&&payloadShape){shapes.push(payloadShape);payloadShape='';}
       rotatingNode = canRotate(n) && !isLineArrow(n) ? n : null;
       if (contRow(n)) {
         exportCont(n, p, {
@@ -4445,6 +4488,7 @@ async function exportVSDX(pageList) {
       const tg = codeTagOf(n, p);
       if (tg) shapes.push(box(tg.x, tg.y, tg.w, tg.h, { fill: tg.fill, line: tg.stroke, lw: 0.7, round: 2, text: tg.text, size: tg.size, bold: true, color: tg.color, face: fontFace(n) }));
     }
+    if(payloadShape)shapes.push(payloadShape);
     function polyShape(pts, color, K, dir, ops) {
       if (rotatingNode && rotOf(rotatingNode) && !ops) pts = pts.map(q => rotPoint(rotatingNode, q.x, q.y));
       ops = ops || pts.map((q, i) => [i ? 'L' : 'M', q.x, q.y]);
@@ -5130,7 +5174,7 @@ function friendlyErr(err) {
   if (/is not a valid|not well-formed|parsererror|XML/i.test(m)) return '文件内容格式有误，无法解析';
   return m;
 }
-function loadDoc(d) { for (const pg of Object.values(d.pages || {})) { if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } if (pg.nodes) for (let i = 0; i < pg.nodes.length; i++) {migrateDimArrow(pg.nodes[i]);fitFan(pg.nodes[i]);} } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
+function loadDoc(d) { for (const pg of Object.values(d.pages || {})) { if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } if (pg.nodes) for (let i = 0; i < pg.nodes.length; i++) {migrateDimArrow(pg.nodes[i]);fitFan(pg.nodes[i]);if(window.Payloads)Payloads.normalizeNode(pg.nodes[i]);} } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
   adoptPages(d);
   if (window.CanvasBg) CanvasBg.lockPages(d);
   doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); view = fitView(d.pages.root); render(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }

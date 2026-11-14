@@ -342,7 +342,7 @@ STATE_JS = r"""(async () => {
   const required = ['#jw-start','#jw-home','#jw-go','#jw-ver','#palette','#props','#svg','#b-help'];
   return {info, title:document.title, url:location.href, ready:document.readyState,
     generic:icons.length, countries:icons.reduce((n,i)=>n+Object.keys(i.countries||{}).length,0),
-    missing:required.filter(s=>!document.querySelector(s)),
+    missing:required.filter(s=>!document.querySelector(s)).concat(typeof Payloads==='undefined'||typeof PayloadPresets==='undefined'?['platform-payload-modules']:[]),
     homeVisible:!!document.querySelector('#jw-start.on'),
     countryOptions:Array.from(document.querySelectorAll('#pal-appearance option')).map(x=>x.value),
     homeCards:document.querySelectorAll('#jw-start [data-a]').length};

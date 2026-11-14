@@ -85,8 +85,8 @@ var CanvasBg = (function () {
   // Far edge shortens toward the center and row spacing tightens toward the top.
   function gridSegments(box, grid) {
     const gap = Math.max(8, grid.gap);
-    const cols = Math.max(1, Math.round(box.w / gap));
-    const rows = Math.max(1, Math.round(box.h / gap));
+    const cols = Math.max(1, Math.min(2048, Math.round(box.w / gap)));
+    const rows = Math.max(1, Math.min(2048, Math.round(box.h / gap)));
     const t = Math.max(0, Math.min(100, grid.persp)) / 100;
     const pull = 0.75 * t;
     let segs = [];
@@ -226,8 +226,10 @@ var CanvasBg = (function () {
     var ctx = canvas.getContext('2d');
     if (!ctx || typeof ctx.createLinearGradient !== 'function' || typeof canvas.toDataURL !== 'function') return '';
     var w = Math.max(1, Math.round(box.w)), h = Math.max(1, Math.round(box.h));
-    canvas.width = w;
-    canvas.height = h;
+    var sampling=Math.min(1,4096/Math.max(w,h));
+    canvas.width = Math.max(1,Math.round(w*sampling));
+    canvas.height = Math.max(1,Math.round(h*sampling));
+    if(sampling<1&&typeof ctx.scale==='function')ctx.scale(sampling,sampling);
     var g;
     if (model.grad.kind === 'radial' && typeof ctx.createRadialGradient === 'function') {
       g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.hypot(w, h) / 2);

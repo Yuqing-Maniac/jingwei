@@ -5,7 +5,7 @@
 - **网页版**：`app/` 下的模块拼成一个离线单文件 html，在 Chromium 69+／Firefox 68+ 中运行。
 - **桌面版**：Electron 22.3.27 外壳（`desktop/`）加载同一界面（多注入 `app/desk/`）。不依赖系统浏览器，支持 Windows 7～11 与银河麒麟 V10（飞腾 arm64、x86_64）。
 
-当前版本 **3.6.6**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。桌面版首页显示的版本来自这个文件。
+当前版本 **3.6.7**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。桌面版首页显示的版本来自这个文件。
 
 ## 2. 目录
 ```
@@ -25,6 +25,7 @@ app/                 网页版源码（全部是“经典脚本”，按 build_w
   convert.js         格式转换对话框（批量）
   demo.js            启动示例图；compat.js 旧浏览器兼容层（ES5）
   country_icons.js  国别外形生成数据（build/icons/package_country.cjs），与阵营涂装独立
+  payload_presets.js / payloads.js  平台载荷绘图预设与n.payloads模型、配置UI、世界坐标效果及边界；载荷方向独立于平台旋转，SVG/PNG/PPT/VSD/draw.io共用效果
   icons*.js          拟物图标库（由 app/icons_src/icons_gen*.py 生成）
   desk/desk.css, desk.js   桌面版专用：标题栏、首页、本地文件读写（只在 window.jwDesk 存在时生效）
 desktop/             Electron 主进程 main.js、preload.js、splash.html、brand.woff、图标；package.json 的 version 即发布版本

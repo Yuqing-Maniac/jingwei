@@ -68,4 +68,6 @@ jobs:
           python3 tests/wingman_icons_test.py
           python3 tests/expansion_icons_test.py
           python3 tests/image_insert_test.py
+          node tests/payload_presets_test.cjs
+          python3 tests/payloads_test.py
           python3 tests/purefan_test.py

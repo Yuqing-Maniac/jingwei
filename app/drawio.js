@@ -61,6 +61,7 @@
   }
   function pageXML(p, pageIds) {
     const t = T(), byId = new Map(p.nodes.map(n => [n.id, n])), out = [];
+    let effectAt=-1;
     const cid = id => 'n' + id, ids = new Set();
     const abs = n => ({ x: n.x, y: n.y });
     const parentOf = n => (n.parent && byId.has(n.parent) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) ? byId.get(n.parent) : null;
@@ -99,10 +100,11 @@
     const visit = n => { if (seen.has(n.id)) return; const pa = parentOf(n); if (pa) visit(pa); seen.add(n.id); order.push(n); };
     drawOrder(p).forEach(visit);
     for (const n of order) {
+      if(!isCont(n)&&effectAt<0)effectAt=out.length;
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_imageOnly: n.imageOnly ? 1 : '', ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const ht = { ht_type: n.type, ht_payloads: Array.isArray(n.payloads) ? n.payloads : '', ht_imageOnly: n.imageOnly ? 1 : '', ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
       const coverageData = {}; Object.keys(n).filter(k => /^coverage[A-Z]/.test(k)).forEach(k => { coverageData[k] = n[k]; });
       if (n.coverageKind) ht.ht_coverage = coverageData;
       if (!isCont(n) && !isLineArrow(n) && (n.icon || n.coverageKind)) { ht.ht_labelLayout = 1; ht.ht_text = n.text || ''; }
@@ -194,6 +196,7 @@
         }
       }
     }
+    if(effectAt<0)effectAt=out.length;
     for (const l of p.links) {
       if (!ids.has(cid(l.from)) || !ids.has(cid(l.to))) continue;
       const K = LINK_KINDS[l.kind] || LINK_KINDS.plain, c = t.link[l.kind] || t.link.plain;
@@ -213,7 +216,9 @@
     const sheet = window.CanvasBg ? CanvasBg.drawio(p) : null;
     const sheetBg = sheet && /^#[0-9A-Fa-f]{6}$/.test(sheet.background || '') ? sheet.background : t.bg;
     const sheetCells = sheet && sheet.cells ? sheet.cells : '';
-    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.join('')}</root></mxGraphModel>` };
+    const effect=typeof payloadEffectsSVG==='function'?payloadEffectsSVG(p):null;
+    const effectCells=effect?`<UserObject label="" id="payload-effects" ht_part="payload-effects"><mxCell style="${xa('shape=image;imageAspect=0;locked=1;movable=0;resizable=0;connectable=0;image=data:image/svg+xml,'+b64(effect.str))}" vertex="1" parent="1"><mxGeometry x="${effect.box.x}" y="${effect.box.y}" width="${effect.box.w}" height="${effect.box.h}" as="geometry"/></mxCell></UserObject>`:'';
+    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.slice(0,effectAt).join('')}${effectCells}${out.slice(effectAt).join('')}</root></mxGraphModel>` };
   }
   function exportString(pageList) {
     const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
@@ -349,7 +354,7 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg' || c.data.ht_part === 'label') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg' || c.data.ht_part === 'label' || c.data.ht_part === 'payload-effects') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');
@@ -370,6 +375,7 @@
         const n = mkNode({ type, x: a.x, y: a.y, w: c.geo.w || 120, h: c.geo.h || 40, text, size: Math.max(8, Math.min(40, +(D.ht_size || st.fontSize) || 13)), bold: (+st.fontStyle & 1) === 1 });
         n._c = c; n._horiz = st.horizontal !== '0';
         if(D.ht_imageOnly){n.imageOnly=true;n.noBox=true;n.text='';if(D.ht_flipX)n.flipX=true;if(D.ht_flipY)n.flipY=true;}
+        if(D.ht_payloads){try{const list=JSON.parse(D.ht_payloads);if(Array.isArray(list)){n.payloads=list;}}catch(_){warnings.push('载荷配置无法解析：'+(text||c.id));}}
         if (D.ht_status) n.status = D.ht_status;
         if (D.ht_etype) n.etype = D.ht_etype; if (D.ht_code) n.code = D.ht_code;
         if (D.ht_attrs) try { n.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
@@ -421,6 +427,7 @@
           if (st.strokeColor && !DEF_COLORS.test(st.strokeColor)) n.stroke = st.strokeColor;
         }
         if(n.type==='fan'){const pad=+D.ht_fanPad||0;n.x=a.x+pad;n.y=a.y+pad;n.w=c.geo.w-2*pad;n.h=c.geo.h-2*pad;fitFan(n);}
+        if(window.Payloads&&Array.isArray(n.payloads))Payloads.normalizeNode(n);
         nodeOf.set(c.id, n); page.nodes.push(n);
       }
       /* 父子：沿 draw.io 父链找到最近的已导入单元（透明 group 跳过） */
