@@ -14,12 +14,14 @@ with sync_playwright() as pw:
       return {count:icons.length,unique:keys.size,all:ICONS.length,
         variants:icons.every(x=>['neutral','red','blue'].every(s=>x.variants[s].includes('data:image/webp;base64,')) && new Set(Object.values(x.variants)).size===3)};
     }''')
-    assert result['count']==655 and result['unique']==655 and result['variants'],result
+    assert result['count']==656 and result['unique']==656 and result['variants'],result
     page.fill('#pal-q','rag')
     page.wait_for_selector('#palette .pitem')
     assert '检索增强生成RAG' in page.locator('#palette').inner_text()
     page.fill('#pal-q','水下目标')
     assert '磁探无人机' in page.locator('#palette').inner_text()
+    page.fill('#pal-q','电子对抗无人机')
+    assert '电子对抗无人机（复合翼）' in page.locator('#palette').inner_text()
     page.fill('#pal-q','')
     page.evaluate("selectNodes([P().nodes.find(x=>x.icon && x.icon.startsWith('lib:')).id]);render();")
     node_id=page.evaluate('selectedNodes()[0].id')
@@ -35,4 +37,4 @@ with sync_playwright() as pw:
     assert page.evaluate('projectJSON()')==saved
     assert not errors,errors
     browser.close()
-    print('redrawn_icons_test ok: 655 icons, 3 variants, selection, undo, serialization')
+    print('redrawn_icons_test ok: 656 icons, 3 variants, selection, undo, serialization')

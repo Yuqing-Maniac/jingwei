@@ -1,7 +1,7 @@
 {
   "baseline": 398,
-  "added": 257,
-  "total": 655,
+  "added": 258,
+  "total": 656,
   "expandedAreas": [
     {
       "category": "后勤保障",
@@ -357,9 +357,10 @@
     },
     {
       "category": "无人",
-      "added": 1,
+      "added": 2,
       "names": [
-        "磁探无人机"
+        "磁探无人机",
+        "电子对抗无人机（复合翼）"
       ]
     }
   ],

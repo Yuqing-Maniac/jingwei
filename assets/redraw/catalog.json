@@ -4195,6 +4195,20 @@
       ],
       "status": "reviewed-first-pass",
       "addedIn": "3.5.0"
+    },
+    {
+      "key": "uav_ew_vtol",
+      "name": "电子对抗无人机（复合翼）",
+      "cat": "无人",
+      "description": "修长复合翼垂直起降平台，配机腹电子对抗吊舱、机背刀状天线和侧向天线罩，并保留独立小型光电载荷。",
+      "keywords": [
+        "电子对抗",
+        "电子战",
+        "复合翼",
+        "电子干扰"
+      ],
+      "status": "reviewed-first-pass",
+      "addedIn": "3.5.2"
     }
   ]
 }
