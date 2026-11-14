@@ -174,7 +174,7 @@
 @media (max-width:760px){#cb-dlg .box{grid-template-columns:1fr}#cb-dlg .side{border-right:none;border-bottom:1px solid var(--line);max-height:46vh}}`;
     document.head.appendChild(st);
     dlg = document.createElement('div'); dlg.id = 'cb-dlg';
-    dlg.innerHTML = `<div class="box" role="dialog" aria-label="编队与复合图标">
+    setMarkup(dlg, `<div class="box" role="dialog" aria-label="编队与复合图标">
 <div class="side">
   <div><h3>编队生成器</h3><div class="hint">把同一种装备按阵型合成一个复合图标，在图中作为一个元素使用（可连线、可下钻、可导出）。</div></div>
   <label class="f">装备图标<input type="text" id="cb-q" placeholder="搜索：四旋翼、无人艇、战斗机…"></label>
@@ -187,7 +187,7 @@
 </div>
 <div class="main"><div class="prev"><img id="cb-img" alt="编队预览"></div>
 <div class="foot"><span class="hint" style="margin-right:auto">也可在画布上框选多个元素后按 Ctrl+G 组合</span><button id="cb-cancel">取消</button><button id="cb-ok" class="primary">插入到画布</button></div></div>
-</div>`;
+</div>`);
     document.body.appendChild(dlg);
     const $c = s => dlg.querySelector(s);
     dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
@@ -209,13 +209,13 @@
   function renderIcons() {
     const q = dlg.querySelector('#cb-q').value.trim();
     const list = iconChoices().filter(i => !q || i.name.includes(q));
-    dlg.querySelector('#cb-icons').innerHTML = list.map(i => `<button data-k="lib:${i.key}" class="${state.icon === 'lib:' + i.key ? 'on' : ''}" title="${esc(i.name)}"><img src="${iconURI('lib:' + i.key)}" alt=""><span>${esc(i.name)}</span></button>`).join('') || '<div class="hint" style="grid-column:1/-1;padding:6px">没有匹配的图标</div>';
+    setMarkup(dlg.querySelector('#cb-icons'), list.map(i => `<button data-k="lib:${i.key}" class="${state.icon === 'lib:' + i.key ? 'on' : ''}" title="${esc(i.name)}"><img src="${iconURI('lib:' + i.key)}" alt=""><span>${esc(i.name)}</span></button>`).join('') || '<div class="hint" style="grid-column:1/-1;padding:6px">没有匹配的图标</div>');
   }
   function syncForm() {
     const $c = s => dlg.querySelector(s);
     $c('#cb-n').value = state.count; $c('#cb-nv').textContent = state.count + ' 个';
     $c('#cb-gap').value = state.gap; $c('#cb-taper').checked = state.taper; $c('#cb-frame').checked = state.frame; $c('#cb-name').value = state.name;
-    $c('#cb-pats').innerHTML = PATTERNS.map(([k, v]) => `<button data-p="${k}" class="${k === state.pattern ? 'on' : ''}">${v.replace(/（.*）/, '')}</button>`).join('');
+    setMarkup($c('#cb-pats'), PATTERNS.map(([k, v]) => `<button data-p="${k}" class="${k === state.pattern ? 'on' : ''}">${v.replace(/（.*）/, '')}</button>`).join(''));
     $c('#cb-seed').style.visibility = state.pattern === 'swarm' ? 'visible' : 'hidden';
   }
   function preview() { const r = buildSVG(formationSpec(state)); dlg.querySelector('#cb-img').src = r ? svgUri(r.svg) : ''; }

@@ -1,0 +1,102 @@
+{
+  "id": "20",
+  "icons": [
+    {
+      "key": "it_waf",
+      "name": "Web 应用防火墙",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_ca",
+      "name": "CA 证书",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_mq",
+      "name": "消息队列",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_cache",
+      "name": "缓存",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_middleware",
+      "name": "应用中间件",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_microservice",
+      "name": "微服务",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_registry",
+      "name": "镜像仓库",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_cicd",
+      "name": "持续集成",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_os",
+      "name": "国产操作系统",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_web",
+      "name": "门户网站",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_mobile",
+      "name": "移动应用",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_object_store",
+      "name": "对象存储",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_dw",
+      "name": "数据仓库",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_lakehouse",
+      "name": "湖仓一体",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_etl",
+      "name": "数据集成",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "it_stream",
+      "name": "流计算",
+      "cat": "信息技术",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-20.png"
+}

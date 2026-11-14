@@ -1,0 +1,102 @@
+{
+  "id": "10",
+  "icons": [
+    {
+      "key": "uav_tethered",
+      "name": "系留无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_micro",
+      "name": "微型扑翼无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_solar",
+      "name": "太阳能长航时无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_catapult",
+      "name": "弹射起飞无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_coaxial",
+      "name": "共轴双旋翼无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_ducted",
+      "name": "涵道风扇无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_seaplane",
+      "name": "水上起降无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_ew",
+      "name": "电子战无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_relay",
+      "name": "通信中继无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_recon_small",
+      "name": "手抛式侦察无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "drone_nest",
+      "name": "无人机机巢",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "drone_launcher",
+      "name": "无人机集群发射车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_armed",
+      "name": "武装无人艇（遥控武器站）",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_interceptor",
+      "name": "高速无人拦截艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_kamikaze",
+      "name": "自杀式无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_large",
+      "name": "大型无人水面舰（三体船）",
+      "cat": "无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-10.png"
+}

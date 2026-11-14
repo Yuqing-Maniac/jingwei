@@ -1,0 +1,102 @@
+{
+  "id": "28",
+  "icons": [
+    {
+      "key": "ext_03_01",
+      "name": "野战医院",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_02",
+      "name": "手术方舱",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_03",
+      "name": "远程医疗终端",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_04",
+      "name": "担架救援机器人",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_05",
+      "name": "伤员转运舱",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_06",
+      "name": "急救背包",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_07",
+      "name": "自动体外除颤器",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_08",
+      "name": "生命体征监护仪",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_09",
+      "name": "医用制氧机",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_10",
+      "name": "移动CT车",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_11",
+      "name": "检验检测方舱",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_12",
+      "name": "药品冷藏箱",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_13",
+      "name": "消防指挥车",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_14",
+      "name": "水域救援艇",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_15",
+      "name": "搜救犬",
+      "cat": "医疗救援",
+      "status": "pending"
+    },
+    {
+      "key": "ext_03_16",
+      "name": "应急避难所",
+      "cat": "医疗救援",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-28.png"
+}

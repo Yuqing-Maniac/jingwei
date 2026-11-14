@@ -1,0 +1,102 @@
+{
+  "id": "40",
+  "icons": [
+    {
+      "key": "ext_15_01",
+      "name": "系统总体设计组",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_02",
+      "name": "任务协调中心",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_03",
+      "name": "联络协调席位",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_04",
+      "name": "资源保障协调组",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_05",
+      "name": "质量监督人员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_06",
+      "name": "试验测试工程师",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_07",
+      "name": "系统架构师",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_08",
+      "name": "数据管理员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_09",
+      "name": "网络管理员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_10",
+      "name": "安全管理员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_11",
+      "name": "人工智能算法工程师",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_12",
+      "name": "海洋调查人员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_13",
+      "name": "应急救援指挥员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_14",
+      "name": "生产调度员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_15",
+      "name": "设备检验员",
+      "cat": "组织协同",
+      "status": "pending"
+    },
+    {
+      "key": "ext_15_16",
+      "name": "培训教员",
+      "cat": "组织协同",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-40.png"
+}

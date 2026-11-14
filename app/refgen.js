@@ -362,7 +362,7 @@
   }
   function fillSources(selId) {
     const list = sources();
-    q('#rg-src').innerHTML = list.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+    setMarkup(q('#rg-src'), list.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join(''));
     q('#rg-src').value = selId || 'cur';
     pickSource();
   }
@@ -392,7 +392,7 @@
     const s = sources().find(x => x.id === q('#rg-src').value) || sources()[0];
     try { refDoc = s.get(); } catch (e) { console.error(e); msg('参照加载失败：' + (e.message || e), true); return; }
     const ps = pagesOf(refDoc);
-    q('#rg-page').innerHTML = ps.map(({ p, dep }) => `<option value="${esc(p.id)}">${'　'.repeat(dep)}${dep ? '⊕ ' : ''}${esc(p.name || '页面')}${p.view ? '（' + esc(p.view) + '）' : ''}</option>`).join('');
+    setMarkup(q('#rg-page'), ps.map(({ p, dep }) => `<option value="${esc(p.id)}">${'　'.repeat(dep)}${dep ? '⊕ ' : ''}${esc(p.name || '页面')}${p.view ? '（' + esc(p.view) + '）' : ''}</option>`).join(''));
     const want = refDoc === doc && refDoc.pages[cur] ? cur : ps[0].p.id;
     q('#rg-page').value = want; pickPage();
   }
@@ -408,8 +408,8 @@
   }
   function renderMap() {
     const saved = lsGet().lastMap || {};
-    q('#rg-map').innerHTML = `<tr><th>参照层</th><th style="width:34%">新项目对应层</th><th style="width:38%">指定条目（可选，顿号分隔）</th></tr>` +
-      rows.map(r => `<tr class="${r.kind}" data-k="${r.key}"><td class="nm">${r.kind === 'lane' ? '└ ' : ''}${esc(r.name.replace(/<br>/g, ' '))} <span class="rg-hint">×${r.count}</span><small title="${esc(r.sample)}">${esc(r.sample)}</small></td><td><input type="text" data-f="name" placeholder="同名或留空" value="${esc((saved[r.name] || {}).name || '')}"></td><td><input type="text" data-f="items" placeholder="${r.kind === 'band' ? '留空沿用' : '留空沿用'}"></td></tr>`).join('');
+    setMarkup(q('#rg-map'), `<tr><th>参照层</th><th style="width:34%">新项目对应层</th><th style="width:38%">指定条目（可选，顿号分隔）</th></tr>` +
+      rows.map(r => `<tr class="${r.kind}" data-k="${r.key}"><td class="nm">${r.kind === 'lane' ? '└ ' : ''}${esc(r.name.replace(/<br>/g, ' '))} <span class="rg-hint">×${r.count}</span><small title="${esc(r.sample)}">${esc(r.sample)}</small></td><td><input type="text" data-f="name" placeholder="同名或留空" value="${esc((saved[r.name] || {}).name || '')}"></td><td><input type="text" data-f="items" placeholder="${r.kind === 'band' ? '留空沿用' : '留空沿用'}"></td></tr>`).join(''));
   }
   function readMap() {
     const m = {};
@@ -424,8 +424,8 @@
     });
   }
   function drawRef() {
-    try { q('#rg-refprev').innerHTML = svgOf(refDoc, refDoc.pages[refPid], 'rgr'); }
-    catch (e) { console.error(e); q('#rg-refprev').innerHTML = `<div class="rg-empty">预览失败：${esc(e.message || e)}</div>`; }
+    try { setMarkup(q('#rg-refprev'), svgOf(refDoc, refDoc.pages[refPid], 'rgr')); }
+    catch (e) { console.error(e); setMarkup(q('#rg-refprev'), `<div class="rg-empty">预览失败：${esc(e.message || e)}</div>`); }
   }
 
   /* 目标文档外壳：新建文档模式继承参照的主题与配置；其他模式沿用当前文档 */
@@ -446,19 +446,19 @@
   }
   function drawOut() {
     const box = q('#rg-outprev'), rep = q('#rg-rep');
-    if (!result) { box.innerHTML = '<div class="rg-empty">点下方“生成预览”</div>'; rep.innerHTML = ''; return; }
+    if (!result) { setMarkup(box, '<div class="rg-empty">点下方“生成预览”</div>'); setMarkup(rep, ''); return; }
     const { res, shell } = result, p = res.pages[0];
     const d = Object.assign({}, shell, { custom: Object.assign({}, doc.custom, refDoc.custom || {}), pages: Object.fromEntries(res.pages.map(x => [x.id, x])) });
-    box.innerHTML = svgOf(d, p, 'rgo');
+    setMarkup(box, svgOf(d, p, 'rgo'));
     const s = res.stats, w = [...new Set(res.warnings)];
-    rep.innerHTML = `${s.pages > 1 ? `${s.pages} 页（含 ${s.pages - 1} 个展开页）· ` : ''}${s.bands} 个分组带 · ${s.lanes} 层 · ${s.items} 个条目 · ${s.links} 条连接` + (w.length ? `<ul>${w.slice(0, 20).map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
+    setMarkup(rep, `${s.pages > 1 ? `${s.pages} 页（含 ${s.pages - 1} 个展开页）· ` : ''}${s.bands} 个分组带 · ${s.lanes} 层 · ${s.items} 个条目 · ${s.links} 条连接` + (w.length ? `<ul>${w.slice(0, 20).map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''));
     q('#rg-ressub').textContent = res.title ? '「' + res.title + '」' : '';
   }
   function rebuildFromOut() {
     const t = q('#rg-out').value;
     if (!t.trim()) { result = null; drawOut(); q('#rg-apply').disabled = true; return; }
     try { result = build(t); q('#rg-apply').disabled = !result.res.root.nodes.length; drawOut(); msg(''); }
-    catch (e) { console.error(e); result = null; q('#rg-apply').disabled = true; q('#rg-outprev').innerHTML = `<div class="rg-empty">解析出错：${esc(e.message || e)}</div>`; }
+    catch (e) { console.error(e); result = null; q('#rg-apply').disabled = true; setMarkup(q('#rg-outprev'), `<div class="rg-empty">解析出错：${esc(e.message || e)}</div>`); }
   }
   /* 参照方言（可能被用户在 details 中改过） */
   const refDialect = () => q('#rg-dialect').value.trim() || toDialect(sk, { icons: q('#rg-keepicons').checked });
@@ -564,7 +564,7 @@
   function ensureUI() {
     if (root) return;
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
-    root = document.createElement('div'); root.id = 'rg'; root.innerHTML = HTML; document.body.appendChild(root);
+    root = document.createElement('div'); root.id = 'rg'; setMarkup(root, HTML); document.body.appendChild(root);
     const c = TextGen.llmCfg(); q('#rg-base').value = c.base; q('#rg-model').value = c.model; q('#rg-key').value = c.key;
     const s = lsGet(); if (s.eng) { const r = q(`input[name=rg-eng][value=${s.eng}]`); if (r) r.checked = true; } if (s.ap) { const r = q(`input[name=rg-ap][value=${s.ap}]`); if (r) r.checked = true; }
     root.addEventListener('keydown', e => {

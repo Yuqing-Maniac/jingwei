@@ -1,0 +1,102 @@
+{
+  "id": "22",
+  "icons": [
+    {
+      "key": "cuas_detect_jam",
+      "name": "侦测干扰一体反无人设备",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "beidou_timing",
+      "name": "北斗授时系统",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "eo_composite",
+      "name": "复合光电系统",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "compute_platform",
+      "name": "新架构算力平台",
+      "cat": "信息技术",
+      "status": "pending"
+    },
+    {
+      "key": "uav_decoy",
+      "name": "诱饵无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uav_asw",
+      "name": "反潜无人机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_recon",
+      "name": "侦察无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_strike",
+      "name": "打击无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_ew",
+      "name": "电子战无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_relay",
+      "name": "中继无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_cargo",
+      "name": "运输无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_decoy",
+      "name": "诱饵无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ruav_target",
+      "name": "靶标无人直升机",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "loiter_recon",
+      "name": "侦察巡飞弹",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "loiter_ew",
+      "name": "干扰巡飞弹",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "loiter_relay",
+      "name": "中继巡飞弹",
+      "cat": "无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-22.png"
+}

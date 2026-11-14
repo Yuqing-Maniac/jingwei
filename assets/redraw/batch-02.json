@@ -1,0 +1,102 @@
+{
+  "id": "02",
+  "icons": [
+    {
+      "key": "missile_boat",
+      "name": "导弹快艇",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "usv",
+      "name": "无人艇",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "submarine",
+      "name": "潜艇",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "uuv",
+      "name": "无人潜航器",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "sonar_buoy",
+      "name": "声呐浮标",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "tank",
+      "name": "主战坦克",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "ifv",
+      "name": "步兵战车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "sp_howitzer",
+      "name": "自行火炮",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "towed_gun",
+      "name": "牵引火炮",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "mlrs",
+      "name": "远程火箭炮",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "tel",
+      "name": "导弹发射车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "sam",
+      "name": "防空导弹车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "truck",
+      "name": "运输保障车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "ugv",
+      "name": "无人车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "robodog",
+      "name": "无人狗（四足）",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "soldier",
+      "name": "单兵",
+      "cat": "陆地",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-02.png"
+}

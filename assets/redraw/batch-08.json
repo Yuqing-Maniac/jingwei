@@ -1,0 +1,102 @@
+{
+  "id": "08",
+  "icons": [
+    {
+      "key": "laser_rangefinder",
+      "name": "激光测距仪",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "antenna_array",
+      "name": "天线阵",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "relay",
+      "name": "中继站",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "router",
+      "name": "路由器",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "firewall",
+      "name": "防火墙",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "fiber",
+      "name": "光纤／光端机",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "beidou",
+      "name": "北斗终端",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "weather",
+      "name": "气象站",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "camera",
+      "name": "监控摄像机",
+      "cat": "感知通信",
+      "status": "pending"
+    },
+    {
+      "key": "big_screen",
+      "name": "指挥大屏",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "laptop",
+      "name": "便携计算机",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "tablet",
+      "name": "平板终端",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "handheld",
+      "name": "手持终端",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "data_center",
+      "name": "数据中心",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "algorithm",
+      "name": "算法模型",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "knowledge_graph",
+      "name": "知识图谱",
+      "cat": "指控信息",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-08.png"
+}

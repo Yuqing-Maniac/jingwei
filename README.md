@@ -19,7 +19,7 @@
 
 - **界面皮肤**：经典蓝、青竹、暖纸、深空，工具栏和桌面首页均可切换，自动记住选择，不改变图面主题与导出配色。
 - **桌面启动**：经纬交织启动动画，默认全屏；点击「退出全屏」或按 F11 返回窗口。
-- **绘图**：分组带、层（泳道）、子容器；基础形状、流程图形、箭头；三百多个拟物化图标（无人、反无人、指控、感知通信等）与编队复合图标。
+- **绘图**：分组带、层（泳道）、子容器；基础形状、流程图形、箭头；655 个写实图标（含后勤、能源、医疗、海洋、航天、无人、制造、数据治理、人工智能等），均支持原色／红方／蓝方局部涂装与编队复合图标。
 - **文字成图**（Ctrl+Shift+G）：粘贴文字或 Markdown，自动生成分层架构图。
 - **参照生成**（Ctrl+Shift+L）：以一张好图为参照，填入新项目内容生成同款新图；可接内网 OpenAI 兼容大模型，也可离线。
 - **一键美化**（Ctrl+Shift+F）：对齐、等距；连线从框边中点出入、同边多线对称排布、绕开中间的框且拐弯最少；拖动吸附。
@@ -31,7 +31,17 @@
 
 ## 下载
 
-当前源码版本是 3.3.16。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。以下是已发布的 3.3.15／3.3.14 下载说明。
+当前源码版本是 3.5.2。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。桌面版首页的版本号读这个字段。
+
+3.5.2 的草稿发布包含两份免安装包。解压后顶层是 `JingWeiZhiTu` 文件夹和唯一入口，只运行那个入口。
+
+- `jingwei_v3.5.2_windows_x64_portable.zip`（Windows 10／11，64 位，入口 `JingWeiZhiTu.exe`）
+- `jingwei_v3.5.2_kylin_arm64_portable.zip`（银河麒麟 V10，ARM64，入口 `JingWeiZhiTu.sh`）
+- `SHA256SUMS.txt`
+
+Windows 32 位、麒麟 x86_64、离线网页包和增量包这次没有放进发布。打包脚本仍能构建它们。Electron 22.3.27 能在 Windows 7 SP1 x64 上运行，这次没有单独的 Win7 包，也没有 Win7 真机测试。
+
+以下是已发布的 3.3.15／3.3.14 下载说明。
 
 到仓库 Releases 页面下载标签 `jingwei-v<版本>`。文件名是唯一 ASCII，中文只作显示名。发布时上传免安装 zip、网页离线 zip、增量 zip 和 `SHA256SUMS.txt`。
 
@@ -47,7 +57,9 @@
 
 ## 使用
 
-- **Windows 绿色版**：解压 `jingwei_v3.3.14_windows_x64_portable.zip` 或 `jingwei_v3.3.14_windows_x86_portable.zip`，双击 `JingWeiZhiTu/JingWeiZhiTu.exe`。
+- **3.5.2 Windows**：解压 `jingwei_v3.5.2_windows_x64_portable.zip`，双击旁边的 `JingWeiZhiTu.exe`。
+- **3.5.2 银河麒麟 ARM64**：解压 `jingwei_v3.5.2_kylin_arm64_portable.zip`，执行 `sh JingWeiZhiTu.sh`。
+- **Windows 绿色版（3.3.14）**：解压 `jingwei_v3.3.14_windows_x64_portable.zip` 或 `jingwei_v3.3.14_windows_x86_portable.zip`，双击 `JingWeiZhiTu/JingWeiZhiTu.exe`。
 - **银河麒麟免安装**：解压 `jingwei_v3.3.14_kylin_arm64_portable.zip` 或 `jingwei_v3.3.14_kylin_x86_64_portable.zip`，进入 `JingWeiZhiTu` 后执行 `sh start.sh`。
 - **网页版**：解压 `jingwei_v3.3.14_web_offline.zip`，双击 `JingWeiZhiTu_v3.3.14.html`。
 - **增量升级**：在 3.3.14 桌面版标题栏点「增量升级」，选择 `jingwei_v3.3.15_incremental.zip`。见 `docs/INCREMENT.md`。
@@ -62,6 +74,6 @@ Ctrl+S 保存（桌面版直接写回当前文件），Ctrl+Shift+S 另存为（
 
 见 `CLAUDE.md` 第 5 节。本地完整构建是 `npm ci && bash build/build_all.sh`，产物在 `_work/dist/`。
 
-仅构建四个平台免安装包（含增量包）：`python build/desktop/build_all.py --portable-only`；前置为 `npm ci` 和已校验的 Electron 22.3.27 运行时。网页版用 `python build/web/package_web.py` 打包。这条路径不需要 NSIS 或 dpkg。
+只构建这一版发布的两份免安装包：`python build/desktop/build_all.py --portable-only win64 kylin-arm64`。加上 `win32`、`kylin-amd64` 可打另外两个平台。`--patch` 打增量包。网页版用 `python build/web/package_web.py`。这些路径不需要 NSIS 或 dpkg。Windows 安装包要额外加 `--installers`。前置为 `npm ci` 和已校验的 Electron 22.3.27 运行时。
 
 拉取请求上的 `jingwei-ci` 会构建界面，并运行 `tests/run_regression.sh`。完整打包在发布标签 `jingwei-v*` 或手动运行 `jingwei-release` 时进行。不要在每个拉取请求上再运行完整打包。

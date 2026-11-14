@@ -871,7 +871,7 @@
   function ensureUI() {
     if (root) return;
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
-    root = document.createElement('div'); root.id = 'tg'; root.innerHTML = HTML; document.body.appendChild(root);
+    root = document.createElement('div'); root.id = 'tg'; setMarkup(root, HTML); document.body.appendChild(root);
     const cfg = lsGet();
     const setEng = v => { const r = q(`input[name=tg-eng][value=${v}]`); if (r && !r.closest('[hidden]')) r.checked = true; };
     setEng(cfg.engine || 'rule');
@@ -973,23 +973,23 @@
   function schedule(ms = 300) { clearTimeout(timer); timer = setTimeout(() => { last = analyse(); if (prevPage >= (last?.pages?.length || 1)) prevPage = 0; drawPreview(); }, ms); }
   function drawPreview() {
     const box = q('#tg-prev'), rep = q('#tg-report'), tabs = q('#tg-tabs');
-    if (!last) { box.innerHTML = '<div class="tg-empty">在左侧输入后，这里实时预览<br><small>不会改动画布，点“识别并生成”才上图</small></div>'; rep.innerHTML = ''; tabs.innerHTML = ''; return; }
-    if (last.error) { box.innerHTML = `<div class="tg-empty">解析出错：${esc(last.error)}</div>`; rep.innerHTML = ''; tabs.innerHTML = ''; return; }
+    if (!last) { setMarkup(box, '<div class="tg-empty">在左侧输入后，这里实时预览<br><small>不会改动画布，点“识别并生成”才上图</small></div>'); setMarkup(rep, ''); setMarkup(tabs, ''); return; }
+    if (last.error) { setMarkup(box, `<div class="tg-empty">解析出错：${esc(last.error)}</div>`); setMarkup(rep, ''); setMarkup(tabs, ''); return; }
     const pages = last.pages;
-    tabs.innerHTML = pages.length > 1 ? pages.map((p, i) => `<button data-pg="${i}" class="${i === prevPage ? 'on' : ''}">${i ? '⊕ ' : ''}${esc(p.name || (i ? '展开页' : '总图'))}</button>`).join('') : '';
+    setMarkup(tabs, pages.length > 1 ? pages.map((p, i) => `<button data-pg="${i}" class="${i === prevPage ? 'on' : ''}">${i ? '⊕ ' : ''}${esc(p.name || (i ? '展开页' : '总图'))}</button>`).join('') : '');
     const p = pages[prevPage] || pages[0];
-    if (!p.nodes.length) { box.innerHTML = '<div class="tg-empty">没有识别到可绘制的内容</div>'; }
+    if (!p.nodes.length) { setMarkup(box, '<div class="tg-empty">没有识别到可绘制的内容</div>'); }
     else {
       const b = contentBBox(p), pad = 16;
       const saved = cur; let inner = '';
       doc.pages[p.id] = p; cur = p.id;
       try { inner = diagramSVG(p, true, 'tgp'); } finally { cur = saved; delete doc.pages[p.id]; }
-      box.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x - pad} ${b.y - pad} ${b.w + pad * 2} ${b.h + pad * 2}" style="background:${T().bg};aspect-ratio:${(b.w + pad * 2) / (b.h + pad * 2)}">${inner}</svg>`;
+      setMarkup(box, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x - pad} ${b.y - pad} ${b.w + pad * 2} ${b.h + pad * 2}" style="background:${T().bg};aspect-ratio:${(b.w + pad * 2) / (b.h + pad * 2)}">${inner}</svg>`);
     }
     const s = last.stats;
     const w = [...new Set(last.warnings)];
-    rep.innerHTML = `<div class="ok">识别结果：${s.pages > 1 ? `${s.pages} 页（含 ${s.pages - 1} 个展开页）· ` : ''}${s.bands} 个分组带 · ${s.lanes} 层 · ${s.items} 个系统 · ${s.links} 条连接</div>` +
-      (w.length ? `<ul>${w.slice(0, 30).map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
+    setMarkup(rep, `<div class="ok">识别结果：${s.pages > 1 ? `${s.pages} 页（含 ${s.pages - 1} 个展开页）· ` : ''}${s.bands} 个分组带 · ${s.lanes} 层 · ${s.items} 个系统 · ${s.links} 条连接</div>` +
+      (w.length ? `<ul>${w.slice(0, 30).map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''));
   }
 
   /* ---------------- AI 理解 ---------------- */
@@ -1126,7 +1126,7 @@
 · <b>Windows 10／11</b>：点一下输入框，按 <code>Win</code>+<code>H</code> 开始口述；<br>
 · <b>麒麟／统信等国产系统</b>：使用输入法自带的语音输入（如讯飞输入法、搜狗输入法的“语音”按钮）；<br>
 · <b>macOS</b>：连按两下 <code>Fn</code> 键口述。<br>说完后点“识别并生成”。口述时可直接说“分为……包括……通过数据链连接……”，无需说符号。`;
-  function voiceTip(extra) { const t = q('#tg-tip'); t.innerHTML = (extra ? `<div style="margin-bottom:4px">${esc(extra)}</div>` : '') + VOICE_TIP + ` <button id="tg-tipx" style="float:right;padding:0 6px">知道了</button>`; t.classList.add('show'); q('#tg-tipx').onclick = () => t.classList.remove('show'); }
+  function voiceTip(extra) { const t = q('#tg-tip'); setMarkup(t, (extra ? `<div style="margin-bottom:4px">${esc(extra)}</div>` : '') + VOICE_TIP + ` <button id="tg-tipx" style="float:right;padding:0 6px">知道了</button>`); t.classList.add('show'); q('#tg-tipx').onclick = () => t.classList.remove('show'); }
   function setMic(on) { const b = q('#tg-mic'); b.classList.toggle('rec', on); b.textContent = on ? ' 正在听写…点此停止' : '🎤 语音输入'; }
   function toggleVoice() {
     if (rec) { try { rec.stop(); } catch (_) { } return; }

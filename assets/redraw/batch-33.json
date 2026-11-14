@@ -1,0 +1,102 @@
+{
+  "id": "33",
+  "icons": [
+    {
+      "key": "ext_08_01",
+      "name": "环境试验箱",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_02",
+      "name": "电磁兼容暗室",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_03",
+      "name": "风洞试验装置",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_04",
+      "name": "水池试验平台",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_05",
+      "name": "振动试验台",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_06",
+      "name": "硬件在环仿真台",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_07",
+      "name": "驾驶模拟器",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_08",
+      "name": "飞行模拟座舱",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_09",
+      "name": "无线电信道模拟器",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_10",
+      "name": "网络损伤仿真仪",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_11",
+      "name": "协议一致性测试仪",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_12",
+      "name": "多源信号发生器",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_13",
+      "name": "示波器",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_14",
+      "name": "频谱分析仪",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_15",
+      "name": "数据采集机箱",
+      "cat": "试验仿真",
+      "status": "pending"
+    },
+    {
+      "key": "ext_08_16",
+      "name": "靶场测量光学站",
+      "cat": "试验仿真",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-33.png"
+}

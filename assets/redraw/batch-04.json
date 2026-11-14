@@ -1,0 +1,102 @@
+{
+  "id": "04",
+  "icons": [
+    {
+      "key": "ai_agent",
+      "name": "智能体",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "security",
+      "name": "安全防护",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "app",
+      "name": "应用",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "switch",
+      "name": "网络交换机",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "tanker",
+      "name": "空中加油机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "ew_aircraft",
+      "name": "电子战飞机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "recon_aircraft",
+      "name": "侦察机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "transport_heli",
+      "name": "运输直升机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "uav_heli",
+      "name": "无人直升机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "hale_uav",
+      "name": "高空长航时无人机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "swarm",
+      "name": "无人机蜂群",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "target_drone",
+      "name": "靶机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "airship",
+      "name": "浮空器",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "hypersonic",
+      "name": "高超声速飞行器",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "interceptor",
+      "name": "拦截弹",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "amphibious",
+      "name": "两栖攻击舰",
+      "cat": "海上",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-04.png"
+}

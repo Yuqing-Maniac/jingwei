@@ -18,9 +18,12 @@ body = ('<script>try { var skin = localStorage.getItem("hongtu.uiSkin"); '
 parts = [rd('icons.js')] + [rd(os.path.basename(p)) for p in sorted(glob.glob(os.path.join(APP, 'icons_*.js')))]
 MODS = ['app.js', 'skins.js', 'glyphbook.js', 'imgimport.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
         'importers.js', 'vsdxraw.js', 'drawio.js', 'refgen.js', 'convert.js']
+if os.path.exists(os.path.join(APP, 'redrawn.js')):
+    parts.append(rd('redrawn.js'))
 mods = [rd(m) for m in MODS]
 own = "<script>\n" + "\n".join(parts) + "\n</script>\n<script>\n" + "\n".join(mods) + "\n" + rd('demo.js') + "\nloadDoc(buildDemo());\nif (!window.jwDesk) Backup.offer();\n</script>\n"
-cdn = ('<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>\n'
+cdn = ('<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>\n'
+       '<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>\n'
        '<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>\n'
        '<script src="https://cdn.jsdelivr.net/npm/milsymbol@2.2.0/dist/milsymbol.js"></script>\n')
 if '--no-artifact' not in sys.argv:
@@ -31,7 +34,7 @@ off = body.replace('<link rel="stylesheet" href="https://fonts.googleapis.com/cs
 off = ('<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
        '<style>*{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style></head><body>\n'
        + '<script>\n' + rd('compat.js') + '\n</script>\n' + off
-       + inl('jszip/dist/jszip.min.js') + inl('pptxgenjs/dist/pptxgen.bundle.js') + inl('milsymbol/dist/milsymbol.js') + own + '</body></html>')
+       + inl('dompurify/dist/purify.min.js') + inl('jszip/dist/jszip.min.js') + inl('pptxgenjs/dist/pptxgen.bundle.js') + inl('milsymbol/dist/milsymbol.js') + own + '</body></html>')
 out = os.path.join(DIST, 'offline.html')
 open(out, 'w', encoding='utf-8').write(off)
 if '--modern' not in sys.argv:
@@ -41,6 +44,12 @@ if '--desk' in sys.argv:
     d = open(out, encoding='utf-8').read()
     css = '<style>\n' + rd('desk/desk.css') + '\n</style>\n'
     js = '<script>\n' + rd('desk/desk.js') + '\n</script>\n'
-    d = d.replace('</head>', css + '</head>', 1).replace('</body></html>', js + '</body></html>')
+    d = d.replace('</head>', css + '</head>', 1)
+    # A bundled library may contain the literal closing tags in a JS string.
+    # Inject only at the document's final closing tags, never inside that library.
+    end = d.rfind('</body></html>')
+    if end < 0:
+        raise RuntimeError('missing document closing tags')
+    d = d[:end] + js + d[end:]
     d = d.replace('<title>经纬织图</title>', '<title>经纬织图</title><meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: \'unsafe-inline\' \'unsafe-eval\'; connect-src *; img-src * data: blob:">', 1)
     open(os.path.join(DIST, 'desk.html'), 'w', encoding='utf-8').write(d); print('desk.html', len(d) // 1024, 'KB -> dist/desk.html')

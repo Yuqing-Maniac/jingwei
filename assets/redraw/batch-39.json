@@ -1,0 +1,102 @@
+{
+  "id": "39",
+  "icons": [
+    {
+      "key": "ext_14_01",
+      "name": "安全运营中心SOC",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_02",
+      "name": "安全信息事件管理SIEM",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_03",
+      "name": "终端检测响应EDR",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_04",
+      "name": "网络检测响应NDR",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_05",
+      "name": "数据防泄漏DLP",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_06",
+      "name": "零信任访问网关",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_07",
+      "name": "硬件安全模块HSM",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_08",
+      "name": "密钥管理服务器",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_09",
+      "name": "安全态势感知平台",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_10",
+      "name": "漏洞扫描设备",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_11",
+      "name": "蜜罐诱捕设备",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_12",
+      "name": "恶意代码分析沙箱",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_13",
+      "name": "访问控制审计台",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_14",
+      "name": "软件供应链安全平台",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_15",
+      "name": "安全启动模块",
+      "cat": "网络安全",
+      "status": "pending"
+    },
+    {
+      "key": "ext_14_16",
+      "name": "物理门禁控制器",
+      "cat": "网络安全",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-39.png"
+}

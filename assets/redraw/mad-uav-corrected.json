@@ -1,0 +1,7 @@
+{
+  "key": "uav_magnetic",
+  "name": "磁探无人机",
+  "cat": "无人",
+  "source": "assets/redraw/masters/uav_magnetic.png",
+  "description": "修长复合翼无人机；机腹磁探球与机头光电载荷大小接近，四根旋翼下方的独立短支腿提供必要离地间隙。"
+}

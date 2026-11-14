@@ -1,0 +1,102 @@
+{
+  "id": "23",
+  "icons": [
+    {
+      "key": "loiter_decoy",
+      "name": "诱饵巡飞弹",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_recon",
+      "name": "侦察无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_ew",
+      "name": "干扰无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_relay",
+      "name": "中继无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_cargo",
+      "name": "运输无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_decoy",
+      "name": "诱饵无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_target",
+      "name": "靶标无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "usv_minelayer",
+      "name": "布雷无人艇",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_strike",
+      "name": "打击无人潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_ew",
+      "name": "水声干扰潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_relay",
+      "name": "水下中继潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_cargo",
+      "name": "运输无人潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_decoy",
+      "name": "声学诱饵潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "uuv_target",
+      "name": "靶标潜航器",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_ew",
+      "name": "干扰无人车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_relay",
+      "name": "中继无人车",
+      "cat": "无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-23.png"
+}

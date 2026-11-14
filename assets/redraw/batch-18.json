@@ -1,0 +1,102 @@
+{
+  "id": "18",
+  "icons": [
+    {
+      "key": "sit_3d",
+      "name": "三维态势显示",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "rugged_pc",
+      "name": "加固计算机",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "vehicle_terminal",
+      "name": "车载指控终端",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "ar_glasses",
+      "name": "AR 眼镜",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "cmd_software",
+      "name": "指挥软件",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "mission_planning",
+      "name": "任务规划",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "data_lake",
+      "name": "数据湖",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "edge_node",
+      "name": "边缘计算节点",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "gateway",
+      "name": "安全网关",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "crypto",
+      "name": "密码机",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "identity",
+      "name": "身份认证",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "audit_log",
+      "name": "日志审计",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "llm",
+      "name": "大模型",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "agent_platform",
+      "name": "智能体平台",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "video_conf",
+      "name": "视频会议终端",
+      "cat": "指控信息",
+      "status": "pending"
+    },
+    {
+      "key": "digital_twin",
+      "name": "数字孪生",
+      "cat": "指控信息",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-18.png"
+}

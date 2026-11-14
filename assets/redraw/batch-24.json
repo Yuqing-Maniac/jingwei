@@ -1,0 +1,102 @@
+{
+  "id": "24",
+  "icons": [
+    {
+      "key": "ugv_decoy",
+      "name": "诱饵无人车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "ugv_target",
+      "name": "靶标无人车",
+      "cat": "无人",
+      "status": "pending"
+    },
+    {
+      "key": "asw_patrol",
+      "name": "反潜巡逻机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "carrier_fighter",
+      "name": "舰载战斗机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "attack_aircraft",
+      "name": "强击机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "asw_heli",
+      "name": "反潜直升机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "aew_heli",
+      "name": "预警直升机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "elint_aircraft",
+      "name": "电子侦察机",
+      "cat": "空中",
+      "status": "pending"
+    },
+    {
+      "key": "ssbn",
+      "name": "战略导弹潜艇",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "elint_ship",
+      "name": "电子侦察船",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "lsd",
+      "name": "船坞登陆舰",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "depth_charge_rl",
+      "name": "火箭深弹",
+      "cat": "海上",
+      "status": "pending"
+    },
+    {
+      "key": "vls",
+      "name": "垂发装置",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "aaa_gun",
+      "name": "高射炮",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "atgm_vehicle",
+      "name": "反坦克导弹车",
+      "cat": "陆地",
+      "status": "pending"
+    },
+    {
+      "key": "coastal_battery",
+      "name": "岸舰导弹",
+      "cat": "陆地",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-24.png"
+}

@@ -1,0 +1,102 @@
+{
+  "id": "35",
+  "icons": [
+    {
+      "key": "ext_10_01",
+      "name": "隧道",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_02",
+      "name": "公路桥梁",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_03",
+      "name": "铁路桥梁",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_04",
+      "name": "铁路货运站",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_05",
+      "name": "机场跑道",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_06",
+      "name": "机场导航台",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_07",
+      "name": "机场地勤保障站",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_08",
+      "name": "边境检查站",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_09",
+      "name": "港口集装箱堆场",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_10",
+      "name": "海上灯塔",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_11",
+      "name": "城市综合管廊",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_12",
+      "name": "地下数据机房",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_13",
+      "name": "移动应急指挥中心",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_14",
+      "name": "应急通信保障营地",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_15",
+      "name": "综合实验室",
+      "cat": "基础设施",
+      "status": "pending"
+    },
+    {
+      "key": "ext_10_16",
+      "name": "人员训练中心",
+      "cat": "基础设施",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-35.png"
+}

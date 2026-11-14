@@ -1,0 +1,102 @@
+{
+  "id": "12",
+  "icons": [
+    {
+      "key": "cuas_radar_4face",
+      "name": "四面阵相控阵雷达",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_radar_vehicle",
+      "name": "车载探测雷达",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_passive",
+      "name": "无源频谱侦测站",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_df",
+      "name": "无线电测向站",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_eo",
+      "name": "光电搜索跟踪转塔",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_irst",
+      "name": "红外全景搜索系统",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_acoustic_array",
+      "name": "声学阵列",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_remote_id",
+      "name": "远程识别接收器",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_mast",
+      "name": "一体化探测塔",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_detector_handheld",
+      "name": "手持式无人机侦测仪",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_detector_portable",
+      "name": "便携箱式侦测设备",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_shelter",
+      "name": "方舱式反无人系统",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_c2",
+      "name": "反无人指控终端",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_fence",
+      "name": "电子围栏",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_lidar",
+      "name": "激光雷达探测器",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_ads_b",
+      "name": "ADS-B／航迹接收站",
+      "cat": "反无人",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-12.png"
+}

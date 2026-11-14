@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: 校验发版资产名（唯一 ASCII，不含安装包）
-        run: bash tests/release_assets_test.sh
+        run: |
+          bash tests/release_assets_test.sh
+          python3 tests/package_layout_test.py
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

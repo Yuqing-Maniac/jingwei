@@ -136,12 +136,12 @@
   function syncOpts() {
     const b = isBeauty();
     q('#cv-o-keep').hidden = b; q('#cv-o-beauty').hidden = !b;
-    q('#cv-hint').innerHTML = (b ? HINT_BEAUTY : HINT_KEEP) + HINT_TAIL;
+    setMarkup(q('#cv-hint'), (b ? HINT_BEAUTY : HINT_KEEP) + HINT_TAIL);
   }
   /* 原样转换路径：Visio → PowerPoint 且保持原排版 */
   const rawPath = (it, t) => t === 'pptx' && !isBeauty() && srcExt(it.f.name) === 'vsdx' && window.VsdxRaw;
   function renderList() {
-    q('#cv-list').innerHTML = items.map((it, i) => `<div class="cv-item"><span class="nm" title="${esc(it.f.name)}">${esc(it.f.name)}</span><span class="st ${it.cls || ''}">${esc(it.st || '待转换')}</span><button data-rm="${i}" title="移出列表" ${busy ? 'disabled' : ''}>×</button></div>`).join('');
+    setMarkup(q('#cv-list'), items.map((it, i) => `<div class="cv-item"><span class="nm" title="${esc(it.f.name)}">${esc(it.f.name)}</span><span class="st ${it.cls || ''}">${esc(it.st || '待转换')}</span><button data-rm="${i}" title="移出列表" ${busy ? 'disabled' : ''}>×</button></div>`).join(''));
     const t = target();
     q('#cv-tg').querySelectorAll('label').forEach(l => l.classList.toggle('on', l.querySelector('input').checked));
     q('#cv-go').disabled = busy || !items.length || !t;
@@ -190,8 +190,8 @@
   function ensureUI() {
     if (root) return;
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
-    root = document.createElement('div'); root.id = 'cv'; root.innerHTML = HTML; document.body.appendChild(root);
-    q('#cv-theme').innerHTML = Object.entries(THEMES).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
+    root = document.createElement('div'); root.id = 'cv'; setMarkup(root, HTML); document.body.appendChild(root);
+    setMarkup(q('#cv-theme'), Object.entries(THEMES).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join(''));
     const s = lsGet();
     if (s.target) { const r = q(`input[name=cv-t][value=${s.target}]`); if (r) r.checked = true; }
     if (s.beauty) q('input[name=cv-lay][value=beauty]').checked = true;

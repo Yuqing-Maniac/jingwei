@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = Path(os.environ.get("JW_PAGE", ROOT / "dist" / "offline.html")).resolve()
-SHOT = Path(os.environ.get("JW_SHOT", "/opt/cursor/artifacts"))
+SHOT = Path(os.environ.get("JW_SHOT", ROOT / "_work" / "qa-results" / "links"))
 URL = PAGE.as_uri()
 
 FAILS = []

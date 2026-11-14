@@ -1,0 +1,102 @@
+{
+  "id": "38",
+  "icons": [
+    {
+      "key": "ext_13_01",
+      "name": "模型训练服务器",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_02",
+      "name": "模型推理服务器",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_03",
+      "name": "模型评测平台",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_04",
+      "name": "模型微调平台",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_05",
+      "name": "检索增强生成RAG",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_06",
+      "name": "智能体工作流",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_07",
+      "name": "多智能体协作",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_08",
+      "name": "多模态感知引擎",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_09",
+      "name": "语音识别终端",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_10",
+      "name": "语音合成服务",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_11",
+      "name": "机器视觉引擎",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_12",
+      "name": "自然语言处理服务",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_13",
+      "name": "边缘AI加速盒",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_14",
+      "name": "联邦学习节点",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_15",
+      "name": "模型安全防护",
+      "cat": "人工智能",
+      "status": "pending"
+    },
+    {
+      "key": "ext_13_16",
+      "name": "知识检索助手",
+      "cat": "人工智能",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-38.png"
+}

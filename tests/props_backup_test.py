@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HTML = (ROOT / 'dist' / 'offline.html').resolve().as_uri()
-SHOT = pathlib.Path('/opt/cursor/artifacts/screenshots')
+SHOT = pathlib.Path(os.environ.get('JW_SHOT', ROOT / '_work' / 'qa-results' / 'props'))
 DOC = """{
   name: '试验', theme: 'report', custom: {},
   statusLabels: { base: '延续', new: '本步新增／重构', key: '重点关注' },

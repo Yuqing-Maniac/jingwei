@@ -1,0 +1,102 @@
+{
+  "id": "26",
+  "icons": [
+    {
+      "key": "ext_01_01",
+      "name": "野战炊事车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_02",
+      "name": "净水车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_03",
+      "name": "饮水储罐",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_04",
+      "name": "移动淋浴车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_05",
+      "name": "洗消保障车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_06",
+      "name": "冷链运输车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_07",
+      "name": "集装箱运输车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_08",
+      "name": "叉车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_09",
+      "name": "物资托盘",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_10",
+      "name": "自动立体仓库",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_11",
+      "name": "智能分拣线",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_12",
+      "name": "物资装卸吊车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_13",
+      "name": "公路抢修车",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_14",
+      "name": "野战宿营帐篷",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_15",
+      "name": "移动维修方舱",
+      "cat": "后勤保障",
+      "status": "pending"
+    },
+    {
+      "key": "ext_01_16",
+      "name": "备件工具箱",
+      "cat": "后勤保障",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-26.png"
+}

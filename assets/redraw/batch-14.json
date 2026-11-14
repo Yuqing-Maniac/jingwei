@@ -1,0 +1,102 @@
+{
+  "id": "14",
+  "icons": [
+    {
+      "key": "cuas_shield_net",
+      "name": "防护网",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_raptor",
+      "name": "猛禽驯化拦截",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "cuas_decoy",
+      "name": "诱饵假目标",
+      "cat": "反无人",
+      "status": "pending"
+    },
+    {
+      "key": "inf_rifleman",
+      "name": "步兵（步枪手）",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "inf_mg",
+      "name": "机枪手",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "tank_crew",
+      "name": "装甲兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "artillery_crew",
+      "name": "炮兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "ad_soldier",
+      "name": "防空兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "recon_soldier",
+      "name": "侦察兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "sof_operator",
+      "name": "特战队员",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "sniper",
+      "name": "狙击手",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "engineer_soldier",
+      "name": "工兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "signal_soldier",
+      "name": "通信兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "ew_soldier",
+      "name": "电子对抗兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "cbrn_soldier",
+      "name": "防化兵",
+      "cat": "人员",
+      "status": "pending"
+    },
+    {
+      "key": "drone_operator_army",
+      "name": "陆军无人机操作手",
+      "cat": "人员",
+      "status": "pending"
+    }
+  ],
+  "path": "_work/redraw-sources/batch-14.png"
+}

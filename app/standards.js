@@ -541,7 +541,7 @@
 @media (max-width:640px){#std-dlg .it{grid-template-columns:auto minmax(0,1fr) auto}#std-dlg .it .rl{display:none}}`;
     document.head.appendChild(st);
     dlg = document.createElement('div'); dlg.id = 'std-dlg';
-    dlg.innerHTML = `<div class="box" role="dialog" aria-label="规范检查"><div class="hd"><strong>规范检查</strong><span id="std-sum" style="display:flex;gap:6px;flex-wrap:wrap"></span><span style="flex:1"></span><button id="std-fix" class="primary" title="自动编号、补充类型、标签带入交换内容、按位置归入容器、从名称提取安全等级、补图例、插入标题栏">一键修复</button><button id="std-re">重新检查</button><button id="std-close">关闭</button></div><div class="bd" id="std-body"></div></div>`;
+    setMarkup(dlg, `<div class="box" role="dialog" aria-label="规范检查"><div class="hd"><strong>规范检查</strong><span id="std-sum" style="display:flex;gap:6px;flex-wrap:wrap"></span><span style="flex:1"></span><button id="std-fix" class="primary" title="自动编号、补充类型、标签带入交换内容、按位置归入容器、从名称提取安全等级、补图例、插入标题栏">一键修复</button><button id="std-re">重新检查</button><button id="std-close">关闭</button></div><div class="bd" id="std-body"></div></div>`);
     document.body.appendChild(dlg);
     dlg.addEventListener('click', e => {
       if (e.target === dlg) return closeCheck();
@@ -561,7 +561,7 @@
     const issues = check(doc); lastIssues = issues;
     const cnt = l => issues.filter(i => i.level === l).length;
     const pill = (l, n) => `<span class="pill" style="color:${LV[l][1]}">${LV[l][0]} ${n}</span>`;
-    dlg.querySelector('#std-sum').innerHTML = ['error', 'warn', 'info'].map(l => pill(l, cnt(l))).join('');
+    setMarkup(dlg.querySelector('#std-sum'), ['error', 'warn', 'info'].map(l => pill(l, cnt(l))).join(''));
     const viewed = pagesForCheck(doc).filter(p => viewOf(p));
     let h = '';
     if (!viewed.length) h = `<div class="empty">当前文档没有设置视图类型的页面。<br>点击画布空白处，在右侧「规范 › 视图类型」中选择视图后再检查：<br>DoDAF／UAF 体系结构视图（OV-1／OV-2／OV-5b／SV-1／SV-4），<br>或信息系统架构视图（业务、应用、数据、技术、部署、安全架构图）。</div>`;
@@ -574,7 +574,7 @@
         h += list.map(({ it, i }) => `<div class="it"><span class="pill" style="color:${LV[it.level][1]}">${LV[it.level][0]}</span><span class="rl">${esc(RULES[it.rule] || it.rule)}</span><span>${esc(it.msg)}</span><button data-go="${i}">定位</button></div>`).join('');
       }
     }
-    dlg.querySelector('#std-body').innerHTML = h;
+    setMarkup(dlg.querySelector('#std-body'), h);
   }
   function openCheck() { ensureDlg(); renderCheck(); dlg.style.display = 'flex'; setTimeout(() => dlg.querySelector('#std-close').focus(), 0); }
   function closeCheck() { if (dlg) dlg.style.display = 'none'; }
