@@ -160,7 +160,29 @@ def main():
         pg.keyboard.press('Control+y')
         pg.wait_for_timeout(80)
 
-        pg.evaluate('() => { clearSel(); render(); }')
+        pg.evaluate("""() => {
+          clearSel();
+          const title = P().nodes.find(n => n.role === 'title');
+          title.text = '标题改';
+          render();
+          undo();
+        }""")
+        pg.wait_for_timeout(40)
+        noop = pg.evaluate("""() => {
+          selectNodes([P().nodes.find(n => n.role === 'title').id]);
+          render();
+          return { redo: redoS.length, text: P().nodes.find(n => n.role === 'title').text };
+        }""")
+        check('undone title edit is still redoable', noop['redo'] == 1 and noop['text'] == '标题', str(noop))
+        pg.click('#gd-sel')
+        pg.wait_for_timeout(40)
+        kept_redo = pg.evaluate("""() => {
+          redo();
+          const title = P().nodes.find(n => n.role === 'title');
+          return { text: title.text, redo: redoS.length };
+        }""")
+        check('no-op apply keeps the redo stack', kept_redo['text'] == '标题改', str(kept_redo))
+        pg.evaluate('() => { undo(); clearSel(); render(); }')
         pg.wait_for_timeout(40)
         pg.click('#gd-page')
         pg.wait_for_timeout(40)

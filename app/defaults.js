@@ -98,12 +98,14 @@ var JwDefaults = (function () {
   }
   function commit(nodes, links) {
     if (!nodes.length && !links.length) { toast('先选中元素或连线'); return; }
-    checkpoint();
-    var before = undoS[undoS.length - 1];
+    var before = snapshot();
     var d = read();
     for (var i = 0; i < nodes.length; i++) applyNode(nodes[i], d);
     for (var j = 0; j < links.length; j++) applyLink(links[j], d);
-    if (before === snapshot()) { undoS.pop(); toast('已经是这些默认值'); return; }
+    if (snapshot() === before) { toast('已经是这些默认值'); return; }
+    undoS.push(before);
+    if (undoS.length > 120) undoS.shift();
+    redoS = [];
     render();
     toast('已套用新建默认：' + nodes.length + ' 个元素，' + links.length + ' 条连线');
   }
