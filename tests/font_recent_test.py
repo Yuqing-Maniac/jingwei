@@ -135,6 +135,7 @@ def main():
               const recent = %s;
               window.jwDesk = {
                 on() {},
+                winState: async () => ({ max: false, full: false }),
                 info: async () => ({ version: '3.3.4', platform: 'linux', arch: 'x64' }),
                 pending: async () => [],
                 recent: async () => recent,
