@@ -332,7 +332,87 @@
     beautify(d.pages.root);
   }, { base: '延续', new: '本次生成', key: '重点' });
 
-  window.TEMPLATES = [t1, t2, t3, t4, t5, t6, t7, t8, t9];
+  /* 不调用 beautify。一键美化会把自由摆放的态势收成流程图。 */
+  const BLUE = '#2C6CB0', RED = '#C44747';
+  function scn(T) {
+    const { N, decor } = T;
+    const zone = (type, text, x, y, w, h, fill, stroke) => {
+      N({ type, text: '', x, y, w, h, fill, stroke });
+      N({ type: 'text', text, x: x + 12, y: y + 8, w: Math.min(168, w - 24), h: 22, size: 13, bold: true, color: stroke });
+    };
+    const unit = (x, y, text, extra) => N(Object.assign({ type: 'equip', noBox: true, w: 84, h: 96, size: 12, x, y, text }, extra));
+    const ms = (sidc, x, y, text) => unit(x, y, text, { icon: 'ms:' + sidc, w: 72, h: 90 });
+    const pic = (key, side, x, y, text) => unit(x, y, text, { icon: ic(key), affiliation: side });
+    const move = (x, y, w, rot, stroke) => N({ type: 'stdArrow', text: '', x, y, w, h: 28, rot, stroke, sw: 2.4 });
+    const axis = (x, y, w, text, fill, stroke) => N({ type: 'arrowR', text, x, y, w, h: 40, size: 13, fill, stroke });
+    const cap = (text, x, y, color) => N({ type: 'text', text, x, y, w: 120, h: 20, size: 12, color });
+    return { N, decor, zone, ms, pic, move, axis, cap };
+  }
+
+  /* ====================================================== 10 区域封控场景 */
+  const scnSeal = define('scn-seal', '区域封控场景', '蓝方在巡逻区内侦察封控，红方自警戒区接近，含军标、红蓝涂装、扇形覆盖与机动箭头', (d, T) => {
+    const { decor, zone, ms, pic, move, axis, cap, N } = scn(T);
+    zone('ellipse', '巡逻区', 28, 96, 520, 460, '#E7F1FA', BLUE);
+    zone('ellipse', '警戒区', 640, 110, 500, 430, '#FDECEC', RED);
+    N({ type: 'sector', text: '', x: 300, y: 270, w: 120, h: 110, sweep: 90, fill: '#C5DCF3', stroke: BLUE });
+    move(500, 230, 160, 180, RED); cap('红方接近', 508, 204, RED);
+    move(500, 400, 150, 0, BLUE); cap('蓝方前出', 508, 374, BLUE);
+    axis(70, 500, 250, '封控方向', '#D6E6F6', BLUE);
+    ms('SFGPUH----', 70, 180, '蓝方指挥所');
+    ms('SFGPUCR---', 190, 340, '侦察分队');
+    pic('uav_quad', 'blue', 360, 150, '蓝方无人机');
+    pic('radar', 'blue', 300, 390, '蓝方雷达');
+    ms('SHGPUCI---', 760, 190, '红方步兵');
+    ms('SHAPMFQ---', 980, 160, '红方无人机');
+    pic('uav_male', 'red', 860, 310, '红方察打机');
+    pic('sam', 'red', 740, 400, '红方防空');
+    decor(0, 1160, 96, 580, '区域封控作战场景', '蓝方在巡逻区展开侦察与封控，红方自警戒区接近。示例区域，不对应真实地点。', '说明：蓝框与蓝涂装为蓝方，红框与红涂装为红方；扇形为雷达覆盖，箭头为机动方向。符号与图标均可替换。');
+  }, { base: '场景要素', new: '新增', key: '重点' });
+  scnSeal.group = '作战场景';
+
+  /* ====================================================== 11 海上拦截场景 */
+  const scnSea = define('scn-sea', '海上拦截场景', '蓝方巡逻艇与护卫舰在巡逻海区拦截红方无人艇，含军标、舰艇涂装与拦截箭头', (d, T) => {
+    const { decor, zone, ms, pic, move, axis, cap, N } = scn(T);
+    zone('ellipse', '巡逻海区', 24, 100, 500, 450, '#E7F1FA', BLUE);
+    zone('ellipse', '来袭方向', 680, 150, 450, 360, '#FDECEC', RED);
+    N({ type: 'sector', text: '', x: 360, y: 230, w: 90, h: 80, sweep: 80, fill: '#C5DCF3', stroke: BLUE });
+    axis(430, 300, 240, '拦截航向', '#D6E6F6', BLUE);
+    move(620, 220, 140, 180, RED); cap('来袭航线', 600, 194, RED);
+    move(600, 430, 150, 170, RED); cap('迂回', 620, 404, RED);
+    pic('patrol_boat', 'blue', 80, 180, '蓝方巡逻艇');
+    ms('SFSPCLFF--', 220, 200, '护卫舰');
+    pic('frigate', 'blue', 300, 340, '蓝方护卫舰');
+    pic('supply_ship', 'blue', 80, 400, '蓝方补给船');
+    pic('usv', 'red', 760, 200, '红方无人艇');
+    ms('10063000001207000000', 960, 220, '无人艇');
+    ms('SHUPS-----', 820, 380, '红方潜艇');
+    decor(0, 1160, 100, 570, '海上拦截作战场景', '蓝方在巡逻海区前出拦截，红方无人艇与潜艇自外沿接近。示例海区，不对应真实海域。', '说明：箭头表示拦截航向与来袭航线；军标与拟物舰艇图标可按实际编制替换，名称保持泛称。');
+  }, { base: '场景要素', new: '新增', key: '重点' });
+  scnSea.group = '作战场景';
+
+  /* ====================================================== 12 空地协同场景 */
+  const scnAir = define('scn-air', '空地协同场景', '蓝方集结后向红方防御地域突击，含军标、红蓝装备、会合点与突击箭头', (d, T) => {
+    const { decor, zone, ms, pic, move, axis, cap, N } = scn(T);
+    zone('rect', '集结地域', 24, 100, 460, 460, '#E7F1FA', BLUE);
+    zone('rect', '防御地域', 700, 100, 430, 460, '#FDECEC', RED);
+    N({ type: 'ellipse', text: '会合点', x: 530, y: 250, w: 120, h: 72, size: 13, fill: '#FFF6D8', stroke: '#A37B12' });
+    axis(500, 160, 200, '突击方向', '#D6E6F6', BLUE);
+    move(470, 400, 200, -12, BLUE); cap('机降航线', 500, 360, BLUE);
+    axis(80, 500, 220, '前出', '#D6E6F6', BLUE);
+    ms('SFGPUH----', 50, 170, '蓝方指挥所');
+    pic('fighter', 'blue', 200, 150, '蓝方战斗机');
+    pic('helicopter', 'blue', 340, 160, '蓝方直升机');
+    ms('SFGPUCA---', 60, 340, '装甲分队');
+    pic('tank', 'blue', 220, 360, '蓝方坦克');
+    ms('SHAPMFF---', 760, 160, '红方战斗机');
+    pic('sam', 'red', 960, 160, '红方防空');
+    ms('SHGPUCA---', 760, 340, '红方装甲');
+    pic('ifv', 'red', 940, 360, '红方步战车');
+    decor(0, 1160, 100, 580, '空地协同作战场景', '蓝方自集结地域前出，空中与地面在会合点协同，指向红方防御地域。示例想定，不含具体番号。', '说明：矩形为集结与防御地域，椭圆为会合点，箭头为主突与机降方向。红蓝涂装只区分阵营。');
+  }, { base: '场景要素', new: '新增', key: '重点' });
+  scnAir.group = '作战场景';
+
+  window.TEMPLATES = [t1, t2, t3, t4, t5, t6, t7, t8, t9, scnSeal, scnSea, scnAir];
 
   /* ====================================================== 画廊 UI */
   const CSS = `
