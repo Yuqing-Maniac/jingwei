@@ -2065,6 +2065,7 @@ stage.addEventListener('drop', e => {
 function addNode(spec, wx, wy) {
   checkpoint();
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
+  if (window.JwDefaults) JwDefaults.stampNode(n, spec);
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
   if (n.type === 'legend') P().noLegend = false;
@@ -2327,7 +2328,7 @@ function endDrag(e) {
   if (d.mode === 'link') {
     const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
-    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selectLinks([l.id]); }
+    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; if (window.JwDefaults) JwDefaults.stampLink(l); P().links.push(l); selectLinks([l.id]); }
   }
   if (d.mode === 'marquee') ui.marquee = null;
   render();
@@ -3292,6 +3293,7 @@ function renderProps() {
   if (links.length > 1) {
     h += `<h3>已选 ${links.length} 条连线</h3>`;
     h += fieldsHTML(links, LINK_FIELDS);
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" type="button" style="color:var(--danger)">删除连线</button>`;
   } else if (links.length === 1) {
     const l = links[0];
@@ -3310,6 +3312,7 @@ function renderProps() {
     h += `<div class="row"><label>走线</label>${seg('p-route', [['ortho', '直角'], ['straight', '直线']], l.route)}</div>`;
     if (window.Std) h += Std.propsHTML('link', l, p);
     h += sameButton();
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
   } else if (sel.size > 1) {
     const nodes = selectedNodes();
@@ -3318,6 +3321,7 @@ function renderProps() {
     h += fieldsHTML(nodes, NODE_FIELDS);
     h += arrowExtraHTML(nodes);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
   } else if (sel.size === 1) {
     const n = nodeById([...sel][0]); if (!n) { clearSel(); return renderProps(); }
@@ -3342,6 +3346,7 @@ function renderProps() {
     const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type);
     if (showSub) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
     const st = legendEntries(p);
@@ -3355,6 +3360,7 @@ function renderProps() {
     h += `<div class="row" title="拖动时对齐其他图形的边与中线、画布中轴，并提示等间距；按住 Alt 临时关闭"><label>拖动吸附</label>${seg('d-snapon', [['on', '对齐吸附'], ['off', '关闭']], snapOn() ? 'on' : 'off')}</div>`;
     if (window.Compact) h += Compact.panelHTML();
     h += `<div class="row" title="北约体制：友方蓝、敌方红；我军习惯：我方红、敌方蓝"><label>军标配色</label>${seg('d-ms', [['nato', '友蓝敌红'], ['cn', '我红敌蓝']], msMode())}</div>`;
+    if (window.JwDefaults) h += JwDefaults.panelHTML();
     if (window.Std) h += Std.propsHTML('page', null, p);
     h += `<hr><div class="hint" style="margin-bottom:4px">状态图例名称</div>`;
     h += ['base', 'new', 'key'].map(s => { const t = T(); const c = s === 'base' ? t.box : t.st[s]; return `<div class="row"><label><span class="swatch" style="width:18px;height:12px;background:${c.fill};border:1px solid ${c.stroke}"></span></label><input type="text" data-sl="${s}" value="${esc(doc.statusLabels[s])}"></div>`; }).join('');
@@ -3421,6 +3427,7 @@ function bindProps() {
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
   on('#d-snapon', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; try { localStorage.setItem('hongtu.snap', b.dataset.v); } catch (_) { } render(); });
   if (window.Compact && !l && !n && !links.length) Compact.bind($('#props'));
+  if (window.JwDefaults) JwDefaults.bind($('#props'));
   if (window.Std && links.length < 2) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
   on('#d-ms', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.msColor = b.dataset.v; renderPalette(); render(); if ($('#modal').style.display === 'flex') renderPicker(); });
 }
@@ -4277,7 +4284,9 @@ function irConnectPair(a, b, msg) {
     return false;
   }
   const kid = 'k' + uid();
-  s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
+  const fresh = { id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' };
+  if (window.JwDefaults) JwDefaults.stampLink(fresh);
+  s.links.push(fresh);
   s.sel = { kind: 'link', id: kid };
   $('#ir-msg').textContent = msg;
   paintImageReview();
@@ -4291,6 +4300,7 @@ function irPreviewClick(e) {
     const p = irSvgPoint(e);
     const w = Math.max(80, s.w * 0.12), h = Math.max(36, s.h * 0.08);
     const n = mkNode({ id: 'n' + uid(), type: 'rect', text: '新框', parent: null, w: w, h: h, x: Math.max(0, Math.min(Math.max(0, s.w - w), p.x - w / 2)), y: Math.max(0, Math.min(Math.max(0, s.h - h), p.y - h / 2)) });
+    if (window.JwDefaults) JwDefaults.stampNode(n, { type: 'rect', text: '新框' });
     s.nodes.push(n);
     s.sel = { kind: 'node', id: n.id };
     s.mode = '';
