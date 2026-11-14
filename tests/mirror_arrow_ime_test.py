@@ -142,11 +142,15 @@ def main():
           doc.measure = { unit: 'm', px: 10 };
           const auto2 = dimLabel(P().nodes.find(n => n.type === 'dimArrow')) === '5 m' && diagramSVG(P(), true).includes('5 m');
           const dist = document.getElementById('p-dist');
+          const before = dist.value;
           dist.value = '3 km';
           dist.dispatchEvent(new Event('input', { bubbles: true }));
           const dim1 = P().nodes.find(n => n.type === 'dimArrow');
+          const ignored = dist.readOnly && dim1.distMode !== 'fixed' && !dim1.distText && dimLabel(dim1) === before;
           dim1.w = 80;
-          const fixed = dim1.distMode === 'fixed' && dimLabel(dim1) === '3 km';
+          render();
+          const tip = dimLabel(dim1) === '8 m' && document.getElementById('p-dist').value === '8 m';
+          const fixed = ignored && tip;
           document.getElementById('p-rot90').click();
           const turned = P().nodes.find(n => n.type === 'dimArrow').rot === 90;
           const stdNode = P().nodes.find(n => n.type === 'stdArrow');
@@ -154,7 +158,7 @@ def main():
           const ends = arrowEnds(stdNode);
           const angled = Math.abs(ends.tip.y - ends.tail.y) > 20;
           const svgOut = exportSVGString(P(), false).str;
-          const svgHas = svgOut.includes('scale(-1 -1)') && svgOut.includes('3 km') && svgOut.includes('polygon');
+          const svgHas = svgOut.includes('scale(-1 -1)') && svgOut.includes('8 m') && !svgOut.includes('3 km') && svgOut.includes('polygon');
           const xml = DrawIO.exportString([P()]);
           const imported = await DrawIO.importText(xml);
           const nodes = imported.pages[0].nodes;
@@ -162,7 +166,7 @@ def main():
             flip: nodes.some(n => n.flipX && n.flipY),
             cu: nodes.some(n => String(n.icon || '').startsWith('cu:')) && nodes.filter(n => n.flipY).every(n => /^(lib|ms):/.test(n.icon || '')),
             arrow: nodes.some(n => n.type === 'stdArrow'),
-            dist: nodes.some(n => n.type === 'dimArrow' && n.distText === '3 km'),
+            dist: nodes.some(n => n.type === 'dimArrow' && !n.distText && !n.distMode && dimLabel(n) === '8 m'),
             line: xml.includes('endArrow=classic')
           };
           const prev = saveFile;
@@ -184,7 +188,7 @@ def main():
             if (!name.endsWith('.xml')) continue;
             const t = await vsd.files[name].async('string');
             if (t.includes('EndArrow')) vsdArrow = true;
-            if (t.includes('3 km')) vsdText = true;
+            if (t.includes('8 m')) vsdText = true;
           }
           const plainPng = await iconPNG(uri, 40);
           const flipPng = await iconPNG(uri + '#fx', 40);

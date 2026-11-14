@@ -38,6 +38,11 @@ def main():
           const xs1 = g1.majors.map(t => t.x);
           const gap1 = xs1.length > 1 ? xs1[1] - xs1[0] : 0;
           const labels1 = g1.majors.map(t => t.text);
+          const customDist = dimLabel(n) === labels1[labels1.length - 1];
+          const probe = mkNode({ type: 'dimArrow', w: 200, h: 48, rulerStart: 0, rulerStep: 10, rulerGap: 48, rulerUnit: 'm', rulerMinor: 0 });
+          const partial = dimLabel(probe) === '41.667 m';
+          probe.w = 192;
+          const exact = dimLabel(probe) === '40 m';
           const svg1 = diagramSVG(P(), true);
           const shown1 = textsOf(svg1);
           const tickLines = (svg1.match(/<line /g) || []).length;
@@ -45,10 +50,12 @@ def main():
           const turned = nodeSVG(n, P(), true);
           const upright = turned.indexOf('rotate(-90') >= 0 && turned.indexOf('font-size="12"') >= 0;
           delete n.rot; render();
-          const panel = ['p-rulerStart', 'p-rulerGap', 'p-rulerStep', 'p-rulerMinor', 'p-rulerUnit', 'p-rulerSide', 'p-rulerText', 'p-sw', 'p-rot', 'p-stroke'].every(id => document.getElementById(id));
+          const panel = ['p-rulerStart', 'p-rulerGap', 'p-rulerStep', 'p-rulerMinor', 'p-rulerUnit', 'p-rulerSide', 'p-rulerText', 'p-sw', 'p-rot', 'p-stroke', 'p-headColor', 'p-dist'].every(id => document.getElementById(id));
           document.getElementById('p-rulerText').value = '0,10,20';
           document.getElementById('p-rulerText').dispatchEvent(new Event('input', { bubbles: true }));
           const edited = rulerGeom(P().nodes[0]).majors.map(t => t.text);
+          const distEl = document.getElementById('p-dist');
+          const distance = !!distEl && distEl.readOnly && distEl.value === '60 m' && dimLabel(P().nodes[0]) === '60 m' && !P().nodes[0].distMode && !P().nodes[0].distText;
           const svgOut = exportSVGString(P(), false).str;
           const svgTicks = textsOf(svgOut);
           const xml = DrawIO.exportString([P()]);
@@ -82,6 +89,42 @@ def main():
             if (name.indexOf('page') < 0 || name.indexOf('.xml') < 0) continue;
             vsdText += await vsd.files[name].async('string');
           }
+          document.getElementById('p-stroke').value = '#112233';
+          document.getElementById('p-stroke').dispatchEvent(new Event('input', { bubbles: true }));
+          document.getElementById('p-headColor').value = '#aa0044';
+          document.getElementById('p-headColor').dispatchEvent(new Event('input', { bubbles: true }));
+          const colored = P().nodes[0];
+          const colorSvg = nodeSVG(colored, P(), true);
+          const colorNode = colored.stroke === '#112233' && colored.headColor === '#aa0044' && colorSvg.indexOf('stroke="#112233"') >= 0 && colorSvg.indexOf('fill="#aa0044"') >= 0 && colorSvg.indexOf('fill="#112233"') >= 0;
+          const colorXml = DrawIO.exportString([P()]);
+          const colorBack = (await DrawIO.importText(colorXml)).pages[0].nodes.find(it => it.type === 'dimArrow');
+          const colorDio = !!(colorBack && colorBack.headColor === '#aa0044' && colorBack.stroke === '#112233' && !colorBack.distText && colorXml.indexOf('#aa0044') >= 0 && colorXml.indexOf('endArrow=none') >= 0);
+          const blobs2 = [];
+          saveFile = async (name, data) => { blobs2.push({ name: name, data: data }); };
+          await exportPPTX();
+          await exportVSDX();
+          const colorOut = exportSVGString(P(), false).str;
+          const colorPng = await rasterize(colorOut, 400, 240, 2);
+          saveFile = prev;
+          const ppt2z = await JSZip.loadAsync(await blobs2[0].data.arrayBuffer());
+          let ppt2 = '';
+          for (const name of Object.keys(ppt2z.files)) {
+            if (name.indexOf('slide') < 0 || name.indexOf('.xml') < 0) continue;
+            ppt2 += await ppt2z.files[name].async('string');
+          }
+          const vsd2z = await JSZip.loadAsync(await blobs2[1].data.arrayBuffer());
+          let vsd2 = '';
+          for (const name of Object.keys(vsd2z.files)) {
+            if (name.indexOf('page') < 0 || name.indexOf('.xml') < 0) continue;
+            vsd2 += await vsd2z.files[name].async('string');
+          }
+          const colorFile = ppt2.indexOf('AA0044') >= 0 && ppt2.indexOf('112233') >= 0 && vsd2.indexOf('#aa0044') >= 0 && vsd2.indexOf('#112233') >= 0 && colorPng && colorPng.size > 1000 && colorOut.indexOf('#aa0044') >= 0 && colorOut.indexOf('#112233') >= 0;
+          document.getElementById('p-stroke').value = '#445566';
+          document.getElementById('p-stroke').dispatchEvent(new Event('input', { bubbles: true }));
+          const keptHead = P().nodes[0].stroke === '#445566' && P().nodes[0].headColor === '#aa0044' && nodeSVG(P().nodes[0], P(), true).indexOf('stroke="#445566"') >= 0 && nodeSVG(P().nodes[0], P(), true).indexOf('fill="#aa0044"') >= 0;
+          document.querySelector('#props [data-shared="headColor"] [data-clear]').click();
+          const cleared = !P().nodes[0].headColor && nodeSVG(P().nodes[0], P(), true).indexOf('fill="#445566"') >= 0;
+          P().nodes[0].headColor = '#aa0044';
           const saved = JSON.parse(projectJSON());
           const old = saved.doc.pages.root.nodes.find(it => it.type === 'dimArrow');
           delete old.rulerGap; delete old.rulerStep; delete old.rulerStart; delete old.rulerMinor; delete old.rulerUnit; delete old.rulerText; delete old.rulerSide;
@@ -93,11 +136,11 @@ def main():
           document.getElementById('pal-q').value = '箭头';
           document.getElementById('pal-q').dispatchEvent(new Event('input', { bubbles: true }));
           const thumb = document.getElementById('palette').innerHTML;
-          P().nodes = [mkNode({ type: 'dimArrow', x: 160, y: 220, w: 240, h: 72, text: '', stroke: '#1F5FBF', sw: 2.4, rulerStart: 0, rulerStep: 10, rulerGap: 48, rulerMinor: 4, rulerUnit: 'm', rulerText: '0,10,25' })];
+          P().nodes = [mkNode({ type: 'dimArrow', x: 160, y: 220, w: 240, h: 72, text: '', stroke: '#1F5FBF', sw: 2.4, headColor: '#C4552A', rulerStart: 0, rulerStep: 10, rulerGap: 48, rulerMinor: 4, rulerUnit: 'm', rulerText: '0,10,25' })];
           P().links = []; P().noLegend = true;
           selectNodes([P().nodes[0].id]); render(); fit();
-          const anchor = document.getElementById('p-rot').closest('.row');
-          document.getElementById('props').scrollTop = Math.max(0, anchor.offsetTop - 16);
+          const anchor = document.getElementById('p-dist').closest('.row');
+          document.getElementById('props').scrollTop = Math.max(0, anchor.offsetTop - 120);
           const thumbItem = [].slice.call(document.querySelectorAll('#palette .pitem')).filter(el => el.textContent.indexOf('距离箭头') >= 0)[0];
           if (thumbItem) thumbItem.scrollIntoView({ block: 'center' });
           const toast = document.getElementById('toast');
@@ -121,11 +164,12 @@ def main():
           return {
             xs0, labels0, gap0, shown0, count0: xs0.length,
             xs1, labels1, gap1, shown1, count1: xs1.length, tickLines, upright, panel, edited,
+            customDist, partial, exact, distance, colorNode, colorDio, colorFile, keptHead, cleared,
             svgTicks, dio,
             pptHas: pptText.indexOf('>20<') >= 0 && pptText.indexOf('60 m') >= 0,
             vsdHas: vsdText.indexOf('>20<') >= 0 && vsdText.indexOf('60 m') >= 0,
             png: png && png.size > 1000,
-            legacy: { text: legacy.distText, count: gL.majors.length, gap: gL.majors.length > 1 ? gL.majors[1].x - gL.majors[0].x : 0, svg: legacySvg.indexOf('12 m') >= 0, minors: gL.minors.length > 0 },
+            legacy: { gone: !legacy.distMode && !legacy.distText, label: dimLabel(legacy), head: legacy.headColor, count: gL.majors.length, gap: gL.majors.length > 1 ? gL.majors[1].x - gL.majors[0].x : 0, svg: legacySvg.indexOf('10 m') >= 0 && legacySvg.indexOf('12 m') < 0, minors: gL.minors.length > 0 },
             thumb: thumb.indexOf('>0<') >= 0 && thumb.indexOf('>10<') >= 0 && thumb.indexOf('>20<') >= 0 && thumb.indexOf('距离箭头') >= 0,
             overlap
           };
@@ -143,8 +187,10 @@ def main():
         assert '20' in result['svgTicks'] and '60 m' in result['svgTicks'], result
         assert result['dio']['type'] == 'dimArrow' and result['dio']['step'] == 10 and result['dio']['gap'] == 40, result
         assert result['dio']['text'] == '0,10,20' and result['dio']['ticks'] > 4 and result['dio']['nums'] and result['dio']['line'], result
+        assert result['customDist'] and result['partial'] and result['exact'] and result['distance'], result
+        assert result['colorNode'] and result['colorDio'] and result['colorFile'] and result['keptHead'] and result['cleared'], result
         assert result['pptHas'] and result['vsdHas'] and result['png'], result
-        assert result['legacy']['text'] == '12 m' and result['legacy']['count'] >= 2 and result['legacy']['svg'] and result['legacy']['minors'], result
+        assert result['legacy']['gone'] and result['legacy']['label'] == '10 m' and result['legacy']['head'] == '#aa0044' and result['legacy']['count'] >= 2 and result['legacy']['svg'] and result['legacy']['minors'], result
         assert result['thumb'] and result['overlap'] is False, result
         assert not errors, errors
         page.wait_for_timeout(250)

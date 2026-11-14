@@ -402,11 +402,35 @@ function measureSpec() {
   const m = doc && doc.measure;
   return { unit: m && m.unit ? String(m.unit) : 'm', px: m && +m.px > 0 ? +m.px : 10 };
 }
+function rulerCount(len, gap) {
+  let count = Math.floor(Math.max(0, len) / gap + 1e-4) + 1;
+  if (count < 1) count = 1;
+  while (count > 1 && (count - 1) * gap > len + 0.05) count--;
+  return count;
+}
 function dimLabel(n) {
-  if (n.distMode === 'fixed') return String(n.distText || '');
-  const m = measureSpec(), len = n.w / m.px;
-  const num = Math.abs(len) >= 100 ? String(Math.round(len)) : String(Math.round(len * 10) / 10);
-  return num + ' ' + m.unit;
+  if (!n || n.type !== 'dimArrow') return '';
+  const spec = rulerSpec(n), len = Math.max(0, +n.w || 0);
+  if (rulerBits(n).length) {
+    const texts = rulerTexts(n, rulerCount(len, spec.gap), spec);
+    return withUnit(texts[texts.length - 1] || '0', spec.unit, true);
+  }
+  const v = spec.start + (len / spec.gap) * spec.step;
+  return spec.unit ? fmtNum(v) + ' ' + spec.unit : fmtNum(v);
+}
+function arrowColors(n) {
+  const shaft = n.noLine ? 'none' : (n.stroke || stStyle(n, T()).stroke);
+  const head = n.noLine ? 'none' : (n.headColor || shaft);
+  const split = head !== 'none' && String(head).toLowerCase() !== String(shaft).toLowerCase();
+  return { shaft: shaft, head: head, split: split };
+}
+function arrowHeadWorld(n) {
+  const head = arrowHeadLen(n.w, n.h), mid = n.h / 2, x1 = Math.max(0, n.w - head), wing = Math.min(head * 0.42, n.h * 0.45);
+  return [[n.w, mid], [x1, mid - wing], [x1, mid + wing]].map(function (p) { return rotPoint(n, n.x + p[0], n.y + p[1]); });
+}
+function arrowShaftEnd(n) {
+  const head = arrowHeadLen(n.w, n.h), x1 = Math.max(0, n.w - head);
+  return rotPoint(n, n.x + x1, n.y + n.h / 2);
 }
 function fmtNum(v) {
   if (!isFinite(v)) return '';
@@ -471,9 +495,7 @@ function withUnit(label, unit, last) {
 }
 function rulerGeom(n) {
   const spec = rulerSpec(n), len = Math.max(0, +n.w || 0), gap = spec.gap;
-  let count = Math.floor(len / gap + 1e-4) + 1;
-  if (count < 1) count = 1;
-  while (count > 1 && (count - 1) * gap > len + 0.05) count--;
+  const count = rulerCount(len, gap);
   const texts = rulerTexts(n, count, spec), majors = [];
   for (let i = 0; i < count; i++) majors.push({ x: i * gap, text: withUnit(texts[i], spec.unit, i === count - 1) });
   const minors = [], sub = spec.minor > 0 ? gap / (spec.minor + 1) : 0;
@@ -486,7 +508,8 @@ function rulerGeom(n) {
   const mid = n.h / 2, dir = spec.side;
   const majL = Math.max(6, Math.min(11, n.h * 0.22)), minL = Math.max(3, majL * 0.5);
   const base = dir < 0 ? mid - majL - 3 : mid + majL + 12;
-  const caption = n.distMode === 'fixed' ? { x: n.w / 2, y: mid - dir * Math.min(18, n.h * 0.34), text: dimLabel(n) } : null;
+  const tip = dimLabel(n), last = majors.length ? majors[majors.length - 1].text : '';
+  const caption = tip && tip !== last ? { x: len, y: mid - dir * Math.min(18, n.h * 0.34), text: tip } : null;
   return { spec: spec, majors: majors, minors: minors, mid: mid, dir: dir, majL: majL, minL: minL, base: base, caption: caption };
 }
 function rulerItems(n) {
@@ -505,13 +528,19 @@ function rulerItems(n) {
   return { geom: g, ticks: ticks, labels: labels };
 }
 function migrateDimArrow(n) {
-  if (!n || n.type !== 'dimArrow') return;
+  if (!n) return;
+  if (isLineArrow(n)) {
+    if (n.headColor && !/^#[0-9A-Fa-f]{6}$/.test(String(n.headColor))) delete n.headColor;
+    else if (n.headColor && n.stroke && String(n.headColor).toLowerCase() === String(n.stroke).toLowerCase()) delete n.headColor;
+  }
+  if (n.type !== 'dimArrow') return;
   if (n.rulerMinor != null) {
     const k = Math.round(+n.rulerMinor);
     n.rulerMinor = isFinite(k) ? Math.max(0, Math.min(12, k)) : 0;
   }
   if (n.rulerGap != null && !(+n.rulerGap >= 16)) delete n.rulerGap;
   if (n.rulerSide != null && n.rulerSide !== 'below') delete n.rulerSide;
+  delete n.distMode; delete n.distText;
 }
 function arrowHeadLen(w, h) { return Math.max(8, Math.min(18, h * 0.85, w * 0.28)); }
 function arrowEnds(n) {
@@ -519,12 +548,12 @@ function arrowEnds(n) {
   return { tail: rotPoint(n, n.x, y), tip: rotPoint(n, n.x + n.w, y) };
 }
 function arrowMarkup(n) {
-  const stroke = n.noLine ? 'none' : (n.stroke || stStyle(n, T()).stroke);
+  const cols = arrowColors(n), stroke = cols.shaft;
   const sw = n.sw > 0 ? n.sw : 2;
   const head = arrowHeadLen(n.w, n.h), mid = n.h / 2, x1 = Math.max(0, n.w - head), wing = Math.min(head * 0.42, n.h * 0.45);
   let s = `<line x1="0" y1="${mid}" x2="${n.w}" y2="${mid}" stroke="transparent" stroke-width="${Math.max(14, sw + 10)}"/>`;
   s += `<line x1="0" y1="${mid}" x2="${x1}" y2="${mid}" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="butt"/>`;
-  s += `<polygon points="${n.w},${mid} ${x1},${mid - wing} ${x1},${mid + wing}" fill="${stroke}" stroke="none"/>`;
+  s += `<polygon points="${n.w},${mid} ${x1},${mid - wing} ${x1},${mid + wing}" fill="${cols.head}" stroke="none"/>`;
   if (n.type === 'dimArrow') {
     const g = rulerGeom(n), textRot = -rotOf(n), tw = Math.max(1, sw * 0.65);
     const upright = (x, y, text) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="${esc(FONT)}" font-size="12" fill="${stroke}" transform="rotate(${textRot} ${x.toFixed(1)} ${y.toFixed(1)})">${esc(text)}</text>`;
@@ -1340,7 +1369,18 @@ function render(full = true) {
   setMarkup(world, `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG());
   applyView(); applyHover();
   if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
+  syncDistField();
   if (window.Backup) Backup.poke();
+}
+function syncDistField() {
+  const el = $('#p-dist');
+  if (!el) return;
+  const rows = selectedNodes().filter(n => n.type === 'dimArrow');
+  if (!rows.length) return;
+  const first = dimLabel(rows[0]);
+  const mixed = rows.some(n => dimLabel(n) !== first);
+  el.value = mixed ? '' : first;
+  if (mixed) el.placeholder = '多值';
 }
 let linkNoted;
 function noteLinkSelection() {
@@ -3091,7 +3131,7 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
-const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', affiliation: '阵营涂装', flipX: '左右镜像', flipY: '上下镜像', fill: '填充', grad: '渐变', gradTo: '渐变末端', gradA: '末端不透明度', stroke: '描边', noLine: '无描边', sweep: '开角', rot: '角度', sw: '线宽', rulerStart: '起点', rulerGap: '间距', rulerStep: '每格', rulerMinor: '细分', rulerUnit: '单位', rulerSide: '位置', rulerText: '刻度', dist: '距离', dir: '箭头', kind: '链路类型', color: '颜色' };
+const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', affiliation: '阵营涂装', flipX: '左右镜像', flipY: '上下镜像', fill: '填充', grad: '渐变', gradTo: '渐变末端', gradA: '末端不透明度', stroke: '描边', headColor: '箭头', noLine: '无描边', sweep: '开角', rot: '角度', sw: '线宽', rulerStart: '起点', rulerGap: '间距', rulerStep: '每格', rulerMinor: '细分', rulerUnit: '单位', rulerSide: '位置', rulerText: '刻度', dist: '距离', dir: '箭头', kind: '链路类型', color: '颜色' };
 const SHARED_REJECT = {};
 const NODE_FIELDS = {
   labelSide: {
@@ -3199,6 +3239,25 @@ const NODE_FIELDS = {
     get: function (n) { return n.stroke || null; },
     set: function (n, v) { if (n.type === 'text' || n.type === 'tblock') return; if (v) n.stroke = v; else delete n.stroke; }
   },
+  headColor: {
+    id: 'headColor', kind: 'color', optional: true,
+    show: function (items) { return items.some(isLineArrow); },
+    scope: isLineArrow,
+    get: function (n) { return n.headColor || null; },
+    set: function (n, v) {
+      if (!isLineArrow(n)) return;
+      if (!v) { delete n.headColor; return; }
+      const shaft = n.noLine ? 'none' : (n.stroke || stStyle(n, T()).stroke);
+      if (String(v).toLowerCase() === String(shaft).toLowerCase()) delete n.headColor;
+      else n.headColor = v;
+    },
+    swatch: function (items) {
+      const n = items.filter(isLineArrow)[0];
+      if (!n || n.noLine) return '#ffffff';
+      return n.headColor || n.stroke || stStyle(n, T()).stroke;
+    },
+    hint: '默认与描边相同'
+  },
   noLine: {
     id: 'noLine', kind: 'check',
     show: function (items) { return NODE_FIELDS.stroke.show(items); },
@@ -3288,20 +3347,12 @@ const NODE_FIELDS = {
     clear: '默认'
   },
   dist: {
-    id: 'dist', kind: 'text', optional: true,
+    id: 'dist', kind: 'text', readOnly: true,
     show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
     scope: function (n) { return n.type === 'dimArrow'; },
-    get: function (n) { return n.distMode === 'fixed' ? (n.distText || '') : ''; },
-    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v == null || v === '') { delete n.distMode; delete n.distText; } else { n.distMode = 'fixed'; n.distText = String(v); } },
-    placeholder: function (items) {
-      const rows = items.filter(function (n) { return n.type === 'dimArrow' && n.distMode !== 'fixed'; });
-      if (!rows.length) return '手写后固定';
-      const first = dimLabel(rows[0]);
-      for (let i = 1; i < rows.length; i++) if (dimLabel(rows[i]) !== first) return '多值';
-      return first;
-    },
-    note: '空着则按长度',
-    clear: '跟随长度'
+    get: function (n) { return dimLabel(n); },
+    set: function () {},
+    hint: '起点 + 杆长 ÷ 间距 × 每格；自定刻度则取最后一格'
   }
 };
 const LINK_FIELDS = {
@@ -3382,14 +3433,16 @@ function fieldHTML(items, field) {
     const ph = state.mixed ? ' placeholder="多值"' : (field.placeholder ? ` placeholder="${esc(field.placeholder(items))}"` : '');
     const hint = state.mixed ? '<span class="hint">多值</span>' : (field.note ? `<span class="hint" style="flex:1 0 100%">${esc(field.note)}</span>` : '');
     const tip = field.hint ? ` title="${esc(field.hint)}"` : '';
-    const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">${esc(field.clear || '默认')}</button>` : '';
-    return `<div class="row sh" data-shared="${field.id}"><label${tip}>${cap}</label><input type="text" id="${id}" data-shared="${field.id}" value="${esc(shown)}"${ph}>${hint}${clr}</div>`;
+    const clr = field.optional && !field.readOnly ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">${esc(field.clear || '默认')}</button>` : '';
+    const ro = field.readOnly ? ' readonly' : '';
+    return `<div class="row sh" data-shared="${field.id}"><label${tip}>${cap}</label><input type="text" id="${id}" data-shared="${field.id}" value="${esc(shown)}"${ph}${ro}>${hint}${clr}</div>`;
   }
   if (field.kind === 'color') {
-    const hex = !state.mixed && state.value ? state.value : '#ffffff';
+    const hex = !state.mixed && state.value ? state.value : (!state.mixed && field.swatch ? field.swatch(items) : '#ffffff');
     const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const tip = field.hint ? ` title="${esc(field.hint)}"` : '';
     const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
-    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="color" id="${id}" data-shared="${field.id}" value="${hex}">${hint}${clr}</div>`;
+    return `<div class="row sh" data-shared="${field.id}"><label${tip}>${cap}</label><input type="color" id="${id}" data-shared="${field.id}" value="${hex}">${hint}${clr}</div>`;
   }
   return '';
 }
@@ -3478,7 +3531,7 @@ function bindFields(items, fields) {
       });
     } else if (field.kind === 'num' || field.kind === 'color' || field.kind === 'size' || field.kind === 'text') {
       const input = row.querySelector('input');
-      if (!input) return;
+      if (!input || field.readOnly) return;
       input.addEventListener('input', () => {
         const v = parseShared(field, input.value);
         if (v === SHARED_REJECT) return;
@@ -3881,9 +3934,17 @@ async function exportPPTX() {
           else slide.addShape(pptx.ShapeType.rect, o);
         }
       } else if (isLineArrow(n)) {
-        const ends = arrowEnds(n), stroke = n.stroke || stStyle(n, t).stroke, sw = n.sw > 0 ? n.sw : 2;
-        const a = ends.tail, z = ends.tip;
-        slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: Math.max(S(Math.abs(z.x - a.x)), 0.01), h: Math.max(S(Math.abs(z.y - a.y)), 0.01), flipH: z.x < a.x, flipV: z.y < a.y, line: n.noLine ? { width: 0 } : { color: hex(stroke), width: LW(sw), endArrowType: 'triangle' }, ...(n.noLine ? { objectName: 'jwCN' } : {}) });
+        const cols = arrowColors(n), stroke = cols.shaft, sw = n.sw > 0 ? n.sw : 2;
+        const ends = arrowEnds(n), a = ends.tail, z = cols.split ? arrowShaftEnd(n) : ends.tip;
+        const line = n.noLine ? { width: 0 } : { color: hex(stroke), width: LW(sw), ...(cols.split ? {} : { endArrowType: 'triangle' }) };
+        slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: Math.max(S(Math.abs(z.x - a.x)), 0.01), h: Math.max(S(Math.abs(z.y - a.y)), 0.01), flipH: z.x < a.x, flipV: z.y < a.y, line: line, ...(n.noLine ? { objectName: 'jwCN' } : {}) });
+        if (cols.split) {
+          const pts = arrowHeadWorld(n), xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+          let x0 = Math.min.apply(null, xs), y0 = Math.min.apply(null, ys), x1 = Math.max.apply(null, xs), y1 = Math.max.apply(null, ys);
+          if (x1 - x0 < 0.5) { x0 -= 0.5; x1 += 0.5; }
+          if (y1 - y0 < 0.5) { y0 -= 0.5; y1 += 0.5; }
+          slide.addShape(pptx.ShapeType.custGeom, { x: X(x0), y: Y(y0), w: S(x1 - x0), h: S(y1 - y0), points: pts.map(p => ({ x: +((p.x - x0) * f).toFixed(4), y: +((p.y - y0) * f).toFixed(4) })), fill: { color: hex(cols.head) }, line: { color: hex(cols.head), width: 0 } });
+        }
         if (n.type === 'dimArrow' && !n.noLine) {
           const items = rulerItems(n);
           for (let i = 0; i < items.ticks.length; i++) {
@@ -4113,9 +4174,21 @@ async function exportVSDX(pageList) {
       g += '</Section>';
       return `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(x0 + W / 2))}${cell('PinY', num(y0 + H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('LineColor', color)}${cell('LineWeight', num((K.w || 1.6) * 0.75 / 72), 'PT')}${cell('LinePattern', VSD_PAT[K.dash] || 1)}${cell('FillPattern', 0)}${cell('EndArrow', dir !== 'none' ? 4 : 0)}${cell('BeginArrow', dir === 'both' ? 4 : 0)}${cell('EndArrowSize', 1)}${cell('BeginArrowSize', 1)}${g}</Shape>`;
     }
+    function fillShape(pts, color) {
+      const xsP = pts.map(q => X(q.x)), ysP = pts.map(q => Y(q.y));
+      const x0 = Math.min.apply(null, xsP), x1 = Math.max.apply(null, xsP), y0 = Math.min.apply(null, ysP), y1 = Math.max.apply(null, ysP);
+      const W = Math.max(x1 - x0, 0.0001), H = Math.max(y1 - y0, 0.0001);
+      const gx = v => num(X(v) - x0), gy = v => num(Y(v) - y0);
+      let g = `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 1)}`, ix = 1;
+      pts.forEach((p, i) => { g += `<Row T='${i ? 'LineTo' : 'MoveTo'}' IX='${ix++}'>${cell('X', gx(p.x))}${cell('Y', gy(p.y))}</Row>`; });
+      g += `<Row T='LineTo' IX='${ix}'>${cell('X', gx(pts[0].x))}${cell('Y', gy(pts[0].y))}</Row></Section>`;
+      return `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(x0 + W / 2))}${cell('PinY', num(y0 + H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('FillForegnd', color)}${cell('FillPattern', 1)}${cell('LinePattern', 0)}${g}</Shape>`;
+    }
     for (const n of arrowJobs) {
-      const ends = arrowEnds(n), stroke = n.noLine ? null : (n.stroke || stStyle(n, t).stroke), sw = n.sw > 0 ? n.sw : 2;
-      if (stroke) shapes.push(polyShape([ends.tail, ends.tip], stroke, { w: sw }, 'one'));
+      const cols = arrowColors(n), stroke = cols.shaft === 'none' ? null : cols.shaft, sw = n.sw > 0 ? n.sw : 2;
+      const ends = arrowEnds(n), tip = cols.split ? arrowShaftEnd(n) : ends.tip;
+      if (stroke) shapes.push(polyShape([ends.tail, tip], stroke, { w: sw }, cols.split ? 'none' : 'one'));
+      if (cols.split) shapes.push(fillShape(arrowHeadWorld(n), cols.head));
       if (n.type === 'dimArrow' && stroke) {
         const items = rulerItems(n);
         for (let i = 0; i < items.ticks.length; i++) shapes.push(polyShape(items.ticks[i], stroke, { w: 1 }, 'none'));
