@@ -40,7 +40,7 @@
   function rootCell(p) {
     const a = {};
     if (p.view) a.ht_view = p.view;
-    if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind });
+    if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind, measure: doc.measure || null });
     const at = Object.entries(a).map(([k, v]) => ` ${k}="${xa(v)}"`).join('');
     return at ? `<object label=""${at} id="0"><mxCell/></object>` : '<mxCell id="0"/>';
   }
@@ -69,7 +69,7 @@
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '' };
+      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_affiliation: n.affiliation && n.affiliation !== 'neutral' ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_distMode: n.distMode === 'fixed' ? 'fixed' : '', ht_distText: n.distMode === 'fixed' ? (n.distText || '') : '' };
       if (n.sub && pageIds[n.sub]) ht.link = 'data:page/id,' + pageIds[n.sub];
       const st = stStyle(n, t), fs = n.size || 13, bold = n.bold ? ';fontStyle=1' : '';
       const font = `fontSize=${fs};fontFamily=Microsoft YaHei;html=1;whiteSpace=wrap`;
@@ -91,12 +91,15 @@
         cell(cid(n.id), txt, `text;${font};align=${n.align === 'left' ? 'left' : 'center'};verticalAlign=middle;fontColor=${color}${bold}`, geo, pid, ht);
       } else if (n.type === 'note') {
         cell(cid(n.id), txt, `rounded=1;arcSize=4;${font};align=left;spacingLeft=8;fillColor=${t.note.fill};strokeColor=${t.note.stroke};fontColor=${t.text}`, geo, pid, ht);
+      } else if (n.type === 'stdArrow' || n.type === 'dimArrow') {
+        const stroke = n.stroke || st.stroke, sw = n.sw > 0 ? n.sw : 2, label = n.type === 'dimArrow' ? dimLabel(n) : '';
+        cell(cid(n.id), label, `shape=line;html=1;strokeColor=${stroke};strokeWidth=${sw};endArrow=classic;endFill=1;startArrow=none;fontSize=12;fontColor=${stroke};labelBackgroundColor=${t.bg};rotation=${rotOf(n)}`, geo, pid, ht);
       } else if (n.type === 'legend' || n.type === 'tblock') {
         if (n.type === 'legend' && typeof legendLayout === 'function') legendLayout(n, p);
         const im = 'data:image/svg+xml,' + b64(imgSVG(n));
         cell(cid(n.id), '', `shape=image;aspect=fixed;imageAspect=0;image=${im}`, { x: geo.x - 2, y: geo.y - 2, w: n.w + 4, h: n.h + 4 }, pid, ht);
       } else {
-        const L = nodeLayout(n), im = L.icon ? styleImage(L.icon.uri) : null;
+        const L = nodeLayout(n), im = L.icon ? styleImage(iconMirrorURI(L.icon.uri, L.icon.flipX, L.icon.flipY)) : null;
         const fill = n.fill || st.fill, stroke = n.stroke || st.stroke, color = t.box.text;
         if (n.type === 'equip' || (im && L.icon && L.text && L.text.cy > L.icon.y + L.icon.h)) {
           /* 图标在上、文字在下：容器框（noBox 时透明）+ 图片样式标签 */
@@ -282,12 +285,17 @@
         if (D.ht_etype) n.etype = D.ht_etype; if (D.ht_code) n.code = D.ht_code;
         if (D.ht_attrs) try { n.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
         if (D.ht_role) n.role = D.ht_role; if (D.ht_noBox) n.noBox = true; if (D.ht_titleW) n.titleW = +D.ht_titleW;
+        if (D.ht_affiliation === 'red' || D.ht_affiliation === 'blue') n.affiliation = D.ht_affiliation;
+        if (D.ht_rot) n.rot = +D.ht_rot || 0; if (D.ht_sw) n.sw = +D.ht_sw;
+        if (D.ht_distMode === 'fixed') { n.distMode = 'fixed'; n.distText = D.ht_distText || ''; }
         if (D.link && /^data:page\/id,/.test(D.link)) n._sub = D.link.slice(13);
         /* 导出时若显示编号，标签为“编号 + 空格 + 文字”；导回时去掉前缀（与当前文档是否显示编号无关） */
         if (D.ht_code && new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+').test(n.text)) n.text = n.text.replace(new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+'), '');
         /* 图标 */
-        if (D.ht_icon && /^(lib|ms):/.test(D.ht_icon)) n.icon = D.ht_icon;
-        else { const im = fixImg(st.image); if (im) { n.icon = addImg(im, text || '导入图片'); try { const asp = c.geo.w && c.geo.h ? c.geo.w / c.geo.h : 1; if (st.shape === 'image' && Math.abs(asp - 1) > 0.15) custom[n.icon.slice(3)].aspect = +asp.toFixed(3); } catch (_) { } } }
+        if (D.ht_icon && /^(lib|ms):/.test(D.ht_icon)) {
+          n.icon = D.ht_icon;
+          if (D.ht_flipX) n.flipX = true; if (D.ht_flipY) n.flipY = true;
+        } else { const im = fixImg(st.image); if (im) { n.icon = addImg(im, text || '导入图片'); try { const asp = c.geo.w && c.geo.h ? c.geo.w / c.geo.h : 1; if (st.shape === 'image' && Math.abs(asp - 1) > 0.15) custom[n.icon.slice(3)].aspect = +asp.toFixed(3); } catch (_) { } } }
         if (type === 'equip') { n.noBox = n.noBox || st.fillColor === 'none' || st.shape === 'image'; if (st.shape === 'image' && st.verticalLabelPosition === 'bottom') n.h += 20; n.size = Math.min(n.size, 12); }
         if (type === 'legend' || type === 'tblock') { n.icon = null; }
         if (opts.keepColors !== false && !D.ht_type && !['__cont', 'text'].includes(type)) {
