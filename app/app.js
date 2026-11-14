@@ -162,6 +162,14 @@ const ICONS = (typeof ICON_LIB !== 'undefined' ? ICON_LIB : []);
 const ICON_MAP = Object.fromEntries(ICONS.map(i => [i.key, i]));
 const uriCache = new Map();
 const svgUri = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const tinting = new Set();
+function forgetIcon(key) { for (const k of [...uriCache.keys()]) if (k === key || k.indexOf(key + '|') === 0) uriCache.delete(k); }
+function canSide(n) {
+  if (!n || !n.icon) return false;
+  if (n.icon.startsWith('lib:')) return true;
+  if (n.icon.startsWith('cu:')) { const c = doc.custom[n.icon.slice(3)]; return !!(c && c.combo); }
+  return false;
+}
 function iconURI(key, affiliation) {
   if (!key) return null;
   const side = ['red', 'blue'].includes(affiliation) ? affiliation : 'neutral';
@@ -171,8 +179,17 @@ function iconURI(key, affiliation) {
   if (key.startsWith('lib:')) { const i = ICON_MAP[key.slice(4)]; if (i) u = svgUri(i.variants ? i.variants[side] : i.svg); }
   else if (key.startsWith('ms:')) {
     try { if (window.ms) u = svgUri(new ms.Symbol(key.slice(3), msOptions()).asSVG()); } catch (e) { }
-  } else if (key.startsWith('cu:')) { const c = doc.custom[key.slice(3)]; if (c) u = c.uri; }
-  if (u && !key.startsWith('cu:')) uriCache.set(ck, u);
+  } else if (key.startsWith('cu:')) {
+    const c = doc.custom[key.slice(3)];
+    if (c) {
+      if (side !== 'neutral' && c.combo && window.Combo && Combo.tinted && !tinting.has(key)) {
+        tinting.add(key);
+        try { u = Combo.tinted(c.combo, side); } finally { tinting.delete(key); }
+      }
+      if (!u) u = c.uri;
+    }
+  }
+  if (u) uriCache.set(ck, u);
   return u;
 }
 /* 军标配色：nato = 友蓝敌红（默认）；cn = 我红敌蓝 */
@@ -772,7 +789,7 @@ function computeRoutes(p) {
   for (const it of info) {
     const q = it.pts; if (!q || q.length < 2) continue;
     for (const [n, i, j] of [[it.a, 0, 1], [it.b, q.length - 1, q.length - 2]]) {
-      if (!n || n.noBox || !GEO[n.type] || OUTLINE_RECT.has(n.type)) continue;
+      if (!n || n.noBox || OUTLINE_RECT.has(n.type) || (n.type !== 'sector' && !GEO[n.type])) continue;
       const e = q[i], f = q[j], v = Math.abs(e.x - f.x) < 0.5; /* 端段竖直 → 端点在上／下边 */
       const hit = outlineHit(n, v ? (e.y <= n.y + 0.6 ? 't' : 'b') : (e.x <= n.x + 0.6 ? 'l' : 'r'), e);
       if (hit) { e.x = hit.x; e.y = hit.y; }
@@ -799,17 +816,39 @@ function computeRoutes(p) {
 }
 const OUTLINE_RECT = new Set(['rect', 'round', 'roundL', 'roundR', 'equip', 'predef', 'frame', 'callout', 'note']);
 /* 外接框边上的点 e，沿垂直于该边的方向与图形轮廓求交（取最外侧交点）；无交点返回 null */
+function nearSeg(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+  if (l2 < 1e-6) return [ax, ay];
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+  return [ax + t * dx, ay + t * dy];
+}
 function outlineHit(n, side, e) {
   if (Math.abs(side === 'l' ? e.x - n.x : side === 'r' ? e.x - n.x - n.w : side === 't' ? e.y - n.y : e.y - n.y - n.h) > 0.8) return null;
-  const g = shapeGeom(n.type, n.w, n.h), hz = side === 'l' || side === 'r', c = hz ? e.y - n.y : e.x - n.x, hits = [];
-  for (const poly of g.fill.slice(0, 1)) for (let k = 0; k < poly.length; k++) {
+  const g = shapeGeom(n.type, n.w, n.h, n.sweep), hz = side === 'l' || side === 'r', c = hz ? e.y - n.y : e.x - n.x, hits = [];
+  const poly = (g.fill && g.fill[0]) || [];
+  for (let k = 0; k < poly.length; k++) {
     const A = poly[k], B = poly[(k + 1) % poly.length], a0 = hz ? A[1] : A[0], b0 = hz ? B[1] : B[0];
     if ((a0 - c) * (b0 - c) > 0 || a0 === b0) continue;
     const t = (c - a0) / (b0 - a0); hits.push(hz ? A[0] + (B[0] - A[0]) * t : A[1] + (B[1] - A[1]) * t);
   }
-  if (!hits.length) return null;
-  const d = side === 'l' || side === 't' ? Math.min(...hits) : Math.max(...hits);
-  return hz ? { x: n.x + d, y: e.y } : { x: e.x, y: n.y + d };
+  if (hits.length) {
+    const d = side === 'l' || side === 't' ? Math.min(...hits) : Math.max(...hits);
+    const pt = hz ? { x: n.x + d, y: e.y } : { x: e.x, y: n.y + d };
+    if (n.type !== 'sector') return pt;
+    const cx = n.x + n.w / 2, cy = n.y + n.h / 2, reach = Math.min(n.w, n.h) * 0.2;
+    if (Math.hypot(pt.x - cx, pt.y - cy) > reach) return pt;
+  }
+  /* 扇形的空角没有轮廓：端点改落到楔形边上，而不是停在外接框或扇心 */
+  if (n.type !== 'sector' || poly.length < 3) return null;
+  const px = hz ? (side === 'l' ? 0 : n.w) : e.x - n.x, py = hz ? e.y - n.y : (side === 't' ? 0 : n.h);
+  let best = null, bd = Infinity;
+  for (let k = 0; k < poly.length; k++) {
+    const A = poly[k], B = poly[(k + 1) % poly.length], q = nearSeg(px, py, A[0], A[1], B[0], B[1]);
+    const dd = (q[0] - px) * (q[0] - px) + (q[1] - py) * (q[1] - py);
+    if (dd < bd) { bd = dd; best = q; }
+  }
+  if (!best || bd < 1) return null;
+  return { x: n.x + best[0], y: n.y + best[1] };
 }
 /* ---------- 自动避障 ---------- */
 function isAncestor(o, n, byId) { let q = n.parent ? byId.get(n.parent) : null, g = 0; while (q && g++ < 30) { if (q === o) return true; q = q.parent ? byId.get(q.parent) : null; } return false; }
@@ -2989,10 +3028,10 @@ const NODE_FIELDS = {
   },
   affiliation: {
     id: 'affiliation', kind: 'select',
-    show: function (items) { return items.some(function (n) { return !!(n.icon && n.icon.startsWith('lib:')); }); },
-    scope: function (n) { return !!(n.icon && n.icon.startsWith('lib:')); },
+    show: function (items) { return items.some(canSide); },
+    scope: function (n) { return canSide(n); },
     get: function (n) { return n.affiliation || 'neutral'; },
-    set: function (n, v) { if (!(n.icon && n.icon.startsWith('lib:'))) return; if (!v || v === 'neutral') delete n.affiliation; else n.affiliation = v; },
+    set: function (n, v) { if (!canSide(n)) return; if (!v || v === 'neutral') delete n.affiliation; else n.affiliation = v; forgetIcon(n.icon); },
     options: function () { return [['neutral', '原色'], ['blue', '蓝方'], ['red', '红方']]; }
   },
   flipX: {
@@ -3743,25 +3782,29 @@ async function paintPptGradients(blob) {
   const zip = await JSZip.loadAsync(blob);
   const names = Object.keys(zip.files).filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k));
   let changed = false;
+  const re = /name="(jwG[hvr][0-9A-F]{6}\d{3}[0-9A-F]{6}N?|jwCN)"/;
   for (const name of names) {
-    let xml = await zip.file(name).async('string');
-    const re = /name="(jwG[hvr][0-9A-F]{6}\d{3}[0-9A-F]{6}N?|jwCN)"/g;
-    let m, next = xml, from = 0;
-    while ((m = re.exec(xml))) {
-      const tag = m[1], bare = tag.charAt(tag.length - 1) === 'N' ? tag.slice(0, -1) : tag;
+    let xml = await zip.file(name).async('string'), guard = 0;
+    while (guard++ < 400) {
+      const m = re.exec(xml); if (!m) break;
+      const tag = m[1], bare = tag.charAt(tag.length - 1) === 'N' ? tag.slice(0, -1) : tag, noLine = tag.charAt(tag.length - 1) === 'N';
       const g = bare.charAt(2) === 'G' ? { dir: bare.charAt(3), c1: '#' + bare.slice(4, 10), a2: +bare.slice(10, 13) / 100, c2: '#' + bare.slice(13, 19) } : null;
-      const at = next.indexOf('name="' + tag + '"', from);
-      if (at < 0) continue;
-      const sp = next.lastIndexOf('<p:sp', at), end = next.indexOf('</p:sp>', at);
-      if (sp < 0 || end < 0) continue;
-      let chunk = next.slice(sp, end);
-      if (g) chunk = chunk.replace(/<a:solidFill>[\s\S]*?<\/a:solidFill>/, gradFillXml(g));
-      if (tag.charAt(tag.length - 1) === 'N') chunk = chunk.replace(/<a:ln\b[^>]*>[\s\S]*?<\/a:ln>/, '<a:ln><a:noFill/></a:ln>');
-      next = next.slice(0, sp) + chunk + next.slice(end);
-      from = sp + chunk.length;
+      const at = m.index, sp = xml.lastIndexOf('<p:sp', at), end = xml.indexOf('</p:sp>', at);
+      if (sp < 0 || end < 0) { xml = xml.slice(0, at) + 'name="jwDone"' + xml.slice(at + m[0].length); changed = true; continue; }
+      let chunk = xml.slice(sp, end).replace('name="' + tag + '"', 'name="jwDone"');
+      const a = chunk.indexOf('<p:spPr'), b = chunk.indexOf('</p:spPr>');
+      if (a >= 0 && b > a) {
+        let mid = chunk.slice(a, b); const lns = [];
+        mid = mid.replace(/<a:ln\b[^>]*\/>|<a:ln\b[^>]*>[\s\S]*?<\/a:ln>/g, s => { lns.push(s); return '%%LN' + (lns.length - 1) + '%%'; });
+        if (g) mid = mid.replace(/<a:solidFill>[\s\S]*?<\/a:solidFill>/, gradFillXml(g));
+        mid = mid.replace(/%%LN(\d+)%%/g, (_, i) => noLine ? '<a:ln><a:noFill/></a:ln>' : lns[+i]);
+        if (noLine && !lns.length) mid += '<a:ln><a:noFill/></a:ln>';
+        chunk = chunk.slice(0, a) + mid + chunk.slice(b);
+      }
+      xml = xml.slice(0, sp) + chunk + xml.slice(end);
       changed = true;
     }
-    if (next !== xml) zip.file(name, next);
+    if (changed) zip.file(name, xml);
   }
   return changed ? zip.generateAsync({ type: 'blob' }) : blob;
 }

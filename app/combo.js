@@ -43,18 +43,19 @@
     const a = svgText.indexOf('>', svgText.indexOf('<svg')) + 1, b = svgText.lastIndexOf('</svg>');
     return svgText.slice(a, b);
   }
-  function memberMarkup(m) {
+  function memberMarkup(m, side) {
     const x = m.x * U, y = m.y * U, s = m.s * U;
     if (m.icon && m.icon.startsWith('lib:') && ICON_MAP[m.icon.slice(4)]) {
-      const sv = ICON_MAP[m.icon.slice(4)].svg;
+      const i = ICON_MAP[m.icon.slice(4)];
+      const sv = (side && side !== 'neutral' && i.variants && i.variants[side]) || i.svg;
       const vb = (sv.match(/viewBox=['"]([^'"]+)['"]/) || [, '0 0 96 96'])[1];
       return `<svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s.toFixed(1)}" height="${s.toFixed(1)}" viewBox="${vb}" overflow="visible">${innerOf(sv)}</svg>`;
     }
-    const u = iconURI(m.icon); if (!u) return '';
+    const u = iconURI(m.icon, side); if (!u) return '';
     return `<image href="${u.replace(/"/g, '&quot;')}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s.toFixed(1)}" height="${s.toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
   }
   /* members: [{icon, x, y, s}] where x,y = top-left in icon units, s = size in icon units */
-  function buildSVG(spec) {
+  function buildSVG(spec, side) {
     const ms = spec.members; if (!ms.length) return null;
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     for (const m of ms) { x0 = Math.min(x0, m.x); y0 = Math.min(y0, m.y); x1 = Math.max(x1, m.x + m.s); y1 = Math.max(y1, m.y + m.s); }
@@ -64,7 +65,7 @@
     let body = '';
     if (spec.frame) body += `<rect x="${(x0 * U + 3).toFixed(1)}" y="${(y0 * U + 3).toFixed(1)}" width="${(W - 6).toFixed(1)}" height="${(H - 6).toFixed(1)}" rx="${Math.min(W, H) * 0.12}" fill="#4CA8FF" fill-opacity="0.07" stroke="#4C8FD6" stroke-width="3" stroke-dasharray="10 7"/>`;
     /* draw back-to-front: larger y first so nearer (lower) members overlap the far ones */
-    for (const m of [...ms].sort((a, b) => a.y - b.y)) body += memberMarkup(m);
+    for (const m of [...ms].sort((a, b) => a.y - b.y)) body += memberMarkup(m, side);
     if (spec.badge) {
       const r = Math.max(22, Math.min(W, H) * 0.11), cx = x1 * U - r * 1.05, cy = y0 * U + r * 1.05;
       body += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#F2A33A" stroke="#ffffff" stroke-width="3"/><path d="M${(cx - r * 0.42).toFixed(1)},${(cy - r * 0.42).toFixed(1)} L${(cx + r * 0.42).toFixed(1)},${(cy + r * 0.42).toFixed(1)} M${(cx + r * 0.42).toFixed(1)},${(cy - r * 0.42).toFixed(1)} L${(cx - r * 0.42).toFixed(1)},${(cy + r * 0.42).toFixed(1)}" stroke="#ffffff" stroke-width="${(r * 0.16).toFixed(1)}" stroke-linecap="round"/>`;
@@ -112,6 +113,8 @@
     const x0 = Math.min(...ns.map(n => n.x)), y0 = Math.min(...ns.map(n => n.y)), x1 = Math.max(...ns.map(n => n.x + n.w)), y1 = Math.max(...ns.map(n => n.y + n.h));
     const sz = sizeFor(doc.custom[cid].aspect, Math.min(220, Math.max(140, Math.sqrt((x1 - x0) * (y1 - y0)) * 0.7)));
     const cn = mkNode({ type: 'equip', icon: 'cu:' + cid, text: label, size: 12, w: sz.w, h: sz.h, x: snapv((x0 + x1) / 2 - sz.w / 2), y: snapv((y0 + y1) / 2 - sz.h / 2), parent: ns[0].parent });
+    const sides = [...new Set(ns.map(n => n.affiliation || ''))].filter(Boolean);
+    if (sides.length === 1) cn.affiliation = sides[0];
     const ids = new Set(ns.map(n => n.id));
     p.links = p.links.filter(l => !(ids.has(l.from) && ids.has(l.to)));
     for (const l of p.links) { if (ids.has(l.from)) l.from = cn.id; if (ids.has(l.to)) l.to = cn.id; }
@@ -143,6 +146,7 @@
       const cell = Math.max(72, k * 1.3);
       ms.forEach((m, i) => out.push(mkNode({ type: 'equip', icon: m.icon, text: `${iconName(m.icon)}${ms.length > 1 ? ' ' + (i + 1) : ''}`, noBox: true, size: 12, w: 96, h: 96, x: snapv(n.x + (m.x - x0) * cell), y: snapv(n.y + (m.y - y0) * cell), parent: n.parent })));
     }
+    if (n.affiliation) for (const o of out) if (o.icon && (o.icon.indexOf('lib:') === 0 || o.icon.indexOf('cu:') === 0)) o.affiliation = n.affiliation;
     const p = P(); p.nodes = p.nodes.filter(x => x.id !== n.id); p.nodes.push(...out);
     /* links attach to the first member */
     for (const l of p.links) { if (l.from === n.id) l.from = out[0].id; if (l.to === n.id) l.to = out[0].id; }
@@ -240,7 +244,7 @@
       const id = editNode.icon.slice(3); saveCombo(spec, name, id);
       const sz = sizeFor(doc.custom[id].aspect); const cx = editNode.x + editNode.w / 2, cy = editNode.y + editNode.h / 2;
       Object.assign(editNode, { text: name, w: sz.w, h: sz.h, x: snapv(cx - sz.w / 2), y: snapv(cy - sz.h / 2) });
-      uriCache.delete('cu:' + id);
+      if (typeof forgetIcon === 'function') forgetIcon('cu:' + id); else uriCache.delete('cu:' + id);
     } else {
       const id = saveCombo(spec, name), sz = sizeFor(doc.custom[id].aspect);
       const r = svg.getBoundingClientRect(), c = clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
@@ -260,7 +264,7 @@
     },
     /* create a mixed group icon from [{icon, x, y, s}] (icon units) */
     groupIcon(members, name, opt = {}) { const id = saveCombo({ kind: 'mixed', frame: !!opt.frame, badge: false, members }, name || '复合图标'); return 'cu:' + id; },
-    groupSelection, ungroup, open, isCombo: n => !!(n && n.icon && n.icon.startsWith('cu:') && doc.custom[n.icon.slice(3)]?.combo),
+    groupSelection, ungroup, open, tinted(spec, side) { const r = buildSVG(spec, side); return r ? svgUri(r.svg) : null; }, isCombo: n => !!(n && n.icon && n.icon.startsWith('cu:') && doc.custom[n.icon.slice(3)]?.combo),
   };
   window.openFormation = open;
 })();
