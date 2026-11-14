@@ -1,0 +1,281 @@
+{
+  "id": "support-06",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-079ea2e6-64f5-4d41-80a9-2b1c8db1d0f0.png",
+  "entries": [
+    {
+      "key": "cuas_detect_jam",
+      "country": "cn",
+      "model": "Hikvision illustrative detection-jamming unit",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hikvision.com/content/dam/hikvision/en/marketing/image/latest-news/20260427/2025-hikvision-annual-report_en.pdf",
+          "title": "Hikvision illustrative detection-jamming unit"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "blue pedestal cabinet with white rectangular radar panel",
+        "cyan twin-lens gimbal and three directional short horn antennas"
+      ]
+    },
+    {
+      "key": "cuas_detect_jam",
+      "country": "us",
+      "model": "Liteye T-AUDS US integration reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://dronelife.com/2020/08/31/liteye-rolls-out-new-counter-drone-platform/",
+          "title": "Liteye T-AUDS US integration reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "blue two-wheel trailer with tall mast",
+        "twin rectangular antenna panels",
+        "round EO ball and three horizontal jammer horns"
+      ]
+    },
+    {
+      "key": "eo_composite",
+      "country": "cn",
+      "model": "DJI Zenmuse H20T reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://enterprise.dji.com/zenmuse-h20-series",
+          "title": "DJI Zenmuse H20T reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "compact rectangular multi-sensor camera head with three unequal cyan lenses on black three-axis gimbal",
+        "cobalt blue outer shells"
+      ]
+    },
+    {
+      "key": "eo_composite",
+      "country": "us",
+      "model": "Teledyne FLIR Star SAFIRE 380 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://defense.flir.com/defense-products/star-safire-380-hd/",
+          "title": "Teledyne FLIR Star SAFIRE 380 reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "large spherical stabilized optical turret with five different cyan apertures on faceted front and blue upper gimbal shell"
+      ]
+    },
+    {
+      "key": "mad_sensor",
+      "country": "cn",
+      "model": "KQ-200 tail MAD boom illustrative reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.andrewerickson.com/wp-content/uploads/2024/05/CMSI_China-Maritime-Report_38_PLAN-Anti-Submarine-Warfare-Aircraft_Sensors-Weapons-Operational-Concepts_Tirk-Salisbury_202405.pdf",
+          "title": "KQ-200 tail MAD boom illustrative reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "long thin tapered magnetic detector boom",
+        "grey rounded pointed nose and blue cylindrical midsection",
+        "short flanged base"
+      ]
+    },
+    {
+      "key": "mad_sensor",
+      "country": "us",
+      "model": "P-3 AN ASQ-81 illustrative MAD boom reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.zhkzyfz.cn/CN/abstract/article/1673-3819/244",
+          "title": "P-3 AN ASQ-81 illustrative MAD boom reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "shorter broad cigar-shaped white magnetic detector fairing with cobalt-blue rear section and flared silver mounting collar"
+      ]
+    },
+    {
+      "key": "dipping_sonar",
+      "country": "cn",
+      "model": "H SKD-143 illustrative dipping sonar reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.andrewerickson.com/wp-content/uploads/2024/05/CMSI_China-Maritime-Report_38_PLAN-Anti-Submarine-Warfare-Aircraft_Sensors-Weapons-Operational-Concepts_Tirk-Salisbury_202405.pdf",
+          "title": "H SKD-143 illustrative dipping sonar reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "tall narrow blue dipping sonar cylinder suspended from black cable",
+        "silver transducer rings",
+        "four tiny lower fins"
+      ]
+    },
+    {
+      "key": "dipping_sonar",
+      "country": "us",
+      "model": "AN AQS-22 ALFS reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.govinfo.gov/content/pkg/FR-2010-08-03/pdf/2010-18222.pdf",
+          "title": "AN AQS-22 ALFS reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "short wide cylindrical sonar body with blue upper drum",
+        "silver central rings and eight folded dark transducer staves deployed like petals",
+        "short suspension cable"
+      ]
+    },
+    {
+      "key": "iff_transponder",
+      "country": "cn",
+      "model": "Chinese illustrative identification terminal using Xiegu chassis reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://xieguradios.com/products/xiegu-g90-hf-20w-sdr-transceiver",
+          "title": "Chinese illustrative identification terminal using Xiegu chassis reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "small blue horizontal finned radio chassis with rectangular black front",
+        "cyan indicator screen and three gold round ports",
+        "separate white blade antenna"
+      ]
+    },
+    {
+      "key": "iff_transponder",
+      "country": "us",
+      "model": "BAE AN APX-123 illustrative terminal reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.baesystems.com/en-us/product/iff-family",
+          "title": "BAE AN APX-123 illustrative terminal reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "blue tall rectangular avionics box with silver carry handle",
+        "large black multipin front connector",
+        "two circular silver RF ports and mounting feet"
+      ]
+    },
+    {
+      "key": "rwr",
+      "country": "cn",
+      "model": "KJ8602A illustrative radar warning receiver reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.globalmil.com/military/air_force/china/systems/ew_ecm_elint/2010/0401/196.html",
+          "title": "KJ8602A illustrative radar warning receiver reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "blue narrow rack unit with silver cooling ribs",
+        "black circular connector bank and two detached tiny white conical antenna fairings"
+      ]
+    },
+    {
+      "key": "rwr",
+      "country": "us",
+      "model": "AN ALR-67 illustrative receiver reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryperiscope.com/weapons/electronics/electronic-warfare/analr-67/overview/",
+          "title": "AN ALR-67 illustrative receiver reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "wide blue low electronic receiver chassis with four detached small black spiral antenna disks arranged neatly beside it"
+      ]
+    },
+    {
+      "key": "sat_recon",
+      "country": "cn",
+      "model": "Gaofen-1 illustrative optical spacecraft reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Gaofen_1",
+          "title": "Gaofen-1 illustrative optical spacecraft reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "gold rectangular satellite bus with two opposite rectangular solar wings",
+        "large black downward circular optical aperture and blue service panel"
+      ]
+    },
+    {
+      "key": "sat_recon",
+      "country": "us",
+      "model": "Landsat 8 illustrative sensing platform reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/mission/landsat-8/",
+          "title": "Landsat 8 illustrative sensing platform reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "white rectangular satellite with single long dark solar wing on one side",
+        "gold instrument box and two dark downward imaging apertures"
+      ]
+    },
+    {
+      "key": "sat_relay",
+      "country": "cn",
+      "model": "Tianlian relay satellite reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tianlian",
+          "title": "Tianlian relay satellite reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "gold and blue box bus with two rectangular solar wings and two large umbrella-shaped gold mesh antennas on different sides"
+      ]
+    },
+    {
+      "key": "sat_relay",
+      "country": "us",
+      "model": "NASA TDRS reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tracking_and_Data_Relay_Satellite",
+          "title": "NASA TDRS reference"
+        }
+      ],
+      "notes": "公开平台外形作美术示意，非精确装备复刻。中国敌我识别图仅借鉴国产Xiegu民用电台外壳，不宣称真实IFF型号；侦察卫星借鉴公开民用高分/陆地卫星外形，不宣称军事侦察用途。Liteye为美国集成商，AUDS含国际供应商组件。",
+      "geometryChecks": [
+        "blue and gold cuboid satellite with two huge round white mesh reflector dishes on side booms and long rectangular solar panels"
+      ]
+    }
+  ]
+}

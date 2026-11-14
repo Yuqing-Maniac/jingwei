@@ -1,0 +1,345 @@
+{
+  "id": "maritime_land-02",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-9c9759a6-6551-4610-96ea-6f4476d83cd5.png",
+  "entries": [
+    {
+      "key": "tank",
+      "country": "cn",
+      "model": "99A型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dia.mil/Portals/27/Documents/News/Military%20Power%20Publications/China_Military_Power_FINAL_5MB_20190103.pdf",
+          "title": "China Military Power"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Low sloping hull",
+        "six roadwheels each side",
+        "strongly wedge-shaped turret with ERA cheeks",
+        "long smoothbore barrel",
+        "rectangular side skirts"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.1779
+    },
+    {
+      "key": "tank",
+      "country": "us",
+      "model": "M1A2 SEP v3（外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://api.army.mil/e2/c/downloads/2024/07/19/ab2038a9/u-s-army-portfolio-2024.pdf",
+          "title": "US Army Acquisition Portfolio 2024"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Seven roadwheels each side",
+        "broad angular turret with rectangular cheeks and long bustle",
+        "rear turbine grille",
+        "thick slab side skirts"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.1531
+    },
+    {
+      "key": "ifv",
+      "country": "cn",
+      "model": "04A型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/398-CC04%20-%20ZBD04A",
+          "title": "ZBD04A"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Six roadwheels",
+        "wedge front",
+        "low turret with two parallel unequal barrels",
+        "slab side armor and rear troop compartment"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.2138
+    },
+    {
+      "key": "ifv",
+      "country": "us",
+      "model": "M2A4 Bradley（外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://api.army.mil/e2/c/downloads/2024/07/19/ab2038a9/u-s-army-portfolio-2024.pdf",
+          "title": "US Army Acquisition Portfolio 2024"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Six roadwheels",
+        "tall boxy tracked hull",
+        "small offset turret and slender autocannon",
+        "twin TOW box left of turret",
+        "rear troop compartment"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.1403
+    },
+    {
+      "key": "sp_howitzer",
+      "country": "cn",
+      "model": "PLZ-05",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.govinfo.gov/content/pkg/CREC-2010-09-29/pdf/CREC-2010-09-29-senate.pdf",
+          "title": "Congressional Record PLZ-05"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Six roadwheels",
+        "tall angular square turret",
+        "very long 155mm barrel with muzzle brake",
+        "tracked low chassis"
+      ],
+      "cellIndex": 4,
+      "bluePixelRatio": 0.1479
+    },
+    {
+      "key": "sp_howitzer",
+      "country": "us",
+      "model": "M109A7",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.baesystems.com/en/product/m109a7",
+          "title": "M109A7 BAE Systems"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Seven roadwheels",
+        "large boxy rear turret and shorter cannon with muzzle brake",
+        "long flat engine deck in front",
+        "rear spades"
+      ],
+      "cellIndex": 5,
+      "bluePixelRatio": 0.1246
+    },
+    {
+      "key": "towed_gun",
+      "country": "cn",
+      "model": "PLL-01（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.weaponsystems.net/system/1239-155mm%20PLL01",
+          "title": "155mm PLL01"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Long thin barrel",
+        "large twin roadwheels and bulky APU front assembly",
+        "split trails deployed rearward",
+        "substantial recoil cradle"
+      ],
+      "cellIndex": 6,
+      "bluePixelRatio": 0.0115
+    },
+    {
+      "key": "towed_gun",
+      "country": "us",
+      "model": "M777",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cpeae.army.mil/Project-Offices/PM-CAS/Organizations/Tactical-Artillery-Systems/Products/M777A2/",
+          "title": "M777A2"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Light skeletal titanium cradle",
+        "two small wheels",
+        "short broad split spade legs and central circular base",
+        "long barrel and muzzle brake"
+      ],
+      "cellIndex": 7,
+      "bluePixelRatio": 0.0432
+    },
+    {
+      "key": "mlrs",
+      "country": "cn",
+      "model": "PHL-03",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/92-DD05%20-%20PHL03",
+          "title": "PHL03"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "8x8 four-axle long truck",
+        "full-width forward cab",
+        "twelve round launch tubes arranged in banks slightly elevated rearward"
+      ],
+      "cellIndex": 8,
+      "bluePixelRatio": 0.0776
+    },
+    {
+      "key": "mlrs",
+      "country": "us",
+      "model": "M270A2",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://api.army.mil/e2/c/downloads/2024/07/19/ab2038a9/u-s-army-portfolio-2024.pdf",
+          "title": "US Army Acquisition Portfolio 2024"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Tracked chassis six roadwheels",
+        "angular wide front cab",
+        "large rectangular rear launcher holding two six-tube pod faces"
+      ],
+      "cellIndex": 9,
+      "bluePixelRatio": 0.1259
+    },
+    {
+      "key": "tel",
+      "country": "cn",
+      "model": "DF-26公开运输发射车（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://missilethreat.csis.org/missile/dong-feng-26-df-26/",
+          "title": "DF-26 Missile Threat"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Very long six-axle 12x12 truck",
+        "split forward driving cab",
+        "single long cylindrical canister stowed horizontally"
+      ],
+      "cellIndex": 10,
+      "bluePixelRatio": 0.0991
+    },
+    {
+      "key": "tel",
+      "country": "us",
+      "model": "M142 HIMARS ATACMS构型（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/M142_",
+          "title": "M142 HIMARS"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Compact three-axle 6x6 truck",
+        "angular forward armored cab",
+        "one rectangular rear launcher pod with single large round canister end; do not add exposed missile"
+      ],
+      "cellIndex": 11,
+      "bluePixelRatio": 0.1187
+    },
+    {
+      "key": "sam",
+      "country": "cn",
+      "model": "红旗-9公开运输发射车",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.benning.army.mil/infantry/ARTB/RSLC/content/pdf/20240321%20Vehicle%20Identification%20Study%20Guide_Updated.pdf",
+          "title": "Vehicle Identification Study Guide"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "8x8 four-axle truck",
+        "wide forward cab",
+        "four tall cylindrical missile canisters standing nearly vertical at rear",
+        "stabilizer legs deployed"
+      ],
+      "cellIndex": 12,
+      "bluePixelRatio": 0.1406
+    },
+    {
+      "key": "sam",
+      "country": "us",
+      "model": "Patriot M903（公开构型参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://missilethreat.csis.org/system/patriot/",
+          "title": "Patriot Missile Threat"
+        }
+      ],
+      "notes": "公开外形艺术参考，非工程图；可重涂蓝色为示意色，局部轮数/发射筒数量可能为生成近似。",
+      "geometryChecks": [
+        "Separate four-wheel low trailer launcher without driving cab",
+        "bank of four rectangular canisters elevated diagonally",
+        "stabilizing legs"
+      ],
+      "cellIndex": 13,
+      "bluePixelRatio": 0.1046
+    },
+    {
+      "key": "sonar_buoy",
+      "country": "us",
+      "model": "AN/SSQ-53F（包装外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.26defense.com/ssq-53",
+          "title": "AN/SSQ-53F"
+        }
+      ],
+      "notes": "声呐浮标包装圆筒外形参考，非展开构型；无内部结构。",
+      "geometryChecks": [
+        "Slender upright closed deployment cylinder",
+        "rounded cap",
+        "segmented pale metal body",
+        "small antenna socket",
+        "no fins or propulsion"
+      ],
+      "cellIndex": 14,
+      "bluePixelRatio": 0.138
+    }
+  ],
+  "blocked": [
+    {
+      "key": "sonar_buoy",
+      "country": "cn",
+      "reason": "未找到中国自研声呐浮标可靠公开型号和可辨别轮廓，拒绝以美制浮标冒充。",
+      "sources": [
+        {
+          "url": "https://www.govinfo.gov/content/pkg/GOVPUB-D208-PURL-gpo246596/pdf/GOVPUB-D208-PURL-gpo246596.pdf",
+          "title": "China Maritime Report No.38"
+        }
+      ]
+    }
+  ],
+  "qualityNotes": [
+    "15模型按entries顺序占格，16格透明。Patriot图像生成的倾斜箱数与四箱参考不严格一致；中国坦克和美国坦克炮塔差异偏小，保留原图供root审核。"
+  ],
+  "bluePixelTest": {
+    "method": "opaque alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels; natural grays excluded",
+    "target": [
+      0.25,
+      0.35
+    ],
+    "result": "warning: blue-panel target not met by all generated models"
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "id": "personnel-06",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-4aad67ae-18da-477a-bc31-b987a5421859.png",
+  "entries": [
+    {
+      "key": "op_navy_cic",
+      "country": "cn",
+      "model": "中国海军21式蓝色作业服参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "舰艇CIC雷达屏幕控制台",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_navy_cic",
+      "country": "us",
+      "model": "美国海军NWU III/舰上蓝色工作服参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mynavyhr.navy.mil/References/US-Navy-Uniforms/Uniform-Regulations/Chapter-3/male-Officer/Working/NWU-III/",
+          "title": "Navy Working Uniform Type III"
+        },
+        {
+          "url": "https://www.mynavyhr.navy.mil/References/US-Navy-Uniforms/Uniform-Regulations/Chapter-3/Male-Enlisted/Working/Coveralls/",
+          "title": "Navy enlisted working coveralls"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "舰艇CIC雷达屏幕控制台",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_air_controller",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "前沿引导电台/观测工具",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_air_controller",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "前沿引导电台/观测工具",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_space",
+      "country": "cn",
+      "model": "中国蓝灰色21式作业服参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "航天轨道显示工位",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_space",
+      "country": "us",
+      "model": "美国空军/太空军OCP日常任务服参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ussf-cfc.spaceforce.mil/News/Article-Display/Article/2329219/space-force-issues-service-specific-uniform-guidance",
+          "title": "Space Force service-specific uniform guidance (2020) — OCP duty uniform"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "航天轨道显示工位",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_satcom",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "卫通链路/电台值守工位",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "op_satcom",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "卫通链路/电台值守工位",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "officer_female",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "女性军官文书/通信箱",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "officer_female",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "女性军官文书/通信箱",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "liaison",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "联络文件夹与电台",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    },
+    {
+      "key": "liaison",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "服装采用2021—2026公开参考构型，抽象工作台是职能示意，不复原真实指控系统或身份；蓝色面板为可变色区域。",
+      "geometryChecks": [
+        "联络文件夹与电台",
+        "办公制服/工作服剪裁、帽型、工位形制区分中美参考构型",
+        "已目视检查完整人物与工位；末批12格有效、末行透明"
+      ]
+    }
+  ]
+}

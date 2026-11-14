@@ -1,0 +1,137 @@
+{
+  "id": "oneway-uav",
+  "columns": 3,
+  "rows": 1,
+  "path": "/workspace/jingwei/assets/country-variants/masters/oneway-uav.webp",
+  "sourcePath": "/workspace/generated_images/exec-3faf66af-fe6b-4406-bee0-772666a62ec2.png",
+  "entries": [
+    {
+      "key": "oneway_shahed136",
+      "originCountry": "ir",
+      "modelLabel": "Shahed-136（伊朗公开外形参考）",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 724,
+        "h": 724
+      },
+      "cellIndex": 0,
+      "role": "单程无人机／静态公开外形目录",
+      "status": "illustrative-configuration",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.dia.mil/Portals/110/DIA_Iranian_UAVs_in_Ukraine-A_Visual_Comparison.pdf",
+          "title": "DIA (2023): Iranian UAVs in Ukraine — A Visual Comparison",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:Shahed-136_(Geran-2)_drawing_by_Defense_Intelligence_Agency.jpg",
+          "title": "DIA公开外形插图转载，已打开核对轮廓及翼尖稳定面",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "宽三角翼与细长前部机身",
+        "翼尖稳定面上下伸出，近侧下半部可见",
+        "后推桨、封闭外壳，无内构描绘",
+        "完整独立朝左下三分之四俯视，浅灰主色与钴蓝可重涂区域",
+        "无文字旗帜角标、无爆炸发射、无内部结构或技术参数"
+      ],
+      "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+      "bluePixelRatio": 0.19,
+      "suggestedFamilyAliases": [
+        {
+          "label": "Geran-2",
+          "country": "ru",
+          "basis": "DIA 2023公开报告的俄方使用名称；仅建议复用家族外形，不据此推断俄制后续批次外形完全相同",
+          "sourceUrl": "https://www.dia.mil/Portals/110/DIA_Iranian_UAVs_in_Ukraine-A_Visual_Comparison.pdf"
+        }
+      ]
+    },
+    {
+      "key": "oneway_shahed131",
+      "originCountry": "ir",
+      "modelLabel": "Shahed-131（伊朗公开外形参考）",
+      "rect": {
+        "x": 724,
+        "y": 0,
+        "w": 724,
+        "h": 724
+      },
+      "cellIndex": 1,
+      "role": "单程无人机／静态公开外形目录",
+      "status": "illustrative-configuration",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.dia.mil/Portals/110/DIA_Iranian_UAVs_in_Ukraine-A_Visual_Comparison.pdf",
+          "title": "DIA (2023): Iranian UAVs in Ukraine — A Visual Comparison",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:Shahed-131_(Geran-1)_drawing_by_Defense_Intelligence_Agency.jpg",
+          "title": "DIA公开外形插图转载，已打开核对轮廓及翼尖稳定面",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "紧凑的相关三角翼机体",
+        "翼尖稳定面仅向上，未添加下半部",
+        "短圆顺机鼻、后推桨，未虚构额外气动面",
+        "完整独立朝左下三分之四俯视，浅灰主色与钴蓝可重涂区域",
+        "无文字旗帜角标、无爆炸发射、无内部结构或技术参数"
+      ],
+      "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+      "bluePixelRatio": 0.2382,
+      "suggestedFamilyAliases": [
+        {
+          "label": "Geran-1",
+          "country": "ru",
+          "basis": "DIA 2023公开报告的俄方使用名称；仅建议复用家族外形，不据此推断俄制后续批次外形完全相同",
+          "sourceUrl": "https://www.dia.mil/Portals/110/DIA_Iranian_UAVs_in_Ukraine-A_Visual_Comparison.pdf"
+        }
+      ]
+    },
+    {
+      "key": "oneway_lucas",
+      "originCountry": "us",
+      "modelLabel": "LUCAS（美国2025年公开展示外形参考）",
+      "rect": {
+        "x": 1448,
+        "y": 0,
+        "w": 724,
+        "h": 724
+      },
+      "cellIndex": 2,
+      "role": "单程无人机／静态公开外形目录",
+      "status": "illustrative-configuration",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.centcom.mil/MEDIA/PUBLIC-RELEASES/Article/4347030/us-launches-one-way-attack-drone-force-in-the-middle-east/",
+          "title": "CENTCOM 2025 LUCAS官方公开展示新闻",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.dvidshub.net/image/9417768/us-launches-one-way-attack-drone-force-middle-east",
+          "title": "CENTCOM/DVIDS：2025年11月23日LUCAS静态展示近照，已打开核对",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "较圆顺的中央机身与三角翼根融合",
+        "仅向上翼尖稳定面",
+        "机背小圆凸起/后部矩形外罩按CENTCOM近照示意",
+        "后推桨静止，无发射或作战场景",
+        "完整独立朝左下三分之四俯视，浅灰主色与钴蓝可重涂区域",
+        "无文字旗帜角标、无爆炸发射、无内部结构或技术参数"
+      ],
+      "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+      "bluePixelRatio": 0.1281
+    }
+  ]
+}

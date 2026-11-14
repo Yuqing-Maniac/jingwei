@@ -1,0 +1,131 @@
+{
+  "id": "wingman-us-core",
+  "columns": 2,
+  "rows": 2,
+  "path": "/workspace/jingwei/assets/country-variants/masters/wingman-us-core.webp",
+  "sourcePath": "/workspace/generated_images/exec-4a739568-b54e-4bb6-a29b-bad125c88b09.png",
+  "entries": [
+    {
+      "key": "wingman_xq58",
+      "country": "us",
+      "cellIndex": 0,
+      "model": "XQ-58A Valkyrie公开试验构型",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://afresearchlab.com/wp-content/uploads/2020/09/AFRL_XQ-58A_FS_0920.pdf",
+          "title": "AFRL XQ-58A事实表（含2019年试飞实图，已打开查图）",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.kratosdefense.com/unmanned-systems/air/uncrewed-tactical-aircraft/xq-58a",
+          "title": "Kratos XQ-58 Valkyrie厂商页面",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "细长折线尖机鼻及鼻端空速探针",
+        "窄后掠梯形主翼",
+        "背部小型进气口、双外倾尾面、单后喷口",
+        "左下朝向三分之四俯视、完整独立透明sprite，无文字旗帜角标"
+      ],
+      "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。",
+      "bluePixelRatio": 0.2839
+    },
+    {
+      "key": "wingman_xq67",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "XQ-67A OBSS公开首飞试验构型",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.ga-asi.com/ga-asi-makes-first-flight-of-xq-67a-obss",
+          "title": "GA-ASI 2024年2月29日首飞新闻及实机照片（已打开）",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.dvidshub.net/image/8275789/afrls-xq-67a-makes-1st-successful-flight",
+          "title": "AFRL/DVIDS 2024 XQ-67A首飞照片",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "短而宽的扁平折线机鼻",
+        "较宽厚中央机体和低后掠宽翼",
+        "显著背部进气凸台、两侧高外倾尾面和单喷口",
+        "左下朝向三分之四俯视、完整独立透明sprite，无文字旗帜角标"
+      ],
+      "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。",
+      "bluePixelRatio": 0.271
+    },
+    {
+      "key": "wingman_fq42",
+      "country": "us",
+      "cellIndex": 2,
+      "model": "YFQ-42A／FQ-42系列公开试验外形参考",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.ga.com/yfq-42a-returns-to-flight-testing",
+          "title": "GA-ASI 2026年5月21日返回试飞新闻实机近照（已打开）",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.af.mil/News/Article-Display/Article/4092641/air-force-designates-two-mission-design-series-for-collaborative-combat-aircraft/",
+          "title": "USAF 2025年YFQ-42A/YFQ-44A试验名称公告",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.af.mil/News/Article-Display/Article/4600199/air-force-dubs-collaborative-combat-aircraft-fq-42-vengeance-fq-44-fury/",
+          "title": "USAF 2026 FQ-42 Vengeance/FQ-44 Fury名称更新（索引核对）",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "较XQ-67A细长、平顺的折线机身/机鼻",
+        "高位背部进气口和较长中后掠翼",
+        "双外倾V形尾面与中央单喷口",
+        "左下朝向三分之四俯视、完整独立透明sprite，无文字旗帜角标"
+      ],
+      "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。名称核对：2025/2026试验照片称YFQ-42A，厂商曾用Dark Merlin，USAF 2026公告称FQ-42 Vengeance；本图保留已公开的试验外形，不据名称变化推定量产外形变化。",
+      "bluePixelRatio": 0.2892
+    },
+    {
+      "key": "wingman_fq44",
+      "country": "us",
+      "cellIndex": 3,
+      "model": "YFQ-44A Fury／FQ-44系列公开试验外形参考",
+      "modelStatus": "illustrative-configuration",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.dvidshub.net/image/9878412/air-force-tests-collaborative-combat-aircraft-creech",
+          "title": "USAF/DVIDS 2026年7月21日Fury起飞近照（已打开）",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.anduril.com/fury",
+          "title": "Anduril Fury厂商产品页面",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.af.mil/News/Article-Display/Article/4600199/air-force-dubs-collaborative-combat-aircraft-fq-42-vengeance-fq-44-fury/",
+          "title": "USAF 2026 FQ-42/FQ-44名称更新（索引核对）",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "尖长战斗机式无人机鼻，无透明座舱",
+        "腹部/机体下侧进气口",
+        "单高后掠垂尾、独立水平尾面、后掠梯形主翼与单喷口",
+        "左下朝向三分之四俯视、完整独立透明sprite，无文字旗帜角标"
+      ],
+      "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。名称核对：公开试验照片为YFQ-44A Fury，2026官方公告采用FQ-44 Fury；此图不推断量产批次变化。",
+      "bluePixelRatio": 0.2861
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "id": "sensors-02",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-e08bcd41-70d1-41da-bc37-a5e91b585754.png",
+  "entries": [
+    {
+      "key": "router",
+      "country": "cn",
+      "model": "Huawei AR6120",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://messervices.cyber.gouv.fr/visas/ANSSI-CSPN-2020-42-cible.pdf",
+          "title": "Huawei AR6120 Router Security Target V1.8（Huawei撰写、ANSSI公开存档，含正反外形图）"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "low silver rectangular rack router",
+        "dark top cover",
+        "network ports along rear-facing side",
+        "two USB sockets on front"
+      ]
+    },
+    {
+      "key": "router",
+      "country": "us",
+      "model": "Cisco ISR4331",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/support/routers/4331-integrated-services-router-isr/model.html",
+          "title": "Cisco ISR4331"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "deeper rackmount router with grey curved front panel",
+        "modular expansion slots and compact bank of ports"
+      ]
+    },
+    {
+      "key": "firewall",
+      "country": "cn",
+      "model": "Huawei USG6000E-S03",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://ekit.huawei.com/ekit/front/ssr/en/product/1352872112515215104",
+          "title": "Huawei eKit firewall"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "compact desktop security appliance",
+        "ten RJ45 ports in two groups and two SFP cages",
+        "ventilated grey case"
+      ]
+    },
+    {
+      "key": "firewall",
+      "country": "us",
+      "model": "Cisco Firepower 1120",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/1100/hw/guide/hw-install-1100/overview.html",
+          "title": "Cisco Firepower hardware guide"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "wide shallow rack security appliance",
+        "eight ethernet ports and four optical cages grouped on front",
+        "silver rack ears"
+      ]
+    },
+    {
+      "key": "fiber",
+      "country": "cn",
+      "model": "TP-Link MC220L 历史中国品牌外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.tp-link.com/us/business-networking/accessory/mc220l/v1/",
+          "title": "TP-Link MC220L"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。 国别指品牌历史来源，非产地或当前总部认证。",
+      "geometryChecks": [
+        "tiny squat black rectangular metal media converter",
+        "one ethernet socket and one SFP fiber socket",
+        "loosely coiled yellow fiber cable"
+      ]
+    },
+    {
+      "key": "fiber",
+      "country": "us",
+      "model": "TRENDnet TFC-1000S20",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.trendnet.com/products/product-detail?prod=140_TFC-1000S20",
+          "title": "TRENDnet fiber converter"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。 国别指品牌历史来源，非产地或当前总部认证。",
+      "geometryChecks": [
+        "elongated dark steel rectangular converter",
+        "dual blue SC optical connector and one copper ethernet socket",
+        "slim loosely coiled fiber cable"
+      ]
+    },
+    {
+      "key": "beidou",
+      "country": "cn",
+      "model": "CHCNAV LT700H 多星座北斗终端",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://chcnav.com/uploads/LT700H__DS__EN.pdf",
+          "title": "CHCNAV LT700H datasheet"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "rugged landscape tablet with orange protective corners recolored cobalt",
+        "short helical antenna protruding from upper corner",
+        "dark map screen"
+      ]
+    },
+    {
+      "key": "beidou",
+      "country": "us",
+      "model": "Trimble TDC600 GNSS终端角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://help.fieldsystems.trimble.com/tdc600/home.htm",
+          "title": "Trimble TDC600"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。 美国为GNSS导航角色对应，不声称是北斗专用终端。",
+      "geometryChecks": [
+        "portrait rugged smartphone form GNSS handheld",
+        "thick black rubber bumper and yellow side strips recolored cobalt",
+        "narrow display",
+        "no external radio antennas"
+      ]
+    },
+    {
+      "key": "weather",
+      "country": "cn",
+      "model": "Rika RK900-01",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.rikasensor.com/rk900-01-automatic-weather-station-weather-monitoring-station.html",
+          "title": "Rika automatic weather station"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "tripod weather station mast",
+        "crossbar carrying three cup anemometer and wind vane",
+        "white radiation shield and small solar panel and logger box"
+      ]
+    },
+    {
+      "key": "weather",
+      "country": "us",
+      "model": "Campbell ClimaVue 50 站点示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.campbellsci.com/products/climavue-50",
+          "title": "Campbell ClimaVue 50"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "short tripod mast with compact broad all-in-one circular weather sensor head",
+        "ultrasonic prongs around top",
+        "stacked white louvred lower shield and blue logger box",
+        "no cup anemometer"
+      ]
+    },
+    {
+      "key": "camera",
+      "country": "cn",
+      "model": "Hikvision DS-2TD2637公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://securitylab.hikvision.com/en/products/Thermal-Products/Security-thermal-cameras/Bullet-series/ds-2td2637-35-p/",
+          "title": "Hikvision bi-spectrum camera"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "rectangular long white bullet camera with projecting sunshield",
+        "two side-by-side optical apertures on dark front",
+        "short adjustable wall mount"
+      ]
+    },
+    {
+      "key": "camera",
+      "country": "us",
+      "model": "Pelco Sarix Enhanced 4 Bullet",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.pelco.com/cameras/bullet/sarix-enhanced-series-4",
+          "title": "Pelco Sarix"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "long cylindrical white bullet security camera",
+        "rectangular sunshield",
+        "single large dark lens with infrared ring",
+        "articulated rear wall-mount bracket"
+      ]
+    },
+    {
+      "key": "ir_sensor",
+      "country": "cn",
+      "model": "HIKMICRO LYNX 3.0",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.hikmicrotech.com/en/outdoor-products/lynx-3-0-thermal-monocular/",
+          "title": "HIKMICRO LYNX"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "compact cylindrical thermal monocular",
+        "prominent front objective barrel and top linear row of control buttons",
+        "textured dark grip and cobalt side strip"
+      ]
+    },
+    {
+      "key": "ir_sensor",
+      "country": "us",
+      "model": "FLIR Scout III",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.flir.com/en-eu/products/scout-iii",
+          "title": "FLIR Scout III"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "chunky flattened wedge thermal monocular",
+        "tan case recolored cobalt on side",
+        "small recessed front circular lens and rear rubber eyecup",
+        "three top rubber buttons"
+      ]
+    },
+    {
+      "key": "laser_rangefinder",
+      "country": "cn",
+      "model": "Mileseey PF260 Tour 商用角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://mileseeygolf.com/products/pf260-tour-golf-rangefinder",
+          "title": "Mileseey PF260"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "compact white and dark rangefinder monocular",
+        "smooth rounded rectangular vertical body",
+        "front stacked receiver and emitter lenses",
+        "cobalt side grip"
+      ]
+    },
+    {
+      "key": "laser_rangefinder",
+      "country": "us",
+      "model": "Vortex Razor HD4000 商用角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://vortexoptics.com/razor-hd-4000-rangefinder.html",
+          "title": "Vortex Razor HD4000"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "rugged squat angular rangefinder with rubber armoured green-grey body",
+        "two stacked front circular lenses",
+        "top two buttons",
+        "recessed cobalt side panel"
+      ]
+    }
+  ]
+}

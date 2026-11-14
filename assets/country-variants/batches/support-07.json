@@ -1,0 +1,78 @@
+{
+  "id": "support-07",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-ce405039-d3c9-444d-a3e2-67889c0d03f4.png",
+  "entries": [
+    {
+      "key": "sat_nav",
+      "country": "cn",
+      "model": "BeiDou-3 MEO reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.igs.org/mgex/constellations/",
+          "title": "BeiDou-3 MEO reference"
+        }
+      ],
+      "notes": "公开卫星外形参考的美术简化示意，不代表真实涂装、内部结构或当前任务状态。",
+      "geometryChecks": [
+        "gold cuboid navigation satellite with two long rectangular opposite solar wings",
+        "blue upper equipment panels",
+        "circular white navigation antenna array below"
+      ]
+    },
+    {
+      "key": "sat_nav",
+      "country": "us",
+      "model": "GPS III reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.lockheedmartin.com/en-us/products/gps.html",
+          "title": "GPS III reference"
+        }
+      ],
+      "notes": "公开卫星外形参考的美术简化示意，不代表真实涂装、内部结构或当前任务状态。",
+      "geometryChecks": [
+        "tall gold satellite body with two broad opposite solar wings and prominent white conical Earth-facing antenna assembly",
+        "blue side structural panels"
+      ]
+    },
+    {
+      "key": "sat_ewarn",
+      "country": "cn",
+      "model": "DFH-4 generic bus illustrative warning payload configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/DFH-4",
+          "title": "DFH-4 generic bus illustrative warning payload configuration"
+        }
+      ],
+      "notes": "未获得中国预警卫星可靠公开外形；仅以公开DFH-4卫星平台作为同国外形参考，增加虚构红外载荷作示意。此图不代表任何真实中国导弹预警型号、任务或在轨状态。",
+      "geometryChecks": [
+        "large gold cuboid satellite bus with two rectangular solar wings",
+        "blue top equipment housing and a single large dark circular infrared telescope aperture on top; this is fictional payload configuration on public bus"
+      ]
+    },
+    {
+      "key": "sat_ewarn",
+      "country": "us",
+      "model": "SBIRS GEO reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.lockheedmartin.com/en-us/products/sbirs.html",
+          "title": "SBIRS GEO reference"
+        }
+      ],
+      "notes": "公开卫星外形参考的美术简化示意，不代表真实涂装、内部结构或当前任务状态。",
+      "geometryChecks": [
+        "gold cuboid satellite with two long solar wings",
+        "conspicuous tall silver cylindrical infrared scanning telescope pointing above body and second small side staring sensor",
+        "blue structural equipment panels"
+      ]
+    }
+  ]
+}

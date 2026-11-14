@@ -1,0 +1,44 @@
+{
+  "id": "platform-aliases",
+  "aliases": [
+    {
+      "key": "wz7",
+      "country": "cn",
+      "aliasOf": "hale_uav",
+      "model": "无侦-7",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.jetphotos.com/photo/10476528",
+          "title": "WZ7 public photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "复用已核对的同一公开机型外形，增加可直接按型号检索的独立入口。",
+      "geometryChecks": [
+        "distinct joined diamond wings",
+        "swept front main wing joins forward swept rear wing",
+        "upper rear jet",
+        "twin canted tail"
+      ]
+    },
+    {
+      "key": "gj11",
+      "country": "cn",
+      "aliasOf": "uav_ucav",
+      "model": "攻击-11",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.twz.com/air/china-lifts-the-veil-on-the-gj-11-mysterious-dragon-stealth-ucav",
+          "title": "GJ-11公开外形"
+        }
+      ],
+      "notes": "复用已核对的同一公开机型外形，增加可直接按型号检索的独立入口。",
+      "geometryChecks": [
+        "CN GJ-11 triangular tailless flying wing smooth forward nose and dorsal intake"
+      ]
+    }
+  ]
+}

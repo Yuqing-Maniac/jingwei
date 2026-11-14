@@ -61,39 +61,65 @@
   }
   function pageXML(p, pageIds) {
     const t = T(), byId = new Map(p.nodes.map(n => [n.id, n])), out = [];
+    let effectAt=-1;
     const cid = id => 'n' + id, ids = new Set();
     const abs = n => ({ x: n.x, y: n.y });
     const parentOf = n => (n.parent && byId.has(n.parent) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) ? byId.get(n.parent) : null;
     const meta = (o) => Object.entries(o).filter(([, v]) => v != null && v !== '' && v !== false).map(([k, v]) => ` ${k}="${xa(typeof v === 'object' ? JSON.stringify(v) : v)}"`).join('');
     const cell = (id, label, style, geo, par, extra = {}, vertex = true) => {
       ids.add(id);
+      if (vertex && extra.ht_rot && !/(^|;)rotation=/.test(style)) style += ';rotation=' + (+extra.ht_rot || 0);
+      if (vertex && extra.ht_coverage && !extra.ht_paint && window.Coverage) {
+        const coverage = Coverage.style(Object.assign({}, extra.ht_coverage, { sw: extra.ht_sw }));
+        style += ';strokeWidth=' + coverage.sw + ';fillOpacity=' + Math.round(coverage.fillAlpha * 100);
+        if (coverage.dash) style += ';dashed=1;dashPattern=' + coverage.dash;
+      }
+      const separateLabel = extra.ht_labelLayout && (!extra.ht_paint || extra.ht_type === 'fan');
       const g = `<mxGeometry x="${r1(geo.x)}" y="${r1(geo.y)}" width="${r1(geo.w)}" height="${r1(geo.h)}" as="geometry"/>`;
       const inner = `<mxCell style="${xa(style)}" ${vertex ? 'vertex="1"' : ''} parent="${par}">${g}</mxCell>`;
-      out.push(`<UserObject label="${xa(label)}" id="${id}"${meta(extra)}>${inner}</UserObject>`);
+      out.push(`<UserObject label="${xa(separateLabel ? '' : label)}" id="${id}"${meta(extra)}>${inner}</UserObject>`);
+      if (separateLabel) {
+        const source = byId.get(id.slice(1)), layout = source && nodeLayout(source), text = layout && layout.text;
+        if (text && text.lines.length) {
+          const width = Math.max(1, ...text.lines.map(line => measure(line, text.size, text.bold, text.family))) + 2;
+          const height = Math.max(1, text.lines.length * Math.round(text.size * 1.38));
+          const box = rotatedBox(source, {x:text.anchor === 'start' ? text.x : text.x-width/2,y:text.cy-height/2,w:width,h:height});
+          const parent = parentOf(source), px = parent ? parent.x : 0, py = parent ? parent.y : 0;
+          cell(id+'_label', text.lines.map(xh).join('<br>'), `text;html=1;whiteSpace=wrap;align=${text.anchor === 'start' ? 'left' : 'center'};verticalAlign=middle;fontFamily=${fontFace(source)};fontSize=${text.size};fontColor=${text.color};${text.bold ? 'fontStyle=1;' : ''}spacing=0;strokeColor=none;fillColor=none;connectable=0`,
+            {x:box.x-px,y:box.y-py,w:box.w,h:box.h},par,{ht_part:'label',ht_rot:rotOf(source)||''});
+        }
+      }
     };
     const imgSVG = (n) => {
-      const pad = 2, body = nodeSVG(n, p, true);
+      const pad = 2, body = nodeSVG(Object.assign({}, n, {rot:0}), p, true);
       return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x - pad} ${n.y - pad} ${n.w + pad * 2} ${n.h + pad * 2}" width="${n.w + pad * 2}" height="${n.h + pad * 2}">${body}</svg>`;
     };
     const code = n => (doc.showCodes && n.code) ? n.code + ' ' : '';
     /* 父容器先于子元素输出 */
     const order = [], seen = new Set();
     const visit = n => { if (seen.has(n.id)) return; const pa = parentOf(n); if (pa) visit(pa); seen.add(n.id); order.push(n); };
-    p.nodes.forEach(visit);
+    drawOrder(p).forEach(visit);
     for (const n of order) {
+      if(!isCont(n)&&effectAt<0)effectAt=out.length;
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_affiliation: n.affiliation && n.affiliation !== 'neutral' ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: n.type === 'sector' ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const ht = { ht_type: n.type, ht_payloads: Array.isArray(n.payloads) ? n.payloads : '', ht_imageOnly: n.imageOnly ? 1 : '', ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const coverageData = {}; Object.keys(n).filter(k => /^coverage[A-Z]/.test(k)).forEach(k => { coverageData[k] = n[k]; });
+      if (n.coverageKind) ht.ht_coverage = coverageData;
+      if (!isCont(n) && !isLineArrow(n) && (n.icon || n.coverageKind)) { ht.ht_labelLayout = 1; ht.ht_text = n.text || ''; }
+      for (const key of ['iconLabelGap', 'iconLabelDx', 'iconLabelDy']) {
+        if (n[key] != null && isFinite(+n[key])) ht['ht_' + key] = clamp(+n[key], key === 'iconLabelGap' ? 0 : -10000, key === 'iconLabelGap' ? 400 : 10000);
+      }
       if (n.sub && pageIds[n.sub]) ht.link = 'data:page/id,' + pageIds[n.sub];
       const st = stStyle(n, t), fs = n.size || 13, bold = n.bold ? ';fontStyle=1' : '';
       const font = `fontSize=${fs};fontFamily=Microsoft YaHei;html=1;whiteSpace=wrap`;
       const txt = (n.text || '');
       /* draw.io 渐变色标不能带透明度。末端不是完全不透明时，嵌画布同一段 SVG，ht_gradA 仍可回读 */
       const a2 = n.gradA == null ? 1 : +n.gradA;
-      const fade = (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
+      const fade = !n.imageOnly && n.type !== 'fan' && (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
       if (fade) {
-        const body = nodeSVG(n, p, true);
+        const body = nodeSVG(Object.assign({}, n, {rot:0}), p, true);
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x} ${n.y} ${n.w} ${n.h}" width="${n.w}" height="${n.h}">${body}</svg>`;
         cell(cid(n.id), '', 'shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,' + b64(svg), geo, pid, Object.assign(ht, { ht_paint: 1, ht_text: txt }));
         continue;
@@ -137,6 +163,20 @@
             cell(cid(n.id) + 'b' + i, lb.text, `text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=${stroke};strokeColor=none;fillColor=none`, { x: lb.x - ox - tw / 2, y: lb.y - oy - 12, w: tw, h: 16 }, pid, { ht_part: 'ruler' });
           });
         }
+      } else if(n.imageOnly){
+        const icon=nodeLayout(n).icon;
+        if(icon)cell(cid(n.id),'',`shape=image;imageAspect=0;image=${styleImage(icon.uri)};flipH=${n.flipX?1:0};flipV=${n.flipY?1:0}`,geo,pid,ht);
+      } else if (n.type === 'fan') {
+        // Tight circle-sector geometry, with stroke padding only in its image;
+        // preserve the original node bounds and independent caption on import.
+        const paint=paintOf(n,t),gradient=gradDef('diofan'+n.id,paint.grad),pad=Math.max(1,paint.sw/2+1);
+        const body=!n.noBox?gradient.def+shapeMarkup('fan',n.x,n.y,n.w,n.h,gradient.attr||paint.fill,paint.stroke,paint.sw,n.sweep,paint):'';
+        const image=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x-pad} ${n.y-pad} ${n.w+2*pad} ${n.h+2*pad}" width="${n.w+2*pad}" height="${n.h+2*pad}">${body}</svg>`;
+        const icon=nodeLayout(n).icon;
+        cell(cid(n.id),'',`shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,${b64(image)}`,
+          {x:geo.x-pad,y:geo.y-pad,w:n.w+2*pad,h:n.h+2*pad},pid,Object.assign({},ht,{ht_text:n.text||'',ht_paint:1,ht_labelLayout:1,ht_fanPad:pad,ht_fanIcon:icon&&icon.uri}));
+        if(icon){const box=rotatedBox(n,{x:icon.x,y:icon.y,w:icon.w||icon.s,h:icon.h||icon.s});cell(cid(n.id)+'_icon','',`shape=image;imageAspect=0;image=${styleImage(iconMirrorURI(icon.uri,icon.flipX,icon.flipY))}`,
+          {x:box.x-pg.x,y:box.y-pg.y,w:box.w,h:box.h},pid,{ht_part:'label',ht_rot:rotOf(n)||''});}
       } else if (n.type === 'legend' || n.type === 'tblock') {
         if (n.type === 'legend' && typeof legendLayout === 'function') legendLayout(n, p);
         const im = 'data:image/svg+xml,' + b64(imgSVG(n));
@@ -156,6 +196,7 @@
         }
       }
     }
+    if(effectAt<0)effectAt=out.length;
     for (const l of p.links) {
       if (!ids.has(cid(l.from)) || !ids.has(cid(l.to))) continue;
       const K = LINK_KINDS[l.kind] || LINK_KINDS.plain, c = t.link[l.kind] || t.link.plain;
@@ -175,7 +216,9 @@
     const sheet = window.CanvasBg ? CanvasBg.drawio(p) : null;
     const sheetBg = sheet && /^#[0-9A-Fa-f]{6}$/.test(sheet.background || '') ? sheet.background : t.bg;
     const sheetCells = sheet && sheet.cells ? sheet.cells : '';
-    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.join('')}</root></mxGraphModel>` };
+    const effect=typeof payloadEffectsSVG==='function'?payloadEffectsSVG(p):null;
+    const effectCells=effect?`<UserObject label="" id="payload-effects" ht_part="payload-effects"><mxCell style="${xa('shape=image;imageAspect=0;locked=1;movable=0;resizable=0;connectable=0;image=data:image/svg+xml,'+b64(effect.str))}" vertex="1" parent="1"><mxGeometry x="${effect.box.x}" y="${effect.box.y}" width="${effect.box.w}" height="${effect.box.h}" as="geometry"/></mxCell></UserObject>`:'';
+    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.slice(0,effectAt).join('')}${effectCells}${out.slice(effectAt).join('')}</root></mxGraphModel>` };
   }
   function exportString(pageList) {
     const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
@@ -188,7 +231,9 @@
   }
   async function exportFile(pageList) {
     toast('正在生成 draw.io 文件…');
-    const s = exportString(pageList);
+    const pages = pageList && pageList.length ? pageList : pagesInOrder();
+    if (window.JwIconLabels) for (const page of pages) await JwIconLabels.ready(page);
+    const s = exportString(pages);
     await saveFile(docExportName('drawio'), new Blob([s], { type: 'application/xml' }));
   }
 
@@ -309,11 +354,11 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg' || c.data.ht_part === 'label' || c.data.ht_part === 'payload-effects') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');
-        if (D.ht_paint) text = D.ht_text || '';
+        if (D.ht_paint || D.ht_labelLayout) text = D.ht_text || '';
         if (D.ht_type === 'band') { const strip = cells.find(x => x.parent === c.id && x.data.ht_part === 'title'); const sv = strip ? htmlText(strip.label, true).replace(/\s/g, '') : null, ns = x => String(x || '').replace(/\s/g, ''); text = sv == null ? (D.ht_text || text) : (D.ht_text != null && (sv === ns(D.ht_text) || sv === ns((D.ht_code || '') + D.ht_text)) ? D.ht_text : sv); }
         let type = D.ht_type || null;
         const first = Object.keys(st).find(k => st[k] === '__first') || '';
@@ -329,12 +374,29 @@
         }
         const n = mkNode({ type, x: a.x, y: a.y, w: c.geo.w || 120, h: c.geo.h || 40, text, size: Math.max(8, Math.min(40, +(D.ht_size || st.fontSize) || 13)), bold: (+st.fontStyle & 1) === 1 });
         n._c = c; n._horiz = st.horizontal !== '0';
+        if(D.ht_imageOnly){n.imageOnly=true;n.noBox=true;n.text='';if(D.ht_flipX)n.flipX=true;if(D.ht_flipY)n.flipY=true;}
+        if(D.ht_payloads){try{const list=JSON.parse(D.ht_payloads);if(Array.isArray(list)){n.payloads=list;}}catch(_){warnings.push('载荷配置无法解析：'+(text||c.id));}}
         if (D.ht_status) n.status = D.ht_status;
         if (D.ht_etype) n.etype = D.ht_etype; if (D.ht_code) n.code = D.ht_code;
         if (D.ht_attrs) try { n.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
         if (D.ht_role) n.role = D.ht_role; if (D.ht_noBox) n.noBox = true; if (D.ht_titleW) n.titleW = +D.ht_titleW;
-        if (D.ht_affiliation === 'red' || D.ht_affiliation === 'blue') n.affiliation = D.ht_affiliation;
-        if (D.ht_rot) n.rot = +D.ht_rot || 0; if (D.ht_sw) n.sw = +D.ht_sw;
+        if (['cn','us'].includes(D.ht_appearance)) n.appearance = D.ht_appearance;
+        if (['neutral','red','blue'].includes(D.ht_affiliation)) n.affiliation = D.ht_affiliation;
+        const rotation = st.rotation != null && st.rotation !== '' ? +st.rotation : +D.ht_rot;
+        if (isFinite(rotation) && rotation) n.rot = ((rotation % 360) + 360) % 360;
+        if (D.ht_sw) n.sw = +D.ht_sw;
+        for (const key of ['iconLabelGap', 'iconLabelDx', 'iconLabelDy']) {
+          const value = D['ht_' + key];
+          if (value != null && value !== '' && isFinite(+value)) n[key] = clamp(+value, key === 'iconLabelGap' ? 0 : -10000, key === 'iconLabelGap' ? 400 : 10000);
+        }
+        if (D.ht_coverage) {
+          try {
+            const coverage = JSON.parse(D.ht_coverage);
+            Object.keys(coverage).filter(k => /^coverage[A-Z][A-Za-z]*$/.test(k)).forEach(k => {
+              const v = coverage[k]; if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') n[k] = v;
+            });
+          } catch (_) { }
+        }
         if (D.ht_sweep) n.sweep = +D.ht_sweep; if (D.ht_noLine) n.noLine = true;
         if (D.ht_grad === 'h' || D.ht_grad === 'v' || D.ht_grad === 'r') n.grad = D.ht_grad;
         if (D.ht_gradTo) n.gradTo = D.ht_gradTo; if (D.ht_gradA !== '' && D.ht_gradA != null) n.gradA = +D.ht_gradA;
@@ -352,7 +414,8 @@
         /* 导出时若显示编号，标签为“编号 + 空格 + 文字”；导回时去掉前缀（与当前文档是否显示编号无关） */
         if (D.ht_code && new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+').test(n.text)) n.text = n.text.replace(new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+'), '');
         /* 图标 */
-        if (D.ht_paint) { /* 渐变到透明的整形状快照，不是图标 */ }
+        if(n.type==='fan' && D.ht_icon) {n.icon=/^(lib|ms):/.test(D.ht_icon)?D.ht_icon:D.ht_fanIcon?addImg(D.ht_fanIcon,text||'扇形图标'):null;if(D.ht_flipX)n.flipX=true;if(D.ht_flipY)n.flipY=true;}
+        else if (D.ht_paint) { /* 渐变到透明的整形状快照，不是图标 */ }
         else if (D.ht_icon && /^(lib|ms):/.test(D.ht_icon)) {
           n.icon = D.ht_icon;
           if (D.ht_flipX) n.flipX = true; if (D.ht_flipY) n.flipY = true;
@@ -363,6 +426,8 @@
           if (st.fillColor && !DEF_COLORS.test(st.fillColor)) n.fill = st.fillColor;
           if (st.strokeColor && !DEF_COLORS.test(st.strokeColor)) n.stroke = st.strokeColor;
         }
+        if(n.type==='fan'){const pad=+D.ht_fanPad||0;n.x=a.x+pad;n.y=a.y+pad;n.w=c.geo.w-2*pad;n.h=c.geo.h-2*pad;fitFan(n);}
+        if(window.Payloads&&Array.isArray(n.payloads))Payloads.normalizeNode(n);
         nodeOf.set(c.id, n); page.nodes.push(n);
       }
       /* 父子：沿 draw.io 父链找到最近的已导入单元（透明 group 跳过） */
@@ -389,7 +454,7 @@
       const vById = new Map(page.nodes.map(n => [n._c.id, n]));
       const nearest = (pt) => { let best = null, bd = 40; for (const n of page.nodes) { if (['text', 'legend', 'tblock', 'note'].includes(n.type)) continue; const dx = Math.max(n.x - pt.x, 0, pt.x - n.x - n.w), dy = Math.max(n.y - pt.y, 0, pt.y - n.y - n.h); const dd = Math.hypot(dx, dy) + (['band', 'lane', 'group'].includes(n.type) ? 25 : 0); if (dd < bd) { bd = dd; best = n; } } return best; };
       for (const c of cells.filter(c => c.edge)) {
-        if (c.data.ht_part === 'canvasbg') continue;
+        if (c.data.ht_part === 'canvasbg' || c.data.ht_part === 'label') continue;
         const st = parseStyle(c.style), D = c.data;
         if (D.ht_part === 'ruler') continue;
         let a = vById.get(c.source), b = vById.get(c.target);

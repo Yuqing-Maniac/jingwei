@@ -1,0 +1,299 @@
+{
+  "id": "sensors-06",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-22eb4b72-e0c6-4f28-96a6-89231a5fe04b.png",
+  "entries": [
+    {
+      "key": "cuas_eo",
+      "country": "cn",
+      "model": "Viewpro A40TR Pro",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://viewprotech.com/index.php?ac=article&at=read&did=577",
+          "title": "Viewpro A40TR Pro"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "small compact spherical grey sensor camera on U shaped blue gimbal yoke",
+        "multiple front apertures with one larger circular lens and small adjacent sensor"
+      ]
+    },
+    {
+      "key": "cuas_eo",
+      "country": "us",
+      "model": "FLIR Ranger HDC MR",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://defense.flir.com/defense-products/ranger-hdc-mr/",
+          "title": "FLIR Ranger HDC MR"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "long rectangular dual sensor camera housing with prominent front circular window on heavy blue pan-tilt pedestal",
+        "angular tan housings"
+      ]
+    },
+    {
+      "key": "cuas_acoustic_array",
+      "country": "cn",
+      "model": "CRYSOUND 工业声阵列＋站点示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.crysound.com/products/fixed-acoustic-imaging-camera/",
+          "title": "CRYSOUND fixed acoustic imagers"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。 工业声学相机仅为阵列外形参考，无反无人功能或集成实装证明。",
+      "geometryChecks": [
+        "large circular perforated microphone-array dish on short blue tripod and small blue receiver enclosure",
+        "hundreds of little mic holes"
+      ]
+    },
+    {
+      "key": "cuas_acoustic_array",
+      "country": "us",
+      "model": "Fluke ii900 工业声阵列＋站点示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.fluke.com/en-us/product/industrial-imaging/sonic-industrial-imager-ii900",
+          "title": "Fluke ii900"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。 工业声学相机仅为阵列外形参考，无反无人功能或集成实装证明。",
+      "geometryChecks": [
+        "broad rectangular perforated microphone array panel on short mast and blue equipment base",
+        "small central optical window and thick protective side handles"
+      ]
+    },
+    {
+      "key": "cuas_mast",
+      "country": "cn",
+      "model": "Skyfend 多传感器塔示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/fixed/",
+          "title": "Skyfend fixed site"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "short square blue tower with four portrait flat radar faces around top and small U yoke camera below",
+        "circular vertical receiving antennas at crown",
+        "stable four foot base"
+      ]
+    },
+    {
+      "key": "cuas_mast",
+      "country": "us",
+      "model": "Dedrone 多传感器塔示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dedrone.com/solutions/dedrone-portable",
+          "title": "Dedrone Portable"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "round blue mast with smooth white cylindrical RF360 radome at top",
+        "one landscape radar panel below and rectangular pan tilt camera",
+        "tripod base"
+      ]
+    },
+    {
+      "key": "cuas_detector_handheld",
+      "country": "cn",
+      "model": "Skyfend Tracer STP101",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/protable/47.html",
+          "title": "Skyfend Tracer"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "slender rectangular handheld blue radio detector",
+        "THREE long parallel black whip antennas above",
+        "small portrait screen and hand strap"
+      ]
+    },
+    {
+      "key": "cuas_detector_handheld",
+      "country": "us",
+      "model": "WhiteFox Scorpion 3",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.whitefoxdefense.com/scorpion",
+          "title": "WhiteFox Scorpion3"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "small palm-sized rounded rectangular blue detection unit",
+        "compact smooth housing with protective black edges",
+        "short optional stub antenna and separate small phone screen beside"
+      ]
+    },
+    {
+      "key": "cuas_detector_portable",
+      "country": "cn",
+      "model": "DJI AeroScope 便携版公开参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dji.com/aeroscope",
+          "title": "DJI AeroScope"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "open blue rugged suitcase field detector with hinged lid screen",
+        "dark foam interior and two short antennas deployed beside case"
+      ]
+    },
+    {
+      "key": "cuas_detector_portable",
+      "country": "us",
+      "model": "DedronePortable 公开参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dedrone.com/solutions/dedrone-portable",
+          "title": "DedronePortable"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "blue rugged transport case with open lid",
+        "small freestanding white cylindrical RF sensor on compact tripod next to rugged open laptop"
+      ]
+    },
+    {
+      "key": "cuas_shelter",
+      "country": "cn",
+      "model": "Skyfend设备＋方舱示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/fixed/",
+          "title": "Skyfend fixed site"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "single blue compact corrugated equipment shelter with white roof",
+        "rooftop four slender vertical receiving antennas and one portrait flat radar panel on short mast",
+        "visible closed service door"
+      ]
+    },
+    {
+      "key": "cuas_shelter",
+      "country": "us",
+      "model": "Dedrone设备＋方舱示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dedrone.com/solutions/dedrone-portable",
+          "title": "DedronePortable"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "single grey compact equipment shelter with cobalt blue corner structural panels",
+        "rooftop smooth cylindrical RF radome and landscape radar on short mast",
+        "closed service door"
+      ]
+    },
+    {
+      "key": "cuas_c2",
+      "country": "cn",
+      "model": "Skyfend Guider SGA100",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/protable/71.html",
+          "title": "Skyfend Guider"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "rugged thick landscape control tablet with black protective corners and cobalt side body panels",
+        "wide map screen with no text",
+        "folding rear stand"
+      ]
+    },
+    {
+      "key": "cuas_c2",
+      "country": "us",
+      "model": "DedroneTracker.AI＋笔记本示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dedrone.com/products/drone-detection-software",
+          "title": "DedroneTrackerAI"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。",
+      "geometryChecks": [
+        "open rugged blue laptop with thick rubber corner protectors",
+        "full keyboard and landscape display showing simple cyan tracks on dark map",
+        "no text"
+      ]
+    },
+    {
+      "key": "cuas_lidar",
+      "country": "cn",
+      "model": "Hesai PandarXT 商用雷达角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.hesaitech.com/hesai-unveils-pandarxt-32-channel-mid-range-lidar-with-self-developed-proprietary-lidar-asics/",
+          "title": "Hesai PandarXT"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。 商用激光雷达仅为传感器角色外形参考，无特定反无人配置证明。",
+      "geometryChecks": [
+        "compact rectangular rotating lidar head with rounded blue lower metal base and tall dark optical band wrapping upper body",
+        "small low mounting pedestal"
+      ]
+    },
+    {
+      "key": "cuas_lidar",
+      "country": "us",
+      "model": "Velodyne VLP16 Puck 商用雷达角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cidco.ca/sites/default/files/%C3%89quipements%20CIDCO/Lidar%20velodyne%203D.pdf",
+          "title": "Velodyne Puck datasheet"
+        }
+      ],
+      "notes": "公开设备轮廓艺术化参考，不代表精确实物复刻。塔/方舱/软件终端组合为示意，未声称是已验证真实型号。 商用激光雷达仅为传感器角色外形参考，无特定反无人配置证明。",
+      "geometryChecks": [
+        "short broad cylindrical puck lidar with continuous dark optical ring above silver and cobalt cylindrical base",
+        "short cable emerging beside"
+      ]
+    }
+  ],
+  "blocked": [
+    {
+      "key": "cuas_fence",
+      "countries": [
+        "cn",
+        "us"
+      ],
+      "status": "blocked",
+      "reason": "电子围栏属于软件/空间约束概念，无唯一国家设备外形，不能把探测站冒充独立实装型号。"
+    }
+  ]
+}

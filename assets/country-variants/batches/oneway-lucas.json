@@ -1,0 +1,41 @@
+{
+  "id": "oneway-uav",
+  "columns": 3,
+  "rows": 1,
+  "path": "assets/country-variants/masters/oneway-uav.webp",
+  "entries": [
+    {
+      "key": "oneway_lucas",
+      "country": "us",
+      "model": "LUCAS（美国2025年公开展示外形参考）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.centcom.mil/MEDIA/PUBLIC-RELEASES/Article/4347030/us-launches-one-way-attack-drone-force-in-the-middle-east/",
+          "title": "CENTCOM 2025 LUCAS官方公开展示新闻",
+          "reviewDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.dvidshub.net/image/9417768/us-launches-one-way-attack-drone-force-middle-east",
+          "title": "CENTCOM/DVIDS：2025年11月23日LUCAS静态展示近照，已打开核对",
+          "reviewDate": "2026-11-14"
+        }
+      ],
+      "rect": {
+        "left": 1448,
+        "top": 0,
+        "width": 724,
+        "height": 724
+      },
+      "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+      "geometryChecks": [
+        "较圆顺的中央机身与三角翼根融合",
+        "仅向上翼尖稳定面",
+        "机背小圆凸起/后部矩形外罩按CENTCOM近照示意",
+        "后推桨静止，无发射或作战场景",
+        "完整独立朝左下三分之四俯视，浅灰主色与钴蓝可重涂区域",
+        "无文字旗帜角标、无爆炸发射、无内部结构或技术参数"
+      ]
+    }
+  ]
+}

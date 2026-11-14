@@ -1,0 +1,313 @@
+{
+  "id": "personnel-02",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-add04cec-8994-4163-b7a0-9bfe107cd745.png",
+  "entries": [
+    {
+      "key": "inf_mg",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "轻机枪/弹带",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "inf_mg",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "轻机枪/弹带",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "tank_crew",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "装甲乘员耳罩头盔",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "tank_crew",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "装甲乘员耳罩头盔",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "artillery_crew",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "搬运惰性弹体",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "artillery_crew",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "搬运惰性弹体",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "ad_soldier",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "防空控制终端",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "ad_soldier",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "防空控制终端",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "recon_soldier",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "观察望远镜",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "recon_soldier",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "观察望远镜",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "sof_operator",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "战术头盔/携行具",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "sof_operator",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "战术头盔/携行具",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "sniper",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "吉利披风/瞄准镜",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "sniper",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "吉利披风/瞄准镜",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "engineer_soldier",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "探测器或工兵工具",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    },
+    {
+      "key": "engineer_soldier",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；修复版明确钴蓝背心/背包和局部头盔作为应用可变色区域，移除政治标志。",
+      "geometryChecks": [
+        "探测器或工兵工具",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "全批修复：明确钴蓝背心/背包；原4×4格位保持"
+      ]
+    }
+  ],
+  "previousPath": "/workspace/generated_images/exec-e74e4986-a085-4fad-924e-d3069b9e33ad.png"
+}

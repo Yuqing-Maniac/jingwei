@@ -1,0 +1,369 @@
+{
+  "id": "naval-missiles",
+  "columns": 2,
+  "rows": 3,
+  "path": "/workspace/jingwei/assets/country-variants/masters/naval-missiles.webp",
+  "sourcePath": "/workspace/generated_images/exec-ea9905bf-9fdb-42b2-a636-d302520089c1.png",
+  "entries": [
+    {
+      "key": "naval_hhq9b",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "HHQ9家族公开弹体外形参考（供海红旗9B条目）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/tp_214132/15991969_10.html",
+          "title": "从两次大阅兵看我军装备发展这五年（国防部）",
+          "role": "官方名称确认海红旗9B；不单凭封闭发射筒推断弹体",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://weaponsystems.net/system/947-HHQ-9",
+          "title": "HHQ-9 | Weaponsystems.net",
+          "role": "二手公开家族外形：细长弹体与后部四尾翼；无B/C差异证明",
+          "reviewDate": "2026-11-14",
+          "httpError": "HTTP Error 503: Service Unavailable",
+          "reviewMethod": "Web工具已读取相关来源摘要/页面；本地HTTP访问暂时报错，未宣称200"
+        }
+      ],
+      "geometryChecks": [
+        "尖锥鼻、长直圆柱体",
+        "前中段无大型弹翼，仅后部四片尾翼",
+        "不以额外翼片或虚构传感器假造B/C差异"
+      ],
+      "notes": "仅HHQ9家族外形参考；未核实9B与9C批次弹体外形差异，不得宣传此图精确复刻9B，也不得据共享图断言B/C外形完全相同。无内部结构或性能信息。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+      "reviewDate": "2026-11-14"
+    },
+    {
+      "key": "naval_hhq16",
+      "country": "cn",
+      "cellIndex": 1,
+      "model": "红旗16舰载防空导弹（未指明批次，公开展品外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.xinhuanet.com/politics/2019-10/01/c_1125063153.htm",
+          "title": "舰载防空武器方队：立体的现代化防空反导防护网（新华社，2019-10-01）",
+          "role": "官方名称确认：海红旗9B／红旗16／红旗10，无16C或10A批次",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:HQ-16_missile_and_90mm_precision-guided_rocket.jpg",
+          "title": "HQ-16 missile at PLA Naval Museum, Qingdao（公开展品摄影）",
+          "role": "外形摄影：左侧HQ16本体；不使用右侧90mm火箭，不混用16C",
+          "reviewDate": "2026-11-14",
+          "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+        }
+      ],
+      "geometryChecks": [
+        "尖头圆柱弹体",
+        "中后段长边条翼",
+        "后端独立小尾舵；无其他型号附加结构"
+      ],
+      "notes": "按公开海军博物馆HQ16展品的外部轮廓绘制；未核批次，不命名16A/B/C/F，也不以陆基发射车外形代替舰载导弹。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+      "reviewDate": "2026-11-14"
+    },
+    {
+      "key": "naval_hhq10",
+      "country": "cn",
+      "cellIndex": 2,
+      "model": "红旗10舰载近程防空导弹（无后缀，家族公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.xinhuanet.com/politics/2019-10/01/c_1125063153.htm",
+          "title": "舰载防空武器方队：立体的现代化防空反导防护网（新华社，2019-10-01）",
+          "role": "官方名称确认：海红旗9B／红旗16／红旗10，无16C或10A批次",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://www.xinhuanet.com/mil/2015-10/13/c_128313747.htm",
+          "title": "国产海红旗-10导弹真身曝光（新华网，2015-10-13；原文来源环球网）",
+          "role": "公开照片转载，外形辅助；不代表照片为新华原创",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://www.afcea.org/signal-media/international/chinas-navy-deploys-three-tier-defensive-weapons",
+          "title": "China’s Navy Deploys Three-Tier Defensive Weapons | AFCEA",
+          "role": "二手外形辅助：鼻部双角状突起",
+          "reviewDate": "2026-11-14",
+          "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+        }
+      ],
+      "geometryChecks": [
+        "细短圆柱本体、小暗色圆鼻",
+        "鼻部双侧小角状突起、前部小舵面",
+        "尾部紧凑稳定翼；不加大型主翼"
+      ],
+      "notes": "公开无后缀红旗10外形艺术参考，不替代10A精确批次；摄影仅用于外形，生成图无发射效果。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+      "reviewDate": "2026-11-14"
+    },
+    {
+      "key": "naval_yj83j",
+      "country": "cn",
+      "cellIndex": 3,
+      "model": "鹰击83J舰对舰导弹（军博公开展品参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.visitbeijing.com.cn/article/47QniiZo3lo",
+          "title": "震撼！主战装备实装亮相军博（北京旅游网，2017）",
+          "role": "公开展览名单明确鹰击83J",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:YJ-83J_Missile_20170902.jpg",
+          "title": "YJ-83J Missile 20170902（军博公开展品摄影）",
+          "role": "直接外形摄影：腹进气口、主翼、尾部及附加助推段",
+          "reviewDate": "2026-11-14",
+          "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+        }
+      ],
+      "geometryChecks": [
+        "圆锥弧鼻、四片较宽主翼",
+        "腹部可见矩形进气口",
+        "保留舰射附加助推段及尾部翼面，不画成去掉助推段的83K航空型"
+      ],
+      "notes": "军博公开鹰击83J展品外形参考；非83K空射型。不同批次细节及助推段连接处为艺术近似，不给出尺寸或制造信息。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+      "reviewDate": "2026-11-14"
+    },
+    {
+      "key": "naval_hhq10_launcher",
+      "country": "cn",
+      "cellIndex": 4,
+      "model": "红旗10典型八联装发射器（056公开构型参考）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.xinhuanet.com/politics/2019-10/01/c_1125063153.htm",
+          "title": "舰载防空武器方队：立体的现代化防空反导防护网（新华社，2019-10-01）",
+          "role": "官方名称确认：海红旗9B／红旗16／红旗10，无16C或10A批次",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://www.huangpu.org.cn/hpzz/hpzz202001/202012/t20201201_12308984.html",
+          "title": "国庆70周年阅兵先进武器大盘点——海中蛟龙（黄埔军校同学会）",
+          "role": "机构公开报道说明存在24/18/8联装；本文不用其余性能数据",
+          "reviewDate": "2026-11-14",
+          "httpError": "HTTP Error 502: Bad Gateway",
+          "reviewMethod": "Web工具已读取相关来源摘要/页面；本地HTTP访问暂时报错，未宣称200"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:HQ-10_PLANS_Suqian.jpg",
+          "title": "HQ-10 on PLANS Suqian（公开摄影）",
+          "role": "直接外形摄影：八个封闭圆盖3-2-3，箱体侧耳及俯仰支架",
+          "reviewDate": "2026-11-14",
+          "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+        }
+      ],
+      "geometryChecks": [
+        "八个封闭圆形端盖按3-2-3排列",
+        "单个箱体与两侧俯仰耳轴",
+        "短旋转基座，独立完整，无弹体外露"
+      ],
+      "notes": "选取典型公开8联装外形作为发射器图标，不声称覆盖所有舰型、所有红旗10批次；不混淆24或18联装。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+      "reviewDate": "2026-11-14"
+    },
+    {
+      "key": "naval_yj83j_launcher",
+      "country": "cn",
+      "cellIndex": 5,
+      "model": "鹰击83系列典型四联箱式舰载发射架（供83J条目）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.visitbeijing.com.cn/article/47QniiZo3lo",
+          "title": "震撼！主战装备实装亮相军博（北京旅游网）",
+          "role": "83J名称上下文；非此发射架照片来源",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:YJ-83.jpg",
+          "title": "YJ-83 launcher on Type054A Huangshan（公开摄影）",
+          "role": "直接外形摄影：2x2封闭方箱、方形压纹前盖、低角度斜架",
+          "reviewDate": "2026-11-14",
+          "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+        }
+      ],
+      "geometryChecks": [
+        "四个平行长方箱按2x2堆叠",
+        "四个方形封闭端盖有浅锥台压纹",
+        "倾斜开放支撑架；非垂发、非航空挂架、非圆形炮塔基座"
+      ],
+      "notes": "典型83系列舰载箱式架参考，不将架体直接认定为某一J改进批次专用；四箱均封闭、未含弹体或内部构造。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+      "reviewDate": "2026-11-14"
+    }
+  ],
+  "aliases": [
+    {
+      "key": "naval_hhq9c",
+      "country": "cn",
+      "targetKey": "naval_hhq9b",
+      "model": "HHQ9家族公开外形参考（供海红旗9C条目）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/qwfb/16407156.html",
+          "title": "九三胜利日阅兵分列式各梯方队亮点速览（国防部，2025）",
+          "role": "官方名称确认海红旗9C；未提供足够外形证据以区分B/C",
+          "reviewDate": "2026-11-14",
+          "httpStatus": 200
+        }
+      ],
+      "notes": "仅共享家族外形参考图片以避免虚构批次差异；不表示9B与9C性能、内部结构或真实外形相同。registry与alias是否接入由root决定。",
+      "aliasOf": "naval_hhq9b"
+    }
+  ],
+  "imageAudit": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "visualReview": "六格顺序及导弹鼻尾完整、HHQ10发射器八盖3-2-3、YJ83架四闭箱2x2已目视核对。背景存在明显半透明灰色晕圈，需root统一清alpha后使用；未当作透明背景完全合格。"
+  },
+  "qualityStatus": "awaiting-alpha-cleanup",
+  "qualityNotes": [
+    "生成PNG保留，WebP仅无损格式转换。",
+    "照片仅用于公开外形核对，未复制文字、旗帜或标识；均非工程图、剖面或制造设计。",
+    "HHQ9同族图与9C alias仅代表视觉参考，不能用来推断批次差异。"
+  ],
+  "derivedAssetsQA": {
+    "reviewDate": "2026-11-14",
+    "scope": "root已生成的六款cn-red切片，只读检查；未改动icons或master",
+    "results": [
+      {
+        "key": "naval_hhq9b",
+        "size": [
+          256,
+          256
+        ],
+        "alphaExtrema": [
+          0,
+          255
+        ],
+        "objectBoundsAlpha40": [
+          25,
+          65,
+          239,
+          217
+        ],
+        "touchesEdges": false
+      },
+      {
+        "key": "naval_hhq16",
+        "size": [
+          256,
+          256
+        ],
+        "alphaExtrema": [
+          0,
+          255
+        ],
+        "objectBoundsAlpha40": [
+          15,
+          66,
+          231,
+          213
+        ],
+        "touchesEdges": false
+      },
+      {
+        "key": "naval_hhq10",
+        "size": [
+          256,
+          256
+        ],
+        "alphaExtrema": [
+          0,
+          255
+        ],
+        "objectBoundsAlpha40": [
+          30,
+          59,
+          232,
+          190
+        ],
+        "touchesEdges": false
+      },
+      {
+        "key": "naval_yj83j",
+        "size": [
+          256,
+          256
+        ],
+        "alphaExtrema": [
+          0,
+          255
+        ],
+        "objectBoundsAlpha40": [
+          15,
+          51,
+          235,
+          188
+        ],
+        "touchesEdges": false
+      },
+      {
+        "key": "naval_hhq10_launcher",
+        "size": [
+          256,
+          256
+        ],
+        "alphaExtrema": [
+          0,
+          255
+        ],
+        "objectBoundsAlpha40": [
+          46,
+          30,
+          207,
+          222
+        ],
+        "touchesEdges": false
+      },
+      {
+        "key": "naval_yj83j_launcher",
+        "size": [
+          256,
+          256
+        ],
+        "alphaExtrema": [
+          0,
+          255
+        ],
+        "objectBoundsAlpha40": [
+          36,
+          31,
+          217,
+          224
+        ],
+        "touchesEdges": false
+      }
+    ],
+    "screenshots": [
+      "/workspace/jingwei/_work/naval-missile-refs/qa-light.png",
+      "/workspace/jingwei/_work/naval-missile-refs/qa-dark.png"
+    ],
+    "visualConclusion": "六款256x256 RGBA图标在浅深背景下均完整，无边缘截断，原master灰晕在派生图标中已清除，未发现大片透明残影。",
+    "geometryConclusion": [
+      "HHQ9只有家族级轮廓依据，B/C差异未核实，必须保留共享参考说明。",
+      "红旗16长边条翼、红旗10前部小翼/双突起、83J腹进气口等图标级差异可辨；不声称翼面位置、助推器分段或比例精密一致。",
+      "红旗10典型发射器可见3-2-3八闭盖，83系列典型架可见2x2四方闭盖，未发现这两项数量错误。"
+    ],
+    "limitations": [
+      "YJ83J生成图对军博照片的尾部小舵面与附加助推段分界作了简化，不应被描述为精确批次识别图或实物复刻。",
+      "HHQ10鼻部突起及前部舵面为图标级近似，公开照片不足以确认精确位置比例。"
+    ]
+  }
+}

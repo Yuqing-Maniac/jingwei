@@ -1,0 +1,98 @@
+{
+  "id": "recon-radar",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/jingwei/assets/country-variants/masters/recon-radar.webp",
+  "sourcePath": "/workspace/generated_images/exec-8b377389-0af8-4cf3-b727-5c33695d5245.png",
+  "entries": [
+    {
+      "key": "uav_recon_radar",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "翼龙Ⅱ平台＋SAR侦察吊舱参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/wzll/kj/4895725.html",
+          "title": "翼龙-2无人机划过天际 大型无人机首次在国际航展飞行展示（国防部／新华社，2021-09-28）"
+        }
+      ],
+      "notes": "仅任务示意：公开报道核实翼龙-2携光电吊舱及合成孔径雷达；本图SAR罩位置、尺寸及无武器配置为概念表达，非确认的实装型号或精确工程图。蓝色面板为可重涂底色，默认中国红由集成阶段处理。",
+      "geometryChecks": [
+        "单台机尾推进螺旋桨，与美国喷气构型明显不同",
+        "细长机身、长直翼、上反V尾，鼻下小光电球",
+        "机腹适度小型闭合SAR吊舱，无大型圆盘天线",
+        "完整机翼/尾翼/起落架，无武器及国籍标识"
+      ],
+      "bluePixelRatio": 0.152,
+      "alphaBounds": [
+        48,
+        268,
+        859,
+        654
+      ],
+      "sourceAudit": {
+        "checkedAt": "2026-11-14",
+        "httpStatus": 200,
+        "method": "HTTP GET followed redirects; source content also reviewed through web search"
+      }
+    },
+    {
+      "key": "uav_recon_radar",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "MQ-4C Triton平台＋海面监视雷达整流罩参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.navair.navy.mil/product/MQ-4C",
+          "title": "MQ-4C Triton | NAVAIR"
+        },
+        {
+          "url": "https://www.navair.navy.mil/node/22166",
+          "title": "Triton UAS conducts first flight with search radar | NAVAIR"
+        },
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/triton",
+          "title": "MQ-4C Triton | Northrop Grumman"
+        }
+      ],
+      "notes": "仅任务示意：依据公开MQ-4C平台及MFAS海面监视雷达资料绘制，机腹整流罩及起落架细节为模型近似；非工程图，不表达性能、部署或中美装备对等关系。蓝色面板为可重涂底色。",
+      "geometryChecks": [
+        "高鼓起圆头、细长大展弦比机翼",
+        "背置单涡扇发动机及V尾，无螺旋桨",
+        "机腹适度扁椭圆闭合海面监视雷达罩，鼻下小光电球",
+        "完整独立机体，无武器、大盘天线、文字或旗帜"
+      ],
+      "bluePixelRatio": 0.1877,
+      "alphaBounds": [
+        15,
+        256,
+        870,
+        648
+      ],
+      "sourceAudit": {
+        "checkedAt": "2026-11-14",
+        "httpStatus": 200,
+        "method": "HTTP GET followed redirects; source content also reviewed through web search"
+      }
+    }
+  ],
+  "qualityStatus": "reviewed",
+  "notes": "2列1行，左中国参考构型、右美国参考构型，统一浅灰主体与钴蓝面板。原始PNG保留；WebP仅无损格式转换。目视检查飞机完整、姿态与平台差异明显，雷达罩适度。",
+  "imageAudit": {
+    "width": 1774,
+    "height": 887,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "layoutNote": "物体完整且未跨分格，但主翼占用约90%格宽，未严格达成提示中中央70%的留白目标；集成方切片后可统一留白。",
+    "webpRoundtrip": {
+      "alphaMaxDifference": 0,
+      "rgbMaxDifferenceOnNontransparentPixels": 0,
+      "result": "无损WebP与原PNG所有非全透明像素及alpha逐像素一致"
+    }
+  }
+}

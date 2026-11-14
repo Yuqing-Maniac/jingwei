@@ -1,0 +1,49 @@
+{
+  "key": "underwater_weapon",
+  "name": "水下预置武器",
+  "country": "generic",
+  "model": "水下驻留预置装置通用外形示意",
+  "modelStatus": "generic illustrative-concept",
+  "path": "/workspace/jingwei/assets/country-variants/masters/underwater-weapon.webp",
+  "sourcePath": "/workspace/generated_images/exec-2c6f3cf1-e406-4d35-bda6-2f8eceb5bd4a.png",
+  "sources": [
+    {
+      "url": "https://sxwrxtxb.xml-journal.net/cn/article/doi/10.11993/j.issn.2096-3920.2018.06.002",
+      "title": "国外水下预置武器发展及关键技术",
+      "publication": "水下无人系统学报，2018，26(6)：521—526",
+      "doi": "10.11993/j.issn.2096-3920.2018.06.002",
+      "sourceRole": "公开概念上下文，仅核对概念存在；非本图外形来源、非制造资料",
+      "httpStatus": 200,
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "notes": "图标自绘通用概念示意，非实物复刻，不对应或暗示任何中美真实型号、实战配置或部署状态。封闭耐压载荷舱、支脚、底座及小通信/传感器整流罩均为识别用途的概念表达，不提供内部结构或制造细节。未将DARPA非致命UFP项目标注为实战武器。",
+  "geometryChecks": [
+    "独立低矮稳固海底驻留底座，短外撑支脚及宽圆脚垫；后支脚由透视遮挡",
+    "三个封闭圆柱载荷舱，全部顶盖闭合，无内部载荷或开管",
+    "侧面小型通信/传感器整流罩与青色镜片，非大型天线",
+    "无推进器、机翼或尾翼，不描绘成水雷或潜航器",
+    "完整微缩模型，三分之四俯视，浅灰金属与钴蓝可重涂面板",
+    "透明背景，无文字、旗帜、发射、爆炸、海水或地面背景"
+  ],
+  "imageAudit": {
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alphaBounds": [
+      21,
+      121,
+      1235,
+      1136
+    ],
+    "bluePixelRatio": 0.2532,
+    "bluePixelMethod": "alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels",
+    "visualReview": "已view原始PNG确认完整、独立、顶盖闭合，无截断；透明留白在左右较窄，可由集成方统一留白。"
+  },
+  "generation": "image_gen，单轮新图，原始PNG保留；WebP仅无损格式转换",
+  "qualityStatus": "reviewed"
+}

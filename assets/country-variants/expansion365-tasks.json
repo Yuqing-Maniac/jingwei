@@ -1,0 +1,172 @@
+[
+  {
+    "key": "wingman_fh97",
+    "name": "FH-97 无人僚机（展示构型）",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_fh97a",
+    "name": "FH-97A 无人僚机（展示构型）",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_lj1",
+    "name": "LJ-1（隐身靶机／协同参考）",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_xq58",
+    "name": "XQ-58A Valkyrie",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_xq67",
+    "name": "XQ-67A（试验机）",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_fq42",
+    "name": "YFQ-42A／FQ-42（试验外形）",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_fq44",
+    "name": "YFQ-44A／FQ-44 Fury",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_utap22",
+    "name": "UTAP-22 Mako",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "wingman_yfq48",
+    "name": "YFQ-48A Talon Blue（待复核）",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_hhq9b",
+    "name": "HHQ-9B 海红旗-9B",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_hhq16",
+    "name": "HHQ-16 海红旗-16",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_hhq10",
+    "name": "HHQ-10 海红旗-10",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_yj83j",
+    "name": "YJ-83J 鹰击-83J",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_hhq10_launcher",
+    "name": "HHQ-10 典型八联装发射器",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_yj83j_launcher",
+    "name": "YJ-83 典型舰载发射架",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "naval_hhq9c",
+    "name": "HHQ-9C 海红旗-9C",
+    "category": "海上",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  },
+  {
+    "key": "oneway_lucas",
+    "name": "LUCAS（美国公开展示）",
+    "category": "无人",
+    "countries": [
+      "us"
+    ],
+    "strategy": "公开具体型号；按实际来源国标注，不强配其它国家型号",
+    "note": "只查公开外形；展示/试验/家族示意与待复核状态见来源记录"
+  }
+]

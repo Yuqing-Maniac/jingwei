@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-07",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-cf92d8e1-f591-4d58-a319-83c096b43543.png",
+  "entries": [
+    {
+      "key": "uav_seaplane",
+      "country": "cn",
+      "model": "U650公开构型参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.chinanews.com/mil/2015/12-11/7666264.shtml",
+          "title": "U650水陆两栖无人机"
+        }
+      ],
+      "notes": "仅外形类别参考；两者规模与年代不同",
+      "geometryChecks": [
+        "CN U650 flying boat UAV high wing central rear pusher prop boat-shaped hull small wingtip floats conventional single fin tail"
+      ]
+    },
+    {
+      "key": "uav_seaplane",
+      "country": "us",
+      "model": "Flying Fish（密歇根大学历史研究原型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.eurekalert.org/news-releases/668662",
+          "title": "University Michigan Flying Fish research prototype"
+        }
+      ],
+      "notes": "仅外形类别参考；两者规模与年代不同",
+      "geometryChecks": [
+        "US Michigan Flying Fish small autonomous floatplane thin high wing two separate long pontoons underneath forward prop slender tail, clearly different water landing configuration"
+      ]
+    },
+    {
+      "key": "uav_recon_small",
+      "country": "cn",
+      "model": "ASN15公开手抛外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.airuniversity.af.edu/Portals/10/CASI/documents/Research/Infrastructure/2025-05-05%20UAV%20Industrial%20Base.pdf",
+          "title": "CASI ASN15 hand-thrown UAV"
+        }
+      ],
+      "notes": "完整飞机，不画人物",
+      "geometryChecks": [
+        "CN ASN15 compact fuselage long straight shoulder wing small vertical tail rear pusher and horizontal tail"
+      ]
+    },
+    {
+      "key": "uav_recon_small",
+      "country": "us",
+      "model": "RQ11B Raven公开构型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104533/rq-11b-raven/",
+          "title": "RQ11B Raven"
+        }
+      ],
+      "notes": "完整飞机，不画人物",
+      "geometryChecks": [
+        "US Raven slim small fuselage high straight wing with distinctive upturned tips low tail boom and inverted conventional stabilizer rear pusher, no landing gear"
+      ]
+    },
+    {
+      "key": "drone_launcher",
+      "country": "cn",
+      "model": "中国公开集群发射车平台＋任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.twz.com/37062/china-conducts-test-of-massive-suicide-drone-swarm-launched-from-a-box-on-a-truck",
+          "title": "Chinese swarm launch vehicle and US LOCUST"
+        }
+      ],
+      "notes": "发射管列数与车辆组合仅图标示意，不复制实际装备细节",
+      "geometryChecks": [
+        "CN Chinese box-on-truck swarm launcher compact 6 wheel angular truck cab large inclined rectangular multi-tube launch box on rear"
+      ]
+    },
+    {
+      "key": "drone_launcher",
+      "country": "us",
+      "model": "美国LOCUST集群发射系统＋车辆底盘示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.twz.com/37062/china-conducts-test-of-massive-suicide-drone-swarm-launched-from-a-box-on-a-truck",
+          "title": "Chinese swarm launch vehicle and US LOCUST"
+        }
+      ],
+      "notes": "发射管列数与车辆组合仅图标示意，不复制实际装备细节",
+      "geometryChecks": [
+        "US LOCUST public tube launcher arranged in small compact vertical rectangular rack on low 4 wheel tactical utility vehicle open frame different silhouette, no missiles emerging"
+      ]
+    },
+    {
+      "key": "uuv_seabed",
+      "country": "cn",
+      "model": "潜龙三号基础平台＋驻留坞示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://sia.cas.cn/xwzx/mtjj/201805/t20180530_5019581.html",
+          "title": "Qianlong3 public geometry"
+        }
+      ],
+      "notes": "驻留任务、对接框架非真实已核实配置，仅示意",
+      "geometryChecks": [
+        "CN Qianlong3 distinctive deep short fish body rounded blunt snout and side vector thrusters resting inside squat seabed docking cradle"
+      ]
+    },
+    {
+      "key": "uuv_seabed",
+      "country": "us",
+      "model": "REMUS600基础平台＋驻留坞示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hii.com/news/hii-remus-uuv-marks-18-years-serving-australia-and-continues-to-lead-globally-as-unmanned-undersea-vehicle-of-choice",
+          "title": "REMUS600 public underwater platform"
+        }
+      ],
+      "notes": "驻留任务、对接框架非真实已核实配置，仅示意",
+      "geometryChecks": [
+        "US REMUS600 slender torpedo body small crossed rear fins single rear propeller resting on open long seabed docking cradle"
+      ]
+    },
+    {
+      "key": "ugv_recon_small",
+      "country": "cn",
+      "model": "JP-R10公开投抛机器人参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://jp-tz.com/productinfo/1521721.html",
+          "title": "JP-R10 throwable two wheel robot"
+        }
+      ],
+      "notes": "保持可抛投两轮小型结构，不画大型履带车",
+      "geometryChecks": [
+        "CN JPR10 throwable scouting robot two large chunky rubber wheels separated by compact square cyan camera center body short flat stabilizer tail"
+      ]
+    },
+    {
+      "key": "ugv_recon_small",
+      "country": "us",
+      "model": "Throwbot2公开构型参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://reconrobotics.com/products/throwbot-2-robot/",
+          "title": "Throwbot2"
+        }
+      ],
+      "notes": "保持可抛投两轮小型结构，不画大型履带车",
+      "geometryChecks": [
+        "US Throwbot2 two widely spaced ribbed wheels joined by thin tubular axle small center camera and long curved rear stabilizer tail, all tiny scale"
+      ]
+    },
+    {
+      "key": "loiter_ttc",
+      "country": "cn",
+      "model": "CH901系统基础＋测控站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/CH-901",
+          "title": "CH901 public loitering airframe"
+        }
+      ],
+      "notes": "测控箱、终端与天线布置仅示意，不声称是真实系统外观",
+      "geometryChecks": [
+        "CN rugged compact open control case two side by side cyan screens short antenna and separate small tripod patch antenna"
+      ]
+    },
+    {
+      "key": "loiter_ttc",
+      "country": "us",
+      "model": "Switchblade600系统基础＋测控站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/switchblade-600/",
+          "title": "Switchblade600 public airframe"
+        }
+      ],
+      "notes": "测控箱、终端与天线布置仅示意，不声称是真实系统外观",
+      "geometryChecks": [
+        "US Switchblade style compact rugged single touchscreen tablet angled on small stand joystick controller separate slim whip tripod antenna, no text on screens"
+      ]
+    },
+    {
+      "key": "uav_decoy",
+      "country": "cn",
+      "model": "BZK005基础平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/353aaaec-5043-4775-ae35-14ac0cdf94e0",
+          "title": "BZK-005 airframe geometry"
+        }
+      ],
+      "notes": "不得理解为两国存在此真实诱饵型号，使用公开基础平台加示意信号舱",
+      "geometryChecks": [
+        "CN BZK005 fixed wing twin tail booms rear pusher a small belly signal fairing and two tiny antennas"
+      ]
+    },
+    {
+      "key": "uav_decoy",
+      "country": "us",
+      "model": "MQ9基础平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ga.com/usaf-flies-with-angry-kitten-jamming-pod",
+          "title": "MQ-9 Angry Kitten EW pod demonstration"
+        }
+      ],
+      "notes": "不得理解为两国存在此真实诱饵型号，使用公开基础平台加示意信号舱",
+      "geometryChecks": [
+        "US MQ9 bulbous nose long slender wing V tail rear pusher two short antenna fairings compact underwing signal pod no weapons"
+      ]
+    },
+    {
+      "key": "usv_decoy",
+      "country": "cn",
+      "model": "JARI-USV基础平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "诱饵任务电子舱与角反射器仅示意，不声称真实配置",
+      "geometryChecks": [
+        "CN JARI twin hull pointed bow angular stealth bridge compact rear signal box small folded trihedral reflector"
+      ]
+    },
+    {
+      "key": "usv_decoy",
+      "country": "us",
+      "model": "CUSV基础平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "诱饵任务电子舱与角反射器仅示意，不声称真实配置",
+      "geometryChecks": [
+        "US CUSV single V hull broad open aft deck compact signal box short reflector mast"
+      ]
+    }
+  ]
+}

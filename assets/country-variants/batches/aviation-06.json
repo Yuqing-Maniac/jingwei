@@ -1,0 +1,299 @@
+{
+  "id": "aviation-06",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-8ec3702a-2e1c-4bfc-b9a5-0e6903e94552.png",
+  "entries": [
+    {
+      "key": "cuas_programmable_ammo",
+      "country": "cn",
+      "model": "NORINCO 35毫米PTFP弹药角色示意（非精确产品外形）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/PG99_Chinese_35mm_Towed_Anti-Aircraft_Gun",
+          "title": "PG99 source confirms NORINCO PTFP; exterior illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "single large brass cartridge",
+        "cobalt blue long pointed projectile",
+        "dark nose fuse cap",
+        "broad base rim"
+      ]
+    },
+    {
+      "key": "cuas_programmable_ammo",
+      "country": "us",
+      "model": "Mk310公开弹药外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/advanced-weapons/armament-systems/defeating-enemy-threats",
+          "title": "Northrop programmable ammo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "single slim bottleneck brass cartridge",
+        "short blue rounded-ogive projectile",
+        "silver fuse band and base rim"
+      ]
+    },
+    {
+      "key": "cuas_manpads",
+      "country": "cn",
+      "model": "FN-6公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/FN-6",
+          "title": "FN6 public exterior",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long blue launch tube",
+        "distinctive angular rectangular forward protective cap",
+        "pistol grip and compact sight",
+        "detached no operator"
+      ]
+    },
+    {
+      "key": "cuas_manpads",
+      "country": "us",
+      "model": "FIM-92 Stinger公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cia.gov/legacy/museum/artifact/stinger-missile-launcher/",
+          "title": "CIA Stinger museum",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long cylindrical blue tube",
+        "round end caps",
+        "boxy under-tube gripstock",
+        "rectangular top IFF antenna",
+        "no operator"
+      ]
+    },
+    {
+      "key": "cuas_missile_launcher",
+      "country": "cn",
+      "model": "QN-202平台加小型固定架示意（非真实反无人配置）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/archives/archives-land-defense/land-defense-2023/edex-2023-china-polytech-presents-1-2-kg-qn-202-micro-missile",
+          "title": "QN202 source; mounting illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "small single tube micro missile launcher",
+        "rectangular top sight",
+        "pistol grip",
+        "low three-legged support"
+      ]
+    },
+    {
+      "key": "cuas_missile_launcher",
+      "country": "us",
+      "model": "Coyote平台固定发射架示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.rtx.com/raytheon/what-we-do/integrated-air-and-missile-defense/coyote",
+          "title": "Coyote source; mounting illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four short blue launch canisters in two-by-two cluster tilted upward on compact rotating pedestal",
+        "wide base"
+      ]
+    },
+    {
+      "key": "cuas_rws",
+      "country": "cn",
+      "model": "中国公开新型遥控武器站外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.chinamil.com.cn/MEDIA/Videos/10149326.html",
+          "title": "Chinese public RWS footage",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "low angular rectangular turret pedestal",
+        "slim long single machine gun",
+        "right side tall sensor box",
+        "left ammo box"
+      ]
+    },
+    {
+      "key": "cuas_rws",
+      "country": "us",
+      "model": "M153 CROWS II公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/CROWS",
+          "title": "CROWS public exterior",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "tall open U shaped gun cradle on round base",
+        "heavy machine gun with perforated barrel jacket",
+        "side rectangular ammo box",
+        "tall opposite sensor block"
+      ]
+    },
+    {
+      "key": "cuas_shield_net",
+      "country": "cn",
+      "model": "中国DroneXNet防护网架示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dronexnet.com/",
+          "title": "DroneXNet public net product; frame illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "rectangular framed mesh roof with four upright posts",
+        "blue straight beams",
+        "fine gray square mesh",
+        "compact freestanding protective canopy"
+      ]
+    },
+    {
+      "key": "cuas_shield_net",
+      "country": "us",
+      "model": "US Netting防护网架示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.usnetting.com/drone-netting/",
+          "title": "US Netting product; frame illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "arched freestanding mesh barrier on two curved blue tubular end frames",
+        "dark net mesh and wide stabilizer feet"
+      ]
+    },
+    {
+      "key": "cuas_decoy",
+      "country": "cn",
+      "model": "歼-15轮廓充气诱饵示意（非真实产品）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Shenyang_J-15",
+          "title": "J15 source outline only; inflatable fictional",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "small inflated decoy shaped like J15",
+        "visibly rounded puffy seams",
+        "canards",
+        "twin widely spaced fins",
+        "no working engine openings"
+      ]
+    },
+    {
+      "key": "cuas_decoy",
+      "country": "us",
+      "model": "F/A-18轮廓充气诱饵示意（非真实产品）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Boeing_F/A-18E/F_Super_Hornet",
+          "title": "FA18 source outline only; inflatable fictional",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "inflatable aircraft decoy shaped like short Super Hornet",
+        "puffy rounded wings with seams",
+        "twin canted fins",
+        "large root extensions",
+        "no canards"
+      ]
+    },
+    {
+      "key": "sar_radar",
+      "country": "cn",
+      "model": "展疆ZJ-P1吊舱公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.microsar.com.cn/",
+          "title": "Chinese manufacturer integrated SAR pod",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "compact short streamlined rectangular pod with tapered ends",
+        "flat lower radome",
+        "small upper mounting bracket",
+        "blue upper casing"
+      ]
+    },
+    {
+      "key": "sar_radar",
+      "country": "us",
+      "model": "IMSAR NSP-5吊舱公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.insitu.com/products/nsp-5",
+          "title": "NSP5 manufacturer product",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外形艺术参考；示意构型只参考所列同国平台或产品，未证实任务配置、安装方式、反无人能力。弹药无内部结构；诱饵为虚构充气化形态。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long narrow cylindrical weatherized pod with rounded nose and tapered tail",
+        "two upper mounting lugs",
+        "blue spine and pale lower radome"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "id": "support-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-33fc724c-5f46-4368-9e7b-38e1782ec1cf.png",
+  "entries": [
+    {
+      "key": "ext_05_01",
+      "country": "cn",
+      "model": "Long March 5",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Long_March_5",
+          "title": "Long March 5"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "fat white core with four distinct strapped cylindrical boosters and bulbous payload fairing"
+      ]
+    },
+    {
+      "key": "ext_05_01",
+      "country": "us",
+      "model": "Falcon 9",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Falcon_9",
+          "title": "Falcon 9"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "slender single white cylinder",
+        "black interstage band",
+        "narrow fairing",
+        "nine small base engines"
+      ]
+    },
+    {
+      "key": "ext_05_02",
+      "country": "cn",
+      "model": "Zhuque-3 reusable booster reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Zhuque-3",
+          "title": "Zhuque-3 reusable booster reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "stainless broad booster cylinder with grid fins and short deployed landing legs"
+      ]
+    },
+    {
+      "key": "ext_05_02",
+      "country": "us",
+      "model": "Falcon 9 first stage",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Falcon_9",
+          "title": "Falcon 9 first stage"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "slim white sooty booster",
+        "four very long black splayed landing legs",
+        "four rectangular grid fins"
+      ]
+    },
+    {
+      "key": "ext_05_03",
+      "country": "cn",
+      "model": "Wenchang launch tower reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Wenchang_Space_Launch_Site",
+          "title": "Wenchang launch tower reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "tall rectangular enclosed tower with segmented opening service enclosure and broad square base",
+        "NO rocket"
+      ]
+    },
+    {
+      "key": "ext_05_03",
+      "country": "us",
+      "model": "NASA mobile launcher reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Mobile_launcher_platform",
+          "title": "NASA mobile launcher reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "open steel lattice square tower on huge rectangular mobile platform",
+        "multiple horizontal umbilical arms",
+        "NO rocket"
+      ]
+    },
+    {
+      "key": "ext_05_04",
+      "country": "cn",
+      "model": "Tiangong space station",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tiangong_space_station",
+          "title": "Tiangong space station"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "three large white cylindrical modules in T shape",
+        "four paired long blue rectangular solar wings"
+      ]
+    },
+    {
+      "key": "ext_05_04",
+      "country": "us",
+      "model": "ISS US orbital segment reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/International_Space_Station",
+          "title": "ISS US orbital segment reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。ISS为国际合作项目，此处仅参考美国舱段与桁架布局。",
+      "geometryChecks": [
+        "long horizontal exposed truss with eight large paired solar wings and clustered white habitat modules"
+      ]
+    },
+    {
+      "key": "ext_05_05",
+      "country": "cn",
+      "model": "Shenzhou spacecraft",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Shenzhou_(spacecraft)",
+          "title": "Shenzhou spacecraft"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "three inline compartments: cylindrical orbital cabin",
+        "bell-shaped reentry capsule",
+        "silver service cylinder",
+        "two rectangular solar wings"
+      ]
+    },
+    {
+      "key": "ext_05_05",
+      "country": "us",
+      "model": "Crew Dragon",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+          "title": "Crew Dragon"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "white rounded conical capsule with four cyan windows",
+        "attached cylindrical trunk with vertical black solar-panel strip and small fins"
+      ]
+    },
+    {
+      "key": "ext_05_06",
+      "country": "cn",
+      "model": "Tianzhou cargo spacecraft",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tianzhou_(spacecraft)",
+          "title": "Tianzhou cargo spacecraft"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "long stepped cylindrical cargo body with metallic blanket texture",
+        "small front docking ring",
+        "two long rectangular solar wings"
+      ]
+    },
+    {
+      "key": "ext_05_06",
+      "country": "us",
+      "model": "Cygnus cargo spacecraft",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Cygnus_(spacecraft)",
+          "title": "Cygnus cargo spacecraft"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "silver ribbed barrel cargo canister",
+        "dark short service unit and two circular fan-fold solar arrays"
+      ]
+    },
+    {
+      "key": "ext_05_07",
+      "country": "cn",
+      "model": "Tianhe robotic arm reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tianhe_core_module",
+          "title": "Tianhe robotic arm reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "standalone articulated white seven-joint tubular robotic arm in bent S pose anchored to small square service pedestal"
+      ]
+    },
+    {
+      "key": "ext_05_07",
+      "country": "us",
+      "model": "Robonaut 2 orbital service reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Robonaut",
+          "title": "Robonaut 2 orbital service reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "white and silver humanoid upper torso with two multi-jointed arms and golden visor",
+        "mounted on short central pedestal"
+      ]
+    },
+    {
+      "key": "ext_05_08",
+      "country": "cn",
+      "model": "Jilin-1 microsatellite reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Jilin-1",
+          "title": "Jilin-1 microsatellite reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "compact gold foil cuboid",
+        "large downward circular optical telescope aperture",
+        "two short rectangular solar wings"
+      ]
+    },
+    {
+      "key": "ext_05_08",
+      "country": "us",
+      "model": "Planet Dove reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Planet_Labs",
+          "title": "Planet Dove reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。",
+      "geometryChecks": [
+        "slender small cuboid satellite with black telescope barrel and two folded-flat thin rectangular solar wings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,296 @@
+{
+  "id": "personnel-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-ae83341d-2229-4426-bc0b-0b97b8f456b8.png",
+  "entries": [
+    {
+      "key": "commander",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "望远镜/平板指挥动作",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "commander",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "望远镜/平板指挥动作",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "staff_officer",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "地图/文书工位",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "staff_officer",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "地图/文书工位",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "pilot",
+      "country": "cn",
+      "model": "中国空军公开飞行服/头盔参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/2025xb/H_251589/F/16438943.html",
+          "title": "Pilot gets ready for round-the-clock flight training (2026)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "飞行头盔/生存背带",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "pilot",
+      "country": "us",
+      "model": "美国空军sage-green飞行服/生存装具参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.afmc.af.mil/About-Us/History/Uniforms/igphoto/2002737727/",
+          "title": "Current Air Force Flight suit"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "飞行头盔/生存背带",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "drone_pilot",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "遥控器/便携终端",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "drone_pilot",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "遥控器/便携终端",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "squad",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "双人战斗小组",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "squad",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "双人战斗小组",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "sailor",
+      "country": "cn",
+      "model": "中国海军21式作业服公开参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "盘绳/舰上工作服",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "sailor",
+      "country": "us",
+      "model": "美国海军蓝色工作连体服参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mynavyhr.navy.mil/References/US-Navy-Uniforms/Uniform-Regulations/Chapter-3/Male-Enlisted/Working/Coveralls/",
+          "title": "US Navy enlisted working coveralls"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "盘绳/舰上工作服",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "medic",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "跪姿急救包",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "medic",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "跪姿急救包",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "inf_rifleman",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "步枪低姿持握",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    },
+    {
+      "key": "inf_rifleman",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原；移除旗帜与政治标志，蓝色装备面板为应用可变色示意。部分小型携行具蓝色面积未达到目标25—35%，需最终配色检查。",
+      "geometryChecks": [
+        "步枪低姿持握",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见"
+      ]
+    }
+  ]
+}

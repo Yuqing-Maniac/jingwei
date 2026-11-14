@@ -1,0 +1,116 @@
+{
+  "id": "sensors-07",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-a1947056-15d3-4f39-8c8a-3145936295b3.png",
+  "entries": [
+    {
+      "key": "cuas_irst",
+      "country": "cn",
+      "model": "中科立德 玄武I号 周视搜索系统",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.lead-ir.com/produts/208.html",
+          "title": "中科立德玄武I号"
+        }
+      ],
+      "notes": "公开厂家产品外形经图示核对；工业美术简化及钴蓝面板为图标配色，不代表原始产品涂装或精确结构复刻。",
+      "geometryChecks": [
+        "heavy angular pan-tilt pedestal with TWO large optical sensor boxes on either side: left box has paired small circular windows",
+        "right box has one huge circular iridescent infrared aperture; central rotating blue square housing",
+        "one large RECTANGULAR radar panel on stalk ABOVE sensors"
+      ]
+    },
+    {
+      "key": "cuas_irst",
+      "country": "us",
+      "model": "IRST21 机载传感器轮廓＋展示支座示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://news.lockheedmartin.com/2017-10-19-Lockheed-Martin-to-Upgrade-IRST21-Sensor-System-for-U-S-Navy-Fighter-Aircraft",
+          "title": "Lockheed Martin IRST21 official news"
+        }
+      ],
+      "notes": "仅参考美国机载IRST21传感器公开轮廓；低座为展示示意，不声称其为地面全景反无人系统，不与中国周视系统视场或性能对等。",
+      "geometryChecks": [
+        "compact long aerodynamic cylindrical infrared sensor nose pod with rounded faceted dark infrared window at front",
+        "pale metal outer shell and cobalt blue side mounting shroud",
+        "rests on a simple low blue display cradle; no aircraft"
+      ]
+    },
+    {
+      "key": "cuas_remote_id",
+      "country": "cn",
+      "model": "湖南汉地 RID无人机侦测设备",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.handielec.com/product/uavdef/13.html",
+          "title": "湖南汉地RID侦测设备"
+        }
+      ],
+      "notes": "公开厂家产品外形经图示核对；工业美术简化及钴蓝面板为图标配色，不代表原始产品涂装或精确结构复刻。",
+      "geometryChecks": [
+        "small rounded square metal receiver enclosure painted cobalt blue with white edges",
+        "ONE long fibreglass rod antenna from top-right and ONE very short black stub antenna top-left",
+        "coiled power and ethernet cables beside"
+      ]
+    },
+    {
+      "key": "cuas_remote_id",
+      "country": "us",
+      "model": "Pierce Aerospace YR1",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.pierceaerospace.net/yr1",
+          "title": "Pierce Aerospace YR1"
+        }
+      ],
+      "notes": "公开厂家产品外形经图示核对；工业美术简化及钴蓝面板为图标配色，不代表原始产品涂装或精确结构复刻。",
+      "geometryChecks": [
+        "square white receiver enclosure with large dark ribbed front panel and cobalt side body panels below a horizontal metal crossbar carrying THREE long separated white vertical rod antennas with black tips; short mounting pole only"
+      ]
+    },
+    {
+      "key": "cuas_ads_b",
+      "country": "cn",
+      "model": "珠海铭远 ADSB-204A",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://brtaviation.com/products_235/645.html",
+          "title": "珠海铭远ADSB-204A官网"
+        }
+      ],
+      "notes": "公开厂家产品外形经图示核对；工业美术简化及钴蓝面板为图标配色，不代表原始产品涂装或精确结构复刻。",
+      "geometryChecks": [
+        "wide shallow 2U rackmount receiver metal box",
+        "silver front with TWO round coax connectors stacked on left and small indicators across center",
+        "black round switch on right",
+        "cobalt blue TOP cover and rack ears; one separate slim vertical rod antenna beside"
+      ]
+    },
+    {
+      "key": "cuas_ads_b",
+      "country": "us",
+      "model": "uAvionix pingStation",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://uavionix.com/support/pingstation/",
+          "title": "uAvionix pingStation官方支持与实物图"
+        }
+      ],
+      "notes": "公开厂家产品外形经图示核对；工业美术简化及钴蓝面板为图标配色，不代表原始产品涂装或精确结构复刻。",
+      "geometryChecks": [
+        "small square pale-grey weatherproof receiver box with four corner screws and cobalt BLUE center front panel",
+        "ONE very long slim WHITE rod antenna extending straight up",
+        "cable gland and black ethernet cable below",
+        "two side mounting tabs; no rack"
+      ]
+    }
+  ]
+}

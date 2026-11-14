@@ -1,0 +1,280 @@
+{
+  "id": "sensors-03",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-a1d4e85c-575e-4719-855a-0df72830138c.png",
+  "entries": [
+    {
+      "key": "usv_target",
+      "country": "cn",
+      "model": "JARI-USV 平台＋靶标示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "Janes JARI-USV"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "small angular CATAMARAN unmanned boat, two slender parallel hulls, low faceted central superstructure and tall integrated sensor mast",
+        "one tall removable passive radar reflector cross frame on aft deck; no weapons"
+      ]
+    },
+    {
+      "key": "usv_target",
+      "country": "us",
+      "model": "Textron CUSV 平台＋靶标示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "unmanned MONOHULL speedboat, deep V bow, long low working deck, short central open mast, aft open payload bay",
+        "one tall removable passive radar reflector cross frame on aft deck; no weapons"
+      ]
+    },
+    {
+      "key": "usv_minelayer",
+      "country": "cn",
+      "model": "JARI-USV 平台＋布雷角色示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "Janes JARI-USV"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "small angular CATAMARAN unmanned boat, two slender parallel hulls, low faceted central superstructure and tall integrated sensor mast",
+        "simple removable aft cargo frame carrying two sealed inert cylindrical payload cases; no deployment mechanism or active effects"
+      ]
+    },
+    {
+      "key": "usv_minelayer",
+      "country": "us",
+      "model": "Textron CUSV 平台＋布雷角色示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "unmanned MONOHULL speedboat, deep V bow, long low working deck, short central open mast, aft open payload bay",
+        "simple removable aft cargo frame carrying two sealed inert cylindrical payload cases; no deployment mechanism or active effects"
+      ]
+    },
+    {
+      "key": "uuv_strike",
+      "country": "cn",
+      "model": "潜龙三号平台＋打击角色载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "Popular Science Qianlong III"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "short tall flattened oval clownfish-shaped autonomous underwater vehicle, blunt high rounded nose and low side fins, yellow natural material with cobalt side panels, exposed rear thrusters",
+        "one smooth sealed externally attached task module along belly, no exposed ammunition or invented launcher"
+      ]
+    },
+    {
+      "key": "uuv_strike",
+      "country": "us",
+      "model": "REMUS 600平台＋打击角色载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hii.com/wp-content/uploads/2022/07/REMUS-600M-3-31-22_web.pdf",
+          "title": "HII REMUS 600M"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "long slender cylindrical torpedo-shaped AUV, rounded black nose, yellow cylindrical sections and cobalt middle panels, cruciform tail fins and small rear propeller",
+        "one smooth sealed externally attached task module along belly, no exposed ammunition or invented launcher"
+      ]
+    },
+    {
+      "key": "uuv_ew",
+      "country": "cn",
+      "model": "潜龙三号平台＋水声干扰载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "Popular Science Qianlong III"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "short tall flattened oval clownfish-shaped autonomous underwater vehicle, blunt high rounded nose and low side fins, yellow natural material with cobalt side panels, exposed rear thrusters",
+        "one small smooth acoustic transducer dome attached under body"
+      ]
+    },
+    {
+      "key": "uuv_ew",
+      "country": "us",
+      "model": "REMUS 600平台＋水声干扰载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hii.com/wp-content/uploads/2022/07/REMUS-600M-3-31-22_web.pdf",
+          "title": "HII REMUS 600M"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "long slender cylindrical torpedo-shaped AUV, rounded black nose, yellow cylindrical sections and cobalt middle panels, cruciform tail fins and small rear propeller",
+        "one small smooth acoustic transducer dome attached under body"
+      ]
+    },
+    {
+      "key": "uuv_relay",
+      "country": "cn",
+      "model": "潜龙三号平台＋水下中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "Popular Science Qianlong III"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "short tall flattened oval clownfish-shaped autonomous underwater vehicle, blunt high rounded nose and low side fins, yellow natural material with cobalt side panels, exposed rear thrusters",
+        "short vertical communications puck and small acoustic modem cylinder on dorsal body"
+      ]
+    },
+    {
+      "key": "uuv_relay",
+      "country": "us",
+      "model": "REMUS 600平台＋水下中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hii.com/wp-content/uploads/2022/07/REMUS-600M-3-31-22_web.pdf",
+          "title": "HII REMUS 600M"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "long slender cylindrical torpedo-shaped AUV, rounded black nose, yellow cylindrical sections and cobalt middle panels, cruciform tail fins and small rear propeller",
+        "short vertical communications puck and small acoustic modem cylinder on dorsal body"
+      ]
+    },
+    {
+      "key": "uuv_cargo",
+      "country": "cn",
+      "model": "潜龙三号平台＋运输载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "Popular Science Qianlong III"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "short tall flattened oval clownfish-shaped autonomous underwater vehicle, blunt high rounded nose and low side fins, yellow natural material with cobalt side panels, exposed rear thrusters",
+        "removable streamlined underbody cargo canister"
+      ]
+    },
+    {
+      "key": "uuv_cargo",
+      "country": "us",
+      "model": "REMUS 600平台＋运输载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hii.com/wp-content/uploads/2022/07/REMUS-600M-3-31-22_web.pdf",
+          "title": "HII REMUS 600M"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "long slender cylindrical torpedo-shaped AUV, rounded black nose, yellow cylindrical sections and cobalt middle panels, cruciform tail fins and small rear propeller",
+        "removable streamlined underbody cargo canister"
+      ]
+    },
+    {
+      "key": "uuv_decoy",
+      "country": "cn",
+      "model": "潜龙三号平台＋声学诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "Popular Science Qianlong III"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "short tall flattened oval clownfish-shaped autonomous underwater vehicle, blunt high rounded nose and low side fins, yellow natural material with cobalt side panels, exposed rear thrusters",
+        "small detachable slim cylindrical acoustic device attached along side body"
+      ]
+    },
+    {
+      "key": "uuv_decoy",
+      "country": "us",
+      "model": "REMUS 600平台＋声学诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hii.com/wp-content/uploads/2022/07/REMUS-600M-3-31-22_web.pdf",
+          "title": "HII REMUS 600M"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "long slender cylindrical torpedo-shaped AUV, rounded black nose, yellow cylindrical sections and cobalt middle panels, cruciform tail fins and small rear propeller",
+        "small detachable slim cylindrical acoustic device attached along side body"
+      ]
+    },
+    {
+      "key": "uuv_target",
+      "country": "cn",
+      "model": "潜龙三号平台＋靶标载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "Popular Science Qianlong III"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "short tall flattened oval clownfish-shaped autonomous underwater vehicle, blunt high rounded nose and low side fins, yellow natural material with cobalt side panels, exposed rear thrusters",
+        "small passive acoustic reflector plates and simple target transponder capsule"
+      ]
+    },
+    {
+      "key": "uuv_target",
+      "country": "us",
+      "model": "REMUS 600平台＋靶标载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hii.com/wp-content/uploads/2022/07/REMUS-600M-3-31-22_web.pdf",
+          "title": "HII REMUS 600M"
+        }
+      ],
+      "notes": "只核对平台公开轮廓；任务模块为通用角色视觉示意，尚无此平台该载荷组合的可靠公开实装依据，不能作为真实型号或已验证配置使用。潜龙三号为科考AUV，本图不声称其具有军事任务能力。",
+      "geometryChecks": [
+        "long slender cylindrical torpedo-shaped AUV, rounded black nose, yellow cylindrical sections and cobalt middle panels, cruciform tail fins and small rear propeller",
+        "small passive acoustic reflector plates and simple target transponder capsule"
+      ]
+    }
+  ]
+}

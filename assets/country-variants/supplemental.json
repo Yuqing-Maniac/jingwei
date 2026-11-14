@@ -1,0 +1,1123 @@
+[
+  {
+    "key": "uav_recon_eo",
+    "name": "光电侦察无人机",
+    "cat": "无人",
+    "keywords": [
+      "无人侦察机",
+      "光电",
+      "EO",
+      "EO/IR",
+      "摄像",
+      "光电球",
+      "无人机"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "uav_recon_radar",
+    "name": "雷达侦察无人机",
+    "cat": "无人",
+    "keywords": [
+      "无人侦察机",
+      "雷达",
+      "SAR",
+      "海面监视",
+      "合成孔径",
+      "无人机"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "uav_recon_sigint",
+    "name": "电子侦察无人机",
+    "cat": "无人",
+    "keywords": [
+      "无人侦察机",
+      "电侦",
+      "电子侦察",
+      "SIGINT",
+      "ELINT",
+      "被动侦察",
+      "无人机"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "usv_minesweeper",
+    "name": "扫雷型无人艇",
+    "cat": "无人",
+    "keywords": [
+      "扫雷无人艇",
+      "无人扫雷艇",
+      "扫雷艇",
+      "反水雷",
+      "猎雷",
+      "MCM",
+      "UISS"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "wz7",
+    "name": "无侦-7",
+    "cat": "无人",
+    "keywords": [
+      "无侦7",
+      "无侦-7",
+      "WZ7",
+      "WZ-7",
+      "翔龙",
+      "无人侦察机",
+      "联翼",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "aliasOf": "hale_uav"
+  },
+  {
+    "key": "wz8",
+    "name": "无侦-8",
+    "cat": "无人",
+    "keywords": [
+      "无侦8",
+      "无侦-8",
+      "WZ8",
+      "WZ-8",
+      "高空高速",
+      "无人侦察机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "wz10",
+    "name": "无侦-10",
+    "cat": "无人",
+    "keywords": [
+      "无侦10",
+      "无侦-10",
+      "WZ10",
+      "WZ-10",
+      "电侦",
+      "电子侦察",
+      "无人侦察机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "gj2",
+    "name": "攻击-2",
+    "cat": "无人",
+    "keywords": [
+      "攻击2",
+      "攻击-2",
+      "GJ2",
+      "GJ-2",
+      "察打一体",
+      "光电",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "gj11",
+    "name": "攻击-11",
+    "cat": "无人",
+    "keywords": [
+      "攻击11",
+      "攻击-11",
+      "GJ11",
+      "GJ-11",
+      "飞翼",
+      "隐身无人机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "aliasOf": "uav_ucav"
+  },
+  {
+    "key": "gj21",
+    "name": "攻击-21",
+    "cat": "无人",
+    "keywords": [
+      "攻击21",
+      "攻击-21",
+      "GJ21",
+      "GJ-21",
+      "舰载",
+      "飞翼",
+      "隐身无人机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "underwater_prepositioned_weapon",
+    "name": "水下预置武器（示意）",
+    "cat": "海上",
+    "keywords": [
+      "水下预制武器",
+      "水下预置武器",
+      "水下预置",
+      "海底预置",
+      "预置武器",
+      "海底驻留",
+      "underwater prepositioned weapon"
+    ],
+    "countries": [],
+    "teamPaintOnly": true,
+    "genericMaster": "masters/underwater-weapon.webp"
+  },
+  {
+    "key": "wingman_fh97",
+    "name": "FH-97 无人僚机（展示构型）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_fh97",
+      "FH-97 无人僚机（展示构型）",
+      "飞鸿FH-97（2021航展展示构型）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/wingman-cn.json",
+    "notes": "按2021公开展示模型重绘的高速隐身多用途无人机/有人无人协同概念参考，非已列装状态证明。与2022 FH-97A的侧进气展示模型分别建图，不混合不同展次外形。浅灰与蓝色面板为可重涂图标配色，非装备真实涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://tech.youth.cn/wzlb/202109/t20210929_13243656.htm",
+        "title": "中国青年报/中青网：新一代高速隐身多用途无人机首次亮相航展（2021品牌发布实拍）"
+      },
+      {
+        "url": "https://www.twz.com/news-features/is-this-chinas-truck-mounted-drone-launching-electromagnetic-catapult-system",
+        "title": "The War Zone：文中明确标注2021珠海航展FH-97展示模型的近景照片（仅该历史模型照片作外形核对）"
+      }
+    ]
+  },
+  {
+    "key": "wingman_fh97a",
+    "name": "FH-97A 无人僚机（展示构型）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_fh97a",
+      "FH-97A 无人僚机（展示构型）",
+      "飞鸿FH-97A（2022航展展示构型）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/wingman-cn.json",
+    "notes": "公开定位为忠诚僚机；本图严格采用2022首展模型外形，不声称列装或完成实战验证，不把2024或后续网传构型混入。厂商2025-09-11公开记录仍称在研及样机试验验证。浅灰与蓝色面板为可重涂图标配色。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.thepaper.cn/newsDetail_forward_20657609",
+        "title": "中国科协官方科普中国澎湃号：大国利器，首次公开亮相！忠诚僚机现身珠海航展（2022-11-09，含首展模型两侧照片）"
+      },
+      {
+        "url": "https://dataclouds.cninfo.com.cn/shgonggao/2025/2025-09-11/5260578a8ee511f0a374fa163e39923a.pdf",
+        "title": "航天电子2025年半年度业绩说明会记录：飞鸿-97A仍在研发、样机开展试验验证（2025-09-11）"
+      }
+    ]
+  },
+  {
+    "key": "wingman_lj1",
+    "name": "LJ-1（隐身靶机／协同参考）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_lj1",
+      "LJ-1（隐身靶机／协同参考）",
+      "LJ-1隐身靶机（2019公开模型／协同概念参考）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/wingman-cn.json",
+    "notes": "官方原始报道确认其为隐身靶机，并非列装忠诚僚机型号。本条放入无人协同/僚机参考主题时必须保留“靶机／协同概念参考”名称，不把概念用途写成已实现作战能力。仅按公开模型外形重绘，去掉展场发动机/助推器保护盖与支架，不画发射或战术效果；配色为图标用途。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://eng.chinamil.com.cn/CHINA_209163/TopStories_209189/9602237.html",
+        "title": "中国军网英文版：Chinese exhibitors to display laser weapon, stealth target drone at Russian exhibition（2019 MAKS西工大展台LJ-1名称与靶机定位）"
+      },
+      {
+        "url": "https://www.twz.com/h-6-bomber-launched-drones-could-be-in-chinas-air-combat-future",
+        "title": "The War Zone：LJ-1公开模型前上方与后方实拍照片及2019展示背景"
+      }
+    ]
+  },
+  {
+    "key": "wingman_xq58",
+    "name": "XQ-58A Valkyrie",
+    "cat": "无人",
+    "keywords": [
+      "wingman_xq58",
+      "XQ-58A Valkyrie",
+      "XQ-58A Valkyrie公开试验构型",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "batches/wingman-us-core.json",
+    "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://afresearchlab.com/wp-content/uploads/2020/09/AFRL_XQ-58A_FS_0920.pdf",
+        "title": "AFRL XQ-58A事实表（含2019年试飞实图，已打开查图）",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.kratosdefense.com/unmanned-systems/air/uncrewed-tactical-aircraft/xq-58a",
+        "title": "Kratos XQ-58 Valkyrie厂商页面",
+        "reviewDate": "2026-11-14"
+      }
+    ]
+  },
+  {
+    "key": "wingman_xq67",
+    "name": "XQ-67A（试验机）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_xq67",
+      "XQ-67A（试验机）",
+      "XQ-67A OBSS公开首飞试验构型",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "batches/wingman-us-core.json",
+    "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.ga-asi.com/ga-asi-makes-first-flight-of-xq-67a-obss",
+        "title": "GA-ASI 2024年2月29日首飞新闻及实机照片（已打开）",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.dvidshub.net/image/8275789/afrls-xq-67a-makes-1st-successful-flight",
+        "title": "AFRL/DVIDS 2024 XQ-67A首飞照片",
+        "reviewDate": "2026-11-14"
+      }
+    ]
+  },
+  {
+    "key": "wingman_fq42",
+    "name": "YFQ-42A／FQ-42（试验外形）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_fq42",
+      "YFQ-42A／FQ-42（试验外形）",
+      "YFQ-42A／FQ-42系列公开试验外形参考",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "batches/wingman-us-core.json",
+    "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。名称核对：2025/2026试验照片称YFQ-42A，厂商曾用Dark Merlin，USAF 2026公告称FQ-42 Vengeance；本图保留已公开的试验外形，不据名称变化推定量产外形变化。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.ga.com/yfq-42a-returns-to-flight-testing",
+        "title": "GA-ASI 2026年5月21日返回试飞新闻实机近照（已打开）",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.af.mil/News/Article-Display/Article/4092641/air-force-designates-two-mission-design-series-for-collaborative-combat-aircraft/",
+        "title": "USAF 2025年YFQ-42A/YFQ-44A试验名称公告",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.af.mil/News/Article-Display/Article/4600199/air-force-dubs-collaborative-combat-aircraft-fq-42-vengeance-fq-44-fury/",
+        "title": "USAF 2026 FQ-42 Vengeance/FQ-44 Fury名称更新（索引核对）",
+        "reviewDate": "2026-11-14"
+      }
+    ]
+  },
+  {
+    "key": "wingman_fq44",
+    "name": "YFQ-44A／FQ-44 Fury",
+    "cat": "无人",
+    "keywords": [
+      "wingman_fq44",
+      "YFQ-44A／FQ-44 Fury",
+      "YFQ-44A Fury／FQ-44系列公开试验外形参考",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "batches/wingman-us-core.json",
+    "notes": "按公开试验机照片重绘的写实微缩外形，非精确工程图、现役部队或量产批次复原。去除原试验标志、武器与起落架，浅灰+钴蓝为软件可变色示意。已检查整机与翼尾无遮挡、四型形状不同；未填写性能或作战参数。名称核对：公开试验照片为YFQ-44A Fury，2026官方公告采用FQ-44 Fury；此图不推断量产批次变化。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.dvidshub.net/image/9878412/air-force-tests-collaborative-combat-aircraft-creech",
+        "title": "USAF/DVIDS 2026年7月21日Fury起飞近照（已打开）",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.anduril.com/fury",
+        "title": "Anduril Fury厂商产品页面",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.af.mil/News/Article-Display/Article/4600199/air-force-dubs-collaborative-combat-aircraft-fq-42-vengeance-fq-44-fury/",
+        "title": "USAF 2026 FQ-42/FQ-44名称更新（索引核对）",
+        "reviewDate": "2026-11-14"
+      }
+    ]
+  },
+  {
+    "key": "wingman_utap22",
+    "name": "UTAP-22 Mako",
+    "cat": "无人",
+    "keywords": [
+      "wingman_utap22",
+      "UTAP-22 Mako",
+      "Kratos UTAP-22 Mako 无人僚机公开外形参考",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "batches/wingman-us-extra.json",
+    "notes": "基于Kratos官方产品照片和公开俯视/侧视轮廓制作的艺术微缩外形，非测绘复刻或任务载荷认证。厂家说明其源于BQM-167，支持与有人平台协同；不据此声称所有任务系统或特定配置已服役。腹置短舱代表其发动机，不是武器。蓝色为可重涂图标面板，非实机原始标识。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.kratosdefense.com/unmanned-systems/air/uncrewed-tactical-aircraft/mako",
+        "title": "Kratos官方：UTAP-22 Mako产品页与公开展示/飞行照片",
+        "reviewMethod": "web open，官方公开实拍下载HTTP200并view_image核对",
+        "reviewedDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.kratosdefense.com/wp-content/uploads/2025/07/Mako.pdf",
+        "title": "Kratos官方：UTAP-22 Mako公开资料，含俯视与侧视轮廓",
+        "reviewMethod": "web open及curl HTTP200，PDF渲染并view_image查看正侧轮廓",
+        "reviewedDate": "2026-11-14"
+      }
+    ]
+  },
+  {
+    "key": "wingman_yfq48",
+    "name": "YFQ-48A Talon Blue（待复核）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_yfq48",
+      "YFQ-48A Talon Blue（待复核）",
+      "Northrop Grumman YFQ-48A Talon Blue 原型机公开外形艺术参考",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "batches/wingman-us-extra.json",
+    "notes": "截至2026-11-14，Northrop官方当前页面明确标题YFQ-48A Talon Blue、说明获美国空军YFQ-48A命名，并展示2026年原型实机近照，因此并非仅概念图。本图仅为原型公开轮廓艺术参考，不声称量产、服役或未核实任务系统。重要视觉限制：生成前体更尖、更宽，机翼翼根/弦长比官方近照宽，趋近箭头形；保留背部梯形进气和V尾辨识点，但不能视为精确原型比例。后续参照实拍修正被image_gen内容审核拒绝，未以此初版认证真实结构。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.northropgrumman.com/who-we-are/the-facts/autonomy/yfq-48a-talon-blue",
+        "title": "Northrop Grumman官方：YFQ-48A Talon Blue；确认美国空军命名并公开2026年原型近照",
+        "reviewMethod": "由官方Project Talon页面链接跳转到此规范URL，curl HTTP200；web open及多幅官方实机近照核对",
+        "reviewedDate": "2026-11-14"
+      },
+      {
+        "url": "https://media.northropgrumman.com/52337d1a-f96e-4543-9ae5-b498015c7b3c/260507-Talon-Blue-Glamour-photo2_Original%20file.jpg?width=1920",
+        "title": "Northrop官方：260507 Talon Blue正面近照，背进气/V尾/翼面可见",
+        "reviewMethod": "下载HTTP200，view_image查看",
+        "reviewedDate": "2026-11-14"
+      },
+      {
+        "url": "https://media.northropgrumman.com/faec620b-8c62-464f-a0e7-b498015c82c2/260507-Talon-Blue-Glamour-photo3_Original%20file.jpg?width=1920",
+        "title": "Northrop官方：260507 Talon Blue侧面近照，标识YFQ-48A与EXPERIMENTAL",
+        "reviewMethod": "下载HTTP200，view_image查看",
+        "reviewedDate": "2026-11-14"
+      }
+    ]
+  },
+  {
+    "key": "naval_hhq9b",
+    "name": "HHQ-9B 海红旗-9B",
+    "cat": "海上",
+    "keywords": [
+      "naval_hhq9b",
+      "HHQ-9B 海红旗-9B",
+      "HHQ9家族公开弹体外形参考（供海红旗9B条目）",
+      "舰载武器",
+      "舰空导弹",
+      "防空",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "仅HHQ9家族外形参考；未核实9B与9C批次弹体外形差异，不得宣传此图精确复刻9B，也不得据共享图断言B/C外形完全相同。无内部结构或性能信息。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.mod.gov.cn/gfbw/tp_214132/15991969_10.html",
+        "title": "从两次大阅兵看我军装备发展这五年（国防部）",
+        "role": "官方名称确认海红旗9B；不单凭封闭发射筒推断弹体",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://weaponsystems.net/system/947-HHQ-9",
+        "title": "HHQ-9 | Weaponsystems.net",
+        "role": "二手公开家族外形：细长弹体与后部四尾翼；无B/C差异证明",
+        "reviewDate": "2026-11-14",
+        "httpError": "HTTP Error 503: Service Unavailable",
+        "reviewMethod": "Web工具已读取相关来源摘要/页面；本地HTTP访问暂时报错，未宣称200"
+      }
+    ]
+  },
+  {
+    "key": "naval_hhq16",
+    "name": "HHQ-16 海红旗-16",
+    "cat": "海上",
+    "keywords": [
+      "naval_hhq16",
+      "HHQ-16 海红旗-16",
+      "红旗16舰载防空导弹（未指明批次，公开展品外形参考）",
+      "舰载武器",
+      "舰空导弹",
+      "防空",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "按公开海军博物馆HQ16展品的外部轮廓绘制；未核批次，不命名16A/B/C/F，也不以陆基发射车外形代替舰载导弹。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.xinhuanet.com/politics/2019-10/01/c_1125063153.htm",
+        "title": "舰载防空武器方队：立体的现代化防空反导防护网（新华社，2019-10-01）",
+        "role": "官方名称确认：海红旗9B／红旗16／红旗10，无16C或10A批次",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File:HQ-16_missile_and_90mm_precision-guided_rocket.jpg",
+        "title": "HQ-16 missile at PLA Naval Museum, Qingdao（公开展品摄影）",
+        "role": "外形摄影：左侧HQ16本体；不使用右侧90mm火箭，不混用16C",
+        "reviewDate": "2026-11-14",
+        "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+      }
+    ]
+  },
+  {
+    "key": "naval_hhq10",
+    "name": "HHQ-10 海红旗-10",
+    "cat": "海上",
+    "keywords": [
+      "naval_hhq10",
+      "HHQ-10 海红旗-10",
+      "红旗10舰载近程防空导弹（无后缀，家族公开外形参考）",
+      "舰载武器",
+      "舰空导弹",
+      "防空",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "公开无后缀红旗10外形艺术参考，不替代10A精确批次；摄影仅用于外形，生成图无发射效果。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.xinhuanet.com/politics/2019-10/01/c_1125063153.htm",
+        "title": "舰载防空武器方队：立体的现代化防空反导防护网（新华社，2019-10-01）",
+        "role": "官方名称确认：海红旗9B／红旗16／红旗10，无16C或10A批次",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://www.xinhuanet.com/mil/2015-10/13/c_128313747.htm",
+        "title": "国产海红旗-10导弹真身曝光（新华网，2015-10-13；原文来源环球网）",
+        "role": "公开照片转载，外形辅助；不代表照片为新华原创",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://www.afcea.org/signal-media/international/chinas-navy-deploys-three-tier-defensive-weapons",
+        "title": "China’s Navy Deploys Three-Tier Defensive Weapons | AFCEA",
+        "role": "二手外形辅助：鼻部双角状突起",
+        "reviewDate": "2026-11-14",
+        "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+      }
+    ]
+  },
+  {
+    "key": "naval_yj83j",
+    "name": "YJ-83J 鹰击-83J",
+    "cat": "海上",
+    "keywords": [
+      "naval_yj83j",
+      "YJ-83J 鹰击-83J",
+      "鹰击83J舰对舰导弹（军博公开展品参考）",
+      "舰载武器",
+      "舰舰导弹",
+      "反舰",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "军博公开鹰击83J展品外形参考；非83K空射型。不同批次细节及助推段连接处为艺术近似，不给出尺寸或制造信息。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.visitbeijing.com.cn/article/47QniiZo3lo",
+        "title": "震撼！主战装备实装亮相军博（北京旅游网，2017）",
+        "role": "公开展览名单明确鹰击83J",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File:YJ-83J_Missile_20170902.jpg",
+        "title": "YJ-83J Missile 20170902（军博公开展品摄影）",
+        "role": "直接外形摄影：腹进气口、主翼、尾部及附加助推段",
+        "reviewDate": "2026-11-14",
+        "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+      }
+    ]
+  },
+  {
+    "key": "naval_hhq10_launcher",
+    "name": "HHQ-10 典型八联装发射器",
+    "cat": "海上",
+    "keywords": [
+      "naval_hhq10_launcher",
+      "HHQ-10 典型八联装发射器",
+      "红旗10典型八联装发射器（056公开构型参考）",
+      "舰载武器",
+      "舰空导弹",
+      "防空",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "选取典型公开8联装外形作为发射器图标，不声称覆盖所有舰型、所有红旗10批次；不混淆24或18联装。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.xinhuanet.com/politics/2019-10/01/c_1125063153.htm",
+        "title": "舰载防空武器方队：立体的现代化防空反导防护网（新华社，2019-10-01）",
+        "role": "官方名称确认：海红旗9B／红旗16／红旗10，无16C或10A批次",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://www.huangpu.org.cn/hpzz/hpzz202001/202012/t20201201_12308984.html",
+        "title": "国庆70周年阅兵先进武器大盘点——海中蛟龙（黄埔军校同学会）",
+        "role": "机构公开报道说明存在24/18/8联装；本文不用其余性能数据",
+        "reviewDate": "2026-11-14",
+        "httpError": "HTTP Error 502: Bad Gateway",
+        "reviewMethod": "Web工具已读取相关来源摘要/页面；本地HTTP访问暂时报错，未宣称200"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File:HQ-10_PLANS_Suqian.jpg",
+        "title": "HQ-10 on PLANS Suqian（公开摄影）",
+        "role": "直接外形摄影：八个封闭圆盖3-2-3，箱体侧耳及俯仰支架",
+        "reviewDate": "2026-11-14",
+        "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+      }
+    ]
+  },
+  {
+    "key": "naval_yj83j_launcher",
+    "name": "YJ-83 典型舰载发射架",
+    "cat": "海上",
+    "keywords": [
+      "naval_yj83j_launcher",
+      "YJ-83 典型舰载发射架",
+      "鹰击83系列典型四联箱式舰载发射架（供83J条目）",
+      "舰载武器",
+      "舰舰导弹",
+      "反舰",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "典型83系列舰载箱式架参考，不将架体直接认定为某一J改进批次专用；四箱均封闭、未含弹体或内部构造。 浅灰与钴蓝为图标可重涂示意涂装，非真实军用涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.visitbeijing.com.cn/article/47QniiZo3lo",
+        "title": "震撼！主战装备实装亮相军博（北京旅游网）",
+        "role": "83J名称上下文；非此发射架照片来源",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File:YJ-83.jpg",
+        "title": "YJ-83 launcher on Type054A Huangshan（公开摄影）",
+        "role": "直接外形摄影：2x2封闭方箱、方形压纹前盖、低角度斜架",
+        "reviewDate": "2026-11-14",
+        "reviewMethod": "Web search及公开照片核对（非本地HTTP探测状态声明）"
+      }
+    ]
+  },
+  {
+    "key": "naval_hhq9c",
+    "name": "HHQ-9C 海红旗-9C",
+    "cat": "海上",
+    "keywords": [
+      "naval_hhq9c",
+      "HHQ-9C 海红旗-9C",
+      "HHQ9家族公开外形参考（供海红旗9C条目）",
+      "舰载武器",
+      "舰空导弹",
+      "防空",
+      "导弹"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "sourceRecord": "batches/naval-missiles.json",
+    "notes": "仅共享家族外形参考图片以避免虚构批次差异；不表示9B与9C性能、内部结构或真实外形相同。registry与alias是否接入由root决定。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.mod.gov.cn/gfbw/qwfb/16407156.html",
+        "title": "九三胜利日阅兵分列式各梯方队亮点速览（国防部，2025）",
+        "role": "官方名称确认海红旗9C；未提供足够外形证据以区分B/C",
+        "reviewDate": "2026-11-14",
+        "httpStatus": 200
+      }
+    ]
+  },
+  {
+    "key": "wingman_mq28",
+    "name": "MQ-28A Ghost Bat（澳大利亚）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_mq28",
+      "MQ-28A Ghost Bat（澳大利亚）",
+      "澳大利亚 MQ-28A Ghost Bat（公开协同试验构型）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [],
+    "originCountry": "au",
+    "defaultAffiliation": "neutral",
+    "sourceRecord": "masters/wingman-other-source.json",
+    "notes": "公开外形艺术近似，不区分全部Block批次；A后缀采用澳方型号习惯，Boeing产品页通称MQ-28。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.boeing.com/defense/autonomous-and-unmanned-systems/mq-28-ghost-bat",
+        "title": "Boeing: MQ-28 Ghost Bat, autonomous collaborative combat aircraft",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+        "imageUrl": "https://www.boeing.com/content/dam/boeing/v2/products/mq-28-ghost-bat/mq-28-ghost-bat-roadblock-2.jpg",
+        "secondImageUrl": "https://www.boeing.com/content/dam/boeing/v2/products/mq-28-ghost-bat/mq-28-roadblock.jpg"
+      }
+    ],
+    "genericMaster": "masters/wingman-other.webp",
+    "genericRect": {
+      "left": 0,
+      "top": 0,
+      "width": 630,
+      "height": 623
+    }
+  },
+  {
+    "key": "wingman_kizilelma",
+    "name": "KIZILELMA（土耳其）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_kizilelma",
+      "KIZILELMA（土耳其）",
+      "土耳其 KIZILELMA（公开协同试验原型构型）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [],
+    "originCountry": "tr",
+    "defaultAffiliation": "neutral",
+    "sourceRecord": "masters/wingman-other-source.json",
+    "notes": "参考公开试验机照片；不声称精确对应厂商多个后续版本或已形成作战编制。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.baykartech.com/en/press/leonardo-and-baykar-set-major-milestone-for-advanced-creweduncrewed-capability-development-with-successful-first-k-swarm-live-trials/",
+        "title": "Baykar/Leonardo: K-SWARM live CUC-T trials, 22 June 2026",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+        "imageUrl": "https://cdn.baykartech.com/media/upload/userFormUpload/T9vNb5yHxwf0wg1WUtNXhchSwKWcizdF.jpg"
+      },
+      {
+        "url": "https://www.baykartech.com/en/uav/bayraktar-kizilelma/",
+        "title": "Baykar: KIZILELMA unmanned fighter",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied."
+      }
+    ],
+    "genericMaster": "masters/wingman-other.webp",
+    "genericRect": {
+      "left": 630,
+      "top": 0,
+      "width": 631,
+      "height": 623
+    }
+  },
+  {
+    "key": "wingman_anka3",
+    "name": "ANKA III（土耳其）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_anka3",
+      "ANKA III（土耳其）",
+      "土耳其 ANKA III（公开试飞原型构型）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [],
+    "originCountry": "tr",
+    "defaultAffiliation": "neutral",
+    "sourceRecord": "masters/wingman-other-source.json",
+    "notes": "公开试飞原型艺术近似，未照搬照片外置试验武器；只核对外形，不验证装备配置。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.tusas.com/en/products/uav/operative-strategic-uav-systems/anka-III",
+        "title": "Turkish Aerospace: ANKA III official product page",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+        "imageUrl": "https://www.tusas.com/content/images/uploads/originals/TAI09937,6479.jpg"
+      },
+      {
+        "url": "https://www.tusas.com/medya-merkezi/haberler/anka-iii-ve-hurjet-ten-kol-ucusu",
+        "title": "TUSAŞ: ANKA III and HÜRJET formation flight",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied."
+      }
+    ],
+    "genericMaster": "masters/wingman-other.webp",
+    "genericRect": {
+      "left": 0,
+      "top": 623,
+      "width": 630,
+      "height": 624
+    }
+  },
+  {
+    "key": "wingman_s70",
+    "name": "S-70 猎人（俄罗斯展示原型）",
+    "cat": "无人",
+    "keywords": [
+      "wingman_s70",
+      "S-70 猎人（俄罗斯展示原型）",
+      "俄罗斯 S-70 猎人（2021扁喷口公开展示原型构型）",
+      "无人机",
+      "无人僚机",
+      "忠诚僚机",
+      "有人无人协同",
+      "CCA",
+      "loyal wingman"
+    ],
+    "countries": [],
+    "originCountry": "ru",
+    "defaultAffiliation": "neutral",
+    "sourceRecord": "masters/wingman-other-source.json",
+    "notes": "仅2021扁喷口展示原型的外形参考，不表示现役或已批产。2024年有S70原型被击落/损失的公开报道，未认定其与本图所据2021展示机为同一架；不绘制战损或作战效果。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.aviationpros.com/aircraft-maintenance-technology/aircraft-technology/unmanned/press-release/21251794/rostec-uac-rolls-out-the-okhotnik-uav-with-a-flat-jet-nozzle",
+        "title": "Rostec manufacturer press release syndicated by Aviation Pros, Jan 2022",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+        "imageUrl": "https://img.aviationpros.com/files/base/cygnus/cavc/image/2022/01/16x9/Okhotnik_UAV_2.61d3392f8da40.png?width=1200",
+        "sourceType": "manufacturer-press-release-republication",
+        "originalUrl": "https://rostec.ru/media/pressrelease/oak-vpervye-pokazala-bpla-okhotnik-s-ploskim-reaktivnym-soplom/",
+        "originalAccess": "Original Rostec page/PDF returned 502/503; full attributed manufacturer text and photo reviewed at named republication."
+      },
+      {
+        "url": "https://aviationweek.com/defense/aircraft-propulsion/debrief-russia-loses-okhotnik-ucav-ukraine",
+        "title": "Aviation Week: S-70 loss report, 7 October 2024",
+        "reviewedDate": "2026-11-14",
+        "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+        "sourceType": "secondary-status-caveat"
+      }
+    ],
+    "genericMaster": "masters/wingman-other.webp",
+    "genericRect": {
+      "left": 630,
+      "top": 623,
+      "width": 631,
+      "height": 624
+    }
+  },
+  {
+    "key": "oneway_shahed136",
+    "name": "Shahed-136（伊朗）",
+    "cat": "无人",
+    "keywords": [
+      "oneway_shahed136",
+      "Shahed-136（伊朗）",
+      "Shahed-136（伊朗公开外形参考）",
+      "长航时",
+      "单程攻击无人机",
+      "单向攻击无人机",
+      "自杀式无人机",
+      "136同类",
+      "loitering",
+      "Geran-2",
+      "Geran2",
+      "天竺葵2",
+      "沙赫德136"
+    ],
+    "countries": [],
+    "originCountry": "ir",
+    "defaultAffiliation": "neutral",
+    "sourceRecord": "oneway-uav-source.json",
+    "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.dia.mil/Portals/110/DIA_Iranian_UAVs_in_Ukraine-A_Visual_Comparison.pdf",
+        "title": "DIA (2023): Iranian UAVs in Ukraine — A Visual Comparison",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File:Shahed-136_(Geran-2)_drawing_by_Defense_Intelligence_Agency.jpg",
+        "title": "DIA公开外形插图转载，已打开核对轮廓及翼尖稳定面",
+        "reviewDate": "2026-11-14"
+      }
+    ],
+    "genericMaster": "masters/oneway-uav.webp",
+    "genericRect": {
+      "left": 0,
+      "top": 0,
+      "width": 724,
+      "height": 724
+    }
+  },
+  {
+    "key": "oneway_shahed131",
+    "name": "Shahed-131（伊朗）",
+    "cat": "无人",
+    "keywords": [
+      "oneway_shahed131",
+      "Shahed-131（伊朗）",
+      "Shahed-131（伊朗公开外形参考）",
+      "长航时",
+      "单程攻击无人机",
+      "单向攻击无人机",
+      "自杀式无人机",
+      "136同类",
+      "loitering",
+      "Geran-1",
+      "Geran1",
+      "天竺葵1",
+      "沙赫德131"
+    ],
+    "countries": [],
+    "originCountry": "ir",
+    "defaultAffiliation": "neutral",
+    "sourceRecord": "oneway-uav-source.json",
+    "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.dia.mil/Portals/110/DIA_Iranian_UAVs_in_Ukraine-A_Visual_Comparison.pdf",
+        "title": "DIA (2023): Iranian UAVs in Ukraine — A Visual Comparison",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File:Shahed-131_(Geran-1)_drawing_by_Defense_Intelligence_Agency.jpg",
+        "title": "DIA公开外形插图转载，已打开核对轮廓及翼尖稳定面",
+        "reviewDate": "2026-11-14"
+      }
+    ],
+    "genericMaster": "masters/oneway-uav.webp",
+    "genericRect": {
+      "left": 724,
+      "top": 0,
+      "width": 724,
+      "height": 724
+    }
+  },
+  {
+    "key": "oneway_lucas",
+    "name": "LUCAS（美国公开展示）",
+    "cat": "无人",
+    "keywords": [
+      "oneway_lucas",
+      "LUCAS（美国公开展示）",
+      "LUCAS（美国2025年公开展示外形参考）",
+      "长航时",
+      "单程攻击无人机",
+      "单向攻击无人机",
+      "自杀式无人机",
+      "136同类",
+      "loitering"
+    ],
+    "countries": [
+      "us"
+    ],
+    "originCountry": "us",
+    "defaultAffiliation": "blue",
+    "sourceRecord": "oneway-uav-source.json",
+    "notes": "依据公开识别外形/静态近照绘制的目录美术，非精确工程图、制造图或具体批次复原。展示相近家族的真实轮廓差异，不以换标签伪造差异；图格独立缩放，不作比例尺对照。国别为来源国，不把伊朗装备标为中方或俄方。钴蓝涂装仅为软件可变色示意。",
+    "addedIn": "3.6.5",
+    "sources": [
+      {
+        "url": "https://www.centcom.mil/MEDIA/PUBLIC-RELEASES/Article/4347030/us-launches-one-way-attack-drone-force-in-the-middle-east/",
+        "title": "CENTCOM 2025 LUCAS官方公开展示新闻",
+        "reviewDate": "2026-11-14"
+      },
+      {
+        "url": "https://www.dvidshub.net/image/9417768/us-launches-one-way-attack-drone-force-middle-east",
+        "title": "CENTCOM/DVIDS：2025年11月23日LUCAS静态展示近照，已打开核对",
+        "reviewDate": "2026-11-14"
+      }
+    ]
+  }
+]

@@ -104,7 +104,7 @@ done
 sort -o "$list" "$list"
 (
   cd "$OUT"
-  sha256sum "${required[@]}" > SHA256SUMS.txt
+  sha256sum jingwei_*.zip > SHA256SUMS.txt
 )
 printf '%s\n' "$OUT/SHA256SUMS.txt" >> "$list"
 

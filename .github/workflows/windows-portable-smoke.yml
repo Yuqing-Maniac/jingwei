@@ -1,0 +1,74 @@
+name: windows-portable-smoke
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      JW_WORK: ${{ github.workspace }}/_work
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install Windows launcher compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64
+      - name: Build the complete Windows x64 portable ZIP
+        run: |
+          npm ci
+          bash build/fetch_runtime.sh win32-x64
+          python3 tests/package_layout_test.py
+          python3 build/desktop/build_all.py --portable-only win64
+      - name: Preserve the original Electron EXE for a native control experiment
+        run: |
+          python3 -c "import pathlib,zipfile; p=pathlib.Path('_work/native-control'); p.mkdir(parents=True,exist_ok=True); z=zipfile.ZipFile('_work/runtime/electron-v22.3.27-win32-x64.zip'); (p/'electron-original.exe').write_bytes(z.read('electron.exe'))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-original-electron
+          path: _work/native-control/electron-original.exe
+          compression-level: 9
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-portable
+          path: _work/dist/*Windows_x64_*.zip
+          compression-level: 0
+          retention-days: 7
+  native-startup:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-x64-portable
+          path: _work/native-artifact
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-original-electron
+          path: _work/native-control
+      - name: Install the CDP test client
+        run: python -m pip install websocket-client
+      - name: Start both EXEs from the final portable ZIP on Windows
+        run: python tests/windows_portable_smoke.py --archive _work/native-artifact --original-exe _work/native-control/electron-original.exe
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-startup-evidence
+          path: |
+            _work/windows-startup-smoke
+            !_work/windows-startup-smoke/中文 解压 path*/**
+          retention-days: 7

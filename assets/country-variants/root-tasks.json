@@ -1,0 +1,62 @@
+[
+  {
+    "key": "fighter",
+    "name": "战斗机",
+    "category": "空中",
+    "strategy": "中美装备外形",
+    "china_candidate": "歼-20",
+    "usa_candidate": "F-22A",
+    "reference_status": "待核对公开外形与来源",
+    "verified": false,
+    "china_source_url": null,
+    "usa_source_url": null,
+    "family_key": null,
+    "note": "候选仅用于选型讨论；历史、试验、设计构型须在最终名称中明确，不表示两者性能或代际相当。",
+    "production_phase": "第1批：典型航空平台"
+  },
+  {
+    "key": "transport",
+    "name": "运输机",
+    "category": "空中",
+    "strategy": "中美装备外形",
+    "china_candidate": "运-20",
+    "usa_candidate": "C-17A",
+    "reference_status": "待核对公开外形与来源",
+    "verified": false,
+    "china_source_url": null,
+    "usa_source_url": null,
+    "family_key": null,
+    "note": "候选仅用于选型讨论；历史、试验、设计构型须在最终名称中明确，不表示两者性能或代际相当。",
+    "production_phase": "第1批：典型航空平台"
+  },
+  {
+    "key": "awacs",
+    "name": "预警机",
+    "category": "空中",
+    "strategy": "中美装备外形",
+    "china_candidate": "空警-500",
+    "usa_candidate": "E-2D",
+    "reference_status": "待核对公开外形与来源",
+    "verified": false,
+    "china_source_url": null,
+    "usa_source_url": null,
+    "family_key": null,
+    "note": "候选仅用于选型讨论；历史、试验、设计构型须在最终名称中明确，不表示两者性能或代际相当。",
+    "production_phase": "第1批：典型航空平台"
+  },
+  {
+    "key": "helicopter",
+    "name": "武装直升机",
+    "category": "空中",
+    "strategy": "中美装备外形",
+    "china_candidate": "直-10",
+    "usa_candidate": "AH-64E",
+    "reference_status": "待核对公开外形与来源",
+    "verified": false,
+    "china_source_url": null,
+    "usa_source_url": null,
+    "family_key": null,
+    "note": "候选仅用于选型讨论；历史、试验、设计构型须在最终名称中明确，不表示两者性能或代际相当。",
+    "production_phase": "第1批：典型航空平台"
+  }
+]

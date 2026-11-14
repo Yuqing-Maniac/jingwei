@@ -1,0 +1,344 @@
+{
+  "id": "aviation-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-63217211-cbbd-4355-951e-7055fe42cffd.png",
+  "entries": [
+    {
+      "key": "bomber",
+      "country": "cn",
+      "model": "轰-6系列艺术外形参考（非精确轰-6K）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Xi%27an_H-6",
+          "title": "H-6 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。 生成结果保留了轰-6家族的玻璃机鼻特征，不能当作轰-6K精确外形。",
+      "geometryChecks": [
+        "swept mid wings",
+        "two large wing-root intakes",
+        "single tall fin"
+      ]
+    },
+    {
+      "key": "bomber",
+      "country": "us",
+      "model": "B-52H",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Boeing_B-52_Stratofortress",
+          "title": "Boeing B-52 public exterior reference",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long swept high wings",
+        "eight engines in four paired underwing pods",
+        "tall single fin"
+      ]
+    },
+    {
+      "key": "uav_fixed",
+      "country": "cn",
+      "model": "翼龙Ⅰ",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.ecns.cn/military/2012/11-15/35554.shtml",
+          "title": "Wing Loong I public exhibition",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "slender nose",
+        "straight wings",
+        "upward V tail",
+        "rear pusher prop"
+      ]
+    },
+    {
+      "key": "uav_fixed",
+      "country": "us",
+      "model": "MQ-1C Gray Eagle",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.army.mil/article-amp/137593/mq_1c_gray_eagle_unmanned_aircraft_system_uas",
+          "title": "MQ-1C US Army",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "bulbous upper nose",
+        "narrow straight wings",
+        "inverted V tail",
+        "rear pusher prop"
+      ]
+    },
+    {
+      "key": "uav_male",
+      "country": "cn",
+      "model": "翼龙Ⅱ",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/Wing_Loong_II_Chinese_Medium-Altitude_Long_Endurance_%28MALE%29_Unmanned_Aerial_Vehicle_%28UAV%29",
+          "title": "Wing Loong II ODIN",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "bulbous forebody",
+        "long straight wing with upturned winglets",
+        "V tail",
+        "rear prop"
+      ]
+    },
+    {
+      "key": "uav_male",
+      "country": "us",
+      "model": "MQ-9A Reaper",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.ga-asi.com/remotely-piloted-aircraft/mq-9a",
+          "title": "General Atomics MQ-9A Reaper official exterior reference",
+          "reviewMethod": "web open successfully reviewed",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "high narrow straight wing without winglets",
+        "Y tail including ventral fin",
+        "pusher prop"
+      ]
+    },
+    {
+      "key": "uav_quad",
+      "country": "cn",
+      "model": "DJI Matrice 350 RTK",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://enterprise.dji.com/matrice-350-rtk",
+          "title": "Matrice 350 DJI",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "large X arms",
+        "tall twin landing skids",
+        "underslung round gimbal"
+      ]
+    },
+    {
+      "key": "uav_quad",
+      "country": "us",
+      "model": "Skydio X10",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skydio.com/x10",
+          "title": "Skydio X10 manufacturer",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "low compact rectangular body",
+        "four short arms",
+        "tiny landing feet",
+        "rectangular forward gimbal"
+      ]
+    },
+    {
+      "key": "uav_vtol",
+      "country": "cn",
+      "model": "JOUAV CW-20E（替代候选CW-25E）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.jouav.com/products/cw-20e.html",
+          "title": "JOUAV CW-20E official; old CW25E URL redirects",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "slender fuselage",
+        "high straight wing",
+        "twin long lift booms",
+        "four vertical props",
+        "V tail"
+      ]
+    },
+    {
+      "key": "uav_vtol",
+      "country": "us",
+      "model": "JUMP 20",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/jump-20/",
+          "title": "JUMP 20 AeroVironment",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "thick high wing",
+        "twin lift booms",
+        "four lift props",
+        "nose tractor prop",
+        "conventional H-shaped twin boom tail"
+      ]
+    },
+    {
+      "key": "loitering",
+      "country": "cn",
+      "model": "CH-901",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/4d747431c162c439be3db3f3e5a5a265",
+          "title": "CH-901 public ODIN",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "short cylindrical fuselage",
+        "straight high wing",
+        "small conventional tail",
+        "rear prop"
+      ]
+    },
+    {
+      "key": "loitering",
+      "country": "us",
+      "model": "Switchblade 600",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/?avinc_solution_tax=switchblade-600",
+          "title": "Switchblade 600 AeroVironment",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long tubular body",
+        "deployed swept crosswise folding wings",
+        "rear cross tail fins",
+        "small pusher prop"
+      ]
+    },
+    {
+      "key": "cruise_missile",
+      "country": "cn",
+      "model": "CJ-10（公开展示外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/CJ-10_(missile)",
+          "title": "CJ-10 public reference",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "tubular body",
+        "pointed conical nose",
+        "narrow straight deployed wings",
+        "cruciform tail",
+        "belly inlet"
+      ]
+    },
+    {
+      "key": "cruise_missile",
+      "country": "us",
+      "model": "BGM-109 Tomahawk（公开展示外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tomahawk_(missile)",
+          "title": "Tomahawk public reference",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "slender long cylinder",
+        "rounded nose",
+        "broad straight deployed wings",
+        "cruciform tail",
+        "ventral inlet"
+      ]
+    },
+    {
+      "key": "ballistic_missile",
+      "country": "cn",
+      "model": "DF-31系列公开展示参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/DF-31",
+          "title": "DF-31 public reference",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "tall cylindrical multistage rocket",
+        "long slender ogive nose",
+        "subtle stage bands",
+        "no wings"
+      ]
+    },
+    {
+      "key": "ballistic_missile",
+      "country": "us",
+      "model": "LGM-30G Minuteman III（公开展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/LGM-30_Minuteman",
+          "title": "Minuteman public reference",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形的艺术微缩参考；非实物测绘，未验证具体批次或任务挂载。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "stepped multistage cylinder",
+        "distinctly broad blunt conical upper nose",
+        "base skirt",
+        "no wings"
+      ]
+    }
+  ]
+}

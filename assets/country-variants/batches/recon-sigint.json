@@ -1,0 +1,80 @@
+{
+  "id": "recon-sigint",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/generated_images/exec-23c73002-5648-4144-9250-da74f0702bc0.png",
+  "master": "assets/country-variants/masters/recon-sigint.webp",
+  "entries": [
+    {
+      "key": "uav_recon_sigint",
+      "country": "cn",
+      "model": "无侦-10公开平台外形参考＋被动电子侦察任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://military.cctv.com/2025/08/22/ARTIrU4PTdqLRpKLT2QQXI1C250822.shtml",
+          "title": "央视：无人先锋！中国军用无人机家族新质战力快速提升（2025-08-22，无侦-10侦收定位雷达信号）",
+          "reviewMethod": "web open、curl HTTP 200，并下载查看文内无侦-10实拍",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://p3.img.cctvpic.com/photoworkspace/contentimg/2025/08/22/2025082209122439236.png",
+          "title": "央视文内无侦-10公开展示照片",
+          "reviewMethod": "HTTP 200，view_image查看；来源照片仅用于外形核对，不作为发布资产",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "折线后掠低翼，完整机翼可见",
+        "纤长棱面机身和略膨起的机鼻",
+        "双背部梯形进气口与并列后部喷口的艺术近似",
+        "外倾V尾，区别无侦-7联翼与武装直升机",
+        "仅少量小刀形天线、贴体整流罩；无武器、雷达盘、波束或干扰特效",
+        "机头朝左下，三分之四俯视；浅灰主体、钴蓝可重涂局部面板"
+      ],
+      "notes": "央视明确无侦-10遂行电子侦察并侦收定位雷达信号；本图只借用公开平台轮廓表达被动电子侦察。天线、侧面整流罩及局部进排气细节为非功能艺术化示意，不认证真实任务载荷、具体批次或精确结构，不表示主动干扰/攻击能力。国别蓝色为待统一重涂源色，非实物涂装。"
+    },
+    {
+      "key": "uav_recon_sigint",
+      "country": "us",
+      "model": "RQ-4 Global Hawk公开平台外形参考＋被动SIGINT任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/global-hawk",
+          "title": "Northrop Grumman：Global Hawk 官方平台介绍与实拍",
+          "reviewMethod": "web open、curl HTTP 200，并查看页面公开实拍",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://investor.northropgrumman.com/news-releases/news-release-details/northrop-grumman-successfully-demonstrates-flexible-solution",
+          "title": "Northrop Grumman：RQ-4载荷公开说明（2016-02-25，列出ASIP机载信号情报载荷）",
+          "reviewMethod": "web open与curl HTTP 200；仅作为平台曾支持SIGINT任务的公开依据",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://media.northropgrumman.com/68c1bdf5-c2b9-417e-9e4f-b385000a9b2e/global-hawk-proven-persistence_Original%20file.jpg",
+          "title": "Northrop Grumman：Global Hawk官方飞行实拍",
+          "reviewMethod": "HTTP 200，view_image查看；来源照片仅用于外形核对",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "显著鼓起的高额头机鼻，无座舱玻璃",
+        "高展弦比长直翼，比例区别于左侧后掠翼平台",
+        "单台背置发动机，单个朝前进气口",
+        "后部外倾V尾",
+        "少量小刀形天线与贴体整流罩代表被动信号接收，不画大型雷达盘或EO球",
+        "机头朝左下，三分之四俯视；浅灰主体、钴蓝可重涂局部面板"
+      ],
+      "notes": "厂家公开说明RQ-4现有型号能够携带ASIP，但本图未据此认证特定Block或精确ASIP外部安装布局。只使用RQ-4平台轮廓及少量泛化天线/整流罩表达被动SIGINT侦察；不将其称为电子干扰攻击机，不暗示与中方性能对等。蓝色是可重涂美术面板，不是原机涂装。"
+    }
+  ],
+  "qualityNotes": [
+    "image_gen生成两列一行完整独立飞机；已view_image逐图检查",
+    "透明通道0~255，画布角点alpha=0；两机无重叠、无裁断、无文字/旗帜/武器/波束/雷达盘",
+    "原始PNG 1774×887；每格887×887",
+    "按统一蓝色阈值测得可重涂蓝色占非透明机体面积约27.7%/29.0%；视觉以浅灰主体为主",
+    "两图均为公开轮廓艺术近似，非测绘或任务实装真实性认证"
+  ]
+}

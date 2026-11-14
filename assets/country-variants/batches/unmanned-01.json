@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-01484527-ef10-4141-8a82-98fd9938f2fb.png",
+  "entries": [
+    {
+      "key": "usv_mother",
+      "country": "cn",
+      "model": "JARI-USV基础平台＋小艇回收托架示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "中国双体尖艏与低矮隐身上建；美国单体硬折角船壳与开放后甲板",
+      "geometryChecks": [
+        "CN JARI twin-hull faceted stealth low bridge with miniature recovery cradle aft"
+      ]
+    },
+    {
+      "key": "usv_mother",
+      "country": "us",
+      "model": "CUSV基础平台＋小艇回收托架示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "中国双体尖艏与低矮隐身上建；美国单体硬折角船壳与开放后甲板",
+      "geometryChecks": [
+        "US CUSV single chine hull low open aft working deck with small boat cradle, unmistakably different hulls"
+      ]
+    },
+    {
+      "key": "ugv_tracked",
+      "country": "cn",
+      "model": "Sharp Claw I公开履带平台",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/military-products/army/unmanned-systems/unmanned-ground-vehicles/sharp-claw-1-ugv-unmanned-ground-vehicle-china-data-fact-sheet",
+          "title": "Sharp Claw I tracked UGV"
+        }
+      ],
+      "notes": "中国小型低姿履带、紧凑传感头；美国宽大货台、长连续履带",
+      "geometryChecks": [
+        "CN Sharp Claw I tiny low twin tracks and short angular scouting head"
+      ]
+    },
+    {
+      "key": "ugv_tracked",
+      "country": "us",
+      "model": "MUTT履带变型参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://generaldynamics.uk.com/gduk/general-dynamics-land-systems-uk-awarded-contract-to-provide-two-unmanned-ground-vehicles-to-the-british-army/",
+          "title": "MUTT wheeled and tracked variants"
+        }
+      ],
+      "notes": "中国小型低姿履带、紧凑传感头；美国宽大货台、长连续履带",
+      "geometryChecks": [
+        "US tracked MUTT much wider flat utility deck, long tracks and front sensor"
+      ]
+    },
+    {
+      "key": "uav_flying_wing",
+      "country": "cn",
+      "model": "CH-7（2024公开构型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.twz.com/air/chinas-stealth-ch-7-long-endurance-drone-emerges",
+          "title": "CH-7 2024公开原型"
+        }
+      ],
+      "notes": "中国展弦比大、长翼与中央隆起；美国曲折风筝翼、粗短机体",
+      "geometryChecks": [
+        "CN CH-7 extremely long slender flying wing with low central dorsal engine hump"
+      ]
+    },
+    {
+      "key": "uav_flying_wing",
+      "country": "us",
+      "model": "X-47B（试验机）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/military-aviation-systems",
+          "title": "X-47B UCAS demonstrator"
+        }
+      ],
+      "notes": "中国展弦比大、长翼与中央隆起；美国曲折风筝翼、粗短机体",
+      "geometryChecks": [
+        "US X-47B broad short cranked-kite wing, dorsal intake, folded-free straight fully extended wing tips"
+      ]
+    },
+    {
+      "key": "uav_ucav",
+      "country": "cn",
+      "model": "GJ-11公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.twz.com/air/china-lifts-the-veil-on-the-gj-11-mysterious-dragon-stealth-ucav",
+          "title": "GJ-11公开外形"
+        }
+      ],
+      "notes": "中国三角飞翼圆滑前缘；美国曲折翼平面与厚机身",
+      "geometryChecks": [
+        "CN GJ-11 triangular tailless flying wing smooth forward nose and dorsal intake"
+      ]
+    },
+    {
+      "key": "uav_ucav",
+      "country": "us",
+      "model": "X-47B（试验机）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/military-aviation-systems",
+          "title": "X-47B UCAS demonstrator"
+        }
+      ],
+      "notes": "中国三角飞翼圆滑前缘；美国曲折翼平面与厚机身",
+      "geometryChecks": [
+        "US X-47B heavier central fuselage, very distinctive cranked kite wing tips"
+      ]
+    },
+    {
+      "key": "uav_tiltrotor",
+      "country": "cn",
+      "model": "镧影R6000公开原型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.uatair.com/en/product/info/71.html",
+          "title": "Lanying R6000 tiltrotor UAV"
+        }
+      ],
+      "notes": "中国箱型运输机身与双倾转短舱；美国细长机身、高翼尾翼",
+      "geometryChecks": [
+        "CN Lanying R6000 large boxy cargo fuselage swept tail and two wingtip tilting nacelles"
+      ]
+    },
+    {
+      "key": "uav_tiltrotor",
+      "country": "us",
+      "model": "Bell V-247（设计构型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.bellflight.com/products/bell-v-247",
+          "title": "Bell V-247设计构型"
+        }
+      ],
+      "notes": "中国箱型运输机身与双倾转短舱；美国细长机身、高翼尾翼",
+      "geometryChecks": [
+        "US Bell V-247 slim unmanned fuselage V-tail two wingtip tiltrotors, rotors set partly vertical"
+      ]
+    },
+    {
+      "key": "uav_hexa",
+      "country": "cn",
+      "model": "DJI Matrice 600",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dji.com/matrice600",
+          "title": "DJI Matrice 600"
+        }
+      ],
+      "notes": "均六旋翼；中国中央长电池塔、细直臂；美国圆盘中心与弯曲折臂",
+      "geometryChecks": [
+        "CN Matrice 600 six long straight arms six rotors tall central battery stack camera and two landing rails"
+      ]
+    },
+    {
+      "key": "uav_hexa",
+      "country": "us",
+      "model": "Freefly ALTA 6",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://freeflysystems.com/wp-content/uploads/2024/09/ALTA6_Manual_RevE_01.pdf",
+          "title": "Freefly ALTA 6 manual"
+        }
+      ],
+      "notes": "均六旋翼；中国中央长电池塔、细直臂；美国圆盘中心与弯曲折臂",
+      "geometryChecks": [
+        "US ALTA 6 six curved folding arms round compact center and underslung cinema gimbal"
+      ]
+    },
+    {
+      "key": "uav_fpv",
+      "country": "cn",
+      "model": "DJI Avata 2",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dji.com/avata-2/specs",
+          "title": "DJI Avata 2"
+        }
+      ],
+      "notes": "中国一体涵道护圈；美国裸露碳纤维X臂与四个开放桨",
+      "geometryChecks": [
+        "CN DJI Avata 2 low integrated body four joined propeller guard rings and front cyan lens"
+      ]
+    },
+    {
+      "key": "uav_fpv",
+      "country": "us",
+      "model": "Lumenier QAV-R 2参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.getfpv.com/lumenier?cat=617&controller_style=2693",
+          "title": "Lumenier QAV-R 2"
+        }
+      ],
+      "notes": "中国一体涵道护圈；美国裸露碳纤维X臂与四个开放桨",
+      "geometryChecks": [
+        "US QAV-R2 exposed carbon X frame four unguarded propellers tall top battery and front tiny FPV camera"
+      ]
+    },
+    {
+      "key": "uav_cargo",
+      "country": "cn",
+      "model": "DJI FlyCart 30",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dji.com/flycart-30",
+          "title": "DJI FlyCart 30"
+        }
+      ],
+      "notes": "中国四轴共八桨＋吊运箱；美国复合翼＋分布式升力桨＋腹部货舱",
+      "geometryChecks": [
+        "CN DJI FlyCart 30 quad arms with eight coaxial rotors and rectangular suspended cargo box"
+      ]
+    },
+    {
+      "key": "uav_cargo",
+      "country": "us",
+      "model": "Elroy Chaparral公开原型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://elroyair.com/chaparral/aircraft/",
+          "title": "Elroy Chaparral"
+        }
+      ],
+      "notes": "中国四轴共八桨＋吊运箱；美国复合翼＋分布式升力桨＋腹部货舱",
+      "geometryChecks": [
+        "US Elroy Chaparral long high fixed wing multiple lift rotors on booms forward thrust props detachable streamlined belly cargo pod"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+{
+  "id": "sensors-04",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-ae6a5f21-6466-4a0c-b54a-b9b825bb0bb2.png",
+  "entries": [
+    {
+      "key": "ugv_ew",
+      "country": "cn",
+      "model": "Sharp Claw 2 六轮平台＋干扰载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army-guide.com/eng/product5736.html",
+          "title": "Army Guide Sharp Claw 2"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "SIX wheeled low angular unmanned ground vehicle, three black rugged tires per side, faceted wedge nose, recessed cargo deck",
+        "removable payload box with three short antennas on cargo bed"
+      ]
+    },
+    {
+      "key": "ugv_ew",
+      "country": "us",
+      "model": "GDLS MUTT 八轮平台＋干扰载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.gdls.com/mutt/",
+          "title": "General Dynamics MUTT"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "EIGHT wheeled unmanned cargo vehicle, four chunky tires per side, broad flat rectangular low cargo bed, tubular bumper and front sensor bar",
+        "removable payload box with three short antennas on cargo bed"
+      ]
+    },
+    {
+      "key": "ugv_relay",
+      "country": "cn",
+      "model": "Sharp Claw 2 六轮平台＋中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army-guide.com/eng/product5736.html",
+          "title": "Army Guide Sharp Claw 2"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "SIX wheeled low angular unmanned ground vehicle, three black rugged tires per side, faceted wedge nose, recessed cargo deck",
+        "telescoping short relay mast with compact dish and two whip antennas"
+      ]
+    },
+    {
+      "key": "ugv_relay",
+      "country": "us",
+      "model": "GDLS MUTT 八轮平台＋中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.gdls.com/mutt/",
+          "title": "General Dynamics MUTT"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "EIGHT wheeled unmanned cargo vehicle, four chunky tires per side, broad flat rectangular low cargo bed, tubular bumper and front sensor bar",
+        "telescoping short relay mast with compact dish and two whip antennas"
+      ]
+    },
+    {
+      "key": "ugv_decoy",
+      "country": "cn",
+      "model": "Sharp Claw 2 六轮平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army-guide.com/eng/product5736.html",
+          "title": "Army Guide Sharp Claw 2"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "SIX wheeled low angular unmanned ground vehicle, three black rugged tires per side, faceted wedge nose, recessed cargo deck",
+        "one removable folded corner reflector on rear deck"
+      ]
+    },
+    {
+      "key": "ugv_decoy",
+      "country": "us",
+      "model": "GDLS MUTT 八轮平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.gdls.com/mutt/",
+          "title": "General Dynamics MUTT"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "EIGHT wheeled unmanned cargo vehicle, four chunky tires per side, broad flat rectangular low cargo bed, tubular bumper and front sensor bar",
+        "one removable folded corner reflector on rear deck"
+      ]
+    },
+    {
+      "key": "ugv_target",
+      "country": "cn",
+      "model": "Sharp Claw 2 六轮平台＋靶标载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army-guide.com/eng/product5736.html",
+          "title": "Army Guide Sharp Claw 2"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "SIX wheeled low angular unmanned ground vehicle, three black rugged tires per side, faceted wedge nose, recessed cargo deck",
+        "simple inert rectangular target panel on rear cargo deck, no symbol"
+      ]
+    },
+    {
+      "key": "ugv_target",
+      "country": "us",
+      "model": "GDLS MUTT 八轮平台＋靶标载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.gdls.com/mutt/",
+          "title": "General Dynamics MUTT"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "EIGHT wheeled unmanned cargo vehicle, four chunky tires per side, broad flat rectangular low cargo bed, tubular bumper and front sensor bar",
+        "simple inert rectangular target panel on rear cargo deck, no symbol"
+      ]
+    },
+    {
+      "key": "uav_magnetic",
+      "country": "cn",
+      "model": "JOUAV CW-25E 平台＋磁探载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.jouav.com/products/",
+          "title": "JOUAV CW series"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "slender long wing composite VTOL drone, four lift propellers on two thin parallel fore-aft booms, slender fuselage and twin tail structure",
+        "slim nonmagnetic sensor boom extending forward with small capsule at tip"
+      ]
+    },
+    {
+      "key": "uav_magnetic",
+      "country": "us",
+      "model": "AeroVironment JUMP20 平台＋磁探载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/jump-20/",
+          "title": "AeroVironment JUMP20"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "high straight-wing VTOL drone, four lift rotors on stout outrigger booms, bulky central fuselage, conventional single vertical tail and rear horizontal stabilizer",
+        "slim nonmagnetic sensor boom extending forward with small capsule at tip"
+      ]
+    },
+    {
+      "key": "uav_ew_vtol",
+      "country": "cn",
+      "model": "JOUAV CW-25E 平台＋电子对抗载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.jouav.com/products/",
+          "title": "JOUAV CW series"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "slender long wing composite VTOL drone, four lift propellers on two thin parallel fore-aft booms, slender fuselage and twin tail structure",
+        "smooth underbody mission pod and short vertical antenna stubs"
+      ]
+    },
+    {
+      "key": "uav_ew_vtol",
+      "country": "us",
+      "model": "AeroVironment JUMP20 平台＋电子对抗载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/jump-20/",
+          "title": "AeroVironment JUMP20"
+        }
+      ],
+      "notes": "平台公开轮廓参考；任务载荷为非功能角色示意，未核实该具体平台和载荷组合实装。不得作为真实任务型号或已验证状态。",
+      "geometryChecks": [
+        "high straight-wing VTOL drone, four lift rotors on stout outrigger booms, bulky central fuselage, conventional single vertical tail and rear horizontal stabilizer",
+        "smooth underbody mission pod and short vertical antenna stubs"
+      ]
+    },
+    {
+      "key": "acoustic",
+      "country": "cn",
+      "model": "CRYSOUND CRY2624 工业声学阵列角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.crysound.com/products/acoustic-imaging/",
+          "title": "CRYSOUND acoustic imaging"
+        }
+      ],
+      "notes": "民用仪器公开外形，仅作声学/无线电探测角色参考，不声称反无人或军用能力。",
+      "geometryChecks": [
+        "round dark microphone array disk with dense small perforations in radial pattern",
+        "short rear handgrip and compact display"
+      ]
+    },
+    {
+      "key": "acoustic",
+      "country": "us",
+      "model": "Fluke ii900 工业声学阵列角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.fluke.com/en-us/product/industrial-imaging/sonic-industrial-imager-ii900",
+          "title": "Fluke ii900"
+        }
+      ],
+      "notes": "民用仪器公开外形，仅作声学/无线电探测角色参考，不声称反无人或军用能力。",
+      "geometryChecks": [
+        "large broad rectangular acoustic camera with two side handles",
+        "dense microphone hole array on wide square front panel and small circular center lens"
+      ]
+    },
+    {
+      "key": "rf_detector",
+      "country": "cn",
+      "model": "SIGLENT SSA3000X 频谱仪角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.siglent.com/int/products-overview/ssa3000x/",
+          "title": "Siglent SSA3000X"
+        }
+      ],
+      "notes": "民用仪器公开外形，仅作声学/无线电探测角色参考，不声称反无人或军用能力。",
+      "geometryChecks": [
+        "benchtop spectrum analyzer with wide landscape waveform screen on left",
+        "many knobs and buttons right",
+        "single short antenna at front coax port"
+      ]
+    },
+    {
+      "key": "rf_detector",
+      "country": "us",
+      "model": "Tektronix RSA306B 接收机角色参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.tek.com/en/products/spectrum-analyzers/rsa306",
+          "title": "Tektronix RSA306B"
+        }
+      ],
+      "notes": "民用仪器公开外形，仅作声学/无线电探测角色参考，不声称反无人或军用能力。",
+      "geometryChecks": [
+        "small compact blue metal USB spectrum receiver box with curved ribbed sides",
+        "single front coax antenna connector and short rod antenna",
+        "no screen"
+      ]
+    }
+  ]
+}

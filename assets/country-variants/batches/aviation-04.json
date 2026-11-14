@@ -1,0 +1,344 @@
+{
+  "id": "aviation-04",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-4dfc5868-1dc7-495d-a7f8-a89bb88ad541.png",
+  "entries": [
+    {
+      "key": "elint_aircraft",
+      "country": "cn",
+      "model": "运-9电子侦察公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.jhuapl.edu/sites/default/files/2022-12/SpecialMissionAircraftandUnmannedSystems.pdf",
+          "title": "Y9 public special mission report",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four turboprops",
+        "high straight wing",
+        "large side cheek fairings",
+        "belly antenna canoe",
+        "tall fin"
+      ]
+    },
+    {
+      "key": "elint_aircraft",
+      "country": "us",
+      "model": "RC-135V/W电子侦察参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104608/rc-135vw-rivet-joint/",
+          "title": "RC135 USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four jet engines",
+        "low swept wings",
+        "long black nose",
+        "bulbous cheek fairings",
+        "short belly blades"
+      ]
+    },
+    {
+      "key": "ashm",
+      "country": "cn",
+      "model": "YJ-83公开展示参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/YJ-83",
+          "title": "YJ83 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "pointed ogive nose",
+        "cylindrical body",
+        "small swept cruciform middle wings",
+        "four tail fins",
+        "small belly inlet"
+      ]
+    },
+    {
+      "key": "ashm",
+      "country": "us",
+      "model": "RGM-84 Harpoon公开展示参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Harpoon_(missile)",
+          "title": "Harpoon public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "rounded dome nose",
+        "short cylindrical body",
+        "large swept cruciform middle wings",
+        "trapezoid tail fins",
+        "ventral air intake"
+      ]
+    },
+    {
+      "key": "aam",
+      "country": "cn",
+      "model": "PL-12公开展示参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/PL-12",
+          "title": "PL12 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long slender pointed missile",
+        "broad clipped delta midbody wings",
+        "small cruciform tail controls"
+      ]
+    },
+    {
+      "key": "aam",
+      "country": "us",
+      "model": "AIM-120C外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/AIM-120_AMRAAM",
+          "title": "AMRAAM public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "thin cylinder",
+        "white pointed radome",
+        "shorter clipped trapezoid midbody fins",
+        "four rear fins"
+      ]
+    },
+    {
+      "key": "arm",
+      "country": "cn",
+      "model": "YJ-91公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/YJ-91",
+          "title": "YJ91 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "thick cylindrical missile",
+        "four long ramjet intake ducts alongside body",
+        "pointed nose",
+        "swept rear fins"
+      ]
+    },
+    {
+      "key": "arm",
+      "country": "us",
+      "model": "AGM-88 HARM公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/AGM-88_HARM",
+          "title": "HARM public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "slender missile",
+        "long tapered nose",
+        "four long midbody delta wings",
+        "four small tail controls"
+      ]
+    },
+    {
+      "key": "cuas_jammer_gun",
+      "country": "cn",
+      "model": "Heweiyongtai手持反无人机设备外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.hewei-defense.com/hand-held-anti-drone-jamming-counter-drone-jammer-equipment-product/",
+          "title": "Hewei manufacturer public product",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long rectangular boxed antenna shroud",
+        "rear stock",
+        "pistol grip",
+        "carry handle and small top screen"
+      ]
+    },
+    {
+      "key": "cuas_jammer_gun",
+      "country": "us",
+      "model": "Dronebuster手持设备外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.suasnews.com/2022/08/flex-force-launches-new-dronebuster-model/",
+          "title": "Flex Force manufacturer release",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "short compact pistol-like body",
+        "broad flat front antenna plate",
+        "single grip",
+        "small screen on top",
+        "no shoulder stock"
+      ]
+    },
+    {
+      "key": "cuas_jammer_backpack",
+      "country": "cn",
+      "model": "ZDTECH背负式公开产品参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://zdtelecom.en.made-in-china.com/product/EFsftSxDVzaG/China-High-Power-5-Bands-Uav-Manpack-RF-Backpack-Jammer-Anti-Drone-Jammer.html",
+          "title": "ZDTECH public supplier product",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "tall rectangular rigid backpack",
+        "five vertical unequal whip antennas",
+        "black shoulder straps",
+        "vented lower box"
+      ]
+    },
+    {
+      "key": "cuas_jammer_backpack",
+      "country": "us",
+      "model": "DRAKE背负式公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/mission-solutions/electronic-warfare",
+          "title": "Northrop DRAKE public product",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "rounded fabric backpack surrounding narrow electronic box",
+        "two long side antennas and one short antenna",
+        "visible shoulder straps"
+      ]
+    },
+    {
+      "key": "cuas_jammer_omni",
+      "country": "cn",
+      "model": "ZDTECH箱式设备加全向天线站示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.madeinchina.com/supplier/zdtelecom/mall/",
+          "title": "ZDTECH source enclosure; deployment illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "large ribbed rectangular equipment case",
+        "six whip antennas on top",
+        "four small fold-out feet",
+        "external power case"
+      ]
+    },
+    {
+      "key": "cuas_jammer_omni",
+      "country": "us",
+      "model": "DRAKE固定站示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/mission-solutions/electronic-warfare",
+          "title": "DRAKE source equipment; station illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "compact cylindrical radio cluster on short tripod",
+        "three tall whip antennas",
+        "separate flat battery box"
+      ]
+    },
+    {
+      "key": "cuas_jammer_directional",
+      "country": "cn",
+      "model": "Hewei手持设备加三脚架示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hewei-defense.com/hand-held-anti-drone-jamming-counter-drone-jammer-equipment-product/",
+          "title": "Hewei platform; tripod illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long rectangular antenna housing on heavy three-legged tripod",
+        "separate upright control box",
+        "angled flat front"
+      ]
+    },
+    {
+      "key": "cuas_jammer_directional",
+      "country": "us",
+      "model": "Dronebuster平台加定向架示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.suasnews.com/2022/08/flex-force-launches-new-dronebuster-model/",
+          "title": "Dronebuster public platform; mounting illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外观艺术参考；示意固定站/三脚架仅借用有出处设备外形，不声称真实型号配置或能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "short broad flat antenna panel atop small pan tilt pedestal",
+        "compact low electronics box",
+        "three slim splayed legs"
+      ]
+    }
+  ]
+}

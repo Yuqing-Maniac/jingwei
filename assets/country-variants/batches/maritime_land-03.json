@@ -1,0 +1,361 @@
+{
+  "id": "maritime_land-03",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-a759e519-f258-4061-8c43-d8c7a78dd782.png",
+  "entries": [
+    {
+      "key": "truck",
+      "country": "cn",
+      "model": "解放MV3 CTM-132",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/b701b896e57696bc2fe4c544d86016b4",
+          "title": "MV3 Chinese 6x6 General Utility Truck"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Three axles 6x6",
+        "tall square cab-over flat nose",
+        "split windshield",
+        "straight flat cargo bed under canvas hoop canopy"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.2756
+    },
+    {
+      "key": "truck",
+      "country": "us",
+      "model": "FMTV A2 6x6",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://oshkoshdefense.com/vehicles/medium-tactical-vehicles/fmtv-a2/",
+          "title": "FMTV A2 Oshkosh"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Three axles 6x6",
+        "armored angular cab with small short protruding nose",
+        "wide windows",
+        "raised chassis and canvas-covered cargo bed"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.0983
+    },
+    {
+      "key": "ugv",
+      "country": "cn",
+      "model": "锐爪II（公开展示平台参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://date.army.gov.au/sites/default/files/2025-02/20241104-DATE-ARMY-Olvanan_Playing_Cards-PRINT-FINAL_v02.pdf",
+          "title": "Sharp Claw II UGV recognition card"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Six chunky wheels",
+        "armored wedge body",
+        "raised boxy center equipment cabin",
+        "compact top sensor and remote weapon mount"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.1986
+    },
+    {
+      "key": "ugv",
+      "country": "us",
+      "model": "MUTT 8x8（平台参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.army.mil/article/241220/versatile_autonomous_transport_vehicle_tested_at_u_s_army_yuma_proving_ground",
+          "title": "Versatile autonomous transport vehicle"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Eight small wheels",
+        "flat low open cargo platform",
+        "front sensor bar and lightweight rails",
+        "no armored cabin or turret"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.112
+    },
+    {
+      "key": "robodog",
+      "country": "cn",
+      "model": "宇树B2（民用平台参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.unitree.com/b2/",
+          "title": "Unitree B2"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Broad silver rectangular trunk",
+        "cylindrical black hip joints",
+        "four sturdy metallic articulated legs and black feet",
+        "forward black sensor panel"
+      ],
+      "cellIndex": 4,
+      "bluePixelRatio": 0.1145
+    },
+    {
+      "key": "robodog",
+      "country": "us",
+      "model": "Spot（民用平台参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://bostondynamics.com/products/spot/",
+          "title": "Spot Boston Dynamics"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Slim yellow elongated trunk",
+        "four thin bent black legs with yellow upper joints",
+        "rounded nose with black camera sensors",
+        "no head"
+      ],
+      "cellIndex": 5,
+      "bluePixelRatio": 0.143
+    },
+    {
+      "key": "soldier",
+      "country": "cn",
+      "model": "21式作训服公开着装参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/TopStories/4901476.html",
+          "title": "PLA Type-21 uniforms"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Standing human full body",
+        "rounded covered helmet",
+        "woodland digital combat uniform",
+        "compact plate carrier and boots",
+        "bullpup rifle held safely across torso"
+      ],
+      "cellIndex": 6,
+      "bluePixelRatio": 0.0004
+    },
+    {
+      "key": "soldier",
+      "country": "us",
+      "model": "美军OCP及IHPS公开着装参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://api.army.mil/e2/c/downloads/2025/02/04/40286e9e/fort-bliss-blue-book-01feb2025.pdf",
+          "title": "Fort Bliss Blue Book"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Standing human full body",
+        "high-cut IHPS helmet with front mount",
+        "tan-green OCP uniform",
+        "large modular vest",
+        "short carbine with projecting stock held across torso"
+      ],
+      "cellIndex": 7,
+      "bluePixelRatio": 0.0006
+    },
+    {
+      "key": "amphibious",
+      "country": "cn",
+      "model": "075型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navalnews.com/naval-news/2019/08/china-end-of-the-type-071-lpd-program-start-of-the-type-075-lhd-one/",
+          "title": "Type 075 LHD program"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Rectangular straight full length helicopter flight deck",
+        "compact midship starboard island with twin enclosed funnels",
+        "square stern lift and well dock opening",
+        "no catapults"
+      ],
+      "cellIndex": 8,
+      "bluePixelRatio": 0.1029
+    },
+    {
+      "key": "amphibious",
+      "country": "us",
+      "model": "America级 Flight 0",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2169814/no/amphibious-assault-ships-lhdlhar/",
+          "title": "Amphibious Assault Ships"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Long rectangular full flight deck",
+        "long island on starboard with two large exposed funnels and radar masts",
+        "hull side elevators",
+        "no well dock",
+        "no catapults"
+      ],
+      "cellIndex": 9,
+      "bluePixelRatio": 0.1538
+    },
+    {
+      "key": "supply_ship",
+      "country": "cn",
+      "model": "901型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/second-type-901-carrier-supply-ship-in-service-with-plan",
+          "title": "Second Type901 supply ship"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Large full gray hull",
+        "tall forward bridge",
+        "multiple tall rectangular transfer kingposts amidships",
+        "single aft funnel and rear hangar/helipad"
+      ],
+      "cellIndex": 10,
+      "bluePixelRatio": 0.085
+    },
+    {
+      "key": "supply_ship",
+      "country": "us",
+      "model": "Supply级",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.msc.usff.navy.mil/Ships/Ship-Inventory/Fast-Combat-Support-Ships/",
+          "title": "Fast Combat Support Ships"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Long replenishment gray hull",
+        "forward block bridge with lattice mast",
+        "multiple slim A-frame replenishment rigs",
+        "twin staggered funnels",
+        "large aft hangar/helipad"
+      ],
+      "cellIndex": 11,
+      "bluePixelRatio": 0.0776
+    },
+    {
+      "key": "landing_craft",
+      "country": "cn",
+      "model": "726型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/2025xb/H_251589/F/16490602.html",
+          "title": "LCAC well deck training"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Broad rectangular cargo platform",
+        "black inflated cushion skirt",
+        "large rear twin shrouded propeller fans",
+        "compact forward-side pilot cabin",
+        "bow loading ramp"
+      ],
+      "cellIndex": 12,
+      "bluePixelRatio": 0.2027
+    },
+    {
+      "key": "landing_craft",
+      "country": "us",
+      "model": "LCAC（传统型号公开构型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2170004/landing-craft-air-cushion-lcac/landing-craft-air-cushion-lcac/",
+          "title": "Landing Craft Air Cushion"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Rectangular open central vehicle deck",
+        "thick black rubber skirt",
+        "two large rear ducted fans with cross braces",
+        "broad side machinery boxes and raised starboard forward cab",
+        "bow ramp"
+      ],
+      "cellIndex": 13,
+      "bluePixelRatio": 0.0421
+    },
+    {
+      "key": "minesweeper",
+      "country": "cn",
+      "model": "081型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/Photos/16347300.html",
+          "title": "Mine countermeasure ships"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Small gray coastal ship",
+        "raised forward bridge and mast",
+        "small forward gun",
+        "low open aft deck with cable winch and sweep crane"
+      ],
+      "cellIndex": 14,
+      "bluePixelRatio": 0.2058
+    },
+    {
+      "key": "minesweeper",
+      "country": "us",
+      "model": "Avenger级",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.surfpac.navy.mil/Warships/By-Class/Mine-Countermeasures-Ships-MCM/",
+          "title": "Mine Countermeasures Ships"
+        }
+      ],
+      "notes": "公开外形艺术参考，非实物照片及工程图；单兵为公开服装综合参考，民用机器狗不代表军用配置。",
+      "geometryChecks": [
+        "Compact high-sided hull with broad flat bow",
+        "tall blocky forward superstructure",
+        "slender lattice mast",
+        "low aft deck with large yellow mine gear crane and cable reels"
+      ],
+      "cellIndex": 15,
+      "bluePixelRatio": 0.312
+    }
+  ],
+  "qualityNotes": [
+    "已目视16格物体完整。两单兵未遵循足量钴蓝重涂面板，需root处理。075和America细节近似，需以长短岛体及船坞差别审核。"
+  ],
+  "bluePixelTest": {
+    "method": "opaque alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels; natural grays excluded",
+    "target": [
+      0.25,
+      0.35
+    ],
+    "result": "warning: blue-panel target not met by all generated models"
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "id": "support-05",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-8916c7fa-a74b-41b4-a791-300106b23ea1.png",
+  "entries": [
+    {
+      "key": "hf_radio",
+      "country": "cn",
+      "model": "Xiegu G90 illustrative HF reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://xieguradios.com/products/xiegu-g90-hf-20w-sdr-transceiver",
+          "title": "Xiegu G90 illustrative HF reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "compact horizontal finned blue metal radio with black detachable front face",
+        "cyan screen and large right tuning dial"
+      ]
+    },
+    {
+      "key": "hf_radio",
+      "country": "us",
+      "model": "L3Harris RF-7800H-MP reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.l3harris.com/all-capabilities/falcon-iii-rf-7800h-mp-wideband-hf-vhf-manpack-radio",
+          "title": "L3Harris RF-7800H-MP reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "tall rugged blue manpack radio with black top control panel",
+        "large handle and flexible whip antenna"
+      ]
+    },
+    {
+      "key": "vhf_radio",
+      "country": "cn",
+      "model": "Hytera HP785 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hytera.com/eu/terminal.page/products_terminal_dmr-radio_hp785",
+          "title": "Hytera HP785 reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "slender handheld blue two-way radio",
+        "rectangular cyan display",
+        "front numeric keypad",
+        "top short antenna"
+      ]
+    },
+    {
+      "key": "vhf_radio",
+      "country": "us",
+      "model": "L3Harris RF-7850M-HH reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.l3harris.com/all-capabilities/falcon-iii-rf-7850m-hh-multiband-networking-handheld",
+          "title": "L3Harris RF-7850M-HH reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "stocky rugged blue handheld radio with ribbed sides",
+        "large top knobs and tall flexible antenna"
+      ]
+    },
+    {
+      "key": "laser_comm",
+      "country": "cn",
+      "model": "Micius optical terminal illustrative reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Quantum_Experiments_at_Space_Scale",
+          "title": "Micius optical terminal illustrative reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "gold and blue square payload with single large white circular optical telescope on compact two-axis gimbal"
+      ]
+    },
+    {
+      "key": "laser_comm",
+      "country": "us",
+      "model": "NASA ILLUMA-T optical terminal reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.nasa.gov/mission/illumat/",
+          "title": "NASA ILLUMA-T optical terminal reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "short white twin-aperture optical telescope in blue U-shaped gimbal with adjacent rectangular electronics box"
+      ]
+    },
+    {
+      "key": "microwave_relay",
+      "country": "cn",
+      "model": "Huawei RTN 950 illustrative complete relay station",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://e.huawei.com/cn/products/wireless/microwave/traditional-band",
+          "title": "华为企业业务：6–42 GHz常规频段IP微波（含RTN950系列）"
+        },
+        {
+          "url": "https://e-file.huawei.com/marketingcloud/pep/asset/20000001/products/wireless/microwave/traditionalBand/RTN-980L.png",
+          "title": "华为官方同系列图片：RTN-980L室内机、室外射频单元与抛物天线"
+        }
+      ],
+      "notes": "官方页列出RTN950/950A系列，所展示产品图为RTN-980L，已查看其机架机箱、室外射频单元与圆形抛物天线。引用范围为同国同系列微波站的公开部件外形；图标双碟、短桅杆与地面机柜是示意布置，非RTN950实际整站复刻。钴蓝涂装为美术示意。",
+      "geometryChecks": [
+        "short blue steel mast with two small white parabolic dishes facing different directions and a blue equipment cabinet at base"
+      ],
+      "provenanceVerification": {
+        "method": "live HTTP GET via urllib and official image visual inspection",
+        "httpStatus": 200,
+        "imageHttpStatus": 200,
+        "checkedDate": "2026-11-14"
+      }
+    },
+    {
+      "key": "microwave_relay",
+      "country": "us",
+      "model": "L3Harris RF-7850W illustrative HCLOS relay station",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.l3harris.com/all-capabilities/high-capacity-line-sight-hclos-radios",
+          "title": "L3Harris RF-7850W illustrative HCLOS relay station"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "blue tripod mast with a single large rectangular white flat panel and rugged blue transceiver box at its foot"
+      ]
+    },
+    {
+      "key": "leo_constellation",
+      "country": "cn",
+      "model": "Qianfan flat satellite illustrative constellation",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://english.songjiang.gov.cn/news/3105.shtml",
+          "title": "Qianfan flat satellite illustrative constellation"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "three small flat square blue satellites separated in diagonal cluster",
+        "each with two opposite small rectangular solar wings",
+        "no orbit lines"
+      ]
+    },
+    {
+      "key": "leo_constellation",
+      "country": "us",
+      "model": "Starlink illustrative constellation",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Starlink",
+          "title": "Starlink illustrative constellation"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "three flat rectangular satellites separated in triangular cluster",
+        "each with single long solar wing folded at right angle",
+        "no orbit lines"
+      ]
+    },
+    {
+      "key": "air_phased_radar",
+      "country": "cn",
+      "model": "KLJ-7A reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.radartutorial.eu/19.kartei/08.airborne2/en/karte020.en.html",
+          "title": "KLJ-7A reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "exposed airborne AESA module with round golden tilted array on blue cylindrical pedestal and silver electronics behind"
+      ]
+    },
+    {
+      "key": "air_phased_radar",
+      "country": "us",
+      "model": "AN APG-81 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/AN/APG-81",
+          "title": "AN APG-81 reference"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "exposed octagonal flat pale array on blue rectangular electronics backplane with prominent silver cooling fins"
+      ]
+    },
+    {
+      "key": "ship_mesh_datalink",
+      "country": "cn",
+      "model": "Hytera maritime mesh illustrative ship installation",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hytera.com/eu/terminal.page/products_terminal_dmr-radio_hp785",
+          "title": "Hytera maritime mesh illustrative ship installation"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "pair of blue sealed marine radio boxes connected to white short omnidirectional marine antenna mast on compact blue mounting pedestal"
+      ]
+    },
+    {
+      "key": "ship_mesh_datalink",
+      "country": "us",
+      "model": "L3Harris Falcon maritime mesh illustrative installation",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.l3harris.com/all-capabilities/falcon-iii-rf-7850m-v51x-vehicular-base-multiband-radio-system",
+          "title": "L3Harris Falcon maritime mesh illustrative installation"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "blue wide rugged rack terminal with three large circular connectors and separate black cylindrical marine dipole antenna on silver mount"
+      ]
+    },
+    {
+      "key": "air_mesh_datalink",
+      "country": "cn",
+      "model": "Chinese illustrative airborne radio using Hytera enclosure language",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hytera.com/eu/terminal.page/products_terminal_dmr-radio_hp785",
+          "title": "Chinese illustrative airborne radio using Hytera enclosure language"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "narrow elongated blue avionics enclosure with black finned cooling sides",
+        "gold circular cable ports",
+        "paired separate white blade antennas"
+      ]
+    },
+    {
+      "key": "air_mesh_datalink",
+      "country": "us",
+      "model": "US MIDS JTRS illustrative airborne terminal",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dote.osd.mil/Portals/97/pub/reports/FY2022/other/2022annual-report1.pdf",
+          "title": "US MIDS JTRS illustrative airborne terminal"
+        }
+      ],
+      "notes": "公开同国参考外形的美术示意配置；不主张真实涂装或内部结构。船/机载网链中国用公开民用无线电机箱作外形参考，新增安装布局仅为示意，不宣称Hytera产品具有对应军用数据链能力。",
+      "geometryChecks": [
+        "wide low blue avionics box with silver ribbed top",
+        "front black connector block and single detached angular white blade antenna"
+      ]
+    }
+  ]
+}

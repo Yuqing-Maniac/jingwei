@@ -1,0 +1,366 @@
+{
+  "id": "maritime_land-05",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-a193a630-4fec-4651-85b2-422ea9d6c0b9.png",
+  "entries": [
+    {
+      "key": "fuel_truck",
+      "country": "cn",
+      "model": "东风EQ2102油罐车（公开角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://date.army.gov.au/sites/default/files/2024-02/DATE%20Battlebook%20-Part%202%20ORBATS%20and%20Equip.pdf",
+          "title": "EQ2102 tanker recognition"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Three axles 6x6",
+        "tall flat cab-over forward cabin",
+        "long rounded horizontal cylindrical tank with metal straps and top hatch",
+        "side hose boxes"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.2205
+    },
+    {
+      "key": "fuel_truck",
+      "country": "us",
+      "model": "M978A4",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/M978_HEMTT_American_8x8_Heavy_Expanded_Mobility_Tactical_Truck_%28HEMTT%29_Fuel_Tanker",
+          "title": "M978 HEMTT tanker"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four axles 8x8",
+        "low wide cab-over forward cabin",
+        "short hoodless nose",
+        "rounded rectangular tank with top walkway",
+        "rear pump equipment box"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.1644
+    },
+    {
+      "key": "ambulance",
+      "country": "cn",
+      "model": "猛士CSK131救护参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dongfengmengshi.com/products",
+          "title": "车型中心｜东风猛士（含军用CSK131／CSK141系列）"
+        },
+        {
+          "url": "https://www.military.africa/2021/11/nigerian-army-receives-dongfeng-mengshi-armoured-vehicles/",
+          "title": "Nigerian Army receives DongFeng Mengshi armoured vehicles"
+        }
+      ],
+      "notes": "公开猛士底盘加示意医疗方舱的参考构型，并非确认的实装配置。",
+      "geometryChecks": [
+        "Four wheels 4x4",
+        "high protected angular hood",
+        "tall enclosed squared rear medical box with double rear doors",
+        "small side window",
+        "NO markings"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.1597,
+      "sourceAudit": {
+        "checkedAt": "2026-11-14",
+        "method": "urllib HTTP GET，读取实际响应正文并核对标题及CSK131文本",
+        "httpStatus": 200,
+        "note": "原型号PDF链接404，替换为实测可访问的制造商车型页及描述CSK131可用救护角色的公开报道。"
+      }
+    },
+    {
+      "key": "ambulance",
+      "country": "us",
+      "model": "M997A3",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.amgeneral.com/what-we-do/vehicles-chassis/humvee-2ct-ambulance/",
+          "title": "Humvee2CT Ambulance"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four wheels 4x4",
+        "broad low flat Humvee hood with seven-slot grille and round headlights",
+        "very tall rectangular rear medical body over cab roof",
+        "NO cross or markings"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.0907
+    },
+    {
+      "key": "cuas",
+      "country": "cn",
+      "model": "LD2000（防空平台角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/71f95d83a707bbd96a388d084d2542c0",
+          "title": "LD2000"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four axles 8x8 long heavy truck",
+        "small forward cabin",
+        "central rectangular equipment shelter",
+        "large rear naval-style CIWS turret with short rotary barrel cluster and top tracking dish"
+      ],
+      "cellIndex": 4,
+      "bluePixelRatio": 0.1442
+    },
+    {
+      "key": "cuas",
+      "country": "us",
+      "model": "M-LIDS（公开展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dvidshub.net/image/9503678/6-56-ada-validates-counter-uas-training-during-uav-demonstration",
+          "title": "M-LIDS public training photo"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four-wheel M-ATV tall armored MRAP",
+        "protruding hood",
+        "rear roof weapon station with small cannon",
+        "compact Coyote twin launcher box and small square radar panels"
+      ],
+      "cellIndex": 5,
+      "bluePixelRatio": 0.0758
+    },
+    {
+      "key": "laser_weapon",
+      "country": "cn",
+      "model": "寂静狩猎者（公开展出参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.defensenews.com/digital-show-dailies/idex/2019/02/17/check-out-what-china-brought-to-one-of-the-worlds-largest-defense-exhibitions/",
+          "title": "IDEX2019 Silent Hunter"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Three axles 6x6 cab-over truck",
+        "long large rectangular enclosed equipment shelter",
+        "top gimbal turret with single large dark optical aperture and adjacent small sensors",
+        "NO laser beam"
+      ],
+      "cellIndex": 6,
+      "bluePixelRatio": 0.1044
+    },
+    {
+      "key": "laser_weapon",
+      "country": "us",
+      "model": "DE M-SHORAD（试验原型参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dote.osd.mil/Portals/97/pub/reports/FY2025/army/2025de_m-shorad.pdf",
+          "title": "DE MSHORAD prototypes"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four axles 8x8 Stryker armored hull",
+        "tall roof-mounted large spherical laser optics gimbal",
+        "rectangular aft power/thermal boxes and side radiator grilles",
+        "NO beam"
+      ],
+      "cellIndex": 7,
+      "bluePixelRatio": 0.0931
+    },
+    {
+      "key": "hpm",
+      "country": "cn",
+      "model": "飓风3000（公开展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://thedefensepost.com/2026/01/07/details-china-microwave-weapon/",
+          "title": "Hurricane3000 microwave weapon"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four axles 8x8 heavy cab-over truck",
+        "large rectangular electronics shelter",
+        "very large flat rectangular microwave antenna panel on roof tilted upright",
+        "small adjacent sensor mast"
+      ],
+      "cellIndex": 8,
+      "bluePixelRatio": 0.1956
+    },
+    {
+      "key": "hpm",
+      "country": "us",
+      "model": "Leonidas（公开展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.epirusinc.com/electronic-warfare",
+          "title": "Leonidas Epirus"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Low two-wheel towable compact platform",
+        "huge flat rectangular tilted array panel with rounded corners",
+        "sturdy central pedestal and rear electronics cabinet",
+        "stabilizer feet",
+        "NO dish"
+      ],
+      "cellIndex": 9,
+      "bluePixelRatio": 0.0731
+    },
+    {
+      "key": "mortar",
+      "country": "cn",
+      "model": "PP87",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/1377-82mm%20PP87",
+          "title": "82mm PP87"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Thin long mortar tube raised steeply",
+        "triangular ribbed baseplate",
+        "lightweight narrow bipod with diagonal single crossbrace and small sight",
+        "no wheels"
+      ],
+      "cellIndex": 10,
+      "bluePixelRatio": 0.0628
+    },
+    {
+      "key": "mortar",
+      "country": "us",
+      "model": "M120（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cpeae.army.mil/Portals/94/Documents/JPEOAAPortfolioBook_2025.pdf",
+          "title": "M120 Mortar"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Thick wide short mortar tube raised steeply",
+        "large circular ribbed baseplate",
+        "heavy stout bipod with wide horizontal traversing mechanism and side optical sight",
+        "no wheels"
+      ],
+      "cellIndex": 11,
+      "bluePixelRatio": 0.0299
+    },
+    {
+      "key": "spaa",
+      "country": "cn",
+      "model": "PGZ09（双炮防空角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/65-PGZ09",
+          "title": "PGZ09"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Tracked six-roadwheel hull",
+        "tall large turret with TWO widely separated long autocannons on left and right",
+        "front circular tracking radar and rear rectangular search radar"
+      ],
+      "cellIndex": 12,
+      "bluePixelRatio": 0.1426
+    },
+    {
+      "key": "spaa",
+      "country": "us",
+      "model": "M-SHORAD（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://rdl.train.army.mil/catalog-ws/view/100.ATSC/FB12BA8E-A70A-4C54-88F5-88AC7277BBB1-1659012885821/fm3_01x44.pdf",
+          "title": "FM3-01.44 MSHORAD"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Four axle 8x8 Stryker hull",
+        "low turret with single slim cannon",
+        "four-tube Stinger launcher at one side and two rectangular missile rails other side",
+        "small faceted radar panels"
+      ],
+      "cellIndex": 13,
+      "bluePixelRatio": 0.1133
+    },
+    {
+      "key": "eod_robot",
+      "country": "cn",
+      "model": "uBot-EOD A20（公开产品参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://militarypolicesupplier.com/wp-content/uploads/2024/12/CHINA-XINXING-SHANGHAI-CATALOG-2024.pdf",
+          "title": "China Xinxing public catalog EOD robot"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Medium tracked EOD robot with broad square body",
+        "front/rear articulated short flipper tracks",
+        "tall six-joint folding manipulator and two-finger gripper",
+        "cameras"
+      ],
+      "cellIndex": 14,
+      "bluePixelRatio": 0.0945
+    },
+    {
+      "key": "eod_robot",
+      "country": "us",
+      "model": "PackBot510",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://defense.flir.com/defense-products/packbot-510/",
+          "title": "PackBot510 FLIR"
+        }
+      ],
+      "notes": "公开展示/产品/历史外形艺术参考，细节生成近似；PGZ09公开参考为双炮防空车，不凭空增设导弹。激光器无光束效果。",
+      "geometryChecks": [
+        "Small flat tracked EOD robot with long narrow front flipper tracks",
+        "slim articulated folding arm with camera head and gripper",
+        "compact antenna stalk"
+      ],
+      "cellIndex": 15,
+      "bluePixelRatio": 0.051
+    }
+  ],
+  "qualityNotes": [
+    "16格物体完整；迫击炮形状和口径轮廓已区分，足量可变蓝面板在迫击炮偏少，需root决定是否补色。"
+  ],
+  "bluePixelTest": {
+    "method": "opaque alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels; natural grays excluded",
+    "target": [
+      0.25,
+      0.35
+    ],
+    "result": "warning: blue-panel target not met by all generated models"
+  }
+}

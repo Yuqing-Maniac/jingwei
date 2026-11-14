@@ -1,0 +1,347 @@
+{
+  "id": "aviation-03",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-57e16eac-e4f6-4674-b4df-b9c867fa427f.png",
+  "entries": [
+    {
+      "key": "airship",
+      "country": "cn",
+      "model": "AS700民用飞艇参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://english.www.gov.cn/news/202312/22/content_WS65857437c6d0868f4e8e2722.html",
+          "title": "AS700 official public photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "oval blimp envelope",
+        "underbelly enclosed passenger gondola",
+        "four cross tail fins",
+        "two side propellers"
+      ]
+    },
+    {
+      "key": "airship",
+      "country": "us",
+      "model": "TCOM 71M系留浮空器参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://tcomlp.com/aerospace-platforms/tethered-aerostats/",
+          "title": "TCOM manufacturer",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long pear shaped envelope",
+        "large three inflated tail fins",
+        "underslung small sensor",
+        "short tether stump"
+      ]
+    },
+    {
+      "key": "hypersonic",
+      "country": "cn",
+      "model": "MD-22展会模型参考（非已证实服役型号）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/defence/update-airshow-china-2022-new-reusable-hypersonic-uav-displayed",
+          "title": "MD22 exhibition mockup",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "broad pointed flattened lifting body",
+        "small delta rear wings",
+        "two outward canted fins",
+        "no cockpit"
+      ]
+    },
+    {
+      "key": "hypersonic",
+      "country": "us",
+      "model": "X-51A试验演示器参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104467/x-51a-waverider/",
+          "title": "X51 USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "very slender angular wedge",
+        "long rectangular ventral scramjet duct",
+        "four small rear fins",
+        "no cockpit"
+      ]
+    },
+    {
+      "key": "interceptor",
+      "country": "cn",
+      "model": "HQ-9公开拦截弹外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/HQ-9",
+          "title": "HQ9 public missile outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long cylindrical missile",
+        "sharp conical nose",
+        "small rectangular tail control fins",
+        "simple single diameter"
+      ]
+    },
+    {
+      "key": "interceptor",
+      "country": "us",
+      "model": "SM-3公开展示参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/RIM-161_Standard_Missile_3",
+          "title": "SM3 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "stepped rocket body",
+        "black narrow nose cone",
+        "long narrow midbody strakes",
+        "four swept rear fins"
+      ]
+    },
+    {
+      "key": "asw_patrol",
+      "country": "cn",
+      "model": "KQ-200运-8Q公开构型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navalnews.com/naval-news/2019/04/new-details-on-chinas-kq-200-maritime-patrol-aircraft/",
+          "title": "KQ200 photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four turboprops",
+        "high straight wing",
+        "long tail magnetic anomaly boom",
+        "bulbous undernose radar"
+      ]
+    },
+    {
+      "key": "asw_patrol",
+      "country": "us",
+      "model": "P-8A Poseidon",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navair.navy.mil/product/P-8A-Poseidon",
+          "title": "P8 NAVAIR",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "737 airliner body",
+        "low swept wing with raked tips",
+        "two turbofan engines",
+        "no tail boom"
+      ]
+    },
+    {
+      "key": "carrier_fighter",
+      "country": "cn",
+      "model": "歼-15公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Shenyang_J-15",
+          "title": "J15 public aircraft outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long pointed nose",
+        "canards ahead of swept wings",
+        "twin widely spaced engines",
+        "twin vertical fins",
+        "carrier hook"
+      ]
+    },
+    {
+      "key": "carrier_fighter",
+      "country": "us",
+      "model": "F/A-18E公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Boeing_F/A-18E/F_Super_Hornet",
+          "title": "Super Hornet public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "shorter blunt pointed nose",
+        "large leading edge root extensions",
+        "twin rectangular intakes",
+        "twin canted tails",
+        "no canards"
+      ]
+    },
+    {
+      "key": "attack_aircraft",
+      "country": "cn",
+      "model": "强-5（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Nanchang_Q-5",
+          "title": "Q5 historical outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long slender pointed nose",
+        "side fuselage intakes",
+        "swept midwing",
+        "single tail fin",
+        "twin exhausts"
+      ]
+    },
+    {
+      "key": "attack_aircraft",
+      "country": "us",
+      "model": "A-10C公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Fairchild_Republic_A-10_Thunderbolt_II",
+          "title": "A10 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "straight broad wings",
+        "two large engines high on rear fuselage",
+        "twin rectangular tail fins",
+        "blunt gun nose"
+      ]
+    },
+    {
+      "key": "asw_heli",
+      "country": "cn",
+      "model": "直-20F公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:Z-20F_helicopter.jpg",
+          "title": "Z20F public photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "five blade main rotor",
+        "naval cabin",
+        "tail wheel moved just aft cabin",
+        "undernose radar and small side torpedo mounts"
+      ]
+    },
+    {
+      "key": "asw_heli",
+      "country": "us",
+      "model": "MH-60R",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navair.navy.mil/product/MH-60R-Seahawk",
+          "title": "MH60 NAVAIR",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four blade main rotor",
+        "short naval cabin",
+        "dipping sonar bulge",
+        "ball sensor on nose",
+        "forward tailwheel"
+      ]
+    },
+    {
+      "key": "aew_heli",
+      "country": "cn",
+      "model": "直-18J公开预警构型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/Z-18J_%28Bat%29_Chinese_Airborne_Early_Warning_%28AEW%29_Helicopter",
+          "title": "Z18J ODIN public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "large rounded fuselage",
+        "six blade main rotor",
+        "three engine humps",
+        "broad rectangular radar lowered below rear fuselage"
+      ]
+    },
+    {
+      "key": "aew_heli",
+      "country": "us",
+      "model": "MH-60R平台加预警雷达示意构型（非真实美国型号）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.navair.navy.mil/product/MH-60R-Seahawk",
+          "title": "US helicopter platform only; radar fictional",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；MD-22为展会模型，X-51A为试验演示器；预警直升机美方仅平台加示意雷达，不声称真实型号配置。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "compact Seahawk four blade main rotor",
+        "low landing gear",
+        "illustrative small circular dorsal radar on raised short mast"
+      ]
+    }
+  ]
+}

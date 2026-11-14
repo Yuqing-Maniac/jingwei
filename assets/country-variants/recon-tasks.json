@@ -1,0 +1,106 @@
+[
+  {
+    "key": "uav_recon_eo",
+    "name": "光电侦察无人机",
+    "category": "无人",
+    "countries": [
+      "cn",
+      "us"
+    ],
+    "strategy": "中美任务外形示意",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "uav_recon_radar",
+    "name": "雷达侦察无人机",
+    "category": "无人",
+    "countries": [
+      "cn",
+      "us"
+    ],
+    "strategy": "中美任务外形示意",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "uav_recon_sigint",
+    "name": "电子侦察无人机",
+    "category": "无人",
+    "countries": [
+      "cn",
+      "us"
+    ],
+    "strategy": "中美任务外形示意",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "usv_minesweeper",
+    "name": "扫雷型无人艇",
+    "category": "无人",
+    "countries": [
+      "cn",
+      "us"
+    ],
+    "strategy": "中美任务外形示意",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "wz7",
+    "name": "无侦-7",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "具体中国型号，不强配美国对应型号",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "wz8",
+    "name": "无侦-8",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "具体中国型号，不强配美国对应型号",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "wz10",
+    "name": "无侦-10",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "具体中国型号，不强配美国对应型号",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "gj2",
+    "name": "攻击-2",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "具体中国型号，不强配美国对应型号",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "gj11",
+    "name": "攻击-11",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "具体中国型号，不强配美国对应型号",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  },
+  {
+    "key": "gj21",
+    "name": "攻击-21",
+    "category": "无人",
+    "countries": [
+      "cn"
+    ],
+    "strategy": "具体中国型号，不强配美国对应型号",
+    "note": "只核对公开外形，不推断真实载荷性能"
+  }
+]

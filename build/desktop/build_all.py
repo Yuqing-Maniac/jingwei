@@ -3,7 +3,7 @@
 不写目标时，--portable-only 打四个免安装包；否则还打 deb。Windows 安装包只在 --installers 时打。
 --patch 另写增量 zip。前置：npm ci；bash build/fetch_runtime.sh。产物在 _work/dist/（JW_WORK 可改）。
 """
-import os, sys, shutil, subprocess, zipfile, json, time
+import argparse, os, sys, shutil, subprocess, zipfile, json, time
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORK = os.environ.get('JW_WORK', os.path.join(ROOT, '_work'))
 V = json.load(open(os.path.join(ROOT, 'desktop', 'package.json'), encoding='utf-8'))['version']
@@ -13,8 +13,21 @@ sys.path.insert(0, os.path.join(ROOT, 'launcher'))
 import app_files, check_icons, package_portable
 EV = '22.3.27'; ICO = os.path.join(ROOT, 'desktop', 'icon.ico'); PNGS = os.path.join(ROOT, 'assets', 'brand', 'out')
 run = lambda *a, **k: subprocess.run(list(a), check=True, **k)
-portable_only = '--portable-only' in sys.argv
-targets = [a for a in sys.argv[1:] if a != '--portable-only'] or (['win64', 'win32', 'kylin-amd64', 'kylin-arm64'] if portable_only else ['win64', 'win32', 'deb-arm64', 'deb-amd64', 'kylin-amd64', 'kylin-arm64'])
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--portable-only', action='store_true')
+    parser.add_argument('--patch', action='store_true')
+    parser.add_argument('--installers', action='store_true')
+    parser.add_argument('targets', nargs='*')
+    options = parser.parse_intermixed_args(argv)
+    allowed = {'win64', 'win32', 'kylin-amd64', 'kylin-arm64', 'deb-amd64', 'deb-arm64'}
+    unknown = [target for target in options.targets if target not in allowed]
+    if unknown:
+        parser.error('未知打包目标：' + ', '.join(unknown))
+    if not options.targets:
+        options.targets = (['win64', 'win32', 'kylin-amd64', 'kylin-arm64'] if options.portable_only else
+                           ['win64', 'win32', 'deb-arm64', 'deb-amd64', 'kylin-amd64', 'kylin-arm64'])
+    return options
 
 def stage_app():
     run(sys.executable, os.path.join(ROOT, 'build', 'build_web.py'), '--desk', stdout=subprocess.DEVNULL)
@@ -36,7 +49,7 @@ def runtime(arch_zip, dest):
             if not app_files.keep(rel):
                 os.remove(full)
 
-def build_win(arch):
+def build_win(arch, portable_only=False, installers=False):
     za = {'win64': 'win32-x64', 'win32': 'win32-ia32'}[arch]; tag = {'win64': 'x64', 'win32': 'x86'}[arch]
     shutil.rmtree(f'{TMP}/{arch}', ignore_errors=True)
     root = f'{TMP}/{arch}/root'; d = f'{root}/JingWeiZhiTu'; runtime(za, d)
@@ -53,7 +66,7 @@ def build_win(arch):
     if not check_icons.exe_has_icon(entry):
         raise SystemExit('启动器没有图标资源')
     package_portable.zip_portable(root, f'{OUT}/经纬织图_v{V}_Windows_{tag}_绿色版.zip', 'JingWeiZhiTu.exe')
-    if portable_only or '--installers' not in sys.argv: return
+    if portable_only or not installers: return
     nsi = NSI.replace('@VER@', V).replace('@SRC@', d).replace('@ICO@', ICO).replace('@OUT@', f'{OUT}/经纬织图_v{V}_Windows_{tag}_安装包.exe').replace('@ARCH@', tag).replace('@ORG@', BRAND['org']).replace('@COPYRIGHT@', BRAND['copyright'])
     open(f'{TMP}/{arch}/setup.nsi', 'w', encoding='utf-8-sig').write(nsi)
     run('makensis', '-V2', '-INPUTCHARSET', 'UTF8', f'{TMP}/{arch}/setup.nsi')
@@ -88,7 +101,7 @@ def build_deb(arch):
     app = f'{root}/opt/jingwei-zhitu'; runtime(za, app)
     shutil.copy(ASAR, f'{app}/resources/app.asar')
     os.rename(f'{app}/electron', f'{app}/jingwei-zhitu')
-    os.remove(f'{app}/chrome-sandbox')
+    if os.path.exists(f'{app}/chrome-sandbox'): os.remove(f'{app}/chrome-sandbox')
     os.makedirs(f'{root}/usr/bin'); open(f'{root}/usr/bin/jingwei-zhitu', 'w').write(LAUNCHER); os.chmod(f'{root}/usr/bin/jingwei-zhitu', 0o755)
     os.makedirs(f'{root}/usr/share/applications'); open(f'{root}/usr/share/applications/jingwei-zhitu.desktop', 'w', encoding='utf-8').write(DESKTOP)
     os.makedirs(f'{root}/usr/share/mime/packages'); open(f'{root}/usr/share/mime/packages/jingwei-zhitu.xml', 'w', encoding='utf-8').write(MIME)
@@ -264,16 +277,27 @@ Section "Uninstall"
   DeleteRegKey HKCU "Software\Classes\.json\OpenWithList\JingWeiZhiTu.exe"
 SectionEnd
 '''
-os.makedirs(OUT, exist_ok=True)
-check_icons.prove()
-if check_icons.ico_count(open(ICO, 'rb').read()) <= 0:
-    raise SystemExit('desktop/icon.ico 没有图像')
-ASAR = stage_app()
-for t in targets:
-    t0 = time.time()
-    fn = build_win if t.startswith('win') else build_kylin_zip if t.startswith('kylin') else build_deb
-    fn(t)
-    print('built', t, round(time.time() - t0), 's', flush=True)
-if '--patch' in sys.argv:
-    write_patch()
-for f in sorted(os.listdir(OUT)): print(f'{os.path.getsize(os.path.join(OUT, f)) / 2**20:7.1f} MB  {f}')
+def main(argv=None):
+    global ASAR
+    options = parse_args(argv)
+    os.makedirs(OUT, exist_ok=True)
+    check_icons.prove()
+    if check_icons.ico_count(open(ICO, 'rb').read()) <= 0:
+        raise SystemExit('desktop/icon.ico 没有图像')
+    ASAR = stage_app()
+    for t in options.targets:
+        t0 = time.time()
+        if t.startswith('win'):
+            build_win(t, options.portable_only, options.installers)
+        elif t.startswith('kylin'):
+            build_kylin_zip(t)
+        else:
+            build_deb(t)
+        print('built', t, round(time.time() - t0), 's', flush=True)
+    if options.patch:
+        write_patch()
+    for f in sorted(os.listdir(OUT)): print(f'{os.path.getsize(os.path.join(OUT, f)) / 2**20:7.1f} MB  {f}')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,361 @@
+{
+  "id": "maritime_land-04",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-fdcf1b56-940d-42de-8940-e10ddd00f407.png",
+  "entries": [
+    {
+      "key": "glider",
+      "country": "cn",
+      "model": "海翼（公开系列参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.hisutton.com/Chinese-Sea-Wing-Submarine-Drone.html",
+          "title": "Chinese Sea Wing Haiyi"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Slender yellow cylinder",
+        "pointed dark nose",
+        "long straight swept lateral wings mounted midbody",
+        "thin tail with upright antenna fin",
+        "no propeller"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.2792
+    },
+    {
+      "key": "glider",
+      "country": "us",
+      "model": "Slocum（公开系列参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://rucool.marine.rutgers.edu/data/underwater-gliders/about-underwater-gliders/",
+          "title": "About Underwater Gliders"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Shorter cylindrical yellow-orange glider",
+        "blunt rounded black nose",
+        "broad straight wings",
+        "long rear swept tail fin antenna",
+        "exposed tail sensor"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.3688
+    },
+    {
+      "key": "torpedo",
+      "country": "cn",
+      "model": "鱼-6（公开照片外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.twz.com/25596/a-vietnamese-fisherman-reeled-in-a-chinese-torpedo-in-the-south-china-sea",
+          "title": "Chinese torpedo recovered"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Long thin metallic cylinder",
+        "black rounded acoustic nose",
+        "exposed contra-rotating propellers with small cruciform fins aft",
+        "plain cylindrical midbody"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.2428
+    },
+    {
+      "key": "torpedo",
+      "country": "us",
+      "model": "Mk48（公开展示外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2167907/mk-48-heavyweight-torpedo/no/mk-48-heavyweight-torpedo/",
+          "title": "Mk48 Heavyweight Torpedo"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Long dark grey torpedo",
+        "rounded black nose",
+        "segmented exercise sections",
+        "stern cruciform fins and large shrouded pumpjet"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.1585
+    },
+    {
+      "key": "mine",
+      "country": "cn",
+      "model": "EM52（公开照片轮廓参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://aquellasarmasdeguerra.wordpress.com/2015/08/19/enemigos-ocultos-algunas-minas-navales/",
+          "title": "Enemigos ocultos minas navales"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Long olive cylinder with pointed rounded top",
+        "upright at diagonal on compact circular seabed anchor base",
+        "simple external clamp bands",
+        "no spherical horns"
+      ],
+      "cellIndex": 4,
+      "bluePixelRatio": 0.1885
+    },
+    {
+      "key": "mine",
+      "country": "us",
+      "model": "Mk60 CAPTOR（历史展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/File%3AMk.60_Captor.jpg",
+          "title": "Mk60 Captor public photograph"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Long olive watertight capsule lying horizontally",
+        "broad flat circular end cap",
+        "exposed rear stabilizing short fins",
+        "narrow hoisting lugs"
+      ],
+      "cellIndex": 5,
+      "bluePixelRatio": 0.0528
+    },
+    {
+      "key": "research_vessel",
+      "country": "cn",
+      "model": "向阳红01",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.fio.org.cn/forum?fid=27",
+          "title": "First Institute of Oceanography research fleet"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Large white research vessel",
+        "tall forward multilevel bridge",
+        "blue lower hull",
+        "long green aft working deck",
+        "stern A-frame and side crane"
+      ],
+      "cellIndex": 6,
+      "bluePixelRatio": 0.2897
+    },
+    {
+      "key": "research_vessel",
+      "country": "us",
+      "model": "NOAA Okeanos Explorer（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.omao.noaa.gov/marine-operations/ships/okeanos-explorer",
+          "title": "Okeanos Explorer NOAA"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Compact blue hull white bridge survey ship",
+        "central stacked deckhouse",
+        "two large spherical white satellite radomes",
+        "yellow stern crane and open aft research deck"
+      ],
+      "cellIndex": 7,
+      "bluePixelRatio": 0.2997
+    },
+    {
+      "key": "recon_vehicle",
+      "country": "cn",
+      "model": "09式平台侦察载荷参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/ZZH-09_%28Type_09%29_Chinese_8x8_Amphibious_Armor_Personnel_Carrier_%28APC%29",
+          "title": "ZZH09 variants"
+        }
+      ],
+      "notes": "公开同国底盘加示意侦察/通信任务载荷的参考构型，并非确认存在的真实配置。",
+      "geometryChecks": [
+        "8x8 four-axle narrow wedge amphibious armored hull",
+        "small sensor turret",
+        "raised telescopic optical mast with binocular cyan sensor head"
+      ],
+      "cellIndex": 8,
+      "bluePixelRatio": 0.1246
+    },
+    {
+      "key": "recon_vehicle",
+      "country": "us",
+      "model": "M1127 Stryker",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/61ca0b2ea20c1cb79880283ce4542a1b",
+          "title": "M1127 Stryker RV"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "8x8 broad tall Stryker hull",
+        "low remote weapon station",
+        "compact squat raised roof sensor mast",
+        "angular front driver's hatch and rear bustle"
+      ],
+      "cellIndex": 9,
+      "bluePixelRatio": 0.1152
+    },
+    {
+      "key": "command_vehicle",
+      "country": "cn",
+      "model": "ZZH09指挥平台（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/ZZH-09_%28Type_09%29_Chinese_8x8_Amphibious_Armor_Personnel_Carrier_%28APC%29",
+          "title": "ZZH09 Command Vehicle"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "8x8 wedge armored hull",
+        "raised high rectangular rear command cabin",
+        "multiple thin whip antennas",
+        "small roof observation hatch",
+        "no large cannon"
+      ],
+      "cellIndex": 10,
+      "bluePixelRatio": 0.102
+    },
+    {
+      "key": "command_vehicle",
+      "country": "us",
+      "model": "M1130 Stryker（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/M1130_%28Stryker_CV%29_American_Armored_Command_Vehicle",
+          "title": "M1130 Stryker CV"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "8x8 broad boxy Stryker hull",
+        "low roof command station",
+        "large rear equipment racks and many thin whip antennas",
+        "compact remote machine gun mount"
+      ],
+      "cellIndex": 11,
+      "bluePixelRatio": 0.0838
+    },
+    {
+      "key": "comm_vehicle",
+      "country": "cn",
+      "model": "猛士M20通信车（民用应急角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.chongqingdima.com/pickup-command-communication-vehicle",
+          "title": "Pickup Command Communication Vehicle"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "4x4 angular armored SUV/pickup",
+        "protruding hood",
+        "raised rear communications shelter",
+        "roof white satellite dish and slim telescopic mast"
+      ],
+      "cellIndex": 12,
+      "bluePixelRatio": 0.1335
+    },
+    {
+      "key": "comm_vehicle",
+      "country": "us",
+      "model": "M1152A1通信方舱参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://sam.gov/opp/3319b144142a4fe5aa02dae628be509e/view",
+          "title": "Lightweight Multi-Purpose Shelter M1152A1"
+        }
+      ],
+      "notes": "公开同国底盘加示意侦察/通信任务载荷的参考构型，并非确认存在的真实配置。",
+      "geometryChecks": [
+        "4x4 wide low Humvee chassis",
+        "flat angular hood",
+        "simple two-seat cab",
+        "large S250 rectangular shelter rear with small satellite dish and whip antennas"
+      ],
+      "cellIndex": 13,
+      "bluePixelRatio": 0.1953
+    },
+    {
+      "key": "engineering",
+      "country": "cn",
+      "model": "三一SY215C（民用工程平台参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.sanysingapore.com/sy215c/",
+          "title": "SY215C excavator"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Yellow tracked excavator",
+        "long articulated two-segment boom folded compactly over front",
+        "toothed bucket",
+        "glass cab at left",
+        "rounded rear counterweight"
+      ],
+      "cellIndex": 14,
+      "bluePixelRatio": 0.0609
+    },
+    {
+      "key": "engineering",
+      "country": "us",
+      "model": "Caterpillar D7（民用工程平台参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cat.com/en_US/products/new/equipment/dozers/medium-dozers/102647.html",
+          "title": "Cat D7 Dozer"
+        }
+      ],
+      "notes": "公开外形艺术参考，局部为生成近似，非工程图；EM52来自公开照片二手来源，具体批次不能确认；工程车是民用角色参考。",
+      "geometryChecks": [
+        "Yellow crawler bulldozer",
+        "high-drive triangular tracks",
+        "broad curved steel front blade",
+        "central glass cab",
+        "short rear ripper",
+        "no excavator boom"
+      ],
+      "cellIndex": 15,
+      "bluePixelRatio": 0.0637
+    }
+  ],
+  "qualityNotes": [
+    "16格完整，侦察/指挥8轮底盘部分生成可见轮数偏少（不像工程级8x8），保留原图供root审核。"
+  ],
+  "bluePixelTest": {
+    "method": "opaque alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels; natural grays excluded",
+    "target": [
+      0.25,
+      0.35
+    ],
+    "result": "warning: blue-panel target not met by all generated models"
+  }
+}

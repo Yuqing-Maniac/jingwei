@@ -43,3 +43,31 @@ jobs:
           bash tests/legacy_layout.sh
       - name: 核心回归
         run: bash tests/run_regression.sh
+      - name: 国别图标与新版功能集成回归
+        run: |
+          node tests/country_catalog_test.cjs
+          python3 tests/country_icons_test.py
+          python3 tests/mirror_arrow_ime_test.py
+          python3 tests/ruler_arrow_test.py
+          python3 tests/defaults_test.py
+          node tests/canvasbg_logic.mjs
+          python3 tests/canvasbg_ui.py
+          python3 tests/canvasbg_region_ui.py
+          python3 tests/scenario_tpl_test.py
+          python3 tests/review_follow_test.py
+          python3 tests/sector_fill_test.py
+      - name: 图形编辑与导出回归
+        run: |
+          python3 tests/rotation_test.py
+          python3 tests/coverage_test.py
+          python3 tests/iconlabels_test.py
+          python3 tests/layer_order_test.py
+          python3 tests/selectionbounds_test.py
+          python3 tests/recon_icons_test.py
+          python3 tests/underwater_icon_test.py
+          python3 tests/wingman_icons_test.py
+          python3 tests/expansion_icons_test.py
+          python3 tests/image_insert_test.py
+          node tests/payload_presets_test.cjs
+          python3 tests/payloads_test.py
+          python3 tests/purefan_test.py

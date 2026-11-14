@@ -92,7 +92,15 @@ if printf '%s\n' "${lines[@]}" | grep -E '\.(deb|exe)(#|$)' >/dev/null; then
   exit 1
 fi
 
+[ "$(wc -l < "$TMP/out/SHA256SUMS.txt")" -eq "$(( ${#expect[@]} - 1 ))" ]
 (cd "$TMP/out" && sha256sum -c SHA256SUMS.txt >/dev/null)
+# 可选发布物也必须受校验保护，不能只列两份必选包。
+printf 'tampered' >> "$TMP/out/jingwei_v3.3.14_web_offline.zip"
+if (cd "$TMP/out" && sha256sum -c SHA256SUMS.txt >/dev/null 2>&1); then
+  echo "可选网页包损坏时应当校验失败" >&2
+  exit 1
+fi
+printf 'web' > "$TMP/out/jingwei_v3.3.14_web_offline.zip"
 if grep -E '安装|\.deb|\.exe|经纬|免安装|离线|增量|绿色' "$TMP/out/SHA256SUMS.txt" >/dev/null; then
   echo "SHA256SUMS 应只列出 ASCII 资产名" >&2
   exit 1

@@ -1,0 +1,306 @@
+{
+  "id": "support-02",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-d46c4d28-5a69-4636-9357-74cc27d89936.png",
+  "entries": [
+    {
+      "key": "ext_05_09",
+      "country": "cn",
+      "model": "XW-2E CubeSat reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://amsat-uk.org/satellites/comms/camsat-xw-2/",
+          "title": "XW-2E CubeSat reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "small gold-edged 1U cube with solar cells on faces and four thin wire antenna whiskers"
+      ]
+    },
+    {
+      "key": "ext_05_09",
+      "country": "us",
+      "model": "NASA OCSD 1.5U CubeSat reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.nasa.gov/smallspacecraft/ocsd-project/",
+          "title": "NASA OCSD 1.5U CubeSat reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "elongated 1.5U cuboid with solar-cell sides and small optical aperture",
+        "two short antenna wires"
+      ]
+    },
+    {
+      "key": "ext_05_10",
+      "country": "cn",
+      "model": "Tianma tracking antenna reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://shao.cas.cn/65m/introduction/",
+          "title": "上海天文台：天马65米射电望远镜简介"
+        },
+        {
+          "url": "https://shao.cas.cn/2020Ver/kyzb/202005/W020200526519764161561.jpg",
+          "title": "上海天文台：天马65米射电望远镜简介（官方实物图片）"
+        }
+      ],
+      "notes": "官方科研装备页所示天马实物为大口径抛物反射面及开放桁架支撑；图标仅抽象参考碟面、仰角支架和方位转台，Y形支架、实体基座及钴蓝涂装是示意，不是天马精确外形。",
+      "geometryChecks": [
+        "parabolic white solid dish in deep Y-shaped elevation cradle on circular concrete pedestal"
+      ],
+      "provenanceVerification": {
+        "method": "live HTTP GET via urllib and official image visual inspection",
+        "httpStatus": 200,
+        "imageHttpStatus": 200,
+        "checkedDate": "2026-11-14"
+      }
+    },
+    {
+      "key": "ext_05_10",
+      "country": "us",
+      "model": "NASA DSN ground antenna reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.nasa.gov/smallsat-institute/sst-soa/ground-data-systems-and-mission-operations/",
+          "title": "NASA DSN ground antenna reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "white parabolic dish with open triangular radial backup ribs and tall four-legged steel azimuth base"
+      ]
+    },
+    {
+      "key": "ext_05_11",
+      "country": "cn",
+      "model": "Sheshan optical telescope illustrative tracking configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://optical.shao.cas.cn/lytz/field/202208/t20220825_613013.html",
+          "title": "上海天文台光学天文技术研究室：1.56米光学望远镜"
+        },
+        {
+          "url": "https://optical.shao.cas.cn/lytz/field/202208/W020250710502520180763.jpg",
+          "title": "上海天文台光学天文技术研究室：1.56米光学望远镜（官方实物图片）"
+        }
+      ],
+      "notes": "已查看官方实物照片：开放桁架镜筒、粗大侧轴/赤道支承和观测室内基座。图标只借鉴光学镜筒与大型轴座类别，闭合白镜筒及紧凑安装布局是示意，不能视为1.56米设备外形复刻。",
+      "geometryChecks": [
+        "long white open optical tube on equatorial fork with compact square instrument housing and round pedestal"
+      ],
+      "provenanceVerification": {
+        "method": "live HTTP GET via urllib and official image visual inspection",
+        "httpStatus": 200,
+        "imageHttpStatus": 200,
+        "checkedDate": "2026-11-14"
+      }
+    },
+    {
+      "key": "ext_05_11",
+      "country": "us",
+      "model": "GEODSS tracking telescope reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.spaceforce.mil/about-us/fact-sheets/article/2197760/ground-based-electro-optical-deep-space-surveillance/",
+          "title": "GEODSS tracking telescope reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "short wide optical tube on massive two-sided alt-azimuth yoke",
+        "black round aperture",
+        "low cylindrical base"
+      ]
+    },
+    {
+      "key": "ext_05_12",
+      "country": "cn",
+      "model": "SLC-18 space surveillance radar reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://photo.china.com.cn/2022-11/10/content_78511579.htm",
+          "title": "SLC-18 space surveillance radar reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "large inclined rectangular tiled flat phased-array radar panel on trailer with support outriggers"
+      ]
+    },
+    {
+      "key": "ext_05_12",
+      "country": "us",
+      "model": "Space Fence illustrative radar configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.spaceforce.mil/News/Article-Display/Article/2129325/ussf-announces-initial-operational-capability-and-operational-acceptance-of-spa/",
+          "title": "Space Fence illustrative radar configuration"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "two broad low horizontal rectangular radar array pads on a single compact low platform",
+        "small adjacent blue equipment cabin"
+      ]
+    },
+    {
+      "key": "ext_05_13",
+      "country": "cn",
+      "model": "Sheshan satellite laser ranging reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.shao.ac.cn/lnpt/team/202404/t20240403_7439845.html",
+          "title": "上海天文台：卫星激光测距及应用"
+        },
+        {
+          "url": "https://www.shao.ac.cn/lnpt/team/202404/W020241114640766581339.png",
+          "title": "上海天文台：卫星激光测距及应用（官方实物图片）"
+        }
+      ],
+      "notes": "官方页确认佘山60厘米卫星激光测距系统，并展示测距站及多台望远镜照片；引用范围仅为光学望远镜、激光测距站的公开外观类别。图标并列双镜筒及紧凑基座为示意组合，未验证为该站真实整机配置。",
+      "geometryChecks": [
+        "paired optical tubes with small laser transmitter and larger receiving aperture on white equatorial mount"
+      ],
+      "provenanceVerification": {
+        "method": "live HTTP GET via urllib and official image visual inspection",
+        "httpStatus": 200,
+        "imageHttpStatus": 200,
+        "checkedDate": "2026-11-14"
+      }
+    },
+    {
+      "key": "ext_05_13",
+      "country": "us",
+      "model": "NASA NGSLR reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://earth.gsfc.nasa.gov/geo/networks/sgp/techniques/slr",
+          "title": "NASA NGSLR reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "compact black and white open telescope on two-pronged alt-azimuth yoke with separate blue laser equipment cabinet"
+      ]
+    },
+    {
+      "key": "ext_05_14",
+      "country": "cn",
+      "model": "Fengyun ground reception illustrative configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.nsmc.org.cn/nsmc/en/operation/broadcast.html",
+          "title": "Fengyun ground reception illustrative configuration"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "short vertical dark equipment rack containing three silver receiver drawers",
+        "many coax connectors",
+        "cobalt side skins"
+      ]
+    },
+    {
+      "key": "ext_05_14",
+      "country": "us",
+      "model": "NOAA direct readout illustrative receiver configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ospo.noaa.gov/resources/data-access/direct-readout-community.html",
+          "title": "NOAA direct readout illustrative receiver configuration"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "single wide low silver rackmount receiver chassis",
+        "blue front panel",
+        "dark rectangular display and circular tuning knob",
+        "rear finned module"
+      ]
+    },
+    {
+      "key": "ext_05_15",
+      "country": "cn",
+      "model": "TianQi-2 PC104 avionics illustrative payload configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://doi.org/10.2514/1.A35743",
+          "title": "TianQi-2 PC104 avionics illustrative payload configuration"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "compact stack of four square green circuit boards on gold corner standoffs",
+        "blue outer protective side plate and silver connectors"
+      ]
+    },
+    {
+      "key": "ext_05_15",
+      "country": "us",
+      "model": "NASA SpaceCube illustrative compute payload",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://technology.nasa.gov/patent/GSC-TOPS-35",
+          "title": "NASA SpaceCube illustrative compute payload"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "rectangular silver finned sealed compute box with cobalt upper cover",
+        "gold multi-pin connectors in two rows and side attachment flanges"
+      ]
+    },
+    {
+      "key": "ext_05_16",
+      "country": "cn",
+      "model": "Jiamusi deep space dish reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://jdse.bit.edu.cn/sktcxb/article/doi/10.15982/j.issn.2096-9287.2021.20210125",
+          "title": "Jiamusi deep space dish reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "very large deep white parabolic reflector with thick central secondary support and massive conical azimuth pedestal"
+      ]
+    },
+    {
+      "key": "ext_05_16",
+      "country": "us",
+      "model": "NASA DSN Goldstone reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.nasa.gov/smallsat-institute/sst-soa/ground-data-systems-and-mission-operations/",
+          "title": "NASA DSN Goldstone reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。",
+      "geometryChecks": [
+        "large shallow white parabolic dish with four thin quadrupod legs",
+        "exposed triangulated steel elevation structure on circular rail platform"
+      ]
+    }
+  ]
+}

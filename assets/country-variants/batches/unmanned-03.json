@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-03",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-4345f069-748f-41b3-9800-5bdb1045e2ea.png",
+  "entries": [
+    {
+      "key": "usv_armed",
+      "country": "cn",
+      "model": "JARI-USV公开平台＋遥控站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "仅公开平台外形与示意遥控武器站",
+      "geometryChecks": [
+        "CN JARI compact double hull pointed twin bows faceted low superstructure with compact bow remote turret"
+      ]
+    },
+    {
+      "key": "usv_armed",
+      "country": "us",
+      "model": "CUSV公开平台＋遥控站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "仅公开平台外形与示意遥控武器站",
+      "geometryChecks": [
+        "US CUSV single deep-V chine hull open stern deck short mast compact bow remote turret"
+      ]
+    },
+    {
+      "key": "usv_interceptor",
+      "country": "cn",
+      "model": "JARI-USV基础高速拦截示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "拦截任务与低上建调整仅为示意",
+      "geometryChecks": [
+        "CN compact JARI twin hulls faceted bridge and slim mast low empty foredeck"
+      ]
+    },
+    {
+      "key": "usv_interceptor",
+      "country": "us",
+      "model": "CUSV基础高速拦截示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "拦截任务与低上建调整仅为示意",
+      "geometryChecks": [
+        "US CUSV broad single chine hull flared prow open rear well and compact sensor mast, no wake"
+      ]
+    },
+    {
+      "key": "usv_kamikaze",
+      "country": "cn",
+      "model": "JARI-USV基础一次性任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "不表示存在对应真实自杀式型号；闭合任务舱仅示意",
+      "geometryChecks": [
+        "CN low compact catamaran JARI twin pointed bows faceted enclosed forward mission compartment short camera mast"
+      ]
+    },
+    {
+      "key": "usv_kamikaze",
+      "country": "us",
+      "model": "CUSV基础一次性任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "不表示存在对应真实自杀式型号；闭合任务舱仅示意",
+      "geometryChecks": [
+        "US CUSV monohull deep V bow flat closed mission deck small rear mast, no explosives visible"
+      ]
+    },
+    {
+      "key": "usv_large",
+      "country": "cn",
+      "model": "JARI-USV-A（公开展示构型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/security/airshow-china-2024-china-debuts-500-tonne-unmanned-surface-vessel",
+          "title": "JARI-USV-A trimaran"
+        }
+      ],
+      "notes": "三体结构区分：中国隐身上建；美国细长中心体与低外伸浮体",
+      "geometryChecks": [
+        "CN JARI USV A wide trimaran three parallel hulls sharply faceted high stealth superstructure integrated tower"
+      ]
+    },
+    {
+      "key": "usv_large",
+      "country": "us",
+      "model": "Sea Hunter（试验平台）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.darpa.mil/news/2018/sea-hunter-prototype",
+          "title": "DARPA Sea Hunter"
+        }
+      ],
+      "notes": "三体结构区分：中国隐身上建；美国细长中心体与低外伸浮体",
+      "geometryChecks": [
+        "US Sea Hunter very long pencil center hull tiny raised forward deckhouse and two distant slim outrigger floats on crossbeams"
+      ]
+    },
+    {
+      "key": "usv_survey",
+      "country": "cn",
+      "model": "云洲M40A公开双体",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.yunzhou-tech.com/uploads/file/20230824/20230824134319_7788.pdf",
+          "title": "Yunzhou M40A"
+        }
+      ],
+      "notes": "中国封闭式扁平双体；美国开放跨梁双浮筒",
+      "geometryChecks": [
+        "CN Yunzhou M40A compact rounded twin pontoons joined by low enclosed flat central electronics deck a short GNSS mast"
+      ]
+    },
+    {
+      "key": "usv_survey",
+      "country": "us",
+      "model": "SeaRobotics USV2.5公开双体",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.sbg-systems.com/case-studies/searobotics-usv/",
+          "title": "SeaRobotics USV2.5"
+        }
+      ],
+      "notes": "中国封闭式扁平双体；美国开放跨梁双浮筒",
+      "geometryChecks": [
+        "US SeaRobotics USV2.5 two visibly separate long slender hulls open metal bridging frame central sonar rod and twin GNSS poles"
+      ]
+    },
+    {
+      "key": "uuv_xl",
+      "country": "cn",
+      "model": "HSU001（公开大型UUV参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/china-advances-unmanned-underwater-capabilities",
+          "title": "HSU001 public UUV"
+        }
+      ],
+      "notes": "仅类别参考，HSU001不宣称与Orca尺寸等级相同",
+      "geometryChecks": [
+        "CN HSU001 short thick oval flattened submarine body two thin dorsal sensor masts twin stern propulsors no sail"
+      ]
+    },
+    {
+      "key": "uuv_xl",
+      "country": "us",
+      "model": "Orca XLUUV（公开原型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.boeing.com/defense/autonomous-and-unmanned-systems/xluuv",
+          "title": "Boeing Orca"
+        }
+      ],
+      "notes": "仅类别参考，HSU001不宣称与Orca尺寸等级相同",
+      "geometryChecks": [
+        "US Orca long rectangular round-corner submarine hull black rounded bow single short dorsal mast prominent stern X fins and single rear propulsor"
+      ]
+    },
+    {
+      "key": "rov",
+      "country": "cn",
+      "model": "海龙JTR-41公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://underwater.sjtu.edu.cn/info/4447/11791.htm",
+          "title": "Hailong JTR41 ROV"
+        }
+      ],
+      "notes": "均框架式，中国顶部厚浮力块与方框；美国高开敞框架与双机械手",
+      "geometryChecks": [
+        "CN Hailong deep sea ROV tall rectangular white syntactic foam block top, compact metal cage cylindrical side thrusters front manipulator arms"
+      ]
+    },
+    {
+      "key": "rov",
+      "country": "us",
+      "model": "Jason ROV公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.whoi.edu/what-we-do/explore/underwater-vehicles/ndsf-jason/",
+          "title": "WHOI Jason ROV"
+        }
+      ],
+      "notes": "均框架式，中国顶部厚浮力块与方框；美国高开敞框架与双机械手",
+      "geometryChecks": [
+        "US Jason ROV open tall rectangular metal frame yellow-white flotation canopy exposed cameras hoses two articulated front manipulator arms different silhouette"
+      ]
+    },
+    {
+      "key": "wave_glider",
+      "country": "cn",
+      "model": "海哨兵波浪滑翔器参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://iaos.ouc.edu.cn/2019/0414/c16082a237405/page.psp",
+          "title": "Ocean University Hai Shaobing Wave Glider"
+        }
+      ],
+      "notes": "需同时显示水面浮体、连接缆和水下翼组；缩短缆仅为图标布局",
+      "geometryChecks": [
+        "CN Hai Shaobing long narrow solar surfboard float tall simple meteorological mast tether descending to short six-pair wing underwater sled"
+      ]
+    },
+    {
+      "key": "wave_glider",
+      "country": "us",
+      "model": "Wave Glider公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.liquid-robotics.com/wave-gliders/",
+          "title": "Liquid Robotics Wave Glider"
+        }
+      ],
+      "notes": "需同时显示水面浮体、连接缆和水下翼组；缩短缆仅为图标布局",
+      "geometryChecks": [
+        "US Wave Glider broader rounded solar float asymmetric compact antenna mast tether to long slim underwater glider six pairs articulating side fins"
+      ]
+    }
+  ]
+}
