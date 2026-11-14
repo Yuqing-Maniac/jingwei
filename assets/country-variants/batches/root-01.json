@@ -1,0 +1,151 @@
+{
+  "id": "root-01",
+  "columns": 4,
+  "rows": 2,
+  "path": "/workspace/generated_images/exec-8a0a3545-8409-41dd-a7d3-d525638a83dc.png",
+  "entries": [
+    {
+      "key": "fighter",
+      "country": "cn",
+      "model": "歼-20",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.81.mil.cn/kj_208559/10211531.html",
+          "title": "中国军网：歼-20公开照片"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "前置鸭翼",
+        "三角主翼",
+        "双垂尾"
+      ]
+    },
+    {
+      "key": "fighter",
+      "country": "us",
+      "model": "F-22A",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/News/Art/igphoto/2000790798/",
+          "title": "USAF F-22 top view"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "无鸭翼",
+        "梯形翼",
+        "独立后平尾"
+      ]
+    },
+    {
+      "key": "transport",
+      "country": "cn",
+      "model": "运-20",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.81.mil.cn/tp_207717/16283173.html",
+          "title": "中国军网：运-20公开照片"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "四发上单翼",
+        "T形尾翼"
+      ]
+    },
+    {
+      "key": "transport",
+      "country": "us",
+      "model": "C-17A",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.boeing.com/defense/c-17-globemaster-iii",
+          "title": "Boeing C-17"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "四发",
+        "明显翼梢小翼",
+        "T形尾翼"
+      ]
+    },
+    {
+      "key": "awacs",
+      "country": "cn",
+      "model": "空警-500",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.xinhuanet.com/mil/2016-03/25/c_128832644.htm",
+          "title": "新华网：空警-500照片"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "四台涡桨",
+        "背部圆盘",
+        "单垂尾"
+      ]
+    },
+    {
+      "key": "awacs",
+      "country": "us",
+      "model": "E-2D",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navair.navy.mil/product/E-2D",
+          "title": "NAVAIR E-2D"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "双涡桨",
+        "背部圆盘",
+        "多垂尾"
+      ]
+    },
+    {
+      "key": "helicopter",
+      "country": "cn",
+      "model": "直-10",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://military.cctv.cn/2024/11/07/ARTIBoSaah7LKdG1iNYxYztD241107.shtml",
+          "title": "央视军事：直-10训练"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "串列座舱",
+        "窄机身",
+        "五叶主旋翼"
+      ]
+    },
+    {
+      "key": "helicopter",
+      "country": "us",
+      "model": "AH-64E（桅顶雷达构型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.boeing.com/defense/military-rotorcraft/ah-64-apache",
+          "title": "Boeing AH-64 Apache"
+        }
+      ],
+      "notes": "公开外形的艺术微缩图标，非测绘；旋翼、起落架和细节仍需目视复核。",
+      "geometryChecks": [
+        "四叶主旋翼",
+        "串列座舱",
+        "桅顶雷达"
+      ]
+    }
+  ]
+}

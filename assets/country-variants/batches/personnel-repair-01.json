@@ -1,0 +1,66 @@
+{
+  "id": "personnel-repair-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-e2adddf1-95e1-453e-beef-e0ae05bcce6f.png",
+  "entries": [
+    {
+      "key": "tank_crew",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "修复图：明确饱和钴蓝背心/头盔/背包，供统一重涂红色。服装为公开参考示意，非真实身份。",
+      "geometryChecks": [
+        "装甲乘员耳罩头盔",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "钴蓝大面积背心/背包作为明确可变色面板"
+      ]
+    },
+    {
+      "key": "sof_operator",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "修复图：明确饱和钴蓝背心/头盔/背包，供统一重涂红色。服装为公开参考示意，非真实身份。",
+      "geometryChecks": [
+        "战术头盔/携行具",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "钴蓝大面积背心/背包作为明确可变色面板"
+      ]
+    },
+    {
+      "key": "sniper",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "修复图：明确饱和钴蓝背心/头盔/背包，供统一重涂红色。服装为公开参考示意，非真实身份。",
+      "geometryChecks": [
+        "吉利披风/瞄准镜",
+        "中方低盔/深靴/绿系数字衣料；美方独立携行具/土色靴或对应职业服装",
+        "已目视检查：4×4行优先中美配对，人物全身和道具可见",
+        "钴蓝大面积背心/背包作为明确可变色面板"
+      ]
+    }
+  ],
+  "disabled": true
+}

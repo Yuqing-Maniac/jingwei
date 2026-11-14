@@ -8,6 +8,7 @@
   浏览器要求：Chromium 内核 69 以上（奇安信可信浏览器、360 安全浏览器信创版等）或 Firefox 68 以上。
 
 二、文件清单
+  CountryIconAtlas.html    中美外形对照图册（包含此文件时可直接离线打开）
   JingWeiZhiTu_v3.2.1.html  经纬织图主程序（单文件，全部组件已内置）
   发布说明 Word 与 PDF，文件名以 ReleaseNotes 开头，版本号是 3.2.1
   Guide_v3.3.docx 与 Guide_v3.3.pdf  使用说明
@@ -21,6 +22,7 @@
   按 F1 查看全部快捷键。
 
 四、常用功能
+  · 国别图标：在图标面板选择中国／美国外形，默认中国红、美国蓝；节点属性可独立改色。
   · 打开（Ctrl+O）：工程文件 .json，以及 PowerPoint（.pptx）、Visio（.vsdx）、draw.io（.drawio）。
   · 保存（Ctrl+S）：保存为 .jingwei.json 工程文件；旧版 .hongtu.json 可直接打开。
   · 格式转换（Ctrl+Shift+O）：Visio 转 PPT 原样还原字体字号；可批量转 PPT／Visio／draw.io／PNG。

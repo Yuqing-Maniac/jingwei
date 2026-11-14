@@ -1,0 +1,365 @@
+{
+  "id": "maritime_land-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-13d05866-9d92-4bfc-accb-1bc5fe423f5d.png",
+  "entries": [
+    {
+      "key": "carrier",
+      "country": "cn",
+      "model": "福建舰（003）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://chinapower.csis.org/china-type-003-fujian-aircraft-carrier/",
+          "title": "How Advanced Is China’s Third Aircraft Carrier?"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Flat angular deck",
+        "three catapult tracks",
+        "starboard island centered aft",
+        "two starboard elevators"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.0603
+    },
+    {
+      "key": "carrier",
+      "country": "us",
+      "model": "Gerald R. Ford级",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.usni.org/magazines/proceedings/2026/march/chinas-first-supercarrier",
+          "title": "China's First Supercarrier"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Broad flight deck",
+        "four catapult tracks",
+        "compact island far aft to starboard",
+        "three deck-edge elevators"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.0129
+    },
+    {
+      "key": "destroyer",
+      "country": "cn",
+      "model": "055型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.naval-technology.com/news/is-chinas-type-055-a-cruiser-or-a-destroyer/",
+          "title": "Is China’s Type 055 a cruiser or a destroyer?"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Large slab-sided stealth hull",
+        "integrated enclosed mast",
+        "planar bridge arrays",
+        "bow gun",
+        "fore/aft VLS",
+        "stern helicopter deck"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.0487
+    },
+    {
+      "key": "destroyer",
+      "country": "us",
+      "model": "Arleigh Burke Flight III",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/DesktopModules/ArticleCS/Print.aspx?Article=2169871&ModuleId=4201&PortalId=1",
+          "title": "Destroyers DDG 51"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Flared bow",
+        "faceted separate bridge and aft hangar",
+        "lattice/exposed mast",
+        "twin funnels",
+        "stern dual hangar and helipad"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.0836
+    },
+    {
+      "key": "frigate",
+      "country": "cn",
+      "model": "054A型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/china-launches-32nd-type-054a-frigate-for-plan",
+          "title": "China launches 32nd Type 054A frigate"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Slender gray hull",
+        "angular bridge",
+        "rotating top-plate radar mast",
+        "single funnel",
+        "foredeck VLS and bow gun",
+        "aft hangar"
+      ],
+      "cellIndex": 4,
+      "bluePixelRatio": 0.0858
+    },
+    {
+      "key": "frigate",
+      "country": "us",
+      "model": "Oliver Hazard Perry级（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.history.navy.mil/content/history/nhhc/research/histories/ship-histories/danfs/o/oliver-hazard-perry-ffg-7.html",
+          "title": "Oliver Hazard Perry FFG-7"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Long narrow hull",
+        "single forward missile arm launcher",
+        "tall bridge and lattice mast",
+        "single stack",
+        "gun atop amidships deckhouse",
+        "aft helipad"
+      ],
+      "cellIndex": 5,
+      "bluePixelRatio": 0.1359
+    },
+    {
+      "key": "patrol_boat",
+      "country": "cn",
+      "model": "056A型（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/976-Type-056%2Bclass",
+          "title": "Type-056 class"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Compact angular corvette",
+        "forward gun",
+        "mast above bridge",
+        "amidships angled box launchers",
+        "aft helipad without hangar"
+      ],
+      "cellIndex": 6,
+      "bluePixelRatio": 0.0718
+    },
+    {
+      "key": "patrol_boat",
+      "country": "us",
+      "model": "Cyclone级（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://warsearcher.com/shipsearcher/united-states-navy-retired-surface-units/usn-retired-patrol-vessels/",
+          "title": "USN Retired Patrol Vessels"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Small slender patrol hull",
+        "raised forward bridge",
+        "exposed rear working deck",
+        "low gun mounts fore/aft",
+        "no helipad"
+      ],
+      "cellIndex": 7,
+      "bluePixelRatio": 0.1314
+    },
+    {
+      "key": "missile_boat",
+      "country": "cn",
+      "model": "022型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Type_022_missile_boat",
+          "title": "Type 022 missile boat"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Twin wave-piercing catamaran bows",
+        "broad angular low cabin",
+        "two banks of four angled box launchers aft",
+        "small bow gun"
+      ],
+      "cellIndex": 8,
+      "bluePixelRatio": 0.1926
+    },
+    {
+      "key": "missile_boat",
+      "country": "us",
+      "model": "Pegasus级（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navypedia.org/ships/usa/us_cf_pegasus.htm",
+          "title": "PEGASUS missile hydrofoils"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Single compact hull",
+        "bow foil strut and stern foil struts extended",
+        "forward gun",
+        "compact box bridge",
+        "aft angled canister launchers"
+      ],
+      "cellIndex": 9,
+      "bluePixelRatio": 0.073
+    },
+    {
+      "key": "usv",
+      "country": "cn",
+      "model": "JARI-USV（公开展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navalnews.com/naval-news/2024/11/chinese-experimental-aviation-platform-and-combat-usv-emerge-in-detailed-new-imagery/",
+          "title": "Chinese Experimental Carrier And USV Emerge"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Compact faceted gray patrol monohull",
+        "tall central integrated mast",
+        "small remote bow gun",
+        "squared low aft deck"
+      ],
+      "cellIndex": 10,
+      "bluePixelRatio": 0.071
+    },
+    {
+      "key": "usv",
+      "country": "us",
+      "model": "CUSV（公开展示参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Common Unmanned Surface Vehicle"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Low open-workdeck monohull",
+        "small forward cabin/mast with sensor dome",
+        "rubber rubbing strip",
+        "large aft payload deck"
+      ],
+      "cellIndex": 11,
+      "bluePixelRatio": 0.0922
+    },
+    {
+      "key": "submarine",
+      "country": "cn",
+      "model": "039A型（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://wardstonesims.com/manual/database/submarines/type-039a.html",
+          "title": "Type 039A Yuan"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Short broad conventional submarine",
+        "rounded bow",
+        "tall swept sail with fairwater dive planes",
+        "conventional cruciform stern fins"
+      ],
+      "cellIndex": 12,
+      "bluePixelRatio": 0.119
+    },
+    {
+      "key": "submarine",
+      "country": "us",
+      "model": "Virginia级（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2169558/attack-submarines-ssn/",
+          "title": "Attack Submarines SSN"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Long smooth cylindrical nuclear submarine",
+        "rounded bow",
+        "small rectangular sail with bow-mounted diving planes",
+        "conventional stern fins and shrouded pumpjet"
+      ],
+      "cellIndex": 13,
+      "bluePixelRatio": 0.0413
+    },
+    {
+      "key": "uuv",
+      "country": "cn",
+      "model": "潜龙三号（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.popsci.com/finding-qianlong-iii-chinas-new-underwater-drones/",
+          "title": "These are China’s new underwater drones"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Short wide flattened yellow fish-shaped AUV",
+        "black blunt head",
+        "paired side horizontal ducted thrusters and top fin",
+        "NOT a torpedo"
+      ],
+      "cellIndex": 14,
+      "bluePixelRatio": 0.1111
+    },
+    {
+      "key": "uuv",
+      "country": "us",
+      "model": "REMUS 600",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www2.whoi.edu/site/osl/vehicles/remus-600/",
+          "title": "REMUS 600 Oceanographic Systems Lab"
+        }
+      ],
+      "notes": "仅依据公开资料绘制的外形艺术参考，非工程图；涂装为可变色示意。历史/角色参考不表示性能等同。",
+      "geometryChecks": [
+        "Long slender modular torpedo-shaped AUV",
+        "rounded nose",
+        "narrow cylindrical yellow body",
+        "tail propeller and control fins"
+      ],
+      "cellIndex": 15,
+      "bluePixelRatio": 0.0436
+    }
+  ],
+  "qualityNotes": [
+    "已目视确认16格顺序及各物体完整。蓝色可重涂区部分模型偏少，root可统一处理。舰艇细节为模型生成近似，不作精密识别。"
+  ],
+  "bluePixelTest": {
+    "method": "opaque alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels; natural grays excluded",
+    "target": [
+      0.25,
+      0.35
+    ],
+    "result": "warning: blue-panel target not met by all generated models"
+  }
+}

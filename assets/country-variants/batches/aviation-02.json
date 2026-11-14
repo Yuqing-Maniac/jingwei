@@ -1,0 +1,352 @@
+{
+  "id": "aviation-02",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-e1486b46-e748-4fb5-b5d6-ec6a5482c7e0.png",
+  "entries": [
+    {
+      "key": "tanker",
+      "country": "cn",
+      "model": "运油-20公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/2025xb/H_251589/F/16478359.html",
+          "title": "Y20 family MOD",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "wide heavy fuselage",
+        "four underwing jets",
+        "high swept wing",
+        "T tail",
+        "two refuelling pods"
+      ]
+    },
+    {
+      "key": "tanker",
+      "country": "us",
+      "model": "KC-46A",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104537/kc-46a-pegasus/",
+          "title": "KC46 USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "airliner fuselage",
+        "low swept wing",
+        "two jet engines",
+        "conventional tail",
+        "rear refuelling boom"
+      ]
+    },
+    {
+      "key": "ew_aircraft",
+      "country": "cn",
+      "model": "运-9电子对抗公开构型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/plaaf-operating-ecm-variant-of-y-9-aircraft",
+          "title": "Y9 ECM public image",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "high straight wing",
+        "four six blade turboprops",
+        "tall single tail",
+        "large side blisters and aerial fairings"
+      ]
+    },
+    {
+      "key": "ew_aircraft",
+      "country": "us",
+      "model": "EA-37B",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.acc.af.mil/Portals/92/Docs/Fact%20Sheets%20-%202020%20Update/Facts%20Sheets%20-%202023%20Update/EA-37B%20Compass%20Call_NOV%202023.pdf",
+          "title": "EA37 USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "Gulfstream business jet shape",
+        "two rear jet nacelles",
+        "T tail",
+        "winglets",
+        "long side fairings"
+      ]
+    },
+    {
+      "key": "recon_aircraft",
+      "country": "cn",
+      "model": "运-9平台侦察示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.jhuapl.edu/sites/default/files/2022-12/SpecialMissionAircraftandUnmannedSystems.pdf",
+          "title": "Y9 special mission public report",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four turboprops",
+        "high wing",
+        "tall tail",
+        "modest underbelly sensor and side fairings"
+      ]
+    },
+    {
+      "key": "recon_aircraft",
+      "country": "us",
+      "model": "RC-135V/W",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104608/rc-135vw-rivet-joint/",
+          "title": "Rivet Joint USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four underwing jet engines",
+        "low swept wings",
+        "extended black nose",
+        "large side cheek fairings"
+      ]
+    },
+    {
+      "key": "transport_heli",
+      "country": "cn",
+      "model": "直-8L",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/2025xb/D/P_251753/16466748.html",
+          "title": "Z8L MOD photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "wide barrel cabin",
+        "long side sponsons",
+        "three top engine humps",
+        "six blade main rotor and tail rotor"
+      ]
+    },
+    {
+      "key": "transport_heli",
+      "country": "us",
+      "model": "CH-47F",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.boeing.com/defense/military-rotorcraft/h-47-chinook",
+          "title": "Chinook Boeing public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "long box cabin",
+        "two widely spaced tall rotor pylons with tandem three blade rotors",
+        "four wheel landing gear"
+      ]
+    },
+    {
+      "key": "uav_heli",
+      "country": "cn",
+      "model": "AR-500B公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/avic-announces-maiden-flight-of-ar-500b-shipborne-vtol-uav",
+          "title": "AR500B first flight",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "small faceted capsule without cabin windows",
+        "two blade main rotor",
+        "slender tail boom",
+        "skids"
+      ]
+    },
+    {
+      "key": "uav_heli",
+      "country": "us",
+      "model": "MQ-8C Fire Scout",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout?source=OTH-13321",
+          "title": "Fire Scout Northrop",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "large Bell407 style cabin with opaque nose",
+        "four blade main rotor",
+        "high engine cowling",
+        "long skids"
+      ]
+    },
+    {
+      "key": "hale_uav",
+      "country": "cn",
+      "model": "无侦-7",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.jetphotos.com/photo/10476528",
+          "title": "WZ7 public photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "distinct joined diamond wings",
+        "swept front main wing joins forward swept rear wing",
+        "upper rear jet",
+        "twin canted tail"
+      ]
+    },
+    {
+      "key": "hale_uav",
+      "country": "us",
+      "model": "RQ-4B",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/global-hawk",
+          "title": "RQ4 USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "huge bulbous nose",
+        "extremely long narrow wings",
+        "single dorsal engine",
+        "V tail"
+      ]
+    },
+    {
+      "key": "swarm",
+      "country": "cn",
+      "model": "三架Matrice350平台蜂群示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://enterprise.dji.com/matrice-350-rtk",
+          "title": "DJI platform; formation illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "three separated tiny X arm drones",
+        "tall skids",
+        "spherical gimbals",
+        "triangular loose formation"
+      ]
+    },
+    {
+      "key": "swarm",
+      "country": "us",
+      "model": "三架Skydio X10平台蜂群示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.skydio.com/x10",
+          "title": "Skydio platform; formation illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "three separated low flat four arm drones",
+        "compact feet",
+        "rectangular sensor",
+        "diagonal staggered formation"
+      ]
+    },
+    {
+      "key": "target_drone",
+      "country": "cn",
+      "model": "长空一号（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/NAI_CK-1",
+          "title": "CK1 historical public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "slim fuselage",
+        "dorsal engine pod",
+        "swept main wings",
+        "small horizontal tail",
+        "single vertical fin"
+      ]
+    },
+    {
+      "key": "target_drone",
+      "country": "us",
+      "model": "BQM-167A",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104562/bqm-167a-air-force-subscale-aerial-target/",
+          "title": "BQM USAF",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "仅公开外形艺术参考；示意任务构型不代表真实型号挂载或真实蜂群能力。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "short jet fuselage",
+        "belly engine intake",
+        "swept wings",
+        "high T tail",
+        "sharp nose"
+      ]
+    }
+  ],
+  "qualityNotes": [
+    "已用image_gen修正RQ-4误生成联翼的问题；原图保留。",
+    "生成图为艺术外形近似，旋翼叶数及小细节仍可能偏差；geometryChecks记录目标辨识点，不代表逐像素验收。"
+  ]
+}

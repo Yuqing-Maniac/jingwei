@@ -1,0 +1,271 @@
+{
+  "id": "support-04",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-854613fc-633b-4a77-a78d-35290517cae4.png",
+  "entries": [
+    {
+      "key": "fire_control_radar",
+      "country": "cn",
+      "model": "Type 347 fire-control radar reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Type_347_radar",
+          "title": "Type 347 fire-control radar reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "small circular concave dish with offset feed and paired small optical sensor cylinders on compact blue rotating pedestal"
+      ]
+    },
+    {
+      "key": "fire_control_radar",
+      "country": "us",
+      "model": "AN SPG-62 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/AN/SPG-62",
+          "title": "AN SPG-62 reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "white round dish on angular open two-sided gimbal with bulky rectangular blue cabinet base"
+      ]
+    },
+    {
+      "key": "hull_sonar",
+      "country": "cn",
+      "model": "Type 054A bow sonar fairing illustrative reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Type_054A_frigate",
+          "title": "Type 054A bow sonar fairing illustrative reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "isolated long black hydrodynamic bulbous sonar fairing with pointed nose",
+        "flattened mounting flange and blue upper attachment panel"
+      ]
+    },
+    {
+      "key": "hull_sonar",
+      "country": "us",
+      "model": "AN SQS-53 illustrative external fairing reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.globalsecurity.org/military/systems/ship/systems/an-sqq-89.htm",
+          "title": "AN SQS-53 illustrative external fairing reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "broad rounded black teardrop sonar dome with short vertical blue mounting collar and blunt front"
+      ]
+    },
+    {
+      "key": "towed_array",
+      "country": "cn",
+      "model": "H SJG-206 illustrative handling assembly reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://admiraltytrilogy.com/cic/HarpoonAnalysis/PLAN_Towed_Array_and_Acoustic_Decoy.pdf",
+          "title": "H SJG-206 illustrative handling assembly reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "blue compact rectangular towing winch with large black cable drum and slender cylindrical trailing array curled beside it"
+      ]
+    },
+    {
+      "key": "towed_array",
+      "country": "us",
+      "model": "AN SQR-19 illustrative handling assembly reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://man.fas.org/dod-101/sys/ship/weaps/an-sqq-89.htm",
+          "title": "AN SQR-19 illustrative handling assembly reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "blue open A-frame winch with large silver twin-flange cable spool and long flexible black segmented hydrophone array coiled below"
+      ]
+    },
+    {
+      "key": "sonar_station",
+      "country": "cn",
+      "model": "Xiaoqushan cabled seabed observatory illustrative acoustic node",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mdpi.com/1424-8220/18/9/3027",
+          "title": "Xiaoqushan cabled seabed observatory illustrative acoustic node"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "low blue triangular seabed frame with three feet",
+        "silver underwater instrument cylinder and yellow pressure sphere",
+        "short cable coil"
+      ]
+    },
+    {
+      "key": "sonar_station",
+      "country": "us",
+      "model": "US cabled seabed observatory illustrative acoustic node",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://oceanobservatories.org/",
+          "title": "US cabled seabed observatory illustrative acoustic node"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "blue square open subsea instrument frame with four feet",
+        "white vertical sensor tube",
+        "orange flotation spheres and short black cable coil"
+      ]
+    },
+    {
+      "key": "ugs",
+      "country": "cn",
+      "model": "SmartSolo IGU-16 illustrative unattended sensor configuration",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://smartsolo.com/igu-16.html",
+          "title": "SmartSolo IGU-16 illustrative unattended sensor configuration"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "short blue and white rugged cylinder with carrying loop and steel ground spike",
+        "separate tiny solar panel and short radio whip as illustrative additions"
+      ]
+    },
+    {
+      "key": "ugs",
+      "country": "us",
+      "model": "US AN GSR-9 TUGS reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:ANGSR-9_(V)_1_Tactical-Unattended_Ground_Sensors_(T-UGS)_geophone.jpg",
+          "title": "US AN GSR-9 TUGS reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "small angular blue camouflaged electronics box with tall whip antenna and two separate small ground probes connected by black cable"
+      ]
+    },
+    {
+      "key": "seismic_sensor",
+      "country": "cn",
+      "model": "SmartSolo IGU-16 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://smartsolo.com/igu-16.html",
+          "title": "SmartSolo IGU-16 reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "single compact blue and white cylindrical seismic node with pointed long silver steel ground spike"
+      ]
+    },
+    {
+      "key": "seismic_sensor",
+      "country": "us",
+      "model": "Geospace GS-ONE illustrative external housing",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.geospace.com/products/sensors-and-geophones/gs-one/",
+          "title": "Geospace GS-ONE illustrative external housing"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "short wide blue geophone canister with black top cable exit",
+        "two small exposed metal contacts and stout conical ground foot"
+      ]
+    },
+    {
+      "key": "satcom_otm",
+      "country": "cn",
+      "model": "Starwin OTM45 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.chinastarwin.com/landmobility/cotm/0-45m-on-the-move-phased-array-antenna.html",
+          "title": "Starwin OTM45 reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "low round flattened white radome with blue circular mounting plate and cable connector"
+      ]
+    },
+    {
+      "key": "satcom_otm",
+      "country": "us",
+      "model": "Kymeta u8 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.kymetacorp.com/",
+          "title": "Kymeta u8 reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "flat wide square white antenna panel with rounded corners on low blue wedge-shaped base"
+      ]
+    },
+    {
+      "key": "troposcatter",
+      "country": "cn",
+      "model": "CETC TS-504 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://ausairpower.net/APA-Troposcatter-Systems.html",
+          "title": "CETC TS-504 reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "two large shallow white troposcatter dishes side by side mounted atop cobalt-blue six-wheel equipment truck"
+      ]
+    },
+    {
+      "key": "troposcatter",
+      "country": "us",
+      "model": "AN TRC-170 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.marines.mil/Photos/igphoto/2001740716/",
+          "title": "AN TRC-170 reference"
+        }
+      ],
+      "notes": "公开同国平台轮廓参考的示意配置；声呐内部结构及收放组件未获精确外观验证，图示不宣称真实型号复刻。岸基声呐以公开海底科学观测节点作参考，不主张实际军事用途；无人地面传感器中国参考民用地震节点。",
+      "geometryChecks": [
+        "two deep white square-edged parabolic dishes on separate blue trailer frame with small central equipment shelter"
+      ]
+    }
+  ]
+}

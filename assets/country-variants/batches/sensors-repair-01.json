@@ -1,0 +1,103 @@
+{
+  "id": "sensors-repair-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-bf2a843b-c35e-456d-9aed-55abbe0053b3.png",
+  "entries": [
+    {
+      "key": "router",
+      "country": "us",
+      "model": "Cisco ISR4331",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/support/routers/4331-integrated-services-router-isr/model.html",
+          "title": "Cisco ISR4331"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "deeper rackmount router with grey curved front panel",
+        "modular expansion slots and compact bank of ports"
+      ],
+      "cellIndex": 1
+    },
+    {
+      "key": "firewall",
+      "country": "cn",
+      "model": "Huawei USG6000E-S03",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://ekit.huawei.com/ekit/front/ssr/en/product/1352872112515215104",
+          "title": "Huawei eKit firewall"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "compact desktop security appliance",
+        "ten RJ45 ports in two groups and two SFP cages",
+        "ventilated grey case"
+      ],
+      "cellIndex": 2
+    },
+    {
+      "key": "firewall",
+      "country": "us",
+      "model": "Cisco Firepower 1120",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/1100/hw/guide/hw-install-1100/overview.html",
+          "title": "Cisco Firepower hardware guide"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "wide shallow rack security appliance",
+        "eight ethernet ports and four optical cages grouped on front",
+        "silver rack ears"
+      ],
+      "cellIndex": 3
+    },
+    {
+      "key": "camera",
+      "country": "cn",
+      "model": "Hikvision DS-2TD2637公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://securitylab.hikvision.com/en/products/Thermal-Products/Security-thermal-cameras/Bullet-series/ds-2td2637-35-p/",
+          "title": "Hikvision bi-spectrum camera"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "rectangular long white bullet camera with projecting sunshield",
+        "two side-by-side optical apertures on dark front",
+        "short adjustable wall mount"
+      ],
+      "cellIndex": 4
+    },
+    {
+      "key": "camera",
+      "country": "us",
+      "model": "Pelco Sarix Enhanced 4 Bullet",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.pelco.com/cameras/bullet/sarix-enhanced-series-4",
+          "title": "Pelco Sarix"
+        }
+      ],
+      "notes": "公开产品轮廓的艺术简化；商业设备仅作任务角色参考，不暗示军用实装或性能对应。蓝色局部为可重涂图标面板。",
+      "geometryChecks": [
+        "long cylindrical white bullet security camera",
+        "rectangular sunshield",
+        "single large dark lens with infrared ring",
+        "articulated rear wall-mount bracket"
+      ],
+      "cellIndex": 5
+    }
+  ]
+}

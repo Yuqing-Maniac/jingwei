@@ -170,26 +170,30 @@ function canSide(n) {
   if (n.icon.startsWith('cu:')) { const c = doc.custom[n.icon.slice(3)]; return !!(c && c.combo); }
   return false;
 }
-function iconURI(key, affiliation) {
+function iconSide(affiliation, appearance) {
+  return ['neutral', 'red', 'blue'].includes(affiliation) ? affiliation : appearance === 'cn' ? 'red' : appearance === 'us' ? 'blue' : 'neutral';
+}
+function iconURI(key, affiliation, appearance) {
   if (!key) return null;
-  const side = ['red', 'blue'].includes(affiliation) ? affiliation : 'neutral';
-  const ck = key.startsWith('ms:') ? key + '|' + msMode() : key + '|' + side;
+  const side = iconSide(affiliation, appearance);
+  const look = ['cn', 'us'].includes(appearance) ? appearance : 'generic';
+  const ck = key.startsWith('ms:') ? key + '|' + msMode() : key + '|' + side + '|' + look;
   if (uriCache.has(ck)) return uriCache.get(ck);
   let u = null;
-  if (key.startsWith('lib:')) { const i = ICON_MAP[key.slice(4)]; if (i) u = svgUri(i.variants ? i.variants[side] : i.svg); }
+  if (key.startsWith('lib:')) { const i = ICON_MAP[key.slice(4)]; if (i) { const country = i.countries && i.countries[look]; u = svgUri(country ? country.variants[side] : i.variants ? i.variants[side] : i.svg); } }
   else if (key.startsWith('ms:')) {
     try { if (window.ms) u = svgUri(new ms.Symbol(key.slice(3), msOptions()).asSVG()); } catch (e) { }
   } else if (key.startsWith('cu:')) {
     const c = doc.custom[key.slice(3)];
     if (c) {
-      if (side !== 'neutral' && c.combo && window.Combo && Combo.tinted && !tinting.has(key)) {
+      if (['neutral', 'red', 'blue'].includes(affiliation) && c.combo && window.Combo && Combo.tinted && !tinting.has(key)) {
         tinting.add(key);
         try { u = Combo.tinted(c.combo, side); } finally { tinting.delete(key); }
       }
       if (!u) u = c.uri;
     }
   }
-  if (u) uriCache.set(ck, u);
+  if (u && !key.startsWith('cu:')) uriCache.set(ck, u);
   return u;
 }
 /* 军标配色：nato = 友蓝敌红（默认）；cn = 我红敌蓝 */
@@ -282,7 +286,7 @@ function nodeLayout(n) {
     L.text = { lines, x: left ? n.x + pad : n.x + n.w / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: left ? 'start' : 'middle', family, box: [n.x + pad, n.y, n.w - pad * 2, n.h] };
     return L;
   }
-  const uri = iconURI(n.icon, n.affiliation);
+  const uri = iconURI(n.icon, n.affiliation, n.appearance);
   const ib = innerBox(n), pd = ib ? 0 : 5;
   if (ib) n = Object.assign({}, n, ib);
   const top = uri && (n.type === 'equip' || (n.h >= 64 && n.h >= n.w * 0.6));
@@ -2215,8 +2219,14 @@ function iconSections() {
   return PAL_ORDER.filter(c => m.has(c)).concat([...m.keys()].filter(c => !PAL_ORDER.includes(c))).map(c => [c, m.get(c)]);
 }
 const openSecs = new Set(['基础形状', '无人']);
+let paletteAppearance = 'generic';
 function iconPlaceSpec(icon, name, w, h) {
-  return { type: 'equip', w: w, h: h, text: name, icon: icon };
+  const spec = { type: 'equip', w: w, h: h, text: name, icon: icon };
+  const lib = icon.startsWith('lib:') && ICON_MAP[icon.slice(4)];
+  if (lib && lib.countries && lib.countries[paletteAppearance]) {
+    spec.appearance = paletteAppearance; spec.affiliation = iconSide(undefined, paletteAppearance);
+  }
+  return spec;
 }
 function renderPalette() {
   const host = $('#palette');
@@ -2228,7 +2238,7 @@ function renderPalette() {
     qi.addEventListener('compositionend', () => renderPalette());
   }
   const q = (qi.value || '').trim();
-  let h = '';
+  let h = ICONS.some(i => i.countries) ? `<select class="search" id="pal-appearance" aria-label="图标外形版本">${[['generic','通用图标'],['cn','中国外形 · 默认红方'],['us','美国外形 · 默认蓝方']].map(([k,v]) => `<option value="${k}" ${paletteAppearance === k ? 'selected' : ''}>${v}</option>`).join('')}</select>` : '';
   const sec = (title, items, extra = []) => {
     if (!items.length && !extra.length) return ''; const c = !openSecs.has(title) && !q;
     return `<div class="psec${c ? '' : ' open'}"><h4 data-sec="${esc(title)}"><span>${esc(title)}</span><span class="cnt">${items.length}<i>${c ? '▸' : '▾'}</i></span></h4>${c ? '' : `<div class="pgrid">${items.concat(extra).join('')}</div>`}</div>`;
@@ -2236,11 +2246,12 @@ function renderPalette() {
   const m = s => !q || String(s).toLocaleLowerCase().includes(q.toLocaleLowerCase());
   for (const g of ['基础形状', '流程与标注', '箭头']) h += sec(g, SHAPES.filter(s => s.grp === g && (m(s.name) || m(g))).map(s => pitem(s.name, s.spec, s.svg)));
   h += sec('容器与层级', CONTS.filter(s => m(s.name)).map(s => pitem(s.name, s.spec, s.svg)));
-  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c) || (i.keywords || []).some(m)).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key), true)));
+  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c) || (i.keywords || []).some(m) || Object.values(i.countries || {}).some(v => m(v.name))).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key, undefined, i.countries && i.countries[paletteAppearance] ? paletteAppearance : 'generic'), true)));
   if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
   h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
   setMarkup($('#pal-body'), h);
+  const pa = $('#pal-appearance'); if (pa) pa.onchange = () => { paletteAppearance = pa.value; renderPalette(); };
   const pf = $('#pal-form'); if (pf) pf.onclick = () => window.Combo ? Combo.open(null) : toast('复合图标模块未加载');
   const up = $('#pal-up'); if (up) up.onclick = () => { iconTarget = null; $('#f-icon').click(); };
 }
@@ -3186,8 +3197,8 @@ const NODE_FIELDS = {
     id: 'affiliation', kind: 'select',
     show: function (items) { return items.some(canSide); },
     scope: function (n) { return canSide(n); },
-    get: function (n) { return n.affiliation || 'neutral'; },
-    set: function (n, v) { if (!canSide(n)) return; if (!v || v === 'neutral') delete n.affiliation; else n.affiliation = v; forgetIcon(n.icon); },
+    get: function (n) { return iconSide(n.affiliation, n.appearance); },
+    set: function (n, v) { if (!canSide(n)) return; if (!v || (v === 'neutral' && !['cn','us'].includes(n.appearance) && !n.icon.startsWith('cu:'))) delete n.affiliation; else n.affiliation = v; forgetIcon(n.icon); },
     options: function () { return [['neutral', '原色'], ['blue', '蓝方'], ['red', '红方']]; }
   },
   flipX: {
@@ -3600,9 +3611,11 @@ function renderProps() {
     if (n.type !== 'legend' && n.type !== 'tblock') h += `<div class="row"><label>${isCont(n) ? '标题' : '文字'}</label><textarea id="p-text" rows="2">${esc(n.text)}</textarea></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) h += `<div class="row"><label>形状</label><select id="p-type">${SHAPE_GROUPS.map(([g, ts]) => `<optgroup label="${g}">${ts.map(t => `<option value="${t}" ${t === n.type ? 'selected' : ''}>${TYPE_NAME[t]}</option>`).join('')}</optgroup>`).join('')}</select></div>`;
     if (!isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)) {
-      const u = iconURI(n.icon, n.affiliation);
+      const u = iconURI(n.icon, n.affiliation, n.appearance);
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
     }
+    const countryIcon = n.icon && n.icon.startsWith('lib:') && ICON_MAP[n.icon.slice(4)];
+    if (countryIcon && countryIcon.countries) h += `<div class="row"><label>外形版本</label><select id="p-appearance"><option value="generic" ${!n.appearance || n.appearance === 'generic' ? 'selected' : ''}>通用</option>${Object.entries(countryIcon.countries).map(([k,v]) => `<option value="${k}" ${n.appearance === k ? 'selected' : ''}>${k === 'cn' ? '中国' : '美国'} · ${esc(v.name)}${v.qualityStatus === 'awaiting-manual-review' ? '（待复核）' : ''}</option>`).join('')}</select></div>`;
     h += fieldsHTML([n], NODE_FIELDS);
     h += arrowExtraHTML([n]);
     const crow = contRow(n);
@@ -3674,6 +3687,7 @@ function bindProps() {
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
+  on('#p-appearance', 'change', e => { checkpoint(); n.appearance = e.target.value; n.affiliation = iconSide(undefined, n.appearance); render(); });
   on('#p-rot90', 'click', () => applyShared(selectedNodes().filter(isLineArrow), it => { const r = (rotOf(it) + 90) % 360; if (r) it.rot = r; else delete it.rot; }, false));
   on('#p-unit', 'change', e => { checkpoint(); const m = measureSpec(); doc.measure = { unit: (e.target.value || '').trim() || 'm', px: m.px }; render(); });
   on('#p-px', 'change', e => { const px = +e.target.value; if (!(px > 0)) return; checkpoint(); const m = measureSpec(); doc.measure = { unit: m.unit, px: px }; render(); });

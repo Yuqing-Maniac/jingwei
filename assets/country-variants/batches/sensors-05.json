@@ -1,0 +1,286 @@
+{
+  "id": "sensors-05",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-64c339be-dad1-4cd4-a727-422775200354.png",
+  "entries": [
+    {
+      "key": "jammer",
+      "country": "cn",
+      "model": "Skyfend Hunter SHH100",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/protable/22.html",
+          "title": "Skyfend Hunter"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "handheld counterdrone device with short angular front antenna housing",
+        "pistol grip",
+        "shoulder support",
+        "top small screen",
+        "inert display object"
+      ]
+    },
+    {
+      "key": "jammer",
+      "country": "us",
+      "model": "Battelle DroneDefender 历史公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.battelle.org/insights/case-studies/case-study-details/dronedefender-technology",
+          "title": "Battelle DroneDefender"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "rifle-shaped counterdrone device with prominent rectangular forward antenna cage and large longitudinal rods",
+        "shoulder stock and pistol grip",
+        "inert display object"
+      ]
+    },
+    {
+      "key": "antenna_array",
+      "country": "cn",
+      "model": "Huawei BladeAAU Pro 基站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.huawei.com/en/news/2021/6/bladeaau-pro-if-red-dot-design-awards",
+          "title": "Huawei BladeAAU Pro"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "three long slender white BladeAAU integrated antenna panels arranged radially around a short pole on low blue equipment base"
+      ]
+    },
+    {
+      "key": "antenna_array",
+      "country": "us",
+      "model": "ANDREW/原CommScope CNLPX3055F 历史阵列示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.andrew.com/products/base-station-antennas/antennas/itemcnlpx3055f/",
+          "title": "ANDREW CNLPX3055F 官方产品页（原CommScope产品，现为Amphenol旗下；历史外形参考）"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。 CNLPX3055F官网注明2024-03-30停产，本图仅作历史产品轮廓与阵列组合示意。",
+      "geometryChecks": [
+        "two broad rectangular sector antenna panels with rounded corners splayed at angle on short pole",
+        "compact deep radomes",
+        "visible rear brackets"
+      ]
+    },
+    {
+      "key": "relay",
+      "country": "cn",
+      "model": "IWAVE 电台中继站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.iwavecomms.com/products/",
+          "title": "IWAVE products"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "short tripod mast with two stub antennas and flat finned blue radio at base",
+        "small folding solar panel on side"
+      ]
+    },
+    {
+      "key": "relay",
+      "country": "us",
+      "model": "Silvus 电台中继站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://silvustechnologies.com/products/streamcaster-radios/",
+          "title": "Silvus StreamCaster radios"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "taller sectional tripod mast with two long whip antennas at top and vertically finned blue radio unit at bottom",
+        "no dish"
+      ]
+    },
+    {
+      "key": "cuas_radar_lowalt",
+      "country": "cn",
+      "model": "Skyfend Tracker SDH100",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/protable/45.html",
+          "title": "Skyfend Tracker"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "compact rectangular flat radar panel in blue rugged perimeter frame on short tripod",
+        "smooth light front radome"
+      ]
+    },
+    {
+      "key": "cuas_radar_lowalt",
+      "country": "us",
+      "model": "Echodyne EchoGuard",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.echodyne.com/radar-systems/echoguard",
+          "title": "Echodyne EchoGuard"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "compact low horizontal rectangular radar face with rounded dark corners on small tripod and blue electronics back",
+        "flat face"
+      ]
+    },
+    {
+      "key": "cuas_radar_4face",
+      "country": "cn",
+      "model": "Skyfend Tracker 四面组合示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/protable/45.html",
+          "title": "Skyfend Tracker"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "FOUR upright portrait rectangular radars arranged around square central blue cabinet on short stabilized mast",
+        "show front and right faces clearly"
+      ]
+    },
+    {
+      "key": "cuas_radar_4face",
+      "country": "us",
+      "model": "Echodyne EchoGuard 四面组合示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.echodyne.com/radar-systems/echoguard",
+          "title": "Echodyne EchoGuard"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "FOUR low landscape rectangular radar panels arranged around compact cylindrical blue hub on telescoping tripod",
+        "show two faces clearly"
+      ]
+    },
+    {
+      "key": "cuas_radar_vehicle",
+      "country": "cn",
+      "model": "Sharp Claw 2＋Tracker车载示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army-guide.com/eng/product5736.html",
+          "title": "Sharp Claw 2"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "six-wheel low wedge-shaped blue unmanned carrier",
+        "three wheels per side",
+        "upright compact portrait radar panel at rear"
+      ]
+    },
+    {
+      "key": "cuas_radar_vehicle",
+      "country": "us",
+      "model": "MUTT＋EchoGuard车载示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.gdls.com/mutt/",
+          "title": "GDLS MUTT"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "eight-wheel flat-deck blue unmanned cargo carrier",
+        "four wheels per side",
+        "compact landscape radar panel on rear short mast"
+      ]
+    },
+    {
+      "key": "cuas_passive",
+      "country": "cn",
+      "model": "Skyfend Tracer G STP120",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/fixed/49.html",
+          "title": "Skyfend Tracer G"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "stationary blue radio monitoring enclosure with several vertical antennas around a compact central head on short mast",
+        "outdoor square equipment base"
+      ]
+    },
+    {
+      "key": "cuas_passive",
+      "country": "us",
+      "model": "Dedrone RF-360",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dedrone.com/sensors/rf-360",
+          "title": "Dedrone RF360"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "smooth squat cylindrical white RF sensor radome on narrow pedestal",
+        "blue lower connector base and compact side mounting bracket"
+      ]
+    },
+    {
+      "key": "cuas_df",
+      "country": "cn",
+      "model": "Skyfend Tracer G 测向站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.skyfend.com/products/fixed/49.html",
+          "title": "Skyfend Tracer G"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "four slim vertical receiving antennas around a central cylindrical head on a tall tripod",
+        "blue rectangular receiver case at base"
+      ]
+    },
+    {
+      "key": "cuas_df",
+      "country": "us",
+      "model": "Dedrone RF360 多站测向示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dedrone.com/sensors/rf-360",
+          "title": "Dedrone RF360"
+        }
+      ],
+      "notes": "公开设备外形参考与艺术化涂装；组合站点、四面组合及无人车载荷安装为角色示意，未核实该组合已实装。国别按品牌/平台来源，不表示性能对应。",
+      "geometryChecks": [
+        "two separate smooth squat cylindrical RF sensor radomes on short stands",
+        "blue mounting bases and one blue rugged receiver box; no connection lines"
+      ]
+    }
+  ]
+}

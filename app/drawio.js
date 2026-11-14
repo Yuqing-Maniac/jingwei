@@ -84,7 +84,7 @@
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_affiliation: n.affiliation && n.affiliation !== 'neutral' ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: n.type === 'sector' ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: n.type === 'sector' ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
       if (n.sub && pageIds[n.sub]) ht.link = 'data:page/id,' + pageIds[n.sub];
       const st = stStyle(n, t), fs = n.size || 13, bold = n.bold ? ';fontStyle=1' : '';
       const font = `fontSize=${fs};fontFamily=Microsoft YaHei;html=1;whiteSpace=wrap`;
@@ -333,7 +333,8 @@
         if (D.ht_etype) n.etype = D.ht_etype; if (D.ht_code) n.code = D.ht_code;
         if (D.ht_attrs) try { n.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
         if (D.ht_role) n.role = D.ht_role; if (D.ht_noBox) n.noBox = true; if (D.ht_titleW) n.titleW = +D.ht_titleW;
-        if (D.ht_affiliation === 'red' || D.ht_affiliation === 'blue') n.affiliation = D.ht_affiliation;
+        if (['cn','us'].includes(D.ht_appearance)) n.appearance = D.ht_appearance;
+        if (['neutral','red','blue'].includes(D.ht_affiliation)) n.affiliation = D.ht_affiliation;
         if (D.ht_rot) n.rot = +D.ht_rot || 0; if (D.ht_sw) n.sw = +D.ht_sw;
         if (D.ht_sweep) n.sweep = +D.ht_sweep; if (D.ht_noLine) n.noLine = true;
         if (D.ht_grad === 'h' || D.ht_grad === 'v' || D.ht_grad === 'r') n.grad = D.ht_grad;

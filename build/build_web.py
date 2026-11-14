@@ -20,6 +20,8 @@ MODS = ['app.js', 'canvasbg.js', 'skins.js', 'glyphbook.js', 'imgimport.js', 'ba
         'importers.js', 'vsdxraw.js', 'drawio.js', 'refgen.js', 'convert.js', 'defaults.js']
 if os.path.exists(os.path.join(APP, 'redrawn.js')):
     parts.append(rd('redrawn.js'))
+if os.path.exists(os.path.join(APP, 'country_icons.js')):
+    parts.append(rd('country_icons.js'))
 mods = [rd(m) for m in MODS]
 own = "<script>\n" + "\n".join(parts) + "\n</script>\n<script>\n" + "\n".join(mods) + "\n" + rd('demo.js') + "\nloadDoc(buildDemo());\nif (!window.jwDesk) Backup.offer();\n</script>\n"
 cdn = ('<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>\n'

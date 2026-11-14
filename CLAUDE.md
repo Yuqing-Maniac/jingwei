@@ -5,7 +5,7 @@
 - **网页版**：`app/` 下的模块拼成一个离线单文件 html，在 Chromium 69+／Firefox 68+ 中运行。
 - **桌面版**：Electron 22.3.27 外壳（`desktop/`）加载同一界面（多注入 `app/desk/`）。不依赖系统浏览器，支持 Windows 7～11 与银河麒麟 V10（飞腾 arm64、x86_64）。
 
-当前版本 **3.5.2**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。桌面版首页显示的版本来自这个文件。
+当前版本 **3.6.0**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。桌面版首页显示的版本来自这个文件。
 
 ## 2. 目录
 ```
@@ -24,6 +24,7 @@ app/                 网页版源码（全部是“经典脚本”，按 build_w
   drawio.js          draw.io 互通
   convert.js         格式转换对话框（批量）
   demo.js            启动示例图；compat.js 旧浏览器兼容层（ES5）
+  country_icons.js  国别外形生成数据（build/icons/package_country.cjs），与阵营涂装独立
   icons*.js          拟物图标库（由 app/icons_src/icons_gen*.py 生成）
   desk/desk.css, desk.js   桌面版专用：标题栏、首页、本地文件读写（只在 window.jwDesk 存在时生效）
 desktop/             Electron 主进程 main.js、preload.js、splash.html、brand.woff、图标；package.json 的 version 即发布版本
@@ -38,6 +39,7 @@ build/
 tests/               回归测试、QA 排查脚本、桌面版测试（见第 5 节）
 docs/                规格（STD_SPEC、ICON_BRIEF、REF_BRIEF）、QA 报告、各版发布说明 docx/pdf、宣传片/教程策划
 assets/brand/        图标生成脚本 icon.py（→ out/ 下 16–1024 png、ico）、svg；assets/fonts/ 得意黑
+assets/country-variants/ 306项国别制作清单、公开来源、生成母版、三涂装资产与对照图册
 promo/               宣传片、视频教程、海报工程（脚本含原绝对路径，见 promo/README.md）
 brand.example.json   机构标识通用值；brand.local.json（gitignore）为本地真实值
 _work/  dist/        （gitignore）运行时、构建中间件、发布包 / 网页版构建产物；可用 JW_WORK 改 _work 位置

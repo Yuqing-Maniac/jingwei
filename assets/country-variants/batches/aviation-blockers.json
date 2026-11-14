@@ -1,0 +1,20 @@
+{
+  "group": "aviation",
+  "blocked": [
+    {
+      "key": "cuas_raptor",
+      "countries": [
+        "cn",
+        "us"
+      ],
+      "status": "blocked",
+      "reason": "公开检索未找到足以归属中美同国的猛禽驯化反无人拦截装备/服装构型来源。不能把其他国家试验移植为中美型号，也不能只凭猛禽物种国别推断。保留通用版。",
+      "searchedQueries": [
+        "China raptor eagle intercept drone use evidence",
+        "US eagle drone interception trials"
+      ],
+      "sources": []
+    }
+  ],
+  "generationFailures": []
+}

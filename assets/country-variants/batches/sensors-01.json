@@ -1,0 +1,286 @@
+{
+  "id": "sensors-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-cdffcecf-5674-4cfd-b851-a27b84871d36.png",
+  "entries": [
+    {
+      "key": "radar",
+      "country": "cn",
+      "model": "JY-27A 公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.radartutorial.eu/19.kartei/02.surv/en/karte029.en.html",
+          "title": "JY-27A"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "very broad upright open lattice VHF antenna",
+        "eight skeletal panels",
+        "wheeled support platform"
+      ]
+    },
+    {
+      "key": "radar",
+      "country": "us",
+      "model": "AN/TPS-80 G/ATOR",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/mission-solutions/radars/an-tps-80-ground-air-task-oriented-radar-g-ator",
+          "title": "Northrop Grumman G/ATOR"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "solid tall rectangular segmented radar panel angled back on compact two-wheel trailer with stabilizers"
+      ]
+    },
+    {
+      "key": "phased_radar",
+      "country": "cn",
+      "model": "JY-27A 天线组件示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.radartutorial.eu/19.kartei/02.surv/en/karte029.en.html",
+          "title": "JY-27A"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。 组件/设备组合为示意配置，非独立真实型号。",
+      "geometryChecks": [
+        "isolated broad open lattice eight-panel antenna on short azimuth pedestal",
+        "no vehicle"
+      ]
+    },
+    {
+      "key": "phased_radar",
+      "country": "us",
+      "model": "AN/TPS-80 天线组件示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/mission-solutions/radars/an-tps-80-ground-air-task-oriented-radar-g-ator",
+          "title": "Northrop Grumman G/ATOR"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。 组件/设备组合为示意配置，非独立真实型号。",
+      "geometryChecks": [
+        "isolated solid rectangular AESA tile panel on rotating pedestal",
+        "no trailer"
+      ]
+    },
+    {
+      "key": "eo_turret",
+      "country": "cn",
+      "model": "Viewpro Q30T Pro II",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.viewprotech.com/index.php?ac=article&at=read&did=335",
+          "title": "Viewpro Q30T Pro II"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "small black spherical single lens camera gimbal suspended in U-shaped two-axis side yoke and vibration isolation plate"
+      ]
+    },
+    {
+      "key": "eo_turret",
+      "country": "us",
+      "model": "FLIR Star SAFIRE 380-HD",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://defense.flir.com/defense-products/star-safire-380-hd/",
+          "title": "FLIR Star SAFIRE"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "large cream spherical multi aperture stabilized sensor turret",
+        "big central window and smaller side windows",
+        "upper mounting ring"
+      ]
+    },
+    {
+      "key": "satellite",
+      "country": "cn",
+      "model": "高分一号公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://space.skyrocket.de/doc_sdat/gf-1.htm",
+          "title": "Gaofen 1"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "compact box satellite bus",
+        "TWO opposite solar panel wings",
+        "downward multi camera apertures",
+        "gold foil"
+      ]
+    },
+    {
+      "key": "satellite",
+      "country": "us",
+      "model": "Landsat 9",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/3d-resources/landsat-9/",
+          "title": "NASA Landsat 9 model"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "tall rectangular satellite bus",
+        "ONE long solar array extending to one side",
+        "distinct instrument box",
+        "gold thermal blanket"
+      ]
+    },
+    {
+      "key": "comm_tower",
+      "country": "cn",
+      "model": "Huawei BladeAAU Pro 基站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.huawei.com/en/news/2021/6/bladeaau-pro-if-red-dot-design-awards",
+          "title": "Huawei BladeAAU Pro"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。 组件/设备组合为示意配置，非独立真实型号。",
+      "geometryChecks": [
+        "three long narrow white integrated antenna panels around short mast above two equipment cabinets",
+        "slender panels with modular lower blue active section"
+      ]
+    },
+    {
+      "key": "comm_tower",
+      "country": "us",
+      "model": "Airspan AirSpeed 1900 基站示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://fccid.io/PIDAS1900",
+          "title": "FCC Airspan AS1900"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。 组件/设备组合为示意配置，非独立真实型号。",
+      "geometryChecks": [
+        "compact small-cell outdoor radio enclosure with broad rectangular flat panel antenna on short pole and one cabinet",
+        "no triangular lattice tower"
+      ]
+    },
+    {
+      "key": "datalink",
+      "country": "cn",
+      "model": "IWAVE FDM-6600",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.iwavecomms.com/mimo-digital-data-link-for-mobile-uavs-and-robotics-transmitting-video-in-nlos-product/",
+          "title": "IWAVE FDM-6600"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "small flat rectangular finned metal data radio with two short stub antennas",
+        "side ethernet sockets"
+      ]
+    },
+    {
+      "key": "datalink",
+      "country": "us",
+      "model": "Silvus SC4200EP",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://silvustechnologies.com/products/streamcaster-4200-enhanced-plus/",
+          "title": "Silvus StreamCaster 4200"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "vertical rugged ribbed radio body",
+        "two tall whip antennas from top",
+        "bottom circular rugged connector"
+      ]
+    },
+    {
+      "key": "sat_station",
+      "country": "cn",
+      "model": "Antesky 1.2m flyaway",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://antesky.com/products/1.2m-flyaway-antenna-Carbon-Fiber.html",
+          "title": "Antesky flyaway antenna"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "six petal offset parabolic dish on low tripod",
+        "offset feed arm",
+        "small separate rugged controller"
+      ]
+    },
+    {
+      "key": "sat_station",
+      "country": "us",
+      "model": "Cubic GATR 1.2m",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.cubic.com/inflatable-satellite-antenna",
+          "title": "Cubic GATR inflatable antenna"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。",
+      "geometryChecks": [
+        "large spherical inflatable light grey radome with equatorial seam",
+        "guy ropes to ground anchors and separate little blue modem case; NO exposed dish"
+      ]
+    },
+    {
+      "key": "mesh",
+      "country": "cn",
+      "model": "IWAVE MANET 组网示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.iwavecomms.com/products/",
+          "title": "IWAVE products"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。 组件/设备组合为示意配置，非独立真实型号。",
+      "geometryChecks": [
+        "three small flat finned rectangular dual-stub antenna radios arranged loosely triangular",
+        "no lines or symbols"
+      ]
+    },
+    {
+      "key": "mesh",
+      "country": "us",
+      "model": "Silvus StreamCaster MANET 组网示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://silvustechnologies.com/products/streamcaster-radios/",
+          "title": "Silvus StreamCaster radios"
+        }
+      ],
+      "notes": "仅公开外形参考；艺术化简化与蓝色面板为图标配色，不表示性能对等、生产精确复刻或已验证实装。 组件/设备组合为示意配置，非独立真实型号。",
+      "geometryChecks": [
+        "three vertical ribbed dual-whip radio nodes arranged triangular",
+        "no connecting lines no symbols"
+      ]
+    }
+  ]
+}

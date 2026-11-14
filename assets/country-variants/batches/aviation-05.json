@@ -1,0 +1,328 @@
+{
+  "id": "aviation-05",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-c979c6b9-f82a-457f-aa2b-f71d3153f8e0.png",
+  "entries": [
+    {
+      "key": "cuas_spoofer",
+      "country": "cn",
+      "model": "联想ThinkPad平台加导航诱骗设备示意（非实装）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.lenovo.com/us/en/p/laptops/thinkpad/thinkpadx1/len101t0083/len101t0083",
+          "title": "Lenovo platform only",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "thin open laptop beside tall square electronics case with small rounded dome antenna",
+        "slim cobalt panels"
+      ]
+    },
+    {
+      "key": "cuas_spoofer",
+      "country": "us",
+      "model": "Dell7330平台加导航诱骗设备示意（非实装）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dell.com/en-us/shop/dell-laptops-and-notebooks/spd/latitude-13-7330-laptop",
+          "title": "Dell platform only",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "thick rugged open laptop with carry handle beside flat wide finned radio case with small cone antenna"
+      ]
+    },
+    {
+      "key": "cuas_takeover",
+      "country": "cn",
+      "model": "联想终端平台加接管设备示意（非实装）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.lenovo.com/us/en/p/laptops/thinkpad/thinkpadx1/len101t0083/len101t0083",
+          "title": "Lenovo platform only",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "thin open laptop linked by visible cable to vertically stacked two blue radio boxes with twin short antennas"
+      ]
+    },
+    {
+      "key": "cuas_takeover",
+      "country": "us",
+      "model": "Dell终端平台加接管设备示意（非实装）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.dell.com/en-us/shop/dell-laptops-and-notebooks/spd/latitude-13-7330-laptop",
+          "title": "Dell platform only",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "rugged thick handled laptop next to single flat transport case with four antennas and cyan interface panel"
+      ]
+    },
+    {
+      "key": "cuas_laser_vehicle",
+      "country": "cn",
+      "model": "LW-30展会外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/archives/archives-defense-exhibitions/2026-archives-news-defense-exhibitions/world-defense-show-2026/wds-2026-chinas-cpmiec-unveils-lw-30-laser-weapon-system-for-gulf-counter-drone-defense",
+          "title": "LW30 public exhibition photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "six wheel heavy truck",
+        "long enclosed equipment body",
+        "rooftop boxy laser turret with large dark circular optical aperture",
+        "stabilizers"
+      ]
+    },
+    {
+      "key": "cuas_laser_vehicle",
+      "country": "us",
+      "model": "DE M-SHORAD原型外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.army.mil/article/249549/army_to_field_laser_equipped_stryker_prototypes_in_fy_2022",
+          "title": "US Army prototype photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "eight wheel Stryker armored low hull",
+        "compact elevated optical turret",
+        "cylindrical laser aperture",
+        "side power cabinets"
+      ]
+    },
+    {
+      "key": "cuas_hpm_vehicle",
+      "country": "cn",
+      "model": "飓风3000公开展示外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://thedefensepost.com/2026/01/07/details-china-microwave-weapon/",
+          "title": "Hurricane public photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "large eight wheel cab truck",
+        "rectangular equipment shelter",
+        "huge raised flat rectangular antenna array on rear rotating pedestal"
+      ]
+    },
+    {
+      "key": "cuas_hpm_vehicle",
+      "country": "us",
+      "model": "Stryker Leonidas展会构型参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://gdls-ausa.com/stryker-leonidas/",
+          "title": "GDLS manufacturer",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "low eight wheel armored Stryker hull",
+        "wide flat rectangular microwave array tilted above rear roof",
+        "no truck cab"
+      ]
+    },
+    {
+      "key": "cuas_net_gun",
+      "country": "cn",
+      "model": "中国公开捕网专利外形示意（非产品型号）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://patents.google.com/patent/CN109916226A/en",
+          "title": "Chinese published net launcher patent; illustration",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "short wide cylindrical net launcher barrel on pan tilt pedestal",
+        "small side camera",
+        "square base"
+      ]
+    },
+    {
+      "key": "cuas_net_gun",
+      "country": "us",
+      "model": "Fortem NetGun模块独立陈列示意构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://fortemtech.com/products/dronehunter-f700/",
+          "title": "US Fortem product; detached presentation illustrative",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "two short parallel wide net launch cylinders joined on a small rectangular blue module",
+        "mounting lugs",
+        "no drone"
+      ]
+    },
+    {
+      "key": "cuas_net_drone",
+      "country": "cn",
+      "model": "Matrice350平台加网捕载荷示意（非真实配置）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://enterprise.dji.com/matrice-350-rtk",
+          "title": "DJI platform only",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "large four rotor X drone",
+        "tall landing skids",
+        "single blue underslung cylindrical net module",
+        "compact folded net bundle"
+      ]
+    },
+    {
+      "key": "cuas_net_drone",
+      "country": "us",
+      "model": "Fortem DroneHunter F700公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://fortemtech.com/products/dronehunter-f700/",
+          "title": "Fortem F700 manufacturer",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "six rotor hexacopter with thin arms",
+        "flat central blue rectangular body",
+        "two front net barrels",
+        "tall landing skids"
+      ]
+    },
+    {
+      "key": "cuas_interceptor_drone",
+      "country": "cn",
+      "model": "Matrice350平台加防撞笼示意（非真实配置）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://enterprise.dji.com/matrice-350-rtk",
+          "title": "DJI platform only",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "four rotor X drone with tall skids",
+        "large protective open tubular cage around body and propeller perimeter",
+        "small front camera"
+      ]
+    },
+    {
+      "key": "cuas_interceptor_drone",
+      "country": "us",
+      "model": "Anduril Anvil公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.anduril.com/anvil",
+          "title": "Anduril public product",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "compact boxy inverted quadcopter",
+        "four large propellers beneath four short arms",
+        "broad angular blue central body",
+        "front twin camera"
+      ]
+    },
+    {
+      "key": "cuas_gun",
+      "country": "cn",
+      "model": "LD-2000陆基近防炮外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/LD-2000",
+          "title": "LD2000 public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "eight wheel long flatbed truck",
+        "rear low turret with seven-barrel gatling gun",
+        "separate small radar dome",
+        "outriggers"
+      ]
+    },
+    {
+      "key": "cuas_gun",
+      "country": "us",
+      "model": "Land Phalanx C-RAM外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Counter_rocket,_artillery,_and_mortar",
+          "title": "Land Phalanx public outline",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "公开外观艺术参考；标为示意的仅借用同国公开平台外形，所加任务载荷、功能、安装方式均未证实，不代表真实型号配置。导航诱骗/接管设备仅功能符号示意。 reference-reviewed仅表示已查阅公开外形来源；生成结果为艺术近似，geometryChecks为期望辨识点，旋翼叶数/小附件不保证精确。",
+      "geometryChecks": [
+        "standalone trailer mount",
+        "tall cylindrical radar dome over six barrel rotary cannon",
+        "broad blue rectangular equipment base",
+        "stabilizer feet"
+      ]
+    }
+  ]
+}

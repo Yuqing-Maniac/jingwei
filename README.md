@@ -29,9 +29,15 @@
 - **格式互通**（Ctrl+Shift+O）：打开 .pptx／.vsdx／.drawio；导出 PNG（透明、报告插图）、PPT、Visio、draw.io、SVG；Visio 批量转 PPT 时字体字号原样还原。
 - **报告版心**：按版心宽与图内字号排版，插入 Word 即为版心宽。
 
+## 中美外形图册
+
+306 项国别筛选清单的制作记录与对照图册在 [assets/country-variants](assets/country-variants/README.md)。图标面板可选中国／美国外形，默认中国红、美国蓝；节点属性仍可单独改色。无可靠来源的项目保留通用外形，图册逐项显示任务示意和待复核限制。
+
+运行 `node build/icons/package_country.cjs` 更新运行时，再运行 `node build/icons/country_atlas.cjs` 生成 `_work/country-atlas.html` 单文件离线图册。
+
 ## 下载
 
-当前源码版本是 3.5.2。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。桌面版首页的版本号读这个字段。
+当前源码版本是 3.6.0。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。桌面版首页的版本号读这个字段。
 
 3.5.2 的草稿发布包含两份免安装包。解压后顶层是 `JingWeiZhiTu` 文件夹和唯一入口，只运行那个入口。
 

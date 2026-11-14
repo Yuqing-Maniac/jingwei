@@ -1,0 +1,127 @@
+{
+  "id": "support-repair-02",
+  "columns": 4,
+  "rows": 1,
+  "path": "/workspace/generated_images/exec-e8a0c4a7-afd7-48c9-8e28-bb1744bda405.png",
+  "entries": [
+    {
+      "key": "ext_05_02",
+      "country": "us",
+      "model": "Falcon 9 first stage",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Falcon_9",
+          "title": "Falcon 9 first stage"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。 修复02：鲜明钴蓝重涂面板，保留原公开参考几何。",
+      "geometryChecks": [
+        "slim white sooty booster",
+        "four very long black splayed landing legs",
+        "four rectangular grid fins"
+      ]
+    },
+    {
+      "key": "ext_05_03",
+      "country": "us",
+      "model": "NASA mobile launcher reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Mobile_launcher_platform",
+          "title": "NASA mobile launcher reference"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。 修复02：鲜明钴蓝重涂面板，保留原公开参考几何。",
+      "geometryChecks": [
+        "open steel lattice square tower on huge rectangular mobile platform",
+        "multiple horizontal umbilical arms",
+        "NO rocket"
+      ]
+    },
+    {
+      "key": "ext_05_05",
+      "country": "us",
+      "model": "Crew Dragon",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+          "title": "Crew Dragon"
+        }
+      ],
+      "notes": "公开外形参考的美术简化；涂装为可重涂示意，不代表真实涂装、内部结构或装备状态。 修复02：鲜明钴蓝重涂面板，保留原公开参考几何。",
+      "geometryChecks": [
+        "white rounded conical capsule with four cyan windows",
+        "attached cylindrical trunk with vertical black solar-panel strip and small fins"
+      ]
+    },
+    {
+      "key": "ext_05_16",
+      "country": "cn",
+      "model": "Jiamusi deep space dish reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://jdse.bit.edu.cn/sktcxb/article/doi/10.15982/j.issn.2096-9287.2021.20210125",
+          "title": "Jiamusi deep space dish reference"
+        }
+      ],
+      "notes": "公开同国平台外形参考的示意配置；非精确型号复刻，不据此主张任务、内部结构或服役状态。地面接收机仅按公开接收系统功能作机箱示意。 修复02：鲜明钴蓝重涂面板，保留原公开参考几何。",
+      "geometryChecks": [
+        "very large deep white parabolic reflector with thick central secondary support and massive conical azimuth pedestal"
+      ]
+    }
+  ],
+  "qualityChecks": [
+    {
+      "key": "ext_05_02",
+      "country": "us",
+      "blueVisibleRatio256": 0.5184,
+      "transparentRatio": 0.7842,
+      "bbox": [
+        0,
+        0,
+        543,
+        724
+      ]
+    },
+    {
+      "key": "ext_05_03",
+      "country": "us",
+      "blueVisibleRatio256": 0.2692,
+      "transparentRatio": 0.5281,
+      "bbox": [
+        0,
+        0,
+        543,
+        724
+      ]
+    },
+    {
+      "key": "ext_05_05",
+      "country": "us",
+      "blueVisibleRatio256": 0.3102,
+      "transparentRatio": 0.53,
+      "bbox": [
+        0,
+        0,
+        543,
+        724
+      ]
+    },
+    {
+      "key": "ext_05_16",
+      "country": "cn",
+      "blueVisibleRatio256": 0.3115,
+      "transparentRatio": 0.4675,
+      "bbox": [
+        0,
+        3,
+        543,
+        724
+      ]
+    }
+  ]
+}

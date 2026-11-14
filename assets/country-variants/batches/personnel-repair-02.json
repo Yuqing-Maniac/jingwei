@@ -1,0 +1,89 @@
+{
+  "id": "personnel-repair-02",
+  "columns": 4,
+  "rows": 1,
+  "path": "/workspace/generated_images/exec-d763f425-e4b2-40d4-969a-73dda7fbdd71.png",
+  "entries": [
+    {
+      "key": "inf_rifleman",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "修复版：钴蓝背心/头盔/背包为软件可变色示意，非真实制服配色；衣料、盔型、携行具和武器轮廓保留中美公开服装参考差异。不声称身份真实性。",
+      "geometryChecks": [
+        "完整直立全身人物、步枪安全低姿",
+        "中国低圆盔/深色靴/数字绿迷彩/无托步枪；美国高切盔/棕靴/OCP/带枪托卡宾枪",
+        "大面积饱和钴蓝背心与头盔，清晰可重涂"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.2681
+    },
+    {
+      "key": "inf_rifleman",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "修复版：钴蓝背心/头盔/背包为软件可变色示意，非真实制服配色；衣料、盔型、携行具和武器轮廓保留中美公开服装参考差异。不声称身份真实性。",
+      "geometryChecks": [
+        "完整直立全身人物、步枪安全低姿",
+        "中国低圆盔/深色靴/数字绿迷彩/无托步枪；美国高切盔/棕靴/OCP/带枪托卡宾枪",
+        "大面积饱和钴蓝背心与头盔，清晰可重涂"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.2668
+    },
+    {
+      "key": "soldier",
+      "country": "cn",
+      "model": "21式作训服公开着装参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/TopStories/4901476.html",
+          "title": "PLA Type-21 uniforms"
+        }
+      ],
+      "notes": "修复版：钴蓝背心/头盔/背包为软件可变色示意，非真实制服配色；衣料、盔型、携行具和武器轮廓保留中美公开服装参考差异。不声称身份真实性。",
+      "geometryChecks": [
+        "完整直立全身人物、步枪安全低姿",
+        "中国低圆盔/深色靴/数字绿迷彩/无托步枪；美国高切盔/棕靴/OCP/带枪托卡宾枪",
+        "大面积饱和钴蓝背心与头盔，清晰可重涂"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.2556
+    },
+    {
+      "key": "soldier",
+      "country": "us",
+      "model": "美军OCP及IHPS公开着装参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://api.army.mil/e2/c/downloads/2025/02/04/40286e9e/fort-bliss-blue-book-01feb2025.pdf",
+          "title": "Fort Bliss Blue Book"
+        }
+      ],
+      "notes": "修复版：钴蓝背心/头盔/背包为软件可变色示意，非真实制服配色；衣料、盔型、携行具和武器轮廓保留中美公开服装参考差异。不声称身份真实性。",
+      "geometryChecks": [
+        "完整直立全身人物、步枪安全低姿",
+        "中国低圆盔/深色靴/数字绿迷彩/无托步枪；美国高切盔/棕靴/OCP/带枪托卡宾枪",
+        "大面积饱和钴蓝背心与头盔，清晰可重涂"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.2502
+    }
+  ],
+  "previousPath": "/workspace/generated_images/exec-98a93e13-f6fc-409f-b092-457c272963ee.png"
+}

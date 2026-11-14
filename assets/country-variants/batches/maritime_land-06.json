@@ -1,0 +1,357 @@
+{
+  "id": "maritime_land-06",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-ab34878c-34b6-4838-8537-c6d7c1d09f16.png",
+  "entries": [
+    {
+      "key": "ssbn",
+      "country": "cn",
+      "model": "094型（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.everycrsreport.com/files/20170606_RL33153_a3996e7ae4f58e7dda73603a2f96c9ad805d43e3.html",
+          "title": "China Naval Modernization CRS"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Dark cylindrical submarine",
+        "prominent tall long sail with fairwater planes",
+        "large raised stepped missile hump immediately aft of sail with two rows of six closed hatches",
+        "blunt nose and conventional tail"
+      ],
+      "cellIndex": 0,
+      "bluePixelRatio": 0.1556
+    },
+    {
+      "key": "ssbn",
+      "country": "us",
+      "model": "Ohio级（公开外形参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2169580/fleet-ballistic-missile-submarines-ssbn/",
+          "title": "Fleet Ballistic Missile Submarines"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Very long smooth dark cylindrical hull",
+        "small boxy sail far forward with fairwater planes",
+        "broad smooth long missile deck integrated into hull behind sail with two rows of closed hatches",
+        "gently tapered stern"
+      ],
+      "cellIndex": 1,
+      "bluePixelRatio": 0.1188
+    },
+    {
+      "key": "elint_ship",
+      "country": "cn",
+      "model": "815型公开改进外形（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/80e2c7376c8aa959c5c61219ef2ec415",
+          "title": "Type815 Intelligence Collection Ship"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Long conventional gray hull",
+        "tall forward bridge",
+        "three prominent spherical white radomes of unequal sizes on separated decks",
+        "tall sensor mast and aft helipad/hangar"
+      ],
+      "cellIndex": 2,
+      "bluePixelRatio": 0.1409
+    },
+    {
+      "key": "elint_ship",
+      "country": "us",
+      "model": "Victorious级声学监视船（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2222990/ocean-surveillance-ships-t-agos/",
+          "title": "Ocean Surveillance Ships"
+        }
+      ],
+      "notes": "Victorious为公开声学监视船角色参考，非电子情报侦察船，不表示实际用途相同。",
+      "geometryChecks": [
+        "Very broad SWATH twin hull with visibly separated blunt twin bows under platform",
+        "boxy high white/gray forward superstructure",
+        "low aft working deck with towed-array cable winch and small radomes"
+      ],
+      "cellIndex": 3,
+      "bluePixelRatio": 0.1389
+    },
+    {
+      "key": "lsd",
+      "country": "cn",
+      "model": "071型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/2025xb/H_251589/F/16426986.html",
+          "title": "Naval landing ship Type071"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Long flared gray hull with sharp conventional bow",
+        "raised forward block superstructure and single mast",
+        "long low aft helicopter deck and stern well dock gate",
+        "side davits"
+      ],
+      "cellIndex": 4,
+      "bluePixelRatio": 0.1232
+    },
+    {
+      "key": "lsd",
+      "country": "us",
+      "model": "San Antonio级 Flight I",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2222713/amphibious-transport-dock-lpd/amphibious-transport-dock-lpd/",
+          "title": "Amphibious Transport Dock"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Angular stealth gray hull",
+        "broad faceted forward superstructure",
+        "TWO tall distinctive octagonal enclosed masts",
+        "low wide stern helicopter deck and stern well dock gate"
+      ],
+      "cellIndex": 5,
+      "bluePixelRatio": 0.1221
+    },
+    {
+      "key": "depth_charge_rl",
+      "country": "cn",
+      "model": "87式六管火箭深弹发射器（公开参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/552-Type%2B87",
+          "title": "Type87 antisubmarine rocket launcher"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Six long open round launch tubes in two parallel rows of three",
+        "elevated on compact rotating pedestal",
+        "exposed metal frame and side trunnions",
+        "isolated deck mount"
+      ],
+      "cellIndex": 6,
+      "bluePixelRatio": 0.2288
+    },
+    {
+      "key": "depth_charge_rl",
+      "country": "us",
+      "model": "RUR5 ASROC Mk112发射器（历史角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.seaforces.org/wpnsys/SURFACE/Mk-16-ASROC-launcher.htm",
+          "title": "Mk16 ASROC launcher"
+        }
+      ],
+      "notes": "ASROC为历史反潜火箭平台角色参考；公开历史载荷包括鱼雷/深水炸弹，不表示与中国六管深弹同型。",
+      "geometryChecks": [
+        "Broad rectangular matchbox launcher with eight squared cells two rows of four",
+        "elevated rectangular enclosed box on round turning pedestal",
+        "no exposed missiles"
+      ],
+      "cellIndex": 7,
+      "bluePixelRatio": 0.1979
+    },
+    {
+      "key": "vls",
+      "country": "cn",
+      "model": "055型通用垂发模块（公开轮廓参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.govinfo.gov/content/pkg/GOVPUB-D208-PURL-gpo144497/pdf/GOVPUB-D208-PURL-gpo144497.pdf",
+          "title": "China Type055 Cruiser"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Isolated navy ship deck-mounted low rectangular VLS module",
+        "eight LARGE square individual closed hatch covers arranged two by four",
+        "clean compact flush mounting on shallow box base",
+        "no exposed missiles"
+      ],
+      "cellIndex": 8,
+      "bluePixelRatio": 0.2489
+    },
+    {
+      "key": "vls",
+      "country": "us",
+      "model": "Mk41八单元模块（公开参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/naval-launchers-and-munitions/MK41-VLS-product-card.pdf",
+          "title": "Mk41 Vertical Launching System"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Isolated low rectangular eight-cell naval deck launcher module",
+        "eight smaller rectangular hatch covers in two groups of four with prominent long central exhaust plenum channel between groups",
+        "shallow metallic base",
+        "no exposed missiles"
+      ],
+      "cellIndex": 9,
+      "bluePixelRatio": 0.1821
+    },
+    {
+      "key": "aaa_gun",
+      "country": "cn",
+      "model": "59式57毫米高射炮（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/Type_59_Chinese_57mm_Towed_Anti-Aircraft_Gun",
+          "title": "Type59 Chinese57mm Towed AA Gun"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Long SINGLE slim cannon barrel elevated",
+        "open gunner seats behind small armored shield",
+        "FOUR wheel towable carriage with cruciform stabilizer legs",
+        "large recoil cradle"
+      ],
+      "cellIndex": 10,
+      "bluePixelRatio": 0.1254
+    },
+    {
+      "key": "aaa_gun",
+      "country": "us",
+      "model": "M167 Vulcan（历史参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://man.fas.org/dod-101/sys/land/m167.htm",
+          "title": "M167 VADS"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Short thick SIX barrel rotary cannon cluster on compact open turret",
+        "small round radar dish at side",
+        "TWO wheel low trailer carriage and stabilizer jacks",
+        "no large cannon barrel"
+      ],
+      "cellIndex": 11,
+      "bluePixelRatio": 0.0967
+    },
+    {
+      "key": "atgm_vehicle",
+      "country": "cn",
+      "model": "AFT9",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://weaponsystems.net/system/58-AFT-9%26lang%3Den",
+          "title": "AFT9"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Four-wheel 4x4 compact WZ550 armored wedge hull",
+        "rear turret with FOUR slim missile tubes as paired boxes",
+        "central raised optical sight",
+        "sloped twin-window front"
+      ],
+      "cellIndex": 12,
+      "bluePixelRatio": 0.2182
+    },
+    {
+      "key": "atgm_vehicle",
+      "country": "us",
+      "model": "M1134 Stryker",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/M1134_%28Stryker%29_American_8x8_Armored_Anti-Tank_Guided_Missile_Vehicle",
+          "title": "M1134 Stryker ATGM"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Four-axle 8x8 broad Stryker armored hull",
+        "roof elevating TWIN TOW missile tube launcher with large central optical sight",
+        "low square hatch roof and side stowage racks"
+      ],
+      "cellIndex": 13,
+      "bluePixelRatio": 0.1673
+    },
+    {
+      "key": "coastal_battery",
+      "country": "cn",
+      "model": "鹰击12B公开岸防发射车（角色参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://date.army.gov.au/sites/default/files/2025-02/20241104-DATE-ARMY-Olvanan_Playing_Cards-PRINT-FINAL_v02.pdf",
+          "title": "YJ12B coastal defense recognition card"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Four axle 8x8 heavy long cab-over truck",
+        "three long large enclosed rectangular missile canisters on rear bed tilted slightly upward",
+        "stabilizer legs",
+        "do not show naked missiles"
+      ],
+      "cellIndex": 14,
+      "bluePixelRatio": 0.335
+    },
+    {
+      "key": "coastal_battery",
+      "country": "us",
+      "model": "NMESIS（公开构型参考）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.pacom.mil/Media/NEWS/Article/3983873/3d-marine-littoral-regiment-receives-nmesis/",
+          "title": "3d Marine Littoral Regiment receives NMESIS"
+        }
+      ],
+      "notes": "依据公开可见外形绘制的艺术参考，非工程图；舰载垂发归入原任务陆地类别但仍按公开舰载甲板模块绘制。",
+      "geometryChecks": [
+        "Small unmanned FOUR wheel JLTV-based vehicle with no occupied cab",
+        "two long rectangular NSM missile canisters tilted upwards side by side",
+        "compact low front hood and electronics sensor pack"
+      ],
+      "cellIndex": 15,
+      "bluePixelRatio": 0.179
+    }
+  ],
+  "qualityNotes": [
+    "16格完整，主要轮廓有区分；中国VLS生成3x3九盖而非参考2x4八盖；AFT9出现每侧四管而非总四管，属于生成错误，root应考虑退回重绘或以通用角色参考降低型号精度。中国岸防车图仅清楚显示两箱，三箱参考未严格达成。"
+  ],
+  "bluePixelTest": {
+    "method": "opaque alpha>200; B>1.35R and B>1.10G and B-R>30; ratio over opaque pixels; natural grays excluded",
+    "target": [
+      0.25,
+      0.35
+    ],
+    "result": "warning: blue-panel target not met by all generated models"
+  },
+  "qualityStatus": "awaiting-manual-review",
+  "manualReviewCells": [
+    8,
+    12,
+    14
+  ]
+}

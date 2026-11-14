@@ -1,0 +1,72 @@
+{
+  "id": "unmanned-08",
+  "columns": 4,
+  "rows": 1,
+  "path": "/workspace/generated_images/exec-06b7fd0b-2532-42b7-8f2b-02d2b4a11fa2.png",
+  "entries": [
+    {
+      "key": "usv_jetski",
+      "country": "cn",
+      "model": "HISON摩托艇基础外形＋无人化示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.hisonmotorboat.com/",
+          "title": "HISON jetski基础外形"
+        }
+      ],
+      "notes": "中国基础摩托艇非已核实无人型号；美国为美国海军历史试验项目，不表示平台原产美国",
+      "geometryChecks": [
+        "CN HISON personal watercraft hull pointed rounded bow raised saddle deck converted illustratively to autonomous no handlebars small low sensor pod"
+      ]
+    },
+    {
+      "key": "usv_jetski",
+      "country": "us",
+      "model": "Blackfish（QinetiQ North America美国海军试验原型）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://newatlas.com/qinetic-robot-jet-ski-harbor-protection/19350/",
+          "title": "QinetiQ North America Blackfish US Navy trial prototype"
+        }
+      ],
+      "notes": "中国基础摩托艇非已核实无人型号；美国为美国海军历史试验项目，不表示平台原产美国",
+      "geometryChecks": [
+        "US Blackfish unmanned jetski compact broader hull stripped seat with tall rectangular sensor mast and larger foredeck camera fairing, distinctly different body profile"
+      ]
+    },
+    {
+      "key": "auv_portable",
+      "country": "cn",
+      "model": "澎湃PX150微型AUV参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.pengpaix.com/product-106-4.html",
+          "title": "澎湃PX150/160单人便携微型AUV"
+        }
+      ],
+      "notes": "外观参考不表示性能、等级或装备代际一致",
+      "geometryChecks": [
+        "CN PX150 small portable torpedo AUV blunt rounded nose cylindrical white blue body short rear tail with vectoring thruster and compact side sensors"
+      ]
+    },
+    {
+      "key": "auv_portable",
+      "country": "us",
+      "model": "REMUS100公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.hii.com/news/united-kingdom-royal-navy-acquires-remus-100-unmanned-underwater-vehicle",
+          "title": "REMUS100"
+        }
+      ],
+      "notes": "外观参考不表示性能、等级或装备代际一致",
+      "geometryChecks": [
+        "US REMUS100 slimmer long small torpedo AUV pointed-rounded nose black instrument end sections four cruciform tail fins rear propeller two small top lifting fittings"
+      ]
+    }
+  ]
+}

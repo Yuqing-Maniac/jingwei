@@ -1,0 +1,269 @@
+{
+  "id": "support-03",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-8d7c570b-d05c-4abb-b764-4ba5ba49f65a.png",
+  "entries": [
+    {
+      "key": "ext_16_01",
+      "country": "cn",
+      "model": "CR400AF train reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/CR400AF",
+          "title": "CR400AF train reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "two-car short high-speed train with long tapered dolphin nose and swept dark windshield"
+      ]
+    },
+    {
+      "key": "ext_16_01",
+      "country": "us",
+      "model": "Acela train reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Acela",
+          "title": "Acela train reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "two-car train with short angular locomotive nose and tall squared stainless passenger car"
+      ]
+    },
+    {
+      "key": "ext_16_13",
+      "country": "cn",
+      "model": "Bohai Cuizhu RoRo ferry reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.shipspotting.com/photos/3096840?imo=9584803&lid=2874632&navList=moreOfThisShip&page=1&perPage=8",
+          "title": "Bohai Cuizhu RoRo ferry reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "broad white multi-deck ferry with blunt stern loading ramp and long dark row of passenger windows"
+      ]
+    },
+    {
+      "key": "ext_16_13",
+      "country": "us",
+      "model": "Bob Hope class RoRo reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Bob_Hope-class_vehicle_cargo_ship",
+          "title": "Bob Hope class RoRo reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "long grey vehicle cargo hull with single aft bridge and two tall deck loading cranes and stern ramp"
+      ]
+    },
+    {
+      "key": "ext_16_15",
+      "country": "cn",
+      "model": "AG600 rescue aircraft reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/AVIC_AG600",
+          "title": "AG600 rescue aircraft reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "four-propeller high wing amphibian with boat-shaped hull",
+        "high T tail",
+        "small outrigger wing floats"
+      ]
+    },
+    {
+      "key": "ext_16_15",
+      "country": "us",
+      "model": "HC-130 rescue transport reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Lockheed_HC-130",
+          "title": "HC-130 rescue transport reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "four-engine high-wing land transport with bulky round fuselage and rear loading ramp",
+        "conventional tail"
+      ]
+    },
+    {
+      "key": "ext_16_16",
+      "country": "cn",
+      "model": "Harbin Y-12 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Harbin_Y-12",
+          "title": "Harbin Y-12 reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "small twin-turboprop high wing utility airplane",
+        "boxy fuselage and fixed tricycle undercarriage"
+      ]
+    },
+    {
+      "key": "ext_16_16",
+      "country": "us",
+      "model": "Cessna 172 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Cessna_172",
+          "title": "Cessna 172 reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "single-engine high-wing four-seat light airplane with two blade nose propeller and wing struts"
+      ]
+    },
+    {
+      "key": "otH_radar",
+      "country": "cn",
+      "model": "Chinese OTH-B illustrative array reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.globalsecurity.org/military/world/china/radar.htm",
+          "title": "Chinese OTH-B illustrative array reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "compact depiction of long linear row of eight tall narrow crossed-wire dipole antenna masts above one blue equipment container"
+      ]
+    },
+    {
+      "key": "otH_radar",
+      "country": "us",
+      "model": "US ROTHR illustrative array reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Over-the-horizon_radar",
+          "title": "US ROTHR illustrative array reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "three tall triangular steel lattice masts with suspended horizontal wire curtain and two low blue equipment cabinets"
+      ]
+    },
+    {
+      "key": "ship_radar",
+      "country": "cn",
+      "model": "Type 346 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Type_346_radar",
+          "title": "Type 346 reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "one pale rectangular convex array face inset into slanted enclosed ship mast block with blue lower base"
+      ]
+    },
+    {
+      "key": "ship_radar",
+      "country": "us",
+      "model": "AN SPY-6 reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/AN/SPY-6",
+          "title": "AN SPY-6 reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "flat square tiled array with clipped corners attached to grey vertical mast frame",
+        "blue equipment base"
+      ]
+    },
+    {
+      "key": "aew_pod",
+      "country": "cn",
+      "model": "KJ-200 dorsal radar illustrative detached pod",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/KJ-200",
+          "title": "KJ-200 dorsal radar illustrative detached pod"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "long narrow balance-beam rectangular radar canoe on two short aerodynamic pylons and blue attachment base"
+      ]
+    },
+    {
+      "key": "aew_pod",
+      "country": "us",
+      "model": "E-2D APY-9 illustrative detached radar fairing",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.lockheedmartin.com/en-us/products/an-apy-9-radar.html",
+          "title": "E-2D APY-9 illustrative detached radar fairing"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "large thin circular airborne radar rotodome on two compact slanted support pylons and blue attachment base"
+      ]
+    },
+    {
+      "key": "weather_radar",
+      "country": "cn",
+      "model": "CINRAD illustrative exposed weather radar reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Weather_radar",
+          "title": "CINRAD illustrative exposed weather radar reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "white parabolic mesh-backed weather radar dish on compact blue cylindrical pedestal and two side elevation arms"
+      ]
+    },
+    {
+      "key": "weather_radar",
+      "country": "us",
+      "model": "NEXRAD WSR-88D reference",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/NEXRAD",
+          "title": "NEXRAD WSR-88D reference"
+        }
+      ],
+      "notes": "依据公开同国平台外形制作示意配置；涂装和微缩布局为美术设计。机载预警雷达以公开机背整流罩作吊舱图形参考，不声称存在同名独立吊舱。",
+      "geometryChecks": [
+        "white faceted spherical radome on short open four-legged blue steel lattice tower"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-04",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-a3eb819f-c3d0-4161-b583-91ca1f07ce3b.png",
+  "entries": [
+    {
+      "key": "ugv_armed",
+      "country": "cn",
+      "model": "Sharp Claw II基础平台＋武装示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/military-products/army/unmanned-systems/unmanned-ground-vehicles/sharp-claw-2-ugv-6x6-unmanned-ground-vehicle-technical-data-sheet-specifications-pictures-video-11412165",
+          "title": "Sharp Claw II 6x6"
+        }
+      ],
+      "notes": "武装载荷仅示意不声称对应实际整机",
+      "geometryChecks": [
+        "CN Sharp Claw II six large rubber wheels angular raised front sensor hood rear small remote turret"
+      ]
+    },
+    {
+      "key": "ugv_armed",
+      "country": "us",
+      "model": "MUTT基础平台＋武装示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://generaldynamics.uk.com/gduk/general-dynamics-land-systems-uk-awarded-contract-to-provide-two-unmanned-ground-vehicles-to-the-british-army/",
+          "title": "MUTT wheeled and tracked variants"
+        }
+      ],
+      "notes": "武装载荷仅示意不声称对应实际整机",
+      "geometryChecks": [
+        "US MUTT eight smaller wheels very flat rectangular utility platform compact remote turret and sensor mast"
+      ]
+    },
+    {
+      "key": "ugv_logistics",
+      "country": "cn",
+      "model": "Sharp Claw II物资运输平台参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/military-products/army/unmanned-systems/unmanned-ground-vehicles/sharp-claw-2-ugv-6x6-unmanned-ground-vehicle-technical-data-sheet-specifications-pictures-video-11412165",
+          "title": "Sharp Claw II 6x6"
+        }
+      ],
+      "notes": "物资箱装载为示意；保留各平台轮数和结构差异",
+      "geometryChecks": [
+        "CN Sharp Claw II six large rubber wheels sloping angular front sensor hood rear cargo bed with two rugged crates"
+      ]
+    },
+    {
+      "key": "ugv_logistics",
+      "country": "us",
+      "model": "SMET/MUTT物资运输平台参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://generaldynamics.uk.com/gduk/general-dynamics-land-systems-uk-awarded-contract-to-provide-two-unmanned-ground-vehicles-to-the-british-army/",
+          "title": "MUTT wheeled and tracked variants"
+        }
+      ],
+      "notes": "物资箱装载为示意；保留各平台轮数和结构差异",
+      "geometryChecks": [
+        "US MUTT eight wheels flat low platform with four strapped compact cargo crates"
+      ]
+    },
+    {
+      "key": "ugv_mineclear",
+      "country": "cn",
+      "model": "Sharp Claw II基础平台＋扫雷附件示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/military-products/army/unmanned-systems/unmanned-ground-vehicles/sharp-claw-2-ugv-6x6-unmanned-ground-vehicle-technical-data-sheet-specifications-pictures-video-11412165",
+          "title": "Sharp Claw II 6x6"
+        }
+      ],
+      "notes": "不声称实际整机装有扫雷滚轮或犁，任务载荷示意",
+      "geometryChecks": [
+        "CN Sharp Claw II 6 wheels raised front hood front mounted narrow rake-like mine clearance attachment"
+      ]
+    },
+    {
+      "key": "ugv_mineclear",
+      "country": "us",
+      "model": "MUTT基础平台＋扫雷附件示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://generaldynamics.uk.com/gduk/general-dynamics-land-systems-uk-awarded-contract-to-provide-two-unmanned-ground-vehicles-to-the-british-army/",
+          "title": "MUTT wheeled and tracked variants"
+        }
+      ],
+      "notes": "不声称实际整机装有扫雷滚轮或犁，任务载荷示意",
+      "geometryChecks": [
+        "US MUTT 8 wheels low deck front simple cylindrical segmented mine roller both no crew"
+      ]
+    },
+    {
+      "key": "robodog_armed",
+      "country": "cn",
+      "model": "Go2基础平台＋武装任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.unitree.com/go2/",
+          "title": "Unitree Go2 civilian platform"
+        }
+      ],
+      "notes": "Go2是民用平台；武装仅为图标任务示意，不表示厂家实际提供该构型",
+      "geometryChecks": [
+        "CN Unitree Go2 compact rounded quadruped robotic dog smooth white blue body four slim inward-kneed jointed legs small illustrative top remote barrel module"
+      ]
+    },
+    {
+      "key": "robodog_armed",
+      "country": "us",
+      "model": "Vision60基础平台＋武装任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ghostrobotics.io/vision-60",
+          "title": "Ghost Robotics Vision60"
+        }
+      ],
+      "notes": "Go2是民用平台；武装仅为图标任务示意，不表示厂家实际提供该构型",
+      "geometryChecks": [
+        "US Ghost Vision60 larger rectangular industrial quadruped flat body four long robust jointed legs illustrative top compact remote barrel, clearly robots"
+      ]
+    },
+    {
+      "key": "humanoid",
+      "country": "cn",
+      "model": "宇树H1公开平台",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.unitree.com/h1/",
+          "title": "Unitree H1"
+        }
+      ],
+      "notes": "Atlas明确2024代，不混合液压代与2026量产代",
+      "geometryChecks": [
+        "CN Unitree H1 tall lanky humanoid slender black exposed limbs narrow small sensor head box torso two arms two legs"
+      ]
+    },
+    {
+      "key": "humanoid",
+      "country": "us",
+      "model": "Atlas全电动（2024研究原型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://bostondynamics.com/news/introducing-electric-atlas/",
+          "title": "Electric Atlas 2024 research prototype"
+        }
+      ],
+      "notes": "Atlas明确2024代，不混合液压代与2026量产代",
+      "geometryChecks": [
+        "US Atlas 2024 electric prototype compact stockier humanoid round ring-shaped head white grey rounded armor bulkier articulated limbs, neutral standing pose full body"
+      ]
+    },
+    {
+      "key": "unmanned_tank",
+      "country": "cn",
+      "model": "Sharp Claw I基础履带战斗平台示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.armyrecognition.com/military-products/army/unmanned-systems/unmanned-ground-vehicles/sharp-claw-1-ugv-unmanned-ground-vehicle-china-data-fact-sheet",
+          "title": "Sharp Claw I tracked UGV"
+        }
+      ],
+      "notes": "中国为小型履带无人平台非主战坦克；炮塔任务附件仅示意",
+      "geometryChecks": [
+        "CN Sharp Claw I small low short tracked robotic combat vehicle angular compact hull small remote turret no manned hatches"
+      ]
+    },
+    {
+      "key": "unmanned_tank",
+      "country": "us",
+      "model": "Ripsaw M5（试验平台参考）",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/ground-robotic-vehicles-family-products",
+          "title": "Ripsaw M5 robotic combat vehicle"
+        }
+      ],
+      "notes": "中国为小型履带无人平台非主战坦克；炮塔任务附件仅示意",
+      "geometryChecks": [
+        "US Ripsaw M5 long wide tracked robotic combat vehicle deeply sloped chassis large visible road wheels and compact unmanned turret"
+      ]
+    },
+    {
+      "key": "ugv_firefight",
+      "country": "cn",
+      "model": "开诚RXR-M40D公开构型参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.citichickc.com/productinfo/797611.html?templateId=415923",
+          "title": "RXR M40D firefighting robot"
+        }
+      ],
+      "notes": "履带消防平台，保留水炮、接管接口和传感器",
+      "geometryChecks": [
+        "CN RXR M40D compact tall twin track firefighting robot angular central housing elevated long silver water monitor and sensor mast"
+      ]
+    },
+    {
+      "key": "ugv_firefight",
+      "country": "us",
+      "model": "Thermite RS3公开构型参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.howeandhowe.com/civil/thermite",
+          "title": "Howe Thermite"
+        }
+      ],
+      "notes": "履带消防平台，保留水炮、接管接口和传感器",
+      "geometryChecks": [
+        "US Thermite RS3 very wide low tracked chassis huge rounded central high-flow water monitor and exposed rear hose couplings, no water stream"
+      ]
+    },
+    {
+      "key": "drone_nest",
+      "country": "cn",
+      "model": "DJI Dock 2公开构型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://enterprise.dji.com/dock-2",
+          "title": "DJI Dock 2"
+        }
+      ],
+      "notes": "开盖状态、内置小无人机仅用于外观识别",
+      "geometryChecks": [
+        "CN DJI Dock2 compact square low white box two top lids opened outward tiny folded quadcopter inside central landing pad"
+      ]
+    },
+    {
+      "key": "drone_nest",
+      "country": "us",
+      "model": "Skydio Dock for X10公开构型",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.skydio.com/dock",
+          "title": "Skydio Dock for X10"
+        }
+      ],
+      "notes": "开盖状态、内置小无人机仅用于外观识别",
+      "geometryChecks": [
+        "US Skydio Dock for X10 taller elongated rectangular dock with high single hinged protective canopy and small quadcopter landing area"
+      ]
+    }
+  ]
+}

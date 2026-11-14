@@ -1,0 +1,300 @@
+{
+  "id": "personnel-04",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-6172f785-27de-4a81-a9d3-150adb3b7ad1.png",
+  "entries": [
+    {
+      "key": "logistics_soldier",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "搬运箱/手推车",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "logistics_soldier",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "搬运箱/手推车",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "mp_soldier",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "直立持枪警卫和电台",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "mp_soldier",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "直立持枪警卫和电台",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cyber_operator",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "双屏键盘网络工位",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cyber_operator",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "双屏键盘网络工位",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_army",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "陆军地图桌指挥动作",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_army",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "陆军地图桌指挥动作",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_navy",
+      "country": "cn",
+      "model": "中国海军/陆战公开作训作业服参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "舰艇导航复示器/望远镜",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_navy",
+      "country": "us",
+      "model": "美国海军NWU III / 陆战MARPAT公开参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.marines.mil/Portals/1/Publications/MCO%201020.34H%20v2.pdf",
+          "title": "Marine Corps Uniform Regulations — MCCUU MARPAT"
+        },
+        {
+          "url": "https://www.mynavyhr.navy.mil/References/US-Navy-Uniforms/Uniform-Regulations/Chapter-3/male-Officer/Working/NWU-III/",
+          "title": "Navy Working Uniform Type III"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "舰艇导航复示器/望远镜",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_air",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "空军飞行文书与终端",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_air",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "空军飞行文书与终端",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_rocket",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "通用发射管理工位",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_rocket",
+      "country": "us",
+      "model": "美国空军导弹任务人员sage-green飞行服参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.afmc.af.mil/About-Us/History/Uniforms/igphoto/2002737727/",
+          "title": "US Air Force current flight suit"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。美方为功能对应导弹任务岗位，不声称存在同名军种。",
+      "geometryChecks": [
+        "通用发射管理工位",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_joint",
+      "country": "cn",
+      "model": "中国21式作训服/作业服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/NewsRelease/16018909.html",
+          "title": "Type-21 combat uniforms distributed to Chinese military (2021-12-30)"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "多屏联合指挥桌",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    },
+    {
+      "key": "cmd_joint",
+      "country": "us",
+      "model": "美国陆军OCP/职业防护服公开参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.army.mil/uniforms/",
+          "title": "US Army Uniforms and Grooming Guide — OCP ACU"
+        }
+      ],
+      "notes": "参考2021—2026公开服装构型，非特定单位或身份复原。控制设备为通用示意；蓝色装备面板为应用可变色区域。",
+      "geometryChecks": [
+        "多屏联合指挥桌",
+        "中美服装/头盔/携行具依据各自公开服装参考构型区分",
+        "生成后目视检查角色道具与4×4中美行优先排序"
+      ]
+    }
+  ]
+}

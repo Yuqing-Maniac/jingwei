@@ -1,0 +1,59 @@
+{
+  "id": "support-repair-01",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-33a74a0d-5707-48ed-87b4-0663c424ed9a.png",
+  "entries": [
+    {
+      "key": "ext_05_01",
+      "country": "us",
+      "model": "Falcon 9 blue-panel repair",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Falcon_9",
+          "title": "Falcon 9"
+        }
+      ],
+      "notes": "替换support-01对应格；饱和钴蓝示意涂装，公开平台几何参考。",
+      "geometryChecks": [
+        "slender single white cylinder",
+        "black interstage band",
+        "narrow fairing",
+        "nine small base engines"
+      ]
+    },
+    {
+      "key": "ext_05_02",
+      "country": "cn",
+      "model": "Zhuque-3 reusable booster reference blue-panel repair",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Zhuque-3",
+          "title": "Zhuque-3 reusable booster reference"
+        }
+      ],
+      "notes": "替换support-01对应格；饱和钴蓝示意涂装，公开平台几何参考。",
+      "geometryChecks": [
+        "stainless broad booster cylinder with grid fins and short deployed landing legs"
+      ]
+    },
+    {
+      "key": "ext_05_07",
+      "country": "cn",
+      "model": "Tianhe robotic arm reference blue-panel repair",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tianhe_core_module",
+          "title": "Tianhe robotic arm reference"
+        }
+      ],
+      "notes": "替换support-01对应格；饱和钴蓝示意涂装，公开平台几何参考。",
+      "geometryChecks": [
+        "standalone articulated white seven-joint tubular robotic arm in bent S pose anchored to small square service pedestal"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-02",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-d88b94ce-3cf1-4a08-8dfa-75eb5e5dab73.png",
+  "entries": [
+    {
+      "key": "uav_tethered",
+      "country": "cn",
+      "model": "MMC T1系留无人机构型参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://mmcuav.wordpress.com/2017/06/01/mmc-flying-high-with-drone-tether-system/",
+          "title": "MMC T1 drone tether system"
+        }
+      ],
+      "notes": "系留电缆与地面卷盘为示意，非声称特定整机配置",
+      "geometryChecks": [
+        "CN long hexacopter six rotors based on MMC tether system, downward tether to compact ground spool"
+      ]
+    },
+    {
+      "key": "uav_tethered",
+      "country": "us",
+      "model": "Hoverfly系留四旋翼参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://hoverflytech.com/faq/",
+          "title": "Hoverfly tethered UAS"
+        }
+      ],
+      "notes": "系留电缆与地面卷盘为示意，非声称特定整机配置",
+      "geometryChecks": [
+        "US Hoverfly compact four-rotor tall center drone with downward tether to rugged box spool"
+      ]
+    },
+    {
+      "key": "uav_micro",
+      "country": "cn",
+      "model": "西北工业大学Dove（研究原型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.mdpi.com/2072-666X/14/8/1547",
+          "title": "Bird-like flapping wing prototypes review"
+        }
+      ],
+      "notes": "中国鸽式长翼与尾扇；美国蜂鸟式短翼与纤细机身；非真实鸟",
+      "geometryChecks": [
+        "CN mechanical Dove research prototype pigeon-like long white rigid membrane wings blue tiny motor body fan tail"
+      ]
+    },
+    {
+      "key": "uav_micro",
+      "country": "us",
+      "model": "AeroVironment Nano Hummingbird（研究原型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.mdpi.com/2072-666X/14/8/1547",
+          "title": "Bird-like flapping wing prototypes review"
+        }
+      ],
+      "notes": "中国鸽式长翼与尾扇；美国蜂鸟式短翼与纤细机身；非真实鸟",
+      "geometryChecks": [
+        "US Nano Hummingbird robot short translucent flapping wings long needle nose compact cylindrical body and small tail, visibly engineered not living birds"
+      ]
+    },
+    {
+      "key": "uav_solar",
+      "country": "cn",
+      "model": "启明星50（公开原型）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://english.www.gov.cn/news/topnews/202209/05/content_WS63155495c6d0a757729df9e2.html",
+          "title": "Qimingxing 50 solar UAV"
+        }
+      ],
+      "notes": "中国双机身长翼；美国无尾超长直翼与分布式推进",
+      "geometryChecks": [
+        "CN Qimingxing 50 huge ultrathin solar cell wing, twin long booms to tail surfaces and six distributed electric propellers"
+      ]
+    },
+    {
+      "key": "uav_solar",
+      "country": "us",
+      "model": "Helios Prototype（历史试验机）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.nasa.gov/image-article/helios-prototype-flying-wing-2/",
+          "title": "NASA Helios Prototype"
+        }
+      ],
+      "notes": "中国双机身长翼；美国无尾超长直翼与分布式推进",
+      "geometryChecks": [
+        "US historical NASA Helios extremely long flexible rectangular flying wing, many small distributed motors hanging instrument pods, no conventional tail"
+      ]
+    },
+    {
+      "key": "uav_catapult",
+      "country": "cn",
+      "model": "ASN-209基础平台＋弹射示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/f3046790eecd5452cb4e1894a81966f4",
+          "title": "ASN-209 public airframe and launch"
+        }
+      ],
+      "notes": "中国公开采用助推发射，本图导轨为任务图示；非特定装备原型复刻",
+      "geometryChecks": [
+        "CN ASN-209 twin boom pusher prop long wing sitting on short inclined catapult guide stand"
+      ]
+    },
+    {
+      "key": "uav_catapult",
+      "country": "us",
+      "model": "ScanEagle弹射平台参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.insitu.com/products/scaneagle",
+          "title": "Insitu ScanEagle"
+        }
+      ],
+      "notes": "中国公开采用助推发射，本图导轨为任务图示；非特定装备原型复刻",
+      "geometryChecks": [
+        "US ScanEagle compact tailless slender wing with upturned tips rear pusher atop compact pneumatic launch rail"
+      ]
+    },
+    {
+      "key": "uav_coaxial",
+      "country": "cn",
+      "model": "TD550公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.uatair.com/en/product/info/59.html",
+          "title": "TD550 coaxial unmanned helicopter"
+        }
+      ],
+      "notes": "中国直升机式流线机身无尾桨；美国细圆柱体与双层共轴桨",
+      "geometryChecks": [
+        "CN TD550 substantial helicopter-shaped streamlined pod with long tail boom, no tail rotor, two stacked counter-rotating rotor discs, landing skids"
+      ]
+    },
+    {
+      "key": "uav_coaxial",
+      "country": "us",
+      "model": "Ascent Spirit公开外形",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://ascentaerosystems.com/wp-content/uploads/2025/02/2025-Spirit-Platform-Specs_Feb-FINAL.pdf",
+          "title": "Ascent Spirit platform"
+        }
+      ],
+      "notes": "中国直升机式流线机身无尾桨；美国细圆柱体与双层共轴桨",
+      "geometryChecks": [
+        "US Spirit extremely slim vertical cylindrical body two counter-rotating propeller levels small splayed landing feet and bottom camera"
+      ]
+    },
+    {
+      "key": "uav_ducted",
+      "country": "cn",
+      "model": "DJI Avata 2涵道护圈参考",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.dji.com/avata-2/specs",
+          "title": "DJI Avata 2"
+        }
+      ],
+      "notes": "中国四个薄护圈；美国单个厚圆筒涵道与侧支腿",
+      "geometryChecks": [
+        "CN Avata2 flat small quad fan drone four integrated circular guarded ducts front camera"
+      ]
+    },
+    {
+      "key": "uav_ducted",
+      "country": "us",
+      "model": "Honeywell T-Hawk（历史试验平台）",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://avid-llc.squarespace.com/t-hawk-mav",
+          "title": "AVID T-Hawk ducted MAV"
+        }
+      ],
+      "notes": "中国四个薄护圈；美国单个厚圆筒涵道与侧支腿",
+      "geometryChecks": [
+        "US Honeywell T-Hawk large single thick cylindrical ducted fan with three short splayed metal landing legs and side sensor pod"
+      ]
+    },
+    {
+      "key": "uav_ew",
+      "country": "cn",
+      "model": "BZK-005基础平台＋电子对抗载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/353aaaec-5043-4775-ae35-14ac0cdf94e0",
+          "title": "BZK-005 airframe geometry"
+        }
+      ],
+      "notes": "基于公开基础平台的任务载荷示意，吊舱比例与布置不表示真实型号配置",
+      "geometryChecks": [
+        "CN BZK005 long fixed wing twin tail booms rear pusher, long narrow ventral EW canoe and small side antenna fairings"
+      ]
+    },
+    {
+      "key": "uav_ew",
+      "country": "us",
+      "model": "MQ-9A基础平台＋电子对抗吊舱示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ga.com/usaf-flies-with-angry-kitten-jamming-pod",
+          "title": "MQ-9 Angry Kitten EW pod demonstration"
+        }
+      ],
+      "notes": "基于公开基础平台的任务载荷示意，吊舱比例与布置不表示真实型号配置",
+      "geometryChecks": [
+        "US MQ9 classic long narrow fuselage bulbous nose inverted V tail rear pusher and one underwing EW pod"
+      ]
+    },
+    {
+      "key": "uav_relay",
+      "country": "cn",
+      "model": "BZK-005基础平台＋中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/353aaaec-5043-4775-ae35-14ac0cdf94e0",
+          "title": "BZK-005 airframe geometry"
+        }
+      ],
+      "notes": "通信中继载荷仅为示意，不声称真实国别型号有此构型",
+      "geometryChecks": [
+        "CN BZK005 twin boom and straight wing rear pusher with two short dorsal communications blade antennas and small belly relay module"
+      ]
+    },
+    {
+      "key": "uav_relay",
+      "country": "us",
+      "model": "MQ-9基础平台＋中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ga.com/usaf-flies-with-angry-kitten-jamming-pod",
+          "title": "MQ-9 Angry Kitten EW pod demonstration"
+        }
+      ],
+      "notes": "通信中继载荷仅为示意，不声称真实国别型号有此构型",
+      "geometryChecks": [
+        "US MQ9 long fuselage bulbous nose V tail and long wing two small antenna fairings, no weaponry"
+      ]
+    }
+  ]
+}

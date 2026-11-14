@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-05",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-3fda5af0-b813-4ea6-a953-0dcd220e98a8.png",
+  "entries": [
+    {
+      "key": "ruav_recon",
+      "country": "cn",
+      "model": "AR500C基础平台＋侦察载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids small ventral cyan EO ball under nose"
+      ]
+    },
+    {
+      "key": "ruav_recon",
+      "country": "us",
+      "model": "MQ-8C基础平台＋侦察载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids small ventral cyan EO ball under nose"
+      ]
+    },
+    {
+      "key": "ruav_strike",
+      "country": "cn",
+      "model": "AR500C基础平台＋打击载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids two short side pylons with small inert streamlined task pods"
+      ]
+    },
+    {
+      "key": "ruav_strike",
+      "country": "us",
+      "model": "MQ-8C基础平台＋打击载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids two short side pylons with small inert streamlined task pods"
+      ]
+    },
+    {
+      "key": "ruav_ew",
+      "country": "cn",
+      "model": "AR500C基础平台＋电子战载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids one long narrow belly EW pod and two dorsal blade antennas"
+      ]
+    },
+    {
+      "key": "ruav_ew",
+      "country": "us",
+      "model": "MQ-8C基础平台＋电子战载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids one long narrow belly EW pod and two dorsal blade antennas"
+      ]
+    },
+    {
+      "key": "ruav_relay",
+      "country": "cn",
+      "model": "AR500C基础平台＋通信中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids two short thin dorsal antenna blades and small side communications fairings"
+      ]
+    },
+    {
+      "key": "ruav_relay",
+      "country": "us",
+      "model": "MQ-8C基础平台＋通信中继载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids two short thin dorsal antenna blades and small side communications fairings"
+      ]
+    },
+    {
+      "key": "ruav_cargo",
+      "country": "cn",
+      "model": "AR500C基础平台＋运输载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids one rugged small cargo box suspended CLOSE under fuselage by short four-point sling"
+      ]
+    },
+    {
+      "key": "ruav_cargo",
+      "country": "us",
+      "model": "MQ-8C基础平台＋运输载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids one rugged small cargo box suspended CLOSE under fuselage by short four-point sling"
+      ]
+    },
+    {
+      "key": "ruav_decoy",
+      "country": "cn",
+      "model": "AR500C基础平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids small rectangular belly signal module and two tiny side antenna bumps"
+      ]
+    },
+    {
+      "key": "ruav_decoy",
+      "country": "us",
+      "model": "MQ-8C基础平台＋诱饵载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids small rectangular belly signal module and two tiny side antenna bumps"
+      ]
+    },
+    {
+      "key": "ruav_target",
+      "country": "cn",
+      "model": "AR500C基础平台＋靶标载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.militaryfactory.com/aircraft/detail.php?aircraft_id=2298",
+          "title": "AVIC AR500C public rotorcraft shape"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "CN AR500C compact narrow teardrop unmanned helicopter no cockpit glass, slender tail boom exposed tail rotor three blade main rotor two narrow low skids no weapons a small blunt ventral mission module and small orange propeller-tip accents only"
+      ]
+    },
+    {
+      "key": "ruav_target",
+      "country": "us",
+      "model": "MQ-8C基础平台＋靶标载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/fire-scout",
+          "title": "MQ8C Fire Scout"
+        }
+      ],
+      "notes": "仅平台公开基础外形；任务载荷、支架与布置为示意，不表示真实对应型号配置",
+      "geometryChecks": [
+        "US MQ8C larger wide Bell407-derived rotorcraft pod completely opaque unmanned cabin four-blade main rotor tail boom high horizontal tail two broad skids no weapons a small blunt ventral mission module and small orange propeller-tip accents only"
+      ]
+    },
+    {
+      "key": "uav_asw",
+      "country": "cn",
+      "model": "BZK-005基础平台＋反潜载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/353aaaec-5043-4775-ae35-14ac0cdf94e0",
+          "title": "BZK-005 airframe geometry"
+        }
+      ],
+      "notes": "中国无对应真实反潜构型证据；仅基础平台加示意声呐浮标舱，美国也为图示载荷简化",
+      "geometryChecks": [
+        "CN BZK005 long fixed wing twin tail booms rear pusher with two small cylindrical underwing sonobuoy pods nose EO camera"
+      ]
+    },
+    {
+      "key": "uav_asw",
+      "country": "us",
+      "model": "MQ-9B SeaGuardian基础平台＋反潜载荷示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ga-asi.com/multi-mission-payloads/anti-submarine-warfare",
+          "title": "MQ9B SeaGuardian sonobuoy system"
+        }
+      ],
+      "notes": "中国无对应真实反潜构型证据；仅基础平台加示意声呐浮标舱，美国也为图示载荷简化",
+      "geometryChecks": [
+        "US MQ9B SeaGuardian long slim fuselage V tail rear pusher small belly radar dome and two underwing sonobuoy dispenser pods no torpedoes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "maritime_land-blocked",
+  "blocked": [
+    {
+      "key": "sonar_buoy",
+      "country": "cn",
+      "model": null,
+      "status": "blocked",
+      "generated": false,
+      "reason": "无法从可靠公开来源确认中国国产声呐浮标具体型号及足以区分美国外形的公开轮廓，未生成中国替代品；不得把美制AN/SSQ-53或泛化原创设计当作已核验中国型号。",
+      "sources": [
+        {
+          "url": "https://www.govinfo.gov/content/pkg/GOVPUB-D208-PURL-gpo246596/pdf/GOVPUB-D208-PURL-gpo246596.pdf",
+          "title": "China Maritime Report No.38: PLAN Anti-Submarine Warfare Aircraft - Sensors, Weapons, and Operational Concepts"
+        }
+      ],
+      "relatedBatch": "maritime_land-02",
+      "relatedNote": "美国AN/SSQ-53F已生成，02批cellIndex14；cellIndex15为透明空格。"
+    }
+  ],
+  "disabled": true
+}

@@ -1,0 +1,264 @@
+{
+  "id": "unmanned-06",
+  "columns": 4,
+  "rows": 4,
+  "path": "/workspace/generated_images/exec-ed64bc91-2141-465a-beee-2eba59373d2e.png",
+  "entries": [
+    {
+      "key": "loiter_recon",
+      "country": "cn",
+      "model": "CH-901基础平台＋侦察任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/CH-901",
+          "title": "CH901 public loitering airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "CN CH901 compact thick rounded cylindrical fuselage high broad straight folding main wing small rear stabilizer surfaces rear pusher prop small cyan nose optical aperture"
+      ]
+    },
+    {
+      "key": "loiter_recon",
+      "country": "us",
+      "model": "Switchblade600基础平台＋侦察任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/switchblade-600/",
+          "title": "Switchblade600 public airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "US Switchblade600 longer slimmer tube body two widely spaced tandem folding wing sets in X orientation rear pusher small cyan nose optical aperture"
+      ]
+    },
+    {
+      "key": "loiter_ew",
+      "country": "cn",
+      "model": "CH-901基础平台＋干扰任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/CH-901",
+          "title": "CH901 public loitering airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "CN CH901 compact thick rounded cylindrical fuselage high broad straight folding main wing small rear stabilizer surfaces rear pusher prop small short belly signal pod and two short blade antennas"
+      ]
+    },
+    {
+      "key": "loiter_ew",
+      "country": "us",
+      "model": "Switchblade600基础平台＋干扰任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/switchblade-600/",
+          "title": "Switchblade600 public airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "US Switchblade600 longer slimmer tube body two widely spaced tandem folding wing sets in X orientation rear pusher small short belly signal pod and two short blade antennas"
+      ]
+    },
+    {
+      "key": "loiter_relay",
+      "country": "cn",
+      "model": "CH-901基础平台＋中继任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/CH-901",
+          "title": "CH901 public loitering airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "CN CH901 compact thick rounded cylindrical fuselage high broad straight folding main wing small rear stabilizer surfaces rear pusher prop two tiny dorsal blade antennas and smooth belly communications module"
+      ]
+    },
+    {
+      "key": "loiter_relay",
+      "country": "us",
+      "model": "Switchblade600基础平台＋中继任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/switchblade-600/",
+          "title": "Switchblade600 public airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "US Switchblade600 longer slimmer tube body two widely spaced tandem folding wing sets in X orientation rear pusher two tiny dorsal blade antennas and smooth belly communications module"
+      ]
+    },
+    {
+      "key": "loiter_decoy",
+      "country": "cn",
+      "model": "CH-901基础平台＋诱饵任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/CH-901",
+          "title": "CH901 public loitering airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "CN CH901 compact thick rounded cylindrical fuselage high broad straight folding main wing small rear stabilizer surfaces rear pusher prop small blunt belly signal module and tiny side antenna bumps"
+      ]
+    },
+    {
+      "key": "loiter_decoy",
+      "country": "us",
+      "model": "Switchblade600基础平台＋诱饵任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.avinc.com/solution/switchblade-600/",
+          "title": "Switchblade600 public airframe"
+        }
+      ],
+      "notes": "仅公开基础平台外形，任务载荷为示意不声称真实对应型号",
+      "geometryChecks": [
+        "US Switchblade600 longer slimmer tube body two widely spaced tandem folding wing sets in X orientation rear pusher small blunt belly signal module and tiny side antenna bumps"
+      ]
+    },
+    {
+      "key": "usv_recon",
+      "country": "cn",
+      "model": "JARI-USV基础平台＋侦察任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "CN JARI double hull twin pointed bows strongly angular stealth deckhouse short telescopic EO mast and tiny foredeck camera"
+      ]
+    },
+    {
+      "key": "usv_recon",
+      "country": "us",
+      "model": "CUSV基础平台＋侦察任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "US CUSV single deep V hull blunt open aft working deck and short narrow center mast short telescopic EO mast and tiny foredeck camera"
+      ]
+    },
+    {
+      "key": "usv_ew",
+      "country": "cn",
+      "model": "JARI-USV基础平台＋干扰任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "CN JARI double hull twin pointed bows strongly angular stealth deckhouse compact rear electronics box and four upright antenna rods"
+      ]
+    },
+    {
+      "key": "usv_ew",
+      "country": "us",
+      "model": "CUSV基础平台＋干扰任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "US CUSV single deep V hull blunt open aft working deck and short narrow center mast compact rear electronics box and four upright antenna rods"
+      ]
+    },
+    {
+      "key": "usv_relay",
+      "country": "cn",
+      "model": "JARI-USV基础平台＋中继任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "CN JARI double hull twin pointed bows strongly angular stealth deckhouse small white satellite dome and two slim vertical communications antennas"
+      ]
+    },
+    {
+      "key": "usv_relay",
+      "country": "us",
+      "model": "CUSV基础平台＋中继任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "US CUSV single deep V hull blunt open aft working deck and short narrow center mast small white satellite dome and two slim vertical communications antennas"
+      ]
+    },
+    {
+      "key": "usv_cargo",
+      "country": "cn",
+      "model": "JARI-USV基础平台＋运输任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.janes.com/defence-intelligence-insights/defence-news/chinas-csic-expands-unmanned-surface-warfare-portfolio-with-jari-usv",
+          "title": "CSIC JARI USV公开双体构型"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "CN JARI double hull twin pointed bows strongly angular stealth deckhouse two rugged strapped cargo crates on open aft deck"
+      ]
+    },
+    {
+      "key": "usv_cargo",
+      "country": "us",
+      "model": "CUSV基础平台＋运输任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron CUSV"
+        }
+      ],
+      "notes": "任务附件仅为示意，不表示该真实平台有该具体配置",
+      "geometryChecks": [
+        "US CUSV single deep V hull blunt open aft working deck and short narrow center mast two rugged strapped cargo crates on open aft deck"
+      ]
+    }
+  ]
+}
