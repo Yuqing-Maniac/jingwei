@@ -391,6 +391,7 @@ function sideRoundPts(type, w, h, r) {
 }
 const keepsSize = n => n.type === 'equip' || !!(SHP_DEF[n.type] && SHP_DEF[n.type].keep);
 function isLineArrow(n) { return !!n && (n.type === 'stdArrow' || n.type === 'dimArrow'); }
+function canRotate(n) { return !!n && !isCont(n); }
 function rotOf(n) { const r = +n.rot || 0; return isFinite(r) ? r : 0; }
 function rotPoint(n, x, y) {
   const rot = rotOf(n); if (!rot) return { x: x, y: y };
@@ -401,6 +402,24 @@ function unrotPoint(n, x, y) {
   const rot = rotOf(n); if (!rot) return { x: x, y: y };
   const cx = n.x + n.w / 2, cy = n.y + n.h / 2, a = -rot * Math.PI / 180, dx = x - cx, dy = y - cy;
   return { x: cx + dx * Math.cos(a) - dy * Math.sin(a), y: cy + dx * Math.sin(a) + dy * Math.cos(a) };
+}
+/* Node geometry stays unrotated in saved documents; render and exporters share its centre transform. */
+function rotatedBox(n, box) {
+  if (!n || !canRotate(n) || !rotOf(n)) return { x: box.x, y: box.y, w: box.w, h: box.h };
+  const c = rotPoint(n, box.x + box.w / 2, box.y + box.h / 2);
+  return { x: c.x - box.w / 2, y: c.y - box.h / 2, w: box.w, h: box.h };
+}
+function nodeBounds(n) {
+  let x0 = n.x, y0 = n.y, x1 = n.x + n.w, y1 = n.y + n.h;
+  if (canRotate(n) && rotOf(n)) {
+    const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map(q => rotPoint(n, q[0], q[1]));
+    x0 = Math.min(...pts.map(q => q.x)); y0 = Math.min(...pts.map(q => q.y));
+    x1 = Math.max(...pts.map(q => q.x)); y1 = Math.max(...pts.map(q => q.y));
+  }
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+}
+function nodeRotationSVG(n) {
+  return canRotate(n) && !isLineArrow(n) && rotOf(n) ? ` transform="rotate(${rotOf(n)} ${n.x + n.w / 2} ${n.y + n.h / 2})"` : '';
 }
 function measureSpec() {
   const m = doc && doc.measure;
@@ -620,8 +639,9 @@ function paintOf(n, t) {
   let fill = st.fill, stroke = st.stroke;
   if ((n.type === 'note' || n.type === 'legend') && !n.fill) fill = t.note.fill;
   if ((n.type === 'note' || n.type === 'legend') && !n.stroke) stroke = t.note.stroke;
+  const coverage = n.coverageKind && window.Coverage ? Coverage.style(n) : null;
   const noLine = !!n.noLine;
-  return { fill: fill, stroke: noLine ? 'none' : stroke, sw: noLine ? 0 : 1.2, grad: gradSpec(n, fill), noLine: noLine };
+  return { dash: coverage ? coverage.dash : '', fillAlpha: coverage ? coverage.fillAlpha : 1, fill: fill, stroke: noLine ? 'none' : stroke, sw: noLine ? 0 : (coverage ? coverage.sw : 1.2), grad: gradSpec(n, fill), noLine: noLine };
 }
 function gradDef(id, g) {
   if (!g) return { attr: '', def: '' };
@@ -640,7 +660,7 @@ function gradTag(g) {
 /* PPT 形状名：渐变标记，末尾 N 表示无描边。pptxgenjs 会把线宽 0 写成 1，导出后再改 XML。 */
 function pptName(paint) {
   if (!paint) return '';
-  const g = paint.grad ? gradTag(paint.grad) : '';
+  const g = paint.grad ? gradTag(paint.grad) + (paint.fillAlpha != null && paint.fillAlpha < 1 ? 'A' + String(Math.round(paint.fillAlpha * 100)).padStart(3, '0') : '') : '';
   if (!g && !paint.noLine) return '';
   return (g || 'jwC') + (paint.noLine ? 'N' : '');
 }
@@ -649,15 +669,16 @@ function gradFillXml(g) {
   const geom = g.dir === 'r'
     ? '<a:path path="circle"><a:fillToRect l="50000" t="50000" r="50000" b="50000"/></a:path>'
     : `<a:lin ang="${g.dir === 'h' ? 0 : 5400000}" scaled="1"/>`;
-  return `<a:gradFill rotWithShape="1"><a:gsLst>${stop(0, g.c1, 1)}${stop(100000, g.c2, g.a2)}</a:gsLst>${geom}</a:gradFill>`;
+  return `<a:gradFill rotWithShape="1"><a:gsLst>${stop(0, g.c1, g.a1 == null ? 1 : g.a1)}${stop(100000, g.c2, g.a2)}</a:gsLst>${geom}</a:gradFill>`;
 }
 function shapeGeom(type, w, h, sweep) {
   const g = type === 'sector' ? sectorGeom(w, h, sweep) : (GEO[type] || GEO.rect)(w, h);
   g.lines = g.lines || []; g.shade = g.shade || []; return g;
 }
 const ptsD = (pts, x, y, close) => 'M' + pts.map(p => `${(x + p[0]).toFixed(1)},${(y + p[1]).toFixed(1)}`).join(' L') + (close ? 'Z' : '');
-function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2, sweep) {
-  const a = `fill="${fill}" stroke="${stroke}" stroke-width="${sw}"`;
+function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2, sweep, style) {
+  const extra = style ? ` fill-opacity="${style.fillAlpha == null ? 1 : style.fillAlpha}"${style.dash ? ` stroke-dasharray="${esc(style.dash)}"` : ''}` : '';
+  const a = `fill="${fill}" stroke="${stroke}" stroke-width="${sw}"${extra}`;
   if (type === 'ellipse') return `<ellipse cx="${x + w / 2}" cy="${y + h / 2}" rx="${w / 2}" ry="${h / 2}" ${a}/>`;
   if (type === 'diamond') return `<polygon points="${x + w / 2},${y} ${x + w},${y + h / 2} ${x + w / 2},${y + h} ${x},${y + h / 2}" ${a}/>`;
   if (type === 'sector' || (GEO[type] && type !== 'rect')) {
@@ -763,15 +784,21 @@ function nodeSVG(n, p, exp) {
       const paint = paintOf(n, t), fp = gradDef(n.id, paint.grad);
       const kind = n.type === 'note' ? 'rect' : (n.type === 'equip' && n.noBox ? 'equip' : n.type);
       const sw = (n.type === 'note' || (n.type === 'equip' && n.noBox)) ? (paint.noLine ? 0 : 1) : paint.sw;
-      s += fp.def + shapeMarkup(kind, n.x, n.y, n.w, n.h, fp.attr || paint.fill, paint.stroke, sw, n.sweep);
+      s += fp.def + shapeMarkup(kind, n.x, n.y, n.w, n.h, fp.attr || paint.fill, paint.stroke, sw, n.sweep, paint);
     }
     const L = isLineArrow(n) ? { icon: null, text: null } : nodeLayout(n);
     if (L.icon) s += iconSVG(L.icon);
-    if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
+    if (L.text) {
+      const label = textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
+      if (L.icon && !exp) {
+        const b = L.text.box, h = Math.max(b[3], L.text.lines.length * L.text.size * 1.38);
+        s += `<g data-icon-label="${esc(n.id)}"><rect x="${b[0]}" y="${L.text.cy - h / 2}" width="${b[2]}" height="${h}" fill="transparent" pointer-events="all"/>${label}</g>`;
+      } else s += label;
+    }
   }
   if (window.Std) s += Std.codeTagSVG(n, p);
   if (!exp && n.sub) s += `<g data-enter="${esc(n.id)}" style="cursor:pointer"><title>进入内部结构</title><circle cx="${n.x + n.w - 2}" cy="${n.y + 2}" r="8" fill="#2F80ED"/><path d="M${n.x + n.w - 6},${n.y + 2} h8 M${n.x + n.w - 2},${n.y - 2} v8" stroke="#fff" stroke-width="1.8"/></g>`;
-  return `<g data-id="${esc(n.id)}">${s}</g>`;
+  return `<g data-id="${esc(n.id)}"${nodeRotationSVG(n)}>${s}</g>`;
 }
 
 /* ---------- link routing ----------
@@ -788,11 +815,11 @@ function segCross(p1, p2, p3, p4) {
   const t = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / d, u = ((p3.x - p1.x) * (p2.y - p1.y) - (p3.y - p1.y) * (p2.x - p1.x)) / d;
   const e = 0.02; return t > e && t < 1 - e && u > e && u < 1 - e;
 }
-function segHitsBox(u, v, o) { const x0 = Math.min(u.x, v.x), x1 = Math.max(u.x, v.x), y0 = Math.min(u.y, v.y), y1 = Math.max(u.y, v.y); return x1 > o.x + 2 && x0 < o.x + o.w - 2 && y1 > o.y + 2 && y0 < o.y + o.h - 2; }
+function segHitsBox(u, v, o) { if (canRotate(o) && rotOf(o)) o = nodeBounds(o); const x0 = Math.min(u.x, v.x), x1 = Math.max(u.x, v.x), y0 = Math.min(u.y, v.y), y1 = Math.max(u.y, v.y); return x1 > o.x + 2 && x0 < o.x + o.w - 2 && y1 > o.y + 2 && y0 < o.y + o.h - 2; }
 function polyCross(A, B) { let c = 0; for (let i = 0; i < A.length - 1; i++) for (let j = 0; j < B.length - 1; j++) if (segCross(A[i], A[i + 1], B[j], B[j + 1])) c++; return c; }
 function routeSig(p) {
   let s = (doc && doc.jumpStyle || 'arc') + (doc && doc.avoid === false ? 'n' : 'y') + '|';
-  for (const n of p.nodes) s += n.id + ',' + n.x + ',' + n.y + ',' + n.w + ',' + n.h + ';';
+  for (const n of p.nodes) s += n.id + ',' + n.x + ',' + n.y + ',' + n.w + ',' + n.h + ',' + rotOf(n) + ';';
   for (const l of p.links) s += l.id + ',' + l.from + ',' + l.to + ',' + (l.route || '') + ';';
   return s;
 }
@@ -804,8 +831,9 @@ function routesFor(p = P()) {
 }
 function computeRoutes(p) {
   const map = new Map(), info = [], ends = new Map();
-  const byId = new Map(p.nodes.map(n => [n.id, n]));
-  const obst = p.nodes.filter(n => !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type));
+  const sourceById = new Map(p.nodes.map(n => [n.id, n]));
+  const byId = new Map(p.nodes.map(n => [n.id, canRotate(n) && !isLineArrow(n) && rotOf(n) ? Object.assign({}, n, nodeBounds(n), {type:'rect',rot:0}) : n]));
+  const obst = p.nodes.filter(n => !isCont(n) && !['text', 'note', 'legend', 'tblock'].includes(n.type)).map(n => byId.get(n.id));
   const addEnd = (n, side, e) => { const k = n.id + '|' + side; if (!ends.has(k)) ends.set(k, { n, side, list: [] }); ends.get(k).list.push(e); };
   p.links.forEach((l, idx) => {
     const a = byId.get(l.from), b = byId.get(l.to); if (!a || !b) return;
@@ -933,6 +961,16 @@ function computeRoutes(p) {
       const e = q[i], f = q[j], v = Math.abs(e.x - f.x) < 0.5; /* 端段竖直 → 端点在上／下边 */
       const hit = outlineHit(n, v ? (e.y <= n.y + 0.6 ? 't' : 'b') : (e.x <= n.x + 0.6 ? 'l' : 'r'), e);
       if (hit) { e.x = hit.x; e.y = hit.y; }
+    }
+  }
+  /* Route against rotated outer bounds, then slide terminal points along their existing
+     segment onto the rotated rectangle. Orthogonal segments and obstacle detours remain intact. */
+  for (const l of p.links) {
+    const route = map.get(l.id); if (!route || route.pts.length < 2) continue;
+    const q = route.pts;
+    for (const [id, i, j] of [[l.from,0,1],[l.to,q.length-1,q.length-2]]) {
+      const n = sourceById.get(id);
+      if (n && canRotate(n) && !isLineArrow(n) && rotOf(n)) q[i] = rotatedPort(n, q[i], q[j]);
     }
   }
   /* 3. line jumps (horizontal segments hop over vertical ones) */
@@ -1086,11 +1124,25 @@ function opsToD(ops) {
   }
   return d;
 }
+function rotatedPort(n, end, adjacent) {
+  const points = [[n.x,n.y],[n.x+n.w,n.y],[n.x+n.w,n.y+n.h],[n.x,n.y+n.h]].map(q => rotPoint(n,q[0],q[1]));
+  const vx = adjacent.x - end.x, vy = adjacent.y - end.y, hits = [];
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i], b = points[(i+1)%points.length], ex = b.x-a.x, ey = b.y-a.y;
+    const den = vx*ey-vy*ex; if (Math.abs(den)<1e-8) continue;
+    const ax = a.x-end.x, ay = a.y-end.y, t = (ax*ey-ay*ex)/den, u = (ax*vy-ay*vx)/den;
+    if (u >= -1e-7 && u <= 1+1e-7) hits.push({x:end.x+t*vx,y:end.y+t*vy});
+  }
+  hits.sort((a,b) => Math.hypot(a.x-adjacent.x,a.y-adjacent.y)-Math.hypot(b.x-adjacent.x,b.y-adjacent.y));
+  return hits[0] || end;
+}
 function clipRect(r, tx, ty) {
+  const turned = canRotate(r) && rotOf(r); if (turned) { const p = unrotPoint(r, tx, ty); tx = p.x; ty = p.y; }
   const cx = r.x + r.w / 2, cy = r.y + r.h / 2, dx = tx - cx, dy = ty - cy;
   if (!dx && !dy) return { x: cx, y: cy };
   const s = Math.min(dx ? (r.w / 2) / Math.abs(dx) : Infinity, dy ? (r.h / 2) / Math.abs(dy) : Infinity);
-  return { x: cx + dx * s, y: cy + dy * s };
+  const q = { x: cx + dx * s, y: cy + dy * s };
+  return turned ? rotPoint(r, q.x, q.y) : q;
 }
 function labelPos(pts) {
   if (pts.length === 4) return { x: (pts[1].x + pts[2].x) / 2, y: (pts[1].y + pts[2].y) / 2 };
@@ -1307,6 +1359,35 @@ function drawOrder(p) {
   const conts = p.nodes.filter(isCont).sort((a, b) => CONT[a.type] - CONT[b.type] || b.w * b.h - a.w * a.h);
   return conts.concat(p.nodes.filter(n => !isCont(n)));
 }
+/* Ordinary nodes use their document-array order, back to front. Containers stay behind them. */
+function layerSelection(action) {
+  if (!['up', 'down', 'front', 'back'].includes(action)) return false;
+  const page = P(), chosen = new Set(selectedNodes().filter(n => !isCont(n)).map(n => n.id));
+  if (!chosen.size) return false;
+  const ordinary = page.nodes.filter(n => !isCont(n)), ordered = ordinary.slice();
+  if (action === 'front' || action === 'back') {
+    const moved = ordered.filter(n => chosen.has(n.id)), rest = ordered.filter(n => !chosen.has(n.id));
+    ordered.splice(0, ordered.length, ...(action === 'front' ? rest.concat(moved) : moved.concat(rest)));
+  } else if (action === 'up') {
+    for (let i = ordered.length - 2; i >= 0; i--) if (chosen.has(ordered[i].id) && !chosen.has(ordered[i + 1].id)) {
+      const other = ordered[i + 1]; ordered[i + 1] = ordered[i]; ordered[i] = other;
+    }
+  } else {
+    for (let i = 1; i < ordered.length; i++) if (chosen.has(ordered[i].id) && !chosen.has(ordered[i - 1].id)) {
+      const other = ordered[i - 1]; ordered[i - 1] = ordered[i]; ordered[i] = other;
+    }
+  }
+  if (ordered.every((n, i) => n === ordinary[i])) return false;
+  checkpoint();
+  let i = 0; page.nodes = page.nodes.map(n => isCont(n) ? n : ordered[i++]);
+  render(); return true;
+}
+function layerOrderHTML(nodes) {
+  if (!nodes.some(n => !isCont(n))) return '';
+  return '<div class="hint" style="margin-top:10px">叠放顺序（同页普通元素；容器保持后景）</div><div class="grid2">' +
+    [['up', '上移一层'], ['down', '下移一层'], ['front', '置顶'], ['back', '置底']].map(item =>
+      `<button type="button" data-layer="${item[0]}">${item[1]}</button>`).join('') + '</div>';
+}
 function diagramSVG(p, exp, pre = 'm') {
   const t = T();
   /* 容器在下、连线居中、框与装备在上：连线穿过的框遮住线段，不再压字 */
@@ -1326,6 +1407,7 @@ function applyView() {
   $('#z-val').textContent = Math.round(view.k * 100) + '%';
   P().cam = { ...view };
 }
+function selectionBox(n) { return window.JwSelectionBounds ? JwSelectionBounds.box(n) : {x:n.x,y:n.y,w:n.w,h:n.h}; }
 function overlaySVG() {
   const A = '#2F80ED'; let s = '';
   const p = P();
@@ -1335,22 +1417,24 @@ function overlaySVG() {
   });
   for (const id of sel) {
     const n = nodeById(id); if (!n) continue;
-    if (isLineArrow(n) && rotOf(n)) {
-      const pts = [[n.x, n.y], [n.x + n.w, n.y], [n.x + n.w, n.y + n.h], [n.x, n.y + n.h]].map(([x, y]) => rotPoint(n, x, y));
+    const b = selectionBox(n), pad = window.JwSelectionBounds ? 0 : 3;
+    if (canRotate(n) && rotOf(n)) {
+      const pts = [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].map(([x, y]) => rotPoint(n, x, y));
       s += `<polygon points="${pts.map(p => p.x + ',' + p.y).join(' ')}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
-    } else s += `<rect x="${n.x - 3}" y="${n.y - 3}" width="${n.w + 6}" height="${n.h + 6}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
+    } else s += `<rect x="${b.x - pad}" y="${b.y - pad}" width="${b.w + pad * 2}" height="${b.h + pad * 2}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
   }
   const hs = 8 / view.k;
   if (sel.size === 1) {
     const n = nodeById([...sel][0]);
     if (n) {
-      const corners = [['nw', n.x, n.y], ['ne', n.x + n.w, n.y], ['sw', n.x, n.y + n.h], ['se', n.x + n.w, n.y + n.h]];
+      const b = selectionBox(n);
+      const corners = [['nw', b.x, b.y], ['ne', b.x + b.w, b.y], ['sw', b.x, b.y + b.h], ['se', b.x + b.w, b.y + b.h]];
       for (const [h, x, y] of corners) {
-        const p = isLineArrow(n) ? rotPoint(n, x, y) : { x: x, y: y };
+        const p = canRotate(n) ? rotPoint(n, x, y) : { x: x, y: y };
         s += `<rect data-h="${h}" x="${p.x - hs / 2}" y="${p.y - hs / 2}" width="${hs}" height="${hs}" fill="#fff" stroke="${A}" stroke-width="${1.4 / view.k}" style="cursor:${h === 'nw' || h === 'se' ? 'nwse' : 'nesw'}-resize"/>`;
       }
-      if (isLineArrow(n)) {
-        const top = rotPoint(n, n.x + n.w / 2, n.y), grip = rotPoint(n, n.x + n.w / 2, n.y - 18 / view.k);
+      if (canRotate(n)) {
+        const top = rotPoint(n, b.x + b.w / 2, b.y), grip = rotPoint(n, b.x + b.w / 2, b.y - 18 / view.k);
         s += `<line x1="${top.x}" y1="${top.y}" x2="${grip.x}" y2="${grip.y}" stroke="${A}" stroke-width="${1.2 / view.k}" pointer-events="none"/>`;
         s += `<circle data-h="rot" cx="${grip.x}" cy="${grip.y}" r="${5.5 / view.k}" fill="#fff" stroke="${A}" stroke-width="${1.4 / view.k}" style="cursor:grab"><title>拖动旋转</title></circle>`;
       }
@@ -1359,8 +1443,10 @@ function overlaySVG() {
   const portFor = hoverId && !ui.drag ? nodeById(hoverId) : (sel.size === 1 && !ui.drag ? nodeById([...sel][0]) : null);
   if (portFor && portFor.type !== 'legend' && portFor.type !== 'tblock') {
     const n = portFor, r = 5 / view.k;
-    for (const [x, y] of [[n.x + n.w / 2, n.y], [n.x + n.w, n.y + n.h / 2], [n.x + n.w / 2, n.y + n.h], [n.x, n.y + n.h / 2]])
+    for (const [px, py] of [[n.x + n.w / 2, n.y], [n.x + n.w, n.y + n.h / 2], [n.x + n.w / 2, n.y + n.h], [n.x, n.y + n.h / 2]]) {
+      const pt = canRotate(n) ? rotPoint(n, px, py) : {x:px,y:py}, x = pt.x, y = pt.y;
       s += `<circle data-port="${esc(n.id)}" cx="${x}" cy="${y}" r="${r}" fill="${A}" stroke="#fff" stroke-width="${1.5 / view.k}" style="cursor:crosshair"><title>拖动以连线</title></circle>`;
+    }
   }
   if (ui.marquee) { const m = ui.marquee; s += `<rect x="${Math.min(m.x0, m.x1)}" y="${Math.min(m.y0, m.y1)}" width="${Math.abs(m.x1 - m.x0)}" height="${Math.abs(m.y1 - m.y0)}" fill="${A}" fill-opacity=".08" stroke="${A}" stroke-width="${1 / view.k}"/>`; }
   s += guidesSVG();
@@ -1445,7 +1531,7 @@ function contentBBox(p = P()) {
   for (const n of p.nodes) {
     if (n.type === 'legend') legendLayout(n, p);
     let nx0 = n.x, ny0 = n.y, nx1 = n.x + n.w, ny1 = n.y + n.h;
-    if (isLineArrow(n) && rotOf(n)) {
+    if (canRotate(n) && rotOf(n)) {
       const pts = [[n.x, n.y], [n.x + n.w, n.y], [n.x + n.w, n.y + n.h], [n.x, n.y + n.h]].map(([x, y]) => rotPoint(n, x, y));
       nx0 = Math.min(...pts.map(q => q.x)); ny0 = Math.min(...pts.map(q => q.y)); nx1 = Math.max(...pts.map(q => q.x)); ny1 = Math.max(...pts.map(q => q.y));
     }
@@ -2348,6 +2434,20 @@ function guidesSVG() {
     return '';
   }).join('');
 }
+/* Transparent icon gutters should not hide a lower icon. Caption and control hits stay interactive. */
+function canvasHitElement(e) {
+  if (!window.JwSelectionBounds) return e.target;
+  const point = clientToWorld(e.clientX, e.clientY);
+  const elements = document.elementsFromPoint ? document.elementsFromPoint(e.clientX, e.clientY) : [e.target];
+  for (const el of elements) {
+    if (!svg.contains(el) || !el.closest) continue;
+    if (el.closest('[data-h],[data-port],[data-icon-label],[data-enter]')) return el;
+    const group = el.closest('[data-id]');
+    if (group) { const n = nodeById(group.dataset.id); if (n && JwSelectionBounds.hit(n, point, 1 / view.k)) return el; continue; }
+    if (el.closest('[data-link]')) return el;
+  }
+  return svg;
+}
 function hitTarget(el) {
   if (!el || !el.closest) return null;
   const lk = el.closest('[data-link]');
@@ -2361,12 +2461,16 @@ function ensureCtx() {
   if (m) return m;
   m = document.createElement('div');
   m.id = 'ctx';
-  setMarkup(m, '<button type="button" id="ctx-same">选中同类</button>');
+  setMarkup(m, '<button type="button" id="ctx-same">选中同类</button>' + [['up','上移一层'],['down','下移一层'],['front','置顶'],['back','置底']].map(item => `<button type="button" data-layer="${item[0]}">${item[1]}</button>`).join(''));
   document.body.appendChild(m);
   m.querySelector('#ctx-same').addEventListener('click', () => {
     const hit = m._hit;
     m.style.display = 'none';
     if (hit) selectSame(hit);
+  });
+  m.addEventListener('click', e => {
+    const button = e.target.closest('[data-layer]'); if (!button) return;
+    m.style.display = 'none'; layerSelection(button.dataset.layer);
   });
   return m;
 }
@@ -2378,6 +2482,7 @@ function openSameMenu(hit, x, y) {
   }
   const m = ensureCtx();
   m._hit = hit;
+  m.querySelectorAll('[data-layer]').forEach(button => { button.hidden = hit.kind !== 'node' || !selectedNodes().some(n => !isCont(n)); });
   m.style.left = x + 'px';
   m.style.top = y + 'px';
   m.style.display = 'block';
@@ -2409,7 +2514,7 @@ Object.defineProperty(ui, 'drag', { get: () => ui_drag });
 svg.addEventListener('pointerdown', e => {
   if ($('#editor').style.display === 'block') commitEdit();
   closeMenus();
-  const w = clientToWorld(e.clientX, e.clientY), t = e.target;
+  const w = clientToWorld(e.clientX, e.clientY), t = canvasHitElement(e);
   svg.setPointerCapture(e.pointerId);
   const enter = t.closest && t.closest('[data-enter]');
   if (enter) { enterSub(enter.dataset.enter); return; }
@@ -2428,8 +2533,8 @@ svg.addEventListener('pointerdown', e => {
   }
   if (e.button === 2) { const hit = hitTarget(t); if (hit) { openSameMenu(hit, e.clientX, e.clientY); return; } }
   if (e.button === 1 || spaceDown || e.button === 2) { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; return; }
-  if (t.dataset.h === 'rot') { const n = nodeById([...sel][0]); ui_drag = { mode: 'rotate', n, snap: snapshot(), moved: false }; return; }
-  if (t.dataset.h) { const n = nodeById([...sel][0]); ui_drag = { mode: 'resize', h: t.dataset.h, n, o: { ...n }, w0: w, snap: snapshot(), moved: false, kidsO: descendants(n.id).map(d => ({ d, x: d.x, y: d.y })) }; return; }
+  if (t.dataset.h === 'rot') { const n = nodeById([...sel][0]); ui_drag = { mode: 'rotate', n, angle0: Math.atan2(w.y - n.y - n.h / 2, w.x - n.x - n.w / 2) * 180 / Math.PI, rot0: rotOf(n), snap: snapshot(), moved: false }; return; }
+  if (t.dataset.h) { const n = nodeById([...sel][0]); ui_drag = { mode: 'resize', boundsResize: window.JwSelectionBounds ? JwSelectionBounds.beginResize(n, t.dataset.h, w) : null, h: t.dataset.h, n, o: { ...n }, w0: w, snap: snapshot(), moved: false, kidsO: descendants(n.id).map(d => ({ d, x: d.x, y: d.y })) }; return; }
   if (t.dataset.port) { const n = nodeById(t.dataset.port); ui_drag = { mode: 'link', from: n.id }; ui.temp = { x0: n.x + n.w / 2, y0: n.y + n.h / 2, x1: w.x, y1: w.y }; renderOverlay(); toast('拖到目标节点松开完成，Esc 取消'); return; }
   const lk = t.closest && t.closest('[data-link]');
   if (lk) { noteLinkHit(lk.dataset.link, e.clientX, e.clientY); selectLinks([lk.dataset.link]); render(); ui_drag = null; return; }
@@ -2461,9 +2566,10 @@ svg.addEventListener('pointerdown', e => {
 svg.addEventListener('pointermove', e => {
   const w = clientToWorld(e.clientX, e.clientY);
   if (!ui_drag) {
-    const g = e.target.closest && (e.target.closest('[data-id]') || e.target.closest('[data-port]'));
+    const target = canvasHitElement(e);
+    const g = target.closest && (target.closest('[data-id]') || target.closest('[data-port]'));
     const id = g ? (g.dataset.id || g.dataset.port) : null;
-    const lk = !g && e.target.closest && e.target.closest('[data-link]'); const lid = lk ? lk.dataset.link : null;
+    const lk = !g && target.closest && target.closest('[data-link]'); const lid = lk ? lk.dataset.link : null;
     if (lid) noteLinkHit(lid, e.clientX, e.clientY);
     if (id !== hoverId || lid !== hoverLink) { const ch = id !== hoverId; hoverId = id; hoverLink = lid; if (ch) renderOverlay(); applyHover(); }
     return;
@@ -2481,7 +2587,7 @@ svg.addEventListener('pointermove', e => {
   }
   if (d.mode === 'rotate') {
     const n = d.n, cx = n.x + n.w / 2, cy = n.y + n.h / 2;
-    let ang = Math.atan2(w.y - cy, w.x - cx) * 180 / Math.PI + 90;
+    let ang = d.rot0 + Math.atan2(w.y - cy, w.x - cx) * 180 / Math.PI - d.angle0;
     if (!e.shiftKey) ang = Math.round(ang / 15) * 15;
     ang = ((Math.round(ang) % 360) + 360) % 360;
     if (ang) n.rot = ang; else delete n.rot;
@@ -2489,8 +2595,12 @@ svg.addEventListener('pointermove', e => {
   }
   if (d.mode === 'resize') {
     const n = d.n, o = d.o;
+    if (d.boundsResize && window.JwSelectionBounds) {
+      const geometry = JwSelectionBounds.resize(d.boundsResize, w);
+      if (geometry) { Object.assign(n, geometry); d.moved = true; render(false); return; }
+    }
     let dx, dy;
-    if (isLineArrow(o) && rotOf(o)) {
+    if (canRotate(o) && rotOf(o)) {
       const p0 = unrotPoint(o, d.w0.x, d.w0.y), p1 = unrotPoint(o, w.x, w.y);
       dx = snapv(p1.x - p0.x); dy = snapv(p1.y - p0.y);
     } else { dx = snapv(w.x - d.w0.x); dy = snapv(w.y - d.w0.y); }
@@ -2499,8 +2609,13 @@ svg.addEventListener('pointermove', e => {
     if (d.h.includes('e')) ww = o.w + dx; if (d.h.includes('s')) hh = o.h + dy;
     if (d.h.includes('w')) { ww = o.w - dx; x = o.x + dx; } if (d.h.includes('n')) { hh = o.h - dy; y = o.y + dy; }
     if (ww < 24) { if (d.h.includes('w')) x -= 24 - ww; ww = 24; } if (hh < 16) { if (d.h.includes('n')) y -= 16 - hh; hh = 16; }
+    if (n.coverageKind && window.Coverage && Coverage.isCoverage(n)) {
+      const size = Math.max(ww, hh); ww = size; hh = size;
+      if (d.h.includes('w')) x = o.x + o.w - size;
+      if (d.h.includes('n')) y = o.y + o.h - size;
+    }
     ui.guides = null;
-    if (snapOn() && !e.altKey && !(isLineArrow(o) && rotOf(o))) {
+    if (snapOn() && !e.altKey && !n.coverageKind && !(canRotate(o) && rotOf(o))) {
       if (!d.sc) d.sc = snapContext(new Map([[n.id, n], ...descendants(n.id).map(q => [q.id, q])]));
       const T = 7 / view.k, G = [], near = (v, list) => { let b = null; for (const c of list) { const dd = Math.abs(c.v - v); if (dd <= T && (!b || dd < b.d)) b = { d: dd, c }; } return b; };
       const xl = d.sc.rects.flatMap(r => [{ v: r.x, r }, { v: r.x + r.w, r }, { v: r.x + r.w / 2, r }]), yl = d.sc.rects.flatMap(r => [{ v: r.y, r }, { v: r.y + r.h, r }, { v: r.y + r.h / 2, r }]);
@@ -2510,14 +2625,18 @@ svg.addEventListener('pointermove', e => {
       if (d.h.includes('n')) { const b = near(y, yl); if (b) { hh += y - b.c.v; y = b.c.v; G.push(hGuide(b.c.v, { x, y, w: ww, h: hh }, b.c.r)); } }
       ui.guides = G;
     }
+    if (canRotate(o) && rotOf(o)) {
+      const c = rotPoint(o, x + ww / 2, y + hh / 2);
+      x = c.x - ww / 2; y = c.y - hh / 2;
+    }
     Object.assign(n, { x, y, w: ww, h: hh }); render(false); return;
   }
-  if (d.mode === 'link') { ui.temp.x1 = w.x; ui.temp.y1 = w.y; const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]'); hoverId = g ? g.dataset.id : null; renderOverlay(); return; }
+  if (d.mode === 'link') { ui.temp.x1 = w.x; ui.temp.y1 = w.y; const el = canvasHitElement(e); const g = el && el.closest && el.closest('[data-id]'); hoverId = g ? g.dataset.id : null; renderOverlay(); return; }
   if (d.mode === 'marquee') {
     const m = ui.marquee; m.x1 = w.x; m.y1 = w.y;
     const x0 = Math.min(m.x0, m.x1), x1 = Math.max(m.x0, m.x1), y0 = Math.min(m.y0, m.y1), y1 = Math.max(m.y0, m.y1);
     const ids = [...d.base];
-    for (const n of P().nodes) if (n.x >= x0 && n.y >= y0 && n.x + n.w <= x1 && n.y + n.h <= y1 && ids.indexOf(n.id) < 0) ids.push(n.id);
+    for (const n of P().nodes) { const b = window.JwSelectionBounds ? JwSelectionBounds.bounds(n) : nodeBounds(n); if (b.x >= x0 && b.y >= y0 && b.x + b.w <= x1 && b.y + b.h <= y1 && ids.indexOf(n.id) < 0) ids.push(n.id); }
     selectNodes(ids);
     renderOverlay();
   }
@@ -2531,7 +2650,7 @@ function endDrag(e) {
   }
   if ((d.mode === 'resize' || d.mode === 'rotate') && d.moved) { if (d.n && d.n.type === 'legend') d.n.legendLock = true; undoS.push(d.snap); redoS = []; }
   if (d.mode === 'link') {
-    const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
+    const el = canvasHitElement(e); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
     if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; if (window.JwDefaults) JwDefaults.stampLink(l); P().links.push(l); selectLinks([l.id]); }
   }
@@ -2548,7 +2667,7 @@ svg.addEventListener('wheel', e => {
 }, { passive: false });
 svg.addEventListener('dblclick', e => {
   /* pointerdown re-renders the canvas, so the event target may be detached: hit-test again */
-  const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
+  const hit = canvasHitElement(e);
   e = { target: (hit && hit.closest) ? hit : e.target, clientX: e.clientX, clientY: e.clientY };
   const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selectLinks([l.id]); focusLinkCaption(l); return; }
   const g = e.target.closest('[data-id]'); if (!g) return;
@@ -3293,10 +3412,10 @@ const NODE_FIELDS = {
   },
   rot: {
     id: 'rot', kind: 'num', min: 0, max: 359,
-    show: function (items) { return items.some(isLineArrow); },
-    scope: isLineArrow,
+    show: function (items) { return items.some(canRotate); },
+    scope: canRotate,
     get: function (n) { return rotOf(n); },
-    set: function (n, v) { if (!isLineArrow(n)) return; const r = ((Math.round(+v) % 360) + 360) % 360; if (!r) delete n.rot; else n.rot = r; }
+    set: function (n, v) { if (!canRotate(n)) return; const r = ((Math.round(+v) % 360) + 360) % 360; if (!r) delete n.rot; else n.rot = r; }
   },
   rulerStart: {
     id: 'rulerStart', kind: 'num', min: -1000000, max: 1000000,
@@ -3560,7 +3679,7 @@ function bindFields(items, fields) {
   });
 }
 function arrowExtraHTML(nodes) {
-  if (!nodes.some(isLineArrow)) return '';
+  if (!nodes.some(canRotate)) return '<div class="hint">层级容器暂不支持整体旋转；内部图形可独立旋转。</div>';
   let h = '<div class="row"><label>朝向</label><button type="button" id="p-rot90" style="border-color:var(--line)">旋转 90°</button></div>';
   if (!nodes.some(n => n.type === 'dimArrow')) return h;
   const m = measureSpec();
@@ -3602,6 +3721,7 @@ function renderProps() {
     h += `<div class="grid3">${[['l', '左对齐'], ['c', '水平居中'], ['r', '右对齐'], ['t', '顶对齐'], ['m', '垂直居中'], ['b', '底对齐'], ['dh', '水平等距'], ['dv', '垂直等距'], ['size', '等宽等高']].map(([k, n]) => `<button data-al="${k}">${n}</button>`).join('')}</div>`;
     h += fieldsHTML(nodes, NODE_FIELDS);
     h += arrowExtraHTML(nodes);
+    h += layerOrderHTML(nodes);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
     if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
@@ -3618,6 +3738,7 @@ function renderProps() {
     if (countryIcon && countryIcon.countries) h += `<div class="row"><label>外形版本</label><select id="p-appearance"><option value="generic" ${!n.appearance || n.appearance === 'generic' ? 'selected' : ''}>通用</option>${Object.entries(countryIcon.countries).map(([k,v]) => `<option value="${k}" ${n.appearance === k ? 'selected' : ''}>${k === 'cn' ? '中国' : '美国'} · ${esc(v.name)}${v.qualityStatus === 'awaiting-manual-review' ? '（待复核）' : ''}</option>`).join('')}</select></div>`;
     h += fieldsHTML([n], NODE_FIELDS);
     h += arrowExtraHTML([n]);
+    h += layerOrderHTML([n]);
     const crow = contRow(n);
     if (crow && crow.thick.mode === 'field' && (sideOf(n) === 'l' || sideOf(n) === 'r')) h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="${crow.thick.min}" max="${crow.thick.max}" value="${thickness(n, crow)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
@@ -3688,7 +3809,8 @@ function bindProps() {
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
   on('#p-appearance', 'change', e => { checkpoint(); n.appearance = e.target.value; n.affiliation = iconSide(undefined, n.appearance); render(); });
-  on('#p-rot90', 'click', () => applyShared(selectedNodes().filter(isLineArrow), it => { const r = (rotOf(it) + 90) % 360; if (r) it.rot = r; else delete it.rot; }, false));
+  el.querySelectorAll('[data-layer]').forEach(button => button.addEventListener('click', () => layerSelection(button.dataset.layer)));
+  on('#p-rot90', 'click', () => applyShared(selectedNodes().filter(canRotate), it => { const r = (rotOf(it) + 90) % 360; if (r) it.rot = r; else delete it.rot; }, false));
   on('#p-unit', 'change', e => { checkpoint(); const m = measureSpec(); doc.measure = { unit: (e.target.value || '').trim() || 'm', px: m.px }; render(); });
   on('#p-px', 'change', e => { const px = +e.target.value; if (!(px > 0)) return; checkpoint(); const m = measureSpec(); doc.measure = { unit: m.unit, px: px }; render(); });
   on('#p-icon', 'click', () => openIconPicker(n));
@@ -3890,6 +4012,7 @@ async function exportHierarchy(kind) {
   try {
     for (let i = 0; i < items.length; i++) {
       const p = items[i].page;
+      if (window.JwIconLabels) await JwIconLabels.ready(p);
       cur = p.id;
       const ext = kind === 'drawio' ? 'drawio' : kind;
       const name = hierarchyFileName(items[i], i, ext);
@@ -3930,7 +4053,21 @@ async function exportPPTX() {
     const X = v => ox + (v - b.x + pad) * f, Y = v => oy + (v - b.y + pad) * f, S = v => Math.max(0.001, v * f), PT = px => Math.max(5, +(px * f * 72).toFixed(1)), LW = px => Math.max(0.25, +(px * f * 72).toFixed(2));
     const txt = (lines, o) => lines.join('\n');
     if (window.CanvasBg) await CanvasBg.paintPptx(slide, pptx, p, { X, Y, S, box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 } });
+    let rotatingNode = null;
+    const turnPpt = o => {
+      if (!rotatingNode || !rotOf(rotatingNode) || !o || !isFinite(o.x) || !isFinite(o.y)) return o;
+      const cx = X(rotatingNode.x + rotatingNode.w / 2), cy = Y(rotatingNode.y + rotatingNode.h / 2);
+      const w = +o.w || 0, h = +o.h || 0, dx = o.x + w / 2 - cx, dy = o.y + h / 2 - cy;
+      const a = rotOf(rotatingNode) * Math.PI / 180;
+      return { ...o, x: cx + dx * Math.cos(a) - dy * Math.sin(a) - w / 2,
+        y: cy + dx * Math.sin(a) + dy * Math.cos(a) - h / 2, rotate: (rotOf(rotatingNode) + (+o.rotate || 0)) % 360 };
+    };
+    const addShape0 = slide.addShape.bind(slide), addText0 = slide.addText.bind(slide), addImage0 = slide.addImage.bind(slide);
+    slide.addShape = (type, o) => addShape0(type, turnPpt(o));
+    slide.addText = (text, o) => addText0(text, turnPpt(o));
+    slide.addImage = o => addImage0(turnPpt(o));
     for (const n of drawOrder(p)) {
+      rotatingNode = canRotate(n) && !isLineArrow(n) ? n : null;
       const base = { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h) };
       if (contRow(n)) {
         exportCont(n, p, {
@@ -3997,7 +4134,7 @@ async function exportPPTX() {
         const paint = paintOf(n, t);
         const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : (pie ? { angleRange: [270, 270 + sweep] } : {});
         const drawBox = n.type === 'note' || (shp && (!n.noBox || n.status !== 'base'));
-        const boxStyle = { fill: { color: hex(paint.fill) }, line: paint.noLine ? { width: 0 } : { color: hex(paint.stroke), width: n.type === 'note' ? LW(1) : LW(1.2) }, ...(pptName(paint) ? { objectName: pptName(paint) } : {}) };
+        const boxStyle = { fill: { color: hex(paint.fill), transparency: Math.round((1 - paint.fillAlpha) * 100) }, line: paint.noLine ? { width: 0 } : { color: hex(paint.stroke), width: n.type === 'note' ? LW(1) : LW(paint.sw), ...(paint.dash ? { dashType: PPT_DASH[paint.dash] || 'dash' } : {}) }, ...(pptName(paint) ? { objectName: pptName(paint) } : {}) };
         if (!L.icon && L.text) {
           /* 无框文字（标题等）：画布上不折行，PPT 中按实测宽度放宽文本框，避免折行叠字 */
           let tb = base;
@@ -4012,6 +4149,7 @@ async function exportPPTX() {
       const tg = codeTagOf(n, p);
       if (tg) addT(slide, tg.text, { x: X(tg.x), y: Y(tg.y), w: S(tg.w), h: S(tg.h), shape: pptx.ShapeType.roundRect, rectRadius: 0.02, fill: { color: hex(tg.fill) }, line: { color: hex(tg.stroke), width: LW(0.7) }, color: hex(tg.color), fontFace: fontFace(n), fontSize: PT(tg.size), bold: true, align: 'center', valign: 'middle', margin: 0, wrap: false });
     }
+    rotatingNode = null;
     for (const l of p.links) {
       const pts = linkPoints(l, p); if (!pts) continue;
       const K = LINK_KINDS[l.kind] || LINK_KINDS.plain, c = hex(t.link[l.kind]);
@@ -4053,13 +4191,14 @@ async function paintPptGradients(blob) {
   const zip = await JSZip.loadAsync(blob);
   const names = Object.keys(zip.files).filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k));
   let changed = false;
-  const re = /name="(jwG[hvr][0-9A-F]{6}\d{3}[0-9A-F]{6}N?|jwCN)"/;
+  const re = /name="(jwG[hvr][0-9A-F]{6}\d{3}[0-9A-F]{6}(?:A\d{3})?N?|jwCN)"/;
   for (const name of names) {
     let xml = await zip.file(name).async('string'), guard = 0;
     while (guard++ < 400) {
       const m = re.exec(xml); if (!m) break;
       const tag = m[1], bare = tag.charAt(tag.length - 1) === 'N' ? tag.slice(0, -1) : tag, noLine = tag.charAt(tag.length - 1) === 'N';
-      const g = bare.charAt(2) === 'G' ? { dir: bare.charAt(3), c1: '#' + bare.slice(4, 10), a2: +bare.slice(10, 13) / 100, c2: '#' + bare.slice(13, 19) } : null;
+      const g = bare.charAt(2) === 'G' ? { dir: bare.charAt(3), c1: '#' + bare.slice(4, 10), a2: +bare.slice(10, 13) / 100, c2: '#' + bare.slice(13, 19), a1: bare.charAt(19) === 'A' ? +bare.slice(20, 23) / 100 : 1 } : null;
+      if (g) g.a2 *= g.a1;
       const at = m.index, sp = xml.lastIndexOf('<p:sp', at), end = xml.indexOf('</p:sp>', at);
       if (sp < 0 || end < 0) { xml = xml.slice(0, at) + 'name="jwDone"' + xml.slice(at + m[0].length); changed = true; continue; }
       let chunk = xml.slice(sp, end).replace('name="' + tag + '"', 'name="jwDone"');
@@ -4095,7 +4234,7 @@ async function exportVSDX(pageList) {
     const saved = cur; cur = p.id;
     const b = contentBBox(p), pad = 20, f = 1 / 96, PW = (b.w + pad * 2) * f, PH = (b.h + pad * 2) * f;
     const X = v => (v - b.x + pad) * f, Y = v => PH - (v - b.y + pad) * f;
-    let sid = 1; const shapes = []; const rels = [];
+    let sid = 1, rotatingNode = null; const shapes = []; const rels = [];
     if (window.CanvasBg) {
       const sheetShapes = CanvasBg.vsdxShapes(p, { box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 }, f, X, Y, cell, num, id: () => sid++, zip, rels });
       if (sheetShapes && sheetShapes.length) shapes.unshift(...sheetShapes);
@@ -4118,14 +4257,15 @@ async function exportVSDX(pageList) {
       return rectGeom(w, h);
     };
     const box = (x, y, w, h, o) => {
+      const turned = rotatedBox(rotatingNode, { x, y, w, h }); x = turned.x; y = turned.y;
       const W = w * f, H = h * f;
-      let s = `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(x) + W / 2))}${cell('PinY', num(Y(y) - H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('Angle', 0)}`;
-      if (o.fill) s += cell('FillForegnd', o.fill) + cell('FillPattern', 1); else s += cell('FillPattern', 0);
+      let s = `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(x) + W / 2))}${cell('PinY', num(Y(y) - H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('Angle', num(rotatingNode ? -rotOf(rotatingNode) * Math.PI / 180 : 0))}`;
+      if (o.fill) s += cell('FillForegnd', o.fill) + cell('FillPattern', 1) + cell('FillForegndTrans', num(o.grad || o.fillAlpha == null ? 0 : 1 - o.fillAlpha)); else s += cell('FillPattern', 0);
       if (o.grad) {
         /* 角度与 vsdxraw 的读法一致：0 向右，3π/2 向下；径向 dir 1 为圆形 */
         const ang = o.grad.dir === 'h' ? 0 : Math.PI * 1.5;
         s += cell('FillGradientEnabled', 1) + cell('FillGradientAngle', num(ang)) + (o.grad.dir === 'r' ? cell('FillGradientDir', 1) : '');
-        s += `<Section N='FillGradient'><Row IX='0'>${cell('GradientStopColor', o.grad.c1)}${cell('GradientStopColorTrans', 0)}${cell('GradientStopPosition', 0)}</Row><Row IX='1'>${cell('GradientStopColor', o.grad.c2)}${cell('GradientStopColorTrans', num(1 - o.grad.a2))}${cell('GradientStopPosition', 1)}</Row></Section>`;
+        s += `<Section N='FillGradient'><Row IX='0'>${cell('GradientStopColor', o.grad.c1)}${cell('GradientStopColorTrans', num(o.fillAlpha == null ? 0 : 1 - o.fillAlpha))}${cell('GradientStopPosition', 0)}</Row><Row IX='1'>${cell('GradientStopColor', o.grad.c2)}${cell('GradientStopColorTrans', num(1 - o.grad.a2 * (o.fillAlpha == null ? 1 : o.fillAlpha)))}${cell('GradientStopPosition', 1)}</Row></Section>`;
       }
       if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', o.dash ? (VSD_PAT[o.dash] || 1) : 1); else s += cell('LinePattern', 0);
       if (o.round) s += cell('Rounding', num(o.round * f));
@@ -4140,8 +4280,8 @@ async function exportVSDX(pageList) {
       if (o.text != null) s += `<Text>${xs(o.text)}</Text>`;
       return s + '</Shape>';
     };
-    const arrowJobs = [];
     for (const n of drawOrder(p)) {
+      rotatingNode = canRotate(n) && !isLineArrow(n) ? n : null;
       if (contRow(n)) {
         exportCont(n, p, {
           body(b) { shapes.push(box(b.x, b.y, b.w, b.h, { fill: b.fill, line: b.stroke, lw: b.sw, round: b.rx || 0, dash: b.dash })); },
@@ -4150,7 +4290,7 @@ async function exportVSDX(pageList) {
         });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) shapes.push(box(c.x, c.y, c.w, c.h, { fill: c.fill || null, line: c.stroke, lw: c.lw, ...(c.text ? { text: c.text, size: c.size, bold: c.bold, color: c.color, align: c.align, face: fontFace(n) } : {}) }));
-      } else if (isLineArrow(n)) arrowJobs.push(n);
+      } else if (isLineArrow(n)) addNodeArrow(n);
       else if (n.type === 'legend') {
         const items = legendLayout(n, p);
         const lp = paintOf(n, t);
@@ -4163,7 +4303,7 @@ async function exportVSDX(pageList) {
       } else {
         const L = nodeLayout(n), paint = paintOf(n, t);
         const drawBox = n.type === 'note' || (n.type !== 'text' && (!n.noBox || n.status !== 'base'));
-        const bs = drawBox ? { fill: paint.fill, line: paint.noLine ? null : paint.stroke, lw: n.type === 'note' ? 1 : 1.2, grad: paint.grad, sweep: n.type === 'sector' ? sectorSweep(n) : 0, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type === 'note' ? 'rect' : n.type } : {};
+        const bs = drawBox ? { fill: paint.fill, line: paint.noLine ? null : paint.stroke, lw: n.type === 'note' ? 1 : paint.sw, dash: paint.dash, fillAlpha: paint.fillAlpha, grad: paint.grad, sweep: n.type === 'sector' ? sectorSweep(n) : 0, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type === 'note' ? 'rect' : n.type } : {};
         if (!L.icon && L.text) shapes.push(box(n.x, n.y, n.w, n.h, { ...bs, text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, align: L.text.anchor === 'start' ? 'left' : 'center', face: fontFace(n) }));
         else {
           if (drawBox) shapes.push(box(n.x, n.y, n.w, n.h, bs));
@@ -4173,8 +4313,9 @@ async function exportVSDX(pageList) {
             if (png) {
               imgN++; const fn = `image${imgN}.png`; zip.file('visio/media/' + fn, png.split(',')[1], { base64: true });
               const rid = 'rId' + (rels.length + 1); rels.push(`<Relationship Id='${rid}' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/image' Target='../media/${fn}'/>`);
-              const W = (L.icon.w || L.icon.s) * f, HH = (L.icon.h || L.icon.s) * f;
-              shapes.push(`<Shape ID='${sid++}' Type='Foreign' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(L.icon.x) + W / 2))}${cell('PinY', num(Y(L.icon.y) - HH / 2))}${cell('Width', num(W))}${cell('Height', num(HH))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(HH / 2))}${cell('ImgOffsetX', 0)}${cell('ImgOffsetY', 0)}${cell('ImgWidth', num(W))}${cell('ImgHeight', num(HH))}${cell('LinePattern', 0)}${cell('FillPattern', 0)}<Section N='Geometry' IX='0'>${cell('NoFill', 1)}${cell('NoLine', 1)}${cell('NoShow', 1)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(W))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(W))}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section><ForeignData ForeignType='Bitmap' CompressionType='PNG'><Rel r:id='${rid}'/></ForeignData></Shape>`);
+              const imageBox = rotatedBox(rotatingNode, { x: L.icon.x, y: L.icon.y, w: L.icon.w || L.icon.s, h: L.icon.h || L.icon.s });
+              const W = imageBox.w * f, HH = imageBox.h * f;
+              shapes.push(`<Shape ID='${sid++}' Type='Foreign' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(imageBox.x) + W / 2))}${cell('PinY', num(Y(imageBox.y) - HH / 2))}${cell('Width', num(W))}${cell('Height', num(HH))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(HH / 2))}${cell('Angle', num(rotatingNode ? -rotOf(rotatingNode) * Math.PI / 180 : 0))}${cell('ImgOffsetX', 0)}${cell('ImgOffsetY', 0)}${cell('ImgWidth', num(W))}${cell('ImgHeight', num(HH))}${cell('LinePattern', 0)}${cell('FillPattern', 0)}<Section N='Geometry' IX='0'>${cell('NoFill', 1)}${cell('NoLine', 1)}${cell('NoShow', 1)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(W))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(W))}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section><ForeignData ForeignType='Bitmap' CompressionType='PNG'><Rel r:id='${rid}'/></ForeignData></Shape>`);
             }
           }
           if (L.text) { const [bx, by, bw, bh] = L.text.box; shapes.push(box(bx, by, bw, Math.max(bh, 16), { text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, face: fontFace(n) })); }
@@ -4184,6 +4325,7 @@ async function exportVSDX(pageList) {
       if (tg) shapes.push(box(tg.x, tg.y, tg.w, tg.h, { fill: tg.fill, line: tg.stroke, lw: 0.7, round: 2, text: tg.text, size: tg.size, bold: true, color: tg.color, face: fontFace(n) }));
     }
     function polyShape(pts, color, K, dir, ops) {
+      if (rotatingNode && rotOf(rotatingNode) && !ops) pts = pts.map(q => rotPoint(rotatingNode, q.x, q.y));
       ops = ops || pts.map((q, i) => [i ? 'L' : 'M', q.x, q.y]);
       const xsP = [], ysP = [];
       for (const o of ops) { if (o[0] === 'M' || o[0] === 'L') { xsP.push(X(o[1])); ysP.push(Y(o[2])); } else { xsP.push(X(o[1]), X(o[2])); ysP.push(Y(o[3]), Y(o[3] - (o[0] === 'J' ? JUMP_R : 0))); } }
@@ -4211,7 +4353,7 @@ async function exportVSDX(pageList) {
       g += `<Row T='LineTo' IX='${ix}'>${cell('X', gx(pts[0].x))}${cell('Y', gy(pts[0].y))}</Row></Section>`;
       return `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(x0 + W / 2))}${cell('PinY', num(y0 + H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('FillForegnd', color)}${cell('FillPattern', 1)}${cell('LinePattern', 0)}${g}</Shape>`;
     }
-    for (const n of arrowJobs) {
+    function addNodeArrow(n) {
       const cols = arrowColors(n), stroke = cols.shaft === 'none' ? null : cols.shaft, sw = n.sw > 0 ? n.sw : 2;
       const ends = arrowEnds(n), tip = cols.split ? arrowShaftEnd(n) : ends.tip;
       if (stroke) shapes.push(polyShape([ends.tail, tip], stroke, { w: sw }, cols.split ? 'none' : 'one'));
@@ -4225,6 +4367,7 @@ async function exportVSDX(pageList) {
         }
       }
     }
+    rotatingNode = null;
     for (const l of p.links) {
       const pts = linkPoints(l, p); if (!pts) continue;
       const K = LINK_KINDS[l.kind] || LINK_KINDS.plain;
@@ -4297,7 +4440,7 @@ $('#m-export .dd').addEventListener('click', async e => {
     if (k === 'png4') await exportPNG(4, false);
     if (k === 'pngbg') await exportPNG(2, true);
     if (k === 'pngrep') { if (window.Compact) await Compact.exportReportPNG(); else toast('排版模块未加载'); }
-    if (k === 'svg') saveFile(fname('svg'), exportSVGString(P(), false).str);
+    if (k === 'svg') { if (window.JwIconLabels) await JwIconLabels.ready(P()); saveFile(fname('svg'), exportSVGString(P(), false).str); }
     if (k === 'pptx') await exportPPTX();
     if (k === 'vsdx') await exportVSDX();
     if (k === 'drawio') { if (window.DrawIO) await DrawIO.exportFile(); else toast('draw.io 模块未加载'); }

@@ -67,24 +67,48 @@
     const meta = (o) => Object.entries(o).filter(([, v]) => v != null && v !== '' && v !== false).map(([k, v]) => ` ${k}="${xa(typeof v === 'object' ? JSON.stringify(v) : v)}"`).join('');
     const cell = (id, label, style, geo, par, extra = {}, vertex = true) => {
       ids.add(id);
+      if (vertex && extra.ht_rot && !/(^|;)rotation=/.test(style)) style += ';rotation=' + (+extra.ht_rot || 0);
+      if (vertex && extra.ht_coverage && !extra.ht_paint && window.Coverage) {
+        const coverage = Coverage.style(Object.assign({}, extra.ht_coverage, { sw: extra.ht_sw }));
+        style += ';strokeWidth=' + coverage.sw + ';fillOpacity=' + Math.round(coverage.fillAlpha * 100);
+        if (coverage.dash) style += ';dashed=1;dashPattern=' + coverage.dash;
+      }
+      const separateLabel = extra.ht_labelLayout && !extra.ht_paint;
       const g = `<mxGeometry x="${r1(geo.x)}" y="${r1(geo.y)}" width="${r1(geo.w)}" height="${r1(geo.h)}" as="geometry"/>`;
       const inner = `<mxCell style="${xa(style)}" ${vertex ? 'vertex="1"' : ''} parent="${par}">${g}</mxCell>`;
-      out.push(`<UserObject label="${xa(label)}" id="${id}"${meta(extra)}>${inner}</UserObject>`);
+      out.push(`<UserObject label="${xa(separateLabel ? '' : label)}" id="${id}"${meta(extra)}>${inner}</UserObject>`);
+      if (separateLabel) {
+        const source = byId.get(id.slice(1)), layout = source && nodeLayout(source), text = layout && layout.text;
+        if (text && text.lines.length) {
+          const width = Math.max(1, ...text.lines.map(line => measure(line, text.size, text.bold, text.family))) + 2;
+          const height = Math.max(1, text.lines.length * Math.round(text.size * 1.38));
+          const box = rotatedBox(source, {x:text.anchor === 'start' ? text.x : text.x-width/2,y:text.cy-height/2,w:width,h:height});
+          const parent = parentOf(source), px = parent ? parent.x : 0, py = parent ? parent.y : 0;
+          cell(id+'_label', text.lines.map(xh).join('<br>'), `text;html=1;whiteSpace=wrap;align=${text.anchor === 'start' ? 'left' : 'center'};verticalAlign=middle;fontFamily=${fontFace(source)};fontSize=${text.size};fontColor=${text.color};${text.bold ? 'fontStyle=1;' : ''}spacing=0;strokeColor=none;fillColor=none;connectable=0`,
+            {x:box.x-px,y:box.y-py,w:box.w,h:box.h},par,{ht_part:'label',ht_rot:rotOf(source)||''});
+        }
+      }
     };
     const imgSVG = (n) => {
-      const pad = 2, body = nodeSVG(n, p, true);
+      const pad = 2, body = nodeSVG(Object.assign({}, n, {rot:0}), p, true);
       return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x - pad} ${n.y - pad} ${n.w + pad * 2} ${n.h + pad * 2}" width="${n.w + pad * 2}" height="${n.h + pad * 2}">${body}</svg>`;
     };
     const code = n => (doc.showCodes && n.code) ? n.code + ' ' : '';
     /* 父容器先于子元素输出 */
     const order = [], seen = new Set();
     const visit = n => { if (seen.has(n.id)) return; const pa = parentOf(n); if (pa) visit(pa); seen.add(n.id); order.push(n); };
-    p.nodes.forEach(visit);
+    drawOrder(p).forEach(visit);
     for (const n of order) {
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
       const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: n.type === 'sector' ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const coverageData = {}; Object.keys(n).filter(k => /^coverage[A-Z]/.test(k)).forEach(k => { coverageData[k] = n[k]; });
+      if (n.coverageKind) ht.ht_coverage = coverageData;
+      if (!isCont(n) && !isLineArrow(n) && (n.icon || n.coverageKind)) { ht.ht_labelLayout = 1; ht.ht_text = n.text || ''; }
+      for (const key of ['iconLabelGap', 'iconLabelDx', 'iconLabelDy']) {
+        if (n[key] != null && isFinite(+n[key])) ht['ht_' + key] = clamp(+n[key], key === 'iconLabelGap' ? 0 : -10000, key === 'iconLabelGap' ? 400 : 10000);
+      }
       if (n.sub && pageIds[n.sub]) ht.link = 'data:page/id,' + pageIds[n.sub];
       const st = stStyle(n, t), fs = n.size || 13, bold = n.bold ? ';fontStyle=1' : '';
       const font = `fontSize=${fs};fontFamily=Microsoft YaHei;html=1;whiteSpace=wrap`;
@@ -93,7 +117,7 @@
       const a2 = n.gradA == null ? 1 : +n.gradA;
       const fade = (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
       if (fade) {
-        const body = nodeSVG(n, p, true);
+        const body = nodeSVG(Object.assign({}, n, {rot:0}), p, true);
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x} ${n.y} ${n.w} ${n.h}" width="${n.w}" height="${n.h}">${body}</svg>`;
         cell(cid(n.id), '', 'shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,' + b64(svg), geo, pid, Object.assign(ht, { ht_paint: 1, ht_text: txt }));
         continue;
@@ -188,7 +212,9 @@
   }
   async function exportFile(pageList) {
     toast('正在生成 draw.io 文件…');
-    const s = exportString(pageList);
+    const pages = pageList && pageList.length ? pageList : pagesInOrder();
+    if (window.JwIconLabels) for (const page of pages) await JwIconLabels.ready(page);
+    const s = exportString(pages);
     await saveFile(docExportName('drawio'), new Blob([s], { type: 'application/xml' }));
   }
 
@@ -309,11 +335,11 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg' || c.data.ht_part === 'label') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');
-        if (D.ht_paint) text = D.ht_text || '';
+        if (D.ht_paint || D.ht_labelLayout) text = D.ht_text || '';
         if (D.ht_type === 'band') { const strip = cells.find(x => x.parent === c.id && x.data.ht_part === 'title'); const sv = strip ? htmlText(strip.label, true).replace(/\s/g, '') : null, ns = x => String(x || '').replace(/\s/g, ''); text = sv == null ? (D.ht_text || text) : (D.ht_text != null && (sv === ns(D.ht_text) || sv === ns((D.ht_code || '') + D.ht_text)) ? D.ht_text : sv); }
         let type = D.ht_type || null;
         const first = Object.keys(st).find(k => st[k] === '__first') || '';
@@ -335,7 +361,21 @@
         if (D.ht_role) n.role = D.ht_role; if (D.ht_noBox) n.noBox = true; if (D.ht_titleW) n.titleW = +D.ht_titleW;
         if (['cn','us'].includes(D.ht_appearance)) n.appearance = D.ht_appearance;
         if (['neutral','red','blue'].includes(D.ht_affiliation)) n.affiliation = D.ht_affiliation;
-        if (D.ht_rot) n.rot = +D.ht_rot || 0; if (D.ht_sw) n.sw = +D.ht_sw;
+        const rotation = st.rotation != null && st.rotation !== '' ? +st.rotation : +D.ht_rot;
+        if (isFinite(rotation) && rotation) n.rot = ((rotation % 360) + 360) % 360;
+        if (D.ht_sw) n.sw = +D.ht_sw;
+        for (const key of ['iconLabelGap', 'iconLabelDx', 'iconLabelDy']) {
+          const value = D['ht_' + key];
+          if (value != null && value !== '' && isFinite(+value)) n[key] = clamp(+value, key === 'iconLabelGap' ? 0 : -10000, key === 'iconLabelGap' ? 400 : 10000);
+        }
+        if (D.ht_coverage) {
+          try {
+            const coverage = JSON.parse(D.ht_coverage);
+            Object.keys(coverage).filter(k => /^coverage[A-Z][A-Za-z]*$/.test(k)).forEach(k => {
+              const v = coverage[k]; if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') n[k] = v;
+            });
+          } catch (_) { }
+        }
         if (D.ht_sweep) n.sweep = +D.ht_sweep; if (D.ht_noLine) n.noLine = true;
         if (D.ht_grad === 'h' || D.ht_grad === 'v' || D.ht_grad === 'r') n.grad = D.ht_grad;
         if (D.ht_gradTo) n.gradTo = D.ht_gradTo; if (D.ht_gradA !== '' && D.ht_gradA != null) n.gradA = +D.ht_gradA;
@@ -390,7 +430,7 @@
       const vById = new Map(page.nodes.map(n => [n._c.id, n]));
       const nearest = (pt) => { let best = null, bd = 40; for (const n of page.nodes) { if (['text', 'legend', 'tblock', 'note'].includes(n.type)) continue; const dx = Math.max(n.x - pt.x, 0, pt.x - n.x - n.w), dy = Math.max(n.y - pt.y, 0, pt.y - n.y - n.h); const dd = Math.hypot(dx, dy) + (['band', 'lane', 'group'].includes(n.type) ? 25 : 0); if (dd < bd) { bd = dd; best = n; } } return best; };
       for (const c of cells.filter(c => c.edge)) {
-        if (c.data.ht_part === 'canvasbg') continue;
+        if (c.data.ht_part === 'canvasbg' || c.data.ht_part === 'label') continue;
         const st = parseStyle(c.style), D = c.data;
         if (D.ht_part === 'ruler') continue;
         let a = vById.get(c.source), b = vById.get(c.target);

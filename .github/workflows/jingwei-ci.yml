@@ -55,3 +55,10 @@ jobs:
           python3 tests/scenario_tpl_test.py
           python3 tests/review_follow_test.py
           python3 tests/sector_fill_test.py
+      - name: 图形编辑与导出回归
+        run: |
+          python3 tests/rotation_test.py
+          python3 tests/coverage_test.py
+          python3 tests/iconlabels_test.py
+          python3 tests/layer_order_test.py
+          python3 tests/selectionbounds_test.py

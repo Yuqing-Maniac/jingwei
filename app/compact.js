@@ -382,6 +382,7 @@
     return new Blob(parts, { type: 'image/png' });
   }
   async function exportReportPNG() {
+    if (window.JwIconLabels) await JwIconLabels.ready(P());
     const c = cfg(), pg = PAGES[c.page];
     const { str, w, h } = exportSVGString(P(), false);
     const scale = Math.max(2, Math.min(4, 2400 / w * 1.2));

@@ -402,11 +402,16 @@ def app_probe(native, dest, exe, version, extra_args=None):
           document.querySelector('#jw-go').click(); clearSel(); render();
           return {homeVisible:document.querySelector('#jw-start').classList.contains('on'),
             missing:['#svg','#palette','#props','#gd-size','#gd-font','#gd-page','#pal-appearance']
-              .filter(s=>!document.querySelector(s))};
+              .filter(s=>!document.querySelector(s)),
+            editing:{selection:!!window.JwSelectionBounds,labels:!!window.JwIconLabels,
+              coverage:!!window.Coverage,layers:typeof layerSelection==='function',
+              coveragePresets:SHAPES.filter(s=>s.k.indexOf('coverage-')===0).length}};
         })()""")
         save_json(dest / "canvas-options.json", canvas)
         run.cdp.screenshot(dest / "canvas-options.png")
         assert not canvas["homeVisible"] and not canvas["missing"], canvas
+        assert all(canvas["editing"][key] for key in ("selection", "labels", "coverage", "layers")), canvas
+        assert canvas["editing"]["coveragePresets"] == 4, canvas
         fatal = [e for e in run.cdp.events if e.get("method") == "Runtime.exceptionThrown"]
         assert not fatal, fatal
         return state
