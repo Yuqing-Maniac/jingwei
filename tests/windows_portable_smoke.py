@@ -59,6 +59,8 @@ class Win32:
             (self.u, "GetWindowTextLengthW", [wintypes.HWND], ctypes.c_int),
             (self.u, "GetWindowTextW", [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int], ctypes.c_int),
             (self.u, "PostMessageW", [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM], wintypes.BOOL),
+            (self.u, "GetDlgItem", [wintypes.HWND, ctypes.c_int], wintypes.HWND),
+            (self.u, "SendMessageTimeoutW", [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM, wintypes.UINT, wintypes.UINT, ctypes.POINTER(ctypes.c_size_t)], wintypes.LPARAM),
         ]
         for lib, name, args, result in declarations:
             fn = getattr(lib, name)
@@ -432,9 +434,13 @@ def missing_asar_probe(native, dest, outer):
                 save_json(dest / "dialog.json", {"hwnd": hwnd, "text": text})
                 if "程序资源不完整" in text and "重新解压" in text:
                     matched = text
-                    # WM_CLOSE dismisses the test launcher's own MB_OK dialog.
-                    if not native.u.PostMessageW(hwnd, 0x0010, 0, 0):
-                        raise ctypes.WinError(ctypes.get_last_error())
+                    # Exercise the actual OK button instead of relying on a synthetic menu command.
+                    button = native.u.GetDlgItem(hwnd, 1)
+                    response = ctypes.c_size_t()
+                    if button:
+                        native.u.SendMessageTimeoutW(button, 0x00F5, 0, 0, 2, 5000, ctypes.byref(response))
+                    else:
+                        native.u.PostMessageW(hwnd, 0x0010, 0, 0)
                     break
             if matched:
                 run.process.wait(timeout=min(10, max(0.1, end-time.monotonic())))
