@@ -2313,6 +2313,10 @@ function iconSearchMatch(i, query) {
   return !q || [i.key, i.name].concat(iconCats(i), i.keywords || [], Object.values(i.countries || {}).map(v => v.name)).some(s => norm(s).includes(q));
 }
 function iconOriginDefaults(lib, target) {
+  if (lib && lib.teamPaintOnly) {
+    if (target.affiliation == null && ['cn', 'us'].includes(target.appearance)) target.affiliation = iconSide(undefined, target.appearance);
+    delete target.appearance;
+  }
   if (lib && lib.originCountry && lib.countries && lib.countries[lib.originCountry]) {
     target.appearance = lib.originCountry;
     target.affiliation = iconSide(lib.defaultAffiliation, lib.originCountry);
@@ -2322,6 +2326,7 @@ function iconOriginDefaults(lib, target) {
 function iconPlaceSpec(icon, name, w, h) {
   const spec = { type: 'equip', w: w, h: h, text: name, icon: icon };
   const lib = icon.startsWith('lib:') && ICON_MAP[icon.slice(4)];
+  if (lib && lib.teamPaintOnly && ['cn', 'us'].includes(paletteAppearance)) spec.affiliation = iconSide(undefined, paletteAppearance);
   if (lib && lib.countries && lib.countries[paletteAppearance]) {
     spec.appearance = paletteAppearance; spec.affiliation = iconSide(undefined, paletteAppearance);
   }

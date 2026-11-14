@@ -63,3 +63,4 @@ jobs:
           python3 tests/layer_order_test.py
           python3 tests/selectionbounds_test.py
           python3 tests/recon_icons_test.py
+          python3 tests/underwater_icon_test.py

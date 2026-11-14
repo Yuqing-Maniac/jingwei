@@ -188,5 +188,22 @@
     ],
     "originCountry": "cn",
     "defaultAffiliation": "red"
+  },
+  {
+    "key": "underwater_prepositioned_weapon",
+    "name": "水下预置武器（示意）",
+    "cat": "海上",
+    "keywords": [
+      "水下预制武器",
+      "水下预置武器",
+      "水下预置",
+      "海底预置",
+      "预置武器",
+      "海底驻留",
+      "underwater prepositioned weapon"
+    ],
+    "countries": [],
+    "teamPaintOnly": true,
+    "genericMaster": "masters/underwater-weapon.webp"
   }
 ]
