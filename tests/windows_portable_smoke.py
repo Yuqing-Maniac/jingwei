@@ -13,6 +13,7 @@ from ctypes import wintypes
 import json
 import os
 from pathlib import Path
+import shutil
 import socket
 import subprocess
 import sys
@@ -348,12 +349,12 @@ STATE_JS = r"""(async () => {
 })()"""
 
 
-def app_probe(native, dest, exe, version):
+def app_probe(native, dest, exe, version, extra_args=None):
     port = free_port()
     env = environment(dest)
     run = Run(native, dest, exe, ["--remote-debugging-address=127.0.0.1",
               "--remote-debugging-port=" + str(port), "--remote-allow-origins=*",
-              "--user-data-dir=" + str(dest / "独立 user data")], env)
+              "--user-data-dir=" + str(dest / "独立 user data"), *(extra_args or [])], env)
     last = None
     try:
         end = time.monotonic() + 120
@@ -463,11 +464,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", required=True, type=Path, help="Final portable ZIP, or directory containing exactly one ZIP")
     parser.add_argument("--version", default=None, help="Expected application version; defaults to desktop/package.json")
+    parser.add_argument("--original-exe", type=Path, default=None,
+                        help="Optional pristine Electron EXE (or directory containing one EXE), copied beside the packaged inner EXE for a diagnostic control; never changes the normal-startup verdict")
     parser.add_argument("--output", type=Path, default=ROOT / "_work/windows-startup-smoke")
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    report = {"platform": sys.platform, "archive": str(args.archive.resolve()), "tests": []}
+    report = {"platform": sys.platform, "archive": str(args.archive.resolve()), "tests": [],
+              "diagnostics": [], "diagnosticsAffectVerdict": False}
     if sys.platform != "win32":
         report["status"] = "skipped"
         report["reason"] = "Requires real Windows APIs and Electron on Windows; no startup validation performed."
@@ -499,28 +503,71 @@ def main():
         report["extracted"] = str(extracted)
         native = Win32()
 
-        def check(name, fn):
+        def check(name, fn, diagnostic=False):
             dest = output / name
             dest.mkdir(parents=True, exist_ok=True)
-            item = {"name": name}
+            item = {"name": name, "diagnosticOnly": diagnostic}
+            prefix = "DIAGNOSTIC " if diagnostic else ""
             started = time.monotonic()
             try:
                 item["result"] = fn(dest)
                 item["status"] = "passed"
-                print("PASS " + name, flush=True)
+                print(prefix + "PASS " + name, flush=True)
             except Exception as exc:
                 item.update(status="failed", error=error_info(exc))
                 save_json(dest / "failure.json", item["error"])
-                print("FAIL " + name + ": " + str(exc), flush=True)
+                print(prefix + "FAIL " + name + ": " + str(exc), flush=True)
             item["seconds"] = round(time.monotonic() - started, 2)
-            report["tests"].append(item)
+            report["diagnostics" if diagnostic else "tests"].append(item)
             save_json(output / "report.json", report)
+            return item
 
+        inner_result = None
         for label, exe in (("outer", outer), ("inner", inner)):
             check(label + "-manifest", lambda dest, exe=exe: native.manifests(exe, dest))
             check(label + "-node", lambda dest, exe=exe: node_probe(native, dest, exe))
-            check(label + "-app", lambda dest, exe=exe: app_probe(native, dest, exe, version))
+            result = check(label + "-app", lambda dest, exe=exe: app_probe(native, dest, exe, version))
+            if label == "inner":
+                inner_result = result
+        if inner_result["status"] == "failed":
+            # Diagnostic successes never replace either unmodified app launch.
+            # Each app_probe gets its own directory, profile, port, logs and the
+            # exact same visibility/IPC/catalog/DOM assertions as normal startup.
+            matrix = [
+                ("no-software-rasterizer", ["--disable-gpu", "--disable-software-rasterizer"]),
+                ("no-gpu-sandbox", ["--disable-gpu", "--disable-gpu-sandbox"]),
+                ("in-process-gpu", ["--disable-gpu", "--in-process-gpu"]),
+                ("no-sandbox", ["--disable-gpu", "--no-sandbox"]),
+            ]
+            for name, flags in matrix:
+                check("diagnostic-inner-" + name,
+                      lambda dest, flags=flags: app_probe(native, dest, inner, version, extra_args=flags),
+                      diagnostic=True)
+        if args.original_exe is not None:
+            def original_control(dest):
+                source = args.original_exe.resolve()
+                if source.is_dir():
+                    candidates = [p for p in source.iterdir() if p.is_file() and p.suffix.lower() == ".exe"]
+                    if len(candidates) != 1:
+                        raise ValueError("--original-exe directory must contain exactly one EXE: " + str(candidates))
+                    source = candidates[0]
+                if not source.is_file():
+                    raise FileNotFoundError(source)
+                target = inner.with_name("electron-original.exe")
+                if target.exists():
+                    raise FileExistsError("Refusing to overwrite extracted original-control path: " + str(target))
+                shutil.copy2(source, target)
+                save_json(dest / "original-control.json", {
+                    "source": str(source), "copiedTo": str(target),
+                    "runtimeDirectory": str(inner.parent), "extraArgs": [],
+                    "diagnosticOnly": True, "normalExecutablesUnchanged": True})
+                # Resources and DLLs stay in the same directory as the packaged
+                # inner EXE. The pristine EXE alone is the changed variable.
+                return app_probe(native, dest, target, version)
+            check("diagnostic-original-electron-app", original_control, diagnostic=True)
         check("missing-asar", lambda dest: missing_asar_probe(native, dest, outer))
+        # Only mandatory tests determine success. In particular, a successful
+        # --no-sandbox control cannot conceal a failing normal Windows launch.
         report["status"] = "passed" if all(t["status"] == "passed" for t in report["tests"]) else "failed"
     except Exception as exc:
         report.update(status="failed", error=error_info(exc))
