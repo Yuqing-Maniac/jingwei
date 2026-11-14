@@ -166,12 +166,7 @@ var CanvasBg = (function () {
     var m = asModel(model);
     if (!m) return 'native';
     if (format === 'svg' || format === 'png' || format === 'vsdx') return 'native';
-    if (format === 'pptx') {
-      if (m.grad.kind === 'radial') return 'raster';
-      var op = m.grad.stops[0].opacity;
-      for (var i = 1; i < m.grad.stops.length; i++) if (Math.abs(m.grad.stops[i].opacity - op) > 1e-4) return 'raster';
-      return 'native';
-    }
+    if (format === 'pptx') return 'raster';
     if (format === 'drawio') {
       if (m.grad.kind !== 'linear' || m.grad.stops.length !== 2) return 'raster';
       for (var j = 0; j < m.grad.stops.length; j++) if (m.grad.stops[j].opacity < 1 - 1e-4) return 'raster';
@@ -225,34 +220,9 @@ var CanvasBg = (function () {
     var model = asModel(page);
     if (!model || !slide || !ctx || !ctx.box) return Promise.resolve();
     var box = ctx.box;
-    if (plan(model, 'pptx') === 'raster') {
-      var url = raster(page, box);
-      if (url) slide.addImage({ data: url.replace(/^data:/, ''), x: ctx.X(box.x), y: ctx.Y(box.y), w: ctx.S(box.w), h: ctx.S(box.h) });
-      return Promise.resolve();
-    }
-    var colors = model.grad.stops.map(function (s) {
-      return { color: s.color.slice(1), position: Math.round(s.at * 100) };
-    });
-    var op = model.grad.stops[0].opacity;
-    var fill = { type: 'grad', colors: colors, rotate: model.grad.angle, transparency: Math.round((1 - op) * 100) };
-    slide.addShape(pptx.ShapeType.rect, {
-      x: ctx.X(box.x), y: ctx.Y(box.y), w: ctx.S(box.w), h: ctx.S(box.h),
-      fill: fill, line: { width: 0 }
-    });
-    if (model.grid.show) {
-      var segs = segments(box, model.grid);
-      var transparency = Math.round((1 - model.grid.opacity) * 100);
-      for (var i = 0; i < segs.length; i++) {
-        var x1 = segs[i][0], y1 = segs[i][1], x2 = segs[i][2], y2 = segs[i][3];
-        var dx = x2 - x1, dy = y2 - y1;
-        slide.addShape(pptx.ShapeType.line, {
-          x: ctx.X(Math.min(x1, x2)), y: ctx.Y(Math.min(y1, y2)),
-          w: dx === 0 ? 0 : ctx.S(Math.abs(dx)), h: dy === 0 ? 0 : ctx.S(Math.abs(dy)),
-          flipH: x2 < x1, flipV: y2 < y1,
-          line: { color: model.grid.color.slice(1), width: 0.75, transparency: transparency }
-        });
-      }
-    }
+    /* pptxgenjs 3.12 drops fill type grad and turns a zero-width line into a 1pt outline. */
+    var url = raster(page, box);
+    if (url) slide.addImage({ data: url.replace(/^data:/, ''), x: ctx.X(box.x), y: ctx.Y(box.y), w: ctx.S(box.w), h: ctx.S(box.h) });
     return Promise.resolve();
   }
 
@@ -314,8 +284,14 @@ var CanvasBg = (function () {
   function lockStyle() {
     return 'locked=1;pointerEvents=0;movable=0;resizable=0;deletable=0;connectable=0';
   }
-  function dioCell(id, style, inner) {
-    return '<UserObject label="" id="' + id + '" ht_part="canvasbg"><mxCell style="' + escAttr(style) + '" vertex="1" parent="1">' + inner + '</mxCell></UserObject>';
+  function dioCell(id, style, inner, edge) {
+    return '<UserObject label="" id="' + id + '" ht_part="canvasbg"><mxCell style="' + escAttr(style) + '" ' + (edge ? 'edge="1"' : 'vertex="1"') + ' parent="1">' + inner + '</mxCell></UserObject>';
+  }
+  function dioPng(url) {
+    var s = String(url || '');
+    var cut = s.indexOf(',');
+    if (s.indexOf('data:image/png;base64,') === 0 && cut >= 0) return 'data:image/png,' + s.slice(cut + 1);
+    return s;
   }
   function drawio(page) {
     var model = asModel(page);
@@ -328,7 +304,7 @@ var CanvasBg = (function () {
     if (plan(model, 'drawio') === 'raster') {
       var url = raster(page, b);
       if (!url) return { background: background, cells: '' };
-      var style = 'shape=image;imageAspect=0;aspect=fixed;' + lockStyle() + ';image=' + url;
+      var style = 'shape=image;imageAspect=0;aspect=fixed;' + lockStyle() + ';image=' + dioPng(url);
       cells = dioCell('cbg-img', style, '<mxGeometry x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" as="geometry"/>');
       return { background: background, cells: cells };
     }
@@ -341,8 +317,9 @@ var CanvasBg = (function () {
       var op = Math.round(model.grid.opacity * 100);
       for (var i = 0; i < segs.length; i++) {
         var x1 = segs[i][0], y1 = segs[i][1], x2 = segs[i][2], y2 = segs[i][3];
-        var st = 'shape=line;html=1;endArrow=none;startArrow=none;strokeColor=' + model.grid.color + ';strokeOpacity=' + op + ';' + lockStyle();
-        cells += dioCell('cbg-l' + i, st, '<mxGeometry x="' + fmt(Math.min(x1, x2)) + '" y="' + fmt(Math.min(y1, y2)) + '" width="' + fmt(Math.abs(x2 - x1)) + '" height="' + fmt(Math.abs(y2 - y1)) + '" as="geometry"><mxPoint x="' + fmt(x1) + '" y="' + fmt(y1) + '" as="sourcePoint"/><mxPoint x="' + fmt(x2) + '" y="' + fmt(y2) + '" as="targetPoint"/></mxGeometry>');
+        /* mxLine paints the cell bounds and ignores the endpoints, so a perspective segment is a floating edge. */
+        var st = 'endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=' + model.grid.color + ';strokeOpacity=' + op + ';' + lockStyle();
+        cells += dioCell('cbg-l' + i, st, '<mxGeometry relative="1" as="geometry"><mxPoint x="' + fmt(x1) + '" y="' + fmt(y1) + '" as="sourcePoint"/><mxPoint x="' + fmt(x2) + '" y="' + fmt(y2) + '" as="targetPoint"/></mxGeometry>', true);
       }
     }
     return { background: background, cells: cells };

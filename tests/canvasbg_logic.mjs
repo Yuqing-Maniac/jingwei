@@ -115,10 +115,13 @@ const two = {
 };
 assert.equal(CanvasBg.plan(three, 'drawio'), 'raster', 'draw.io raster when 3 stops');
 assert.equal(CanvasBg.plan(two, 'drawio'), 'native', 'draw.io native for two opaque linear stops at 90');
-assert.equal(CanvasBg.plan({ grad: { kind: 'radial', angle: 0, stops: two.grad.stops }, grid: two.grid }, 'pptx'), 'raster', 'pptx raster for radial');
+assert.equal(CanvasBg.plan(two, 'pptx'), 'raster', 'pptx rasters a linear sheet');
+assert.equal(CanvasBg.plan({ grad: { kind: 'radial', angle: 0, stops: two.grad.stops }, grid: two.grid }, 'pptx'), 'raster', 'pptx rasters a radial sheet');
 
 const nativeDio = CanvasBg.drawio({ canvasBg: two });
-assert.match(nativeDio.cells, /shape=line/, 'native grid uses shape=line');
+assert.match(nativeDio.cells, /edge="1"/, 'perspective grid is a floating edge');
+assert.match(nativeDio.cells, /sourcePoint/, 'edge keeps the start point');
+assert.match(nativeDio.cells, /targetPoint/, 'edge keeps the end point');
 assert.match(nativeDio.cells, /locked=1/, 'native grid is locked');
 assert.match(nativeDio.cells, /ht_part="canvasbg"/, 'sheet cells are marked so import skips them');
 
@@ -147,7 +150,8 @@ document.createElement = function (tag) {
   };
 };
 const rasterDio = CanvasBg.drawio({ canvasBg: three });
-assert.match(rasterDio.cells, /data:image\/png;base64/, '3-stop draw.io sheet is a png');
+assert.match(rasterDio.cells, /image=data:image\/png,[A-Za-z0-9+/=]+/, '3-stop draw.io sheet is a png');
+assert.equal(/image=data:image\/png;/.test(rasterDio.cells), false, 'png style value has no semicolon');
 assert.ok(calls.linear >= 1 && calls.stops >= 3, 'raster paints the gradient stops');
 
 const saved = {

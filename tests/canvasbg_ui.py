@@ -105,7 +105,7 @@ def main():
           };
           render();
           const dio = DrawIO.exportString([P()]);
-          check(dio.indexOf('data:image/png;base64') >= 0, 'draw.io 3-stop sheet is a png');
+          check(dio.indexOf('data:image/png,') >= 0 && dio.indexOf('data:image/png;base64') < 0, 'draw.io png style has no semicolon');
           check(dio.indexOf('ht_canvasBg') >= 0, 'draw.io stores the background model');
           check(dio.indexOf('ht_part=&quot;canvasbg&quot;') >= 0 || dio.indexOf('ht_part="canvasbg"') >= 0, 'draw.io marks sheet cells');
           const n0 = P().nodes.length;
@@ -134,13 +134,17 @@ def main():
           const box = { x: 0, y: 0, w: 180, h: 120 };
           const map = { X: v => v, Y: v => v, S: v => v, box };
           P().canvasBg = { grad: { kind: 'linear', angle: 0, stops: [{ at: 0, color: '#112233', opacity: 0.5 }, { at: 1, color: '#AABBCC', opacity: 0.5 }] }, grid: { show: true, color: '#667788', opacity: 0.4, gap: 30, persp: 0 } };
-          check(CanvasBg.plan(P().canvasBg, 'pptx') === 'native', 'shared-opacity linear pptx is native');
+          check(CanvasBg.plan(P().canvasBg, 'pptx') === 'raster', 'pptx sheet is raster');
           await CanvasBg.paintPptx(slide, pptx, P(), map);
-          check(shapes.n > 0 && shapes.image === 0, 'native pptx uses shapes');
-          P().canvasBg.grad.kind = 'radial';
-          check(CanvasBg.plan(P().canvasBg, 'pptx') === 'raster', 'radial pptx is raster');
-          await CanvasBg.paintPptx(slide, pptx, P(), map);
-          check(shapes.image > 0, 'radial pptx uses an image');
+          check(shapes.n === 0 && shapes.image === 1, 'pptx uses one image');
+          const linksBefore = P().links.length;
+          const nodesBefore = P().nodes.length;
+          P().canvasBg = { grad: { kind: 'linear', angle: 90, stops: [{ at: 0, color: '#112233', opacity: 1 }, { at: 1, color: '#AABBCC', opacity: 1 }] }, grid: { show: true, color: '#334455', opacity: 0.8, gap: 48, persp: 100 } };
+          const dioN = DrawIO.exportString([P()]);
+          check(dioN.indexOf('edge="1"') >= 0 && dioN.indexOf('sourcePoint') >= 0, 'perspective grid is a floating edge');
+          const backN = await DrawIO.importText(dioN);
+          check(backN.pages[0].links.length === linksBefore, 'grid edges are not links');
+          check(backN.pages[0].nodes.length === nodesBefore, 'grid edges are not nodes');
           let hooked = false;
           if (typeof JSZip !== 'undefined') {
             P().nodes = P().nodes.filter(n => n.type === 'text').slice(0, 1);

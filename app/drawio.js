@@ -364,6 +364,7 @@
       const vById = new Map(page.nodes.map(n => [n._c.id, n]));
       const nearest = (pt) => { let best = null, bd = 40; for (const n of page.nodes) { if (['text', 'legend', 'tblock', 'note'].includes(n.type)) continue; const dx = Math.max(n.x - pt.x, 0, pt.x - n.x - n.w), dy = Math.max(n.y - pt.y, 0, pt.y - n.y - n.h); const dd = Math.hypot(dx, dy) + (['band', 'lane', 'group'].includes(n.type) ? 25 : 0); if (dd < bd) { bd = dd; best = n; } } return best; };
       for (const c of cells.filter(c => c.edge)) {
+        if (c.data.ht_part === 'canvasbg') continue;
         const st = parseStyle(c.style), D = c.data;
         let a = vById.get(c.source), b = vById.get(c.target);
         const sp = c.pts.find(p => p.as === 'sourcePoint'), tp = c.pts.find(p => p.as === 'targetPoint');
