@@ -55,6 +55,7 @@
     const a = {};
     if (p.view) a.ht_view = p.view;
     if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind, measure: doc.measure || null });
+    if (p.scene && p.scene.stops && p.scene.stops.length >= 2) a.ht_scene = JSON.stringify(p.scene);
     const at = Object.entries(a).map(([k, v]) => ` ${k}="${xa(v)}"`).join('');
     return at ? `<object label=""${at} id="0"><mxCell/></object>` : '<mxCell id="0"/>';
   }
@@ -79,6 +80,10 @@
     const order = [], seen = new Set();
     const visit = n => { if (seen.has(n.id)) return; const pa = parentOf(n); if (pa) visit(pa); seen.add(n.id); order.push(n); };
     p.nodes.forEach(visit);
+    if (typeof scenePack === 'function') {
+      const pack = scenePack(p, 24);
+      if (pack) cell('jwscene', '', 'shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,' + b64(pack.str) + ';movable=0;resizable=0;connectable=0', { x: pack.x, y: pack.y, w: pack.w, h: pack.h }, '1', { ht_part: 'scene' });
+    }
     for (const n of order) {
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
@@ -88,7 +93,7 @@
       const st = stStyle(n, t), fs = n.size || 13, bold = n.bold ? ';fontStyle=1' : '';
       const font = `fontSize=${fs};fontFamily=Microsoft YaHei;html=1;whiteSpace=wrap`;
       const txt = (n.text || '');
-      /* draw.io 渐变没有单独的末端透明度；完全透明的色标改用画布同一段 SVG 快照 */
+      /* draw.io 渐变色标不能带透明度。末端不是完全不透明时，嵌画布同一段 SVG，ht_gradA 仍可回读 */
       const a2 = n.gradA == null ? 1 : +n.gradA;
       const fade = (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
       if (fade) {
@@ -277,6 +282,7 @@
       /* 绝对坐标：沿父链累加（图层不计） */
       const absOf = c => { let x = c.geo ? c.geo.x : 0, y = c.geo ? c.geo.y : 0, p = byId.get(c.parent), k = 0; while (p && !layers.has(p.id) && k++ < 30) { if (p.vertex && p.geo && !p.geo.rel) { x += p.geo.x; y += p.geo.y; } p = byId.get(p.parent); } return { x, y }; };
       const page = { id: idMap[d.id], name: d.name, nodes: [], links: [], view: (rc && rc.data.ht_view) || null };
+      if (rc && rc.data.ht_scene) try { page.scene = JSON.parse(rc.data.ht_scene); page.scene.locked = true; } catch (_) { }
       if (rc && rc.data.ht_doc && !docSettings) try { docSettings = JSON.parse(rc.data.ht_doc); } catch (_) { }
       const nodeOf = new Map();
       const verts = cells.filter(c => c.vertex && c.geo && !c.geo.rel);
@@ -286,7 +292,7 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'scene') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');

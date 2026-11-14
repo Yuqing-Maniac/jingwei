@@ -332,7 +332,54 @@
     beautify(d.pages.root);
   }, { base: '延续', new: '本次生成', key: '重点' });
 
-  window.TEMPLATES = [t1, t2, t3, t4, t5, t6, t7, t8, t9];
+  /* 作战场景：只用现有图标和虚构的边海防巡逻题材 */
+  function opsDoc(id, name, desc, fn) {
+    const t = define(id, name, desc, fn, { base: '巡逻中', new: '本次出动', key: '重点警戒' });
+    t.group = '作战场景';
+    return t;
+  }
+  const tOps1 = opsDoc('ops-patrol', '边海防巡逻对抗', '虚构巡逻体系：蓝方编队、红方来向、探测扇区与距离标注', (d, T) => {
+    const { N, L } = T, C = window.Combo;
+    N({ type: 'text', role: 'title', text: '边海防无人化巡逻体系 · 对抗态势', size: 22, bold: true, x: 80, y: -80, w: 560, h: 36 });
+    const cmd = N({ type: 'equip', icon: ic('console', 'operator'), text: '巡逻指挥席', noBox: true, affiliation: 'blue', x: 40, y: 40, w: 96, h: 96, size: 12 });
+    let key = ic('uav_quad'), w = 150, h = 120;
+    if (C) {
+      key = C.formationIcon(ic('uav_quad'), 4, 'wedge', { name: '蓝方巡逻编队' });
+      const z = C.sizeFor(d.custom[key.slice(3)].aspect, 150); w = z.w; h = z.h;
+    }
+    const form = N({ type: 'equip', icon: key, text: '蓝方巡逻编队', noBox: true, affiliation: 'blue', x: 240, y: 24, w, h, size: 12 });
+    N({ type: 'sector', text: '探测扇区', sweep: 140, fill: '#2F80ED', grad: 'r', gradTo: '#d6e8ff', gradA: 0.15, x: 460, y: 10, w: 200, h: 170, size: 12 });
+    const red = N({ type: 'equip', icon: ic('uav_ucav', 'uav_quad'), text: '红方来向', noBox: true, affiliation: 'red', x: 700, y: 36, w: 96, h: 96, size: 12 });
+    const boat = N({ type: 'equip', icon: ic('usv_armed', 'ship'), text: '海面巡逻艇', noBox: true, affiliation: 'blue', x: 240, y: 230, w: 96, h: 96, size: 12 });
+    N({ type: 'stdArrow', x: 150, y: 78, w: 80, h: 28, text: '' });
+    N({ type: 'dimArrow', x: 420, y: 210, w: 240, h: 48, distMode: 'fixed', distText: '12 km' });
+    L(cmd, form, { kind: 'ctrl', label: '巡逻指令' });
+    L(form, red, { kind: 'data', label: '发现' });
+    L(boat, form, { kind: 'data', label: '海面回传' });
+  });
+  const tOps2 = opsDoc('ops-guard', '要地警戒部署', '虚构警戒场景：组合观察站、拦截阵列、六边形警戒区', (d, T) => {
+    const { N, L } = T, C = window.Combo;
+    N({ type: 'text', role: 'title', text: '边海防无人化巡逻体系 · 要地警戒', size: 22, bold: true, x: 80, y: -80, w: 520, h: 36 });
+    let mix = ic('cuas_radar_lowalt', 'radar'), mw = 160, mh = 110;
+    if (C) {
+      mix = C.groupIcon([[ic('cuas_radar_lowalt', 'radar'), 0, 0, 1], [ic('camera', 'eo_turret'), 1.1, 0.15, 0.85]].map(([icon, x, y, s]) => ({ icon, x, y, s })), '观察站');
+      const z = C.sizeFor(d.custom[mix.slice(3)].aspect, 150); mw = z.w; mh = z.h;
+    }
+    const watch = N({ type: 'equip', icon: mix, text: '观察站', noBox: true, affiliation: 'blue', x: 40, y: 30, w: mw, h: mh, size: 12 });
+    let grid = ic('cuas_interceptor_drone', 'uav_quad'), gw = 180, gh = 140;
+    if (C) {
+      grid = C.formationIcon(ic('cuas_interceptor_drone', 'uav_quad'), 6, 'grid', { name: '拦截阵列', gap: 0.2 });
+      const z = C.sizeFor(d.custom[grid.slice(3)].aspect, 170); gw = z.w; gh = z.h;
+    }
+    const arr = N({ type: 'equip', icon: grid, text: '拦截阵列', noBox: true, affiliation: 'blue', x: 280, y: 20, w: gw, h: gh, size: 12 });
+    const zone = N({ type: 'hexagon', text: '警戒区', fill: '#fff6e8', stroke: '#c47b2b', x: 520, y: 40, w: 180, h: 150, size: 14 });
+    const ground = N({ type: 'equip', icon: ic('ugv_armed', 'ugv'), text: '地面警戒车', noBox: true, affiliation: 'red', x: 760, y: 60, w: 96, h: 96, size: 12 });
+    N({ type: 'arrowR', text: '', x: 500, y: 210, w: 140, h: 48 });
+    L(watch, arr, { kind: 'ctrl', label: '引导' });
+    L(arr, zone, { kind: 'data', label: '覆盖' });
+    L(zone, ground, { kind: 'data', label: '交接' });
+  });
+  window.TEMPLATES = [t1, t2, t3, t4, t5, t6, t7, t8, t9, tOps1, tOps2];
 
   /* ====================================================== 画廊 UI */
   const CSS = `
@@ -376,12 +423,13 @@
   function applyTemplate(t) {
     checkpoint();
     const d = t.build();
-    d.theme = (doc && doc.theme) || d.theme; d.custom = Object.assign({}, doc && doc.custom);
+    d.theme = (doc && doc.theme) || d.theme; d.custom = Object.assign({}, doc && doc.custom, d.custom || {});
     loadDoc(d); fit();
     toast('已应用模板：' + t.name);
   }
   function insertAsPage(t) {
     const src = t.build(), idMap = {}, mapped = {};
+    doc.custom = Object.assign({}, doc.custom, src.custom || {});
     for (const k of Object.keys(src.pages)) idMap[k] = 'p' + uid();
     checkpoint();
     for (const [k, pg] of Object.entries(src.pages)) {
