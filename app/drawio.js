@@ -73,7 +73,7 @@
         style += ';strokeWidth=' + coverage.sw + ';fillOpacity=' + Math.round(coverage.fillAlpha * 100);
         if (coverage.dash) style += ';dashed=1;dashPattern=' + coverage.dash;
       }
-      const separateLabel = extra.ht_labelLayout && !extra.ht_paint;
+      const separateLabel = extra.ht_labelLayout && (!extra.ht_paint || extra.ht_type === 'fan');
       const g = `<mxGeometry x="${r1(geo.x)}" y="${r1(geo.y)}" width="${r1(geo.w)}" height="${r1(geo.h)}" as="geometry"/>`;
       const inner = `<mxCell style="${xa(style)}" ${vertex ? 'vertex="1"' : ''} parent="${par}">${g}</mxCell>`;
       out.push(`<UserObject label="${xa(separateLabel ? '' : label)}" id="${id}"${meta(extra)}>${inner}</UserObject>`);
@@ -102,7 +102,7 @@
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: n.type === 'sector' ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
       const coverageData = {}; Object.keys(n).filter(k => /^coverage[A-Z]/.test(k)).forEach(k => { coverageData[k] = n[k]; });
       if (n.coverageKind) ht.ht_coverage = coverageData;
       if (!isCont(n) && !isLineArrow(n) && (n.icon || n.coverageKind)) { ht.ht_labelLayout = 1; ht.ht_text = n.text || ''; }
@@ -115,7 +115,7 @@
       const txt = (n.text || '');
       /* draw.io 渐变色标不能带透明度。末端不是完全不透明时，嵌画布同一段 SVG，ht_gradA 仍可回读 */
       const a2 = n.gradA == null ? 1 : +n.gradA;
-      const fade = (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
+      const fade = n.type !== 'fan' && (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
       if (fade) {
         const body = nodeSVG(Object.assign({}, n, {rot:0}), p, true);
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x} ${n.y} ${n.w} ${n.h}" width="${n.w}" height="${n.h}">${body}</svg>`;
@@ -161,6 +161,17 @@
             cell(cid(n.id) + 'b' + i, lb.text, `text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=${stroke};strokeColor=none;fillColor=none`, { x: lb.x - ox - tw / 2, y: lb.y - oy - 12, w: tw, h: 16 }, pid, { ht_part: 'ruler' });
           });
         }
+      } else if (n.type === 'fan') {
+        // Tight circle-sector geometry, with stroke padding only in its image;
+        // preserve the original node bounds and independent caption on import.
+        const paint=paintOf(n,t),gradient=gradDef('diofan'+n.id,paint.grad),pad=Math.max(1,paint.sw/2+1);
+        const body=!n.noBox?gradient.def+shapeMarkup('fan',n.x,n.y,n.w,n.h,gradient.attr||paint.fill,paint.stroke,paint.sw,n.sweep,paint):'';
+        const image=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x-pad} ${n.y-pad} ${n.w+2*pad} ${n.h+2*pad}" width="${n.w+2*pad}" height="${n.h+2*pad}">${body}</svg>`;
+        const icon=nodeLayout(n).icon;
+        cell(cid(n.id),'',`shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,${b64(image)}`,
+          {x:geo.x-pad,y:geo.y-pad,w:n.w+2*pad,h:n.h+2*pad},pid,Object.assign({},ht,{ht_text:n.text||'',ht_paint:1,ht_labelLayout:1,ht_fanPad:pad,ht_fanIcon:icon&&icon.uri}));
+        if(icon){const box=rotatedBox(n,{x:icon.x,y:icon.y,w:icon.w||icon.s,h:icon.h||icon.s});cell(cid(n.id)+'_icon','',`shape=image;imageAspect=0;image=${styleImage(iconMirrorURI(icon.uri,icon.flipX,icon.flipY))}`,
+          {x:box.x-pg.x,y:box.y-pg.y,w:box.w,h:box.h},pid,{ht_part:'label',ht_rot:rotOf(n)||''});}
       } else if (n.type === 'legend' || n.type === 'tblock') {
         if (n.type === 'legend' && typeof legendLayout === 'function') legendLayout(n, p);
         const im = 'data:image/svg+xml,' + b64(imgSVG(n));
@@ -393,7 +404,8 @@
         /* 导出时若显示编号，标签为“编号 + 空格 + 文字”；导回时去掉前缀（与当前文档是否显示编号无关） */
         if (D.ht_code && new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+').test(n.text)) n.text = n.text.replace(new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+'), '');
         /* 图标 */
-        if (D.ht_paint) { /* 渐变到透明的整形状快照，不是图标 */ }
+        if(n.type==='fan' && D.ht_icon) {n.icon=/^(lib|ms):/.test(D.ht_icon)?D.ht_icon:D.ht_fanIcon?addImg(D.ht_fanIcon,text||'扇形图标'):null;if(D.ht_flipX)n.flipX=true;if(D.ht_flipY)n.flipY=true;}
+        else if (D.ht_paint) { /* 渐变到透明的整形状快照，不是图标 */ }
         else if (D.ht_icon && /^(lib|ms):/.test(D.ht_icon)) {
           n.icon = D.ht_icon;
           if (D.ht_flipX) n.flipX = true; if (D.ht_flipY) n.flipY = true;
@@ -404,6 +416,7 @@
           if (st.fillColor && !DEF_COLORS.test(st.fillColor)) n.fill = st.fillColor;
           if (st.strokeColor && !DEF_COLORS.test(st.strokeColor)) n.stroke = st.strokeColor;
         }
+        if(n.type==='fan'){const pad=+D.ht_fanPad||0;n.x=a.x+pad;n.y=a.y+pad;n.w=c.geo.w-2*pad;n.h=c.geo.h-2*pad;fitFan(n);}
         nodeOf.set(c.id, n); page.nodes.push(n);
       }
       /* 父子：沿 draw.io 父链找到最近的已导入单元（透明 group 跳过） */

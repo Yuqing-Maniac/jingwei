@@ -46,7 +46,10 @@ var CanvasBg = (function () {
     if (!isFinite(angle)) angle = 0;
     angle = ((angle % 360) + 360) % 360;
     var grid = raw.grid && typeof raw.grid === 'object' ? raw.grid : {};
+    var region = raw.region;
+    var fixed = region && ['x','y','w','h'].every(function (k) { return isFinite(+region[k]); }) && +region.w > 0 && +region.h > 0;
     return {
+      ...(fixed ? {region:{x:+region.x,y:+region.y,w:Math.min(1000000,+region.w),h:Math.min(1000000,+region.h)}} : {}),
       locked: true,
       grad: { kind: gIn.kind === 'radial' ? 'radial' : 'linear', angle: angle, stops: stops },
       grid: {
@@ -54,7 +57,9 @@ var CanvasBg = (function () {
         color: hexColor(grid.color || '#8AA0B8'),
         opacity: clamp(grid.opacity == null ? 0.45 : grid.opacity, 0, 1),
         gap: Math.max(8, isFinite(+grid.gap) ? +grid.gap : 32),
-        persp: clamp(grid.persp == null ? 0 : grid.persp, 0, 100)
+        persp: clamp(grid.persp == null ? 0 : grid.persp, 0, 100),
+        offsetX: isFinite(+grid.offsetX) ? +grid.offsetX : 0,
+        offsetY: isFinite(+grid.offsetY) ? +grid.offsetY : 0
       }
     };
   }
@@ -78,13 +83,13 @@ var CanvasBg = (function () {
   }
 
   // Far edge shortens toward the center and row spacing tightens toward the top.
-  function segments(box, grid) {
+  function gridSegments(box, grid) {
     const gap = Math.max(8, grid.gap);
     const cols = Math.max(1, Math.round(box.w / gap));
     const rows = Math.max(1, Math.round(box.h / gap));
     const t = Math.max(0, Math.min(100, grid.persp)) / 100;
     const pull = 0.75 * t;
-    const segs = [];
+    let segs = [];
     const x0 = box.x, y0 = box.y, w = box.w, h = box.h;
     const depthU = j => {
       const u = j / rows;
@@ -102,7 +107,35 @@ var CanvasBg = (function () {
       const xt = x0 + w / 2 + (xb - (x0 + w / 2)) * (1 - pull);
       segs.push([xb, y0 + h, xt, y0]);
     }
-    return segs;
+    var ox = +grid.offsetX || 0, oy = +grid.offsetY || 0;
+    if (!ox && !oy) return segs;
+    if (!t) {
+      // A flat grid's offset is a phase, so translating it leaves no blank rim.
+      var gx = w / cols, gy = h / rows;
+      segs = [];
+      for (let xx = x0 + ((ox % gx) + gx) % gx; xx <= x0 + w; xx += gx) segs.push([xx,y0,xx,y0+h]);
+      for (let yy = y0 + ((oy % gy) + gy) % gy; yy <= y0 + h; yy += gy) segs.push([x0,yy,x0+w,yy]);
+      return segs;
+    }
+    // Translate perspective geometry then clip every export's actual segments.
+    return segs.map(function (line) {
+      var ax=line[0]+ox, ay=line[1]+oy, dx=line[2]-line[0], dy=line[3]-line[1], lo=0, hi=1;
+      var pp=[-dx,dx,-dy,dy], qq=[ax-x0,x0+w-ax,ay-y0,y0+h-ay];
+      for(var k=0;k<4;k++) { if(!pp[k]) {if(qq[k]<0)return null;} else {var z=qq[k]/pp[k];if(pp[k]<0)lo=Math.max(lo,z);else hi=Math.min(hi,z);if(lo>hi)return null;} }
+      return [ax+lo*dx,ay+lo*dy,ax+hi*dx,ay+hi*dy];
+    }).filter(Boolean);
+  }
+
+  function segments(box, grid, confined) {
+    var lines = gridSegments(box, grid);
+    if (!confined) return lines;
+    // Keep the entire one-unit stroke inside the region in vector exports too.
+    return lines.map(function(line){
+      var x=line[0],y=line[1],dx=line[2]-x,dy=line[3]-y,lo=0,hi=1;
+      var pp=[-dx,dx,-dy,dy],qq=[x-box.x-.5,box.x+box.w-.5-x,y-box.y-.5,box.y+box.h-.5-y];
+      for(var i=0;i<4;i++){if(!pp[i]){if(qq[i]<0)return null;}else{var t=qq[i]/pp[i];if(pp[i]<0)lo=Math.max(lo,t);else hi=Math.min(hi,t);if(lo>hi)return null;}}
+      return [x+lo*dx,y+lo*dy,x+hi*dx,y+hi*dy];
+    }).filter(Boolean);
   }
 
   function contentBox(page) {
@@ -111,6 +144,8 @@ var CanvasBg = (function () {
     return b;
   }
   function sheetBox(page, box, pad) {
+    var model = asModel(page);
+    if (model && model.region) return {...model.region};
     if (box) return { x: +box.x, y: +box.y, w: +box.w, h: +box.h };
     var b = contentBox(page);
     var p = pad == null ? 28 : pad;
@@ -140,13 +175,17 @@ var CanvasBg = (function () {
       })();
     var body = '<rect x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" fill="url(#' + gid + ')" stroke="none" pointer-events="none"/>';
     if (model.grid.show) {
-      var segs = segments(b, model.grid);
+      var segs = segments(b, model.grid, !!model.region);
       for (var i = 0; i < segs.length; i++) {
         var ln = segs[i];
         body += '<line x1="' + fmt(ln[0]) + '" y1="' + fmt(ln[1]) + '" x2="' + fmt(ln[2]) + '" y2="' + fmt(ln[3]) + '" stroke="' + escAttr(model.grid.color) + '" stroke-opacity="' + numAttr(model.grid.opacity) + '" stroke-width="1" pointer-events="none"/>';
       }
     }
-    return '<g class="cbg" pointer-events="none"><defs>' + grad + '</defs>' + body + '</g>';
+    var clip = pf + '-clip';
+    // Live SVG clips the stroke as well as its centerline to the region.
+    var bounds = '<clipPath id="' + clip + '"><rect x="'+fmt(b.x)+'" y="'+fmt(b.y)+'" width="'+fmt(b.w)+'" height="'+fmt(b.h)+'"/></clipPath>';
+    var frame = !box && editMode ? '<rect x="'+fmt(b.x)+'" y="'+fmt(b.y)+'" width="'+fmt(b.w)+'" height="'+fmt(b.h)+'" fill="none" stroke="#2F80ED" stroke-dasharray="6 4"/>' : '';
+    return '<g class="cbg" pointer-events="none"><defs>' + grad + bounds + '</defs><g clip-path="url(#'+clip+')">' + body + '</g>'+frame+'</g>';
   }
 
   function cardinal(angle) {
@@ -205,7 +244,7 @@ var CanvasBg = (function () {
     if (model.grid.show && typeof ctx.beginPath === 'function') {
       ctx.strokeStyle = rgba(model.grid.color, model.grid.opacity);
       ctx.lineWidth = 1;
-      var segs = segments(box, model.grid);
+      var segs = segments(box, model.grid, !!model.region);
       for (var k = 0; k < segs.length; k++) {
         ctx.beginPath();
         ctx.moveTo(segs[k][0] - box.x, segs[k][1] - box.y);
@@ -219,7 +258,7 @@ var CanvasBg = (function () {
   function paintPptx(slide, pptx, page, ctx) {
     var model = asModel(page);
     if (!model || !slide || !ctx || !ctx.box) return Promise.resolve();
-    var box = ctx.box;
+    var box = sheetBox(page, ctx.box);
     /* pptxgenjs 3.12 drops fill type grad and turns a zero-width line into a 1pt outline. */
     var url = raster(page, box);
     if (url) slide.addImage({ data: url.replace(/^data:/, ''), x: ctx.X(box.x), y: ctx.Y(box.y), w: ctx.S(box.w), h: ctx.S(box.h) });
@@ -229,7 +268,7 @@ var CanvasBg = (function () {
   function vsdxShapes(page, ctx) {
     var model = asModel(page);
     if (!model || !ctx || !ctx.box || typeof ctx.cell !== 'function') return [];
-    var box = ctx.box, f = ctx.f, X = ctx.X, Y = ctx.Y, cell = ctx.cell, num = ctx.num, id = ctx.id;
+    var box = sheetBox(page, ctx.box), f = ctx.f, X = ctx.X, Y = ctx.Y, cell = ctx.cell, num = ctx.num, id = ctx.id;
     var W = box.w * f, H = box.h * f;
     var pinX = X(box.x) + W / 2, pinY = Y(box.y) - H / 2;
     /* Visio Y is up: 0 points right, and downward on the page is 3π/2, so the stored angle is negated. */
@@ -254,7 +293,8 @@ var CanvasBg = (function () {
     s += "<Row T='LineTo' IX='5'>" + cell('X', 0) + cell('Y', 0) + '</Row></Section></Shape>';
     var out = [s];
     if (!model.grid.show) return out;
-    var segs = segments(box, model.grid);
+    var segs = segments(box, model.grid, !!model.region);
+    if (!segs.length) return out;
     var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     var vis = [];
     for (var k = 0; k < segs.length; k++) {
@@ -300,7 +340,7 @@ var CanvasBg = (function () {
     var cells = '';
     var background = null;
     var same = model.grad.stops.every(function (s) { return s.color === model.grad.stops[0].color && s.opacity >= 1 - 1e-4; });
-    if (same) background = model.grad.stops[0].color;
+    if (same && !model.region) background = model.grad.stops[0].color;
     if (plan(model, 'drawio') === 'raster') {
       var url = raster(page, b);
       if (!url) return { background: background, cells: '' };
@@ -313,7 +353,7 @@ var CanvasBg = (function () {
     var gst = 'rounded=0;fillColor=' + c1 + ';gradientColor=' + c2 + ';gradientDirection=' + dir + ';strokeColor=none;' + lockStyle();
     cells = dioCell('cbg-fill', gst, '<mxGeometry x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" as="geometry"/>');
     if (model.grid.show) {
-      var segs = segments(b, model.grid);
+      var segs = segments(b, model.grid, !!model.region);
       var op = Math.round(model.grid.opacity * 100);
       for (var i = 0; i < segs.length; i++) {
         var x1 = segs[i][0], y1 = segs[i][1], x2 = segs[i][2], y2 = segs[i][3];
@@ -325,6 +365,30 @@ var CanvasBg = (function () {
     return { background: background, cells: cells };
   }
 
+  var editMode = '', bgDrag = null;
+  function stopEditing() {editMode='';bgDrag=null;var b=document.getElementById('cbg-done');if(b)b.hidden=true;if(typeof render==='function')render();}
+  function bindDrag() {
+    var canvas=document.getElementById('svg');if(!canvas)return;
+    canvas.addEventListener('pointerdown',function(e){
+      if(!editMode||e.button!==0||(typeof spaceDown!=='undefined'&&spaceDown))return;
+      var page=P(),m=asModel(page),p=clientToWorld(e.clientX,e.clientY),b=m&&m.region;
+      if(!b||p.x<b.x||p.x>b.x+b.w||p.y<b.y||p.y>b.y+b.h)return;
+      e.preventDefault();e.stopImmediatePropagation();canvas.setPointerCapture(e.pointerId);
+      bgDrag={page:page,id:e.pointerId,start:p,model:m,mode:editMode,moved:false};
+    },true);
+    window.addEventListener('pointermove',function(e){
+      if(!bgDrag||bgDrag.id!==e.pointerId)return;e.preventDefault();e.stopImmediatePropagation();
+      if(P()!==bgDrag.page){stopEditing();return;}
+      var p=clientToWorld(e.clientX,e.clientY),dx=p.x-bgDrag.start.x,dy=p.y-bgDrag.start.y;
+      if(!bgDrag.moved){if(!dx&&!dy)return;checkpoint();bgDrag.moved=true;}
+      var m=normalize(bgDrag.model);
+      if(bgDrag.mode==='region'){m.region.x+=dx;m.region.y+=dy;}else{m.grid.offsetX+=dx;m.grid.offsetY+=dy;}
+      P().canvasBg=m;render();
+    },true);
+    window.addEventListener('pointerup',function(e){if(!bgDrag||bgDrag.id!==e.pointerId)return;e.preventDefault();e.stopImmediatePropagation();bgDrag=null;},true);
+    window.addEventListener('pointercancel',function(){bgDrag=null;},true);
+    document.addEventListener('keydown',function(e){if(editMode&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();stopEditing();}},true);
+  }
   var draft = null;
   function defaults() {
     return normalize({
@@ -355,13 +419,16 @@ var CanvasBg = (function () {
       });
     }
     draft = normalize({
+      ...(document.getElementById('cbg-scope').value === 'region' ? {region:{x:+document.getElementById('cbg-xpos').value,y:+document.getElementById('cbg-ypos').value,w:Math.max(1,+document.getElementById('cbg-width').value),h:Math.max(1,+document.getElementById('cbg-height').value)}} : {}),
       grad: { kind: document.getElementById('cbg-kind').value, angle: document.getElementById('cbg-angle').value, stops: stops },
       grid: {
         show: document.getElementById('cbg-grid').checked,
         color: document.getElementById('cbg-gcolor').value,
         opacity: (+document.getElementById('cbg-gop').value) / 100,
         gap: +document.getElementById('cbg-gap').value,
-        persp: +document.getElementById('cbg-persp').value
+        persp: +document.getElementById('cbg-persp').value,
+        offsetX: +document.getElementById('cbg-offset-x').value,
+        offsetY: +document.getElementById('cbg-offset-y').value
       }
     });
   }
@@ -409,6 +476,11 @@ var CanvasBg = (function () {
     if (add) add.disabled = stops.length >= 8;
   }
   function fillDialog() {
+    var b = draft.region || sheetBox(P(), null, 28);
+    document.getElementById('cbg-scope').value = draft.region ? 'region' : 'auto';
+    ['xpos','ypos','width','height'].forEach(function(k,i){document.getElementById('cbg-'+k).value=b[['x','y','w','h'][i]];});
+    document.getElementById('cbg-offset-x').value = draft.grid.offsetX;
+    document.getElementById('cbg-offset-y').value = draft.grid.offsetY;
     document.getElementById('cbg-kind').value = draft.grad.kind;
     document.getElementById('cbg-angle').value = String(draft.grad.angle);
     document.getElementById('cbg-grid').checked = !!draft.grid.show;
@@ -419,8 +491,10 @@ var CanvasBg = (function () {
     fillStops();
   }
   function openDialog() {
+    stopEditing();
     var page = typeof P === 'function' ? P() : null;
     draft = page && page.canvasBg ? normalize(page.canvasBg) : defaults();
+    if (!page.canvasBg) draft.region = sheetBox(page, null, 28);
     fillDialog();
     var dlg = document.getElementById('cbg-dlg');
     if (dlg) dlg.style.display = 'flex';
@@ -460,6 +534,8 @@ var CanvasBg = (function () {
     var btn = el('button', { id: 'b-bg', type: 'button', title: '设置画布背景。应用后锁定，点选图元时不会碰到它' }, '背景');
     btn.onclick = openDialog;
     theme.parentNode.insertBefore(btn, theme);
+    var done=el('button',{type:'button',id:'cbg-done',hidden:true},'结束背景拖动');done.onclick=stopEditing;theme.parentNode.insertBefore(done,theme);
+    bindDrag();
     var dlg = el('div', { id: 'cbg-dlg', className: 'mdl' });
     dlg.setAttribute('role', 'dialog');
     dlg.setAttribute('aria-label', '画布背景');
@@ -473,6 +549,12 @@ var CanvasBg = (function () {
     close.onclick = closeDialog;
     mh.appendChild(close);
     var mb = el('div', { className: 'mb' });
+    var scope = el('select',{id:'cbg-scope'});
+    scope.appendChild(el('option',{value:'region'},'底层背景区域（固定范围）'));
+    scope.appendChild(el('option',{value:'auto'},'自动铺底（兼容旧文档）'));
+    mb.appendChild(row('背景范围',scope));
+    [['xpos','区域 X'],['ypos','区域 Y'],['width','区域宽度'],['height','区域高度'],['offset-x','网格偏移 X'],['offset-y','网格偏移 Y']].forEach(function(v){var input=el('input',{id:'cbg-'+v[0],type:'number'});if(v[0]==='width'||v[0]==='height')input.min='1';mb.appendChild(row(v[1],input));});
+    mb.appendChild(el('div',{className:'hint'},'网格仅属于此底层背景区域；移动图元不会改变固定区域。区域移动时网格一起移动，也可单独拖动网格。'));
     var kind = el('select', { id: 'cbg-kind' });
     kind.appendChild(el('option', { value: 'linear' }, '线性'));
     kind.appendChild(el('option', { value: 'radial' }, '径向'));
@@ -513,6 +595,7 @@ var CanvasBg = (function () {
     clear.onclick = clearDialog;
     acts.appendChild(apply);
     acts.appendChild(clear);
+    [['region','拖动底层背景区域'],['grid','拖动网格']].forEach(function(item){var b=el('button',{type:'button',id:'cbg-drag-'+item[0]},item[1]);b.onclick=function(){applyDialog();if(!P().canvasBg.region){P().canvasBg.region=sheetBox(P(),null,28);}if(item[0]==='grid')P().canvasBg.grid.show=true;editMode=item[0];closeDialog();document.getElementById('cbg-done').hidden=false;render();toast(item[1]+'：在背景区域内拖动，完成后点“结束背景拖动”或 Esc');};acts.appendChild(b);});
     mb.appendChild(acts);
     box.appendChild(mh);
     box.appendChild(mb);
@@ -524,6 +607,7 @@ var CanvasBg = (function () {
 
   return {
     normalize: normalize,
+    regionBox: function(page){var m=asModel(page);return m&&m.region ? {...m.region} : null;},
     lockPages: lockPages,
     markup: markup,
     plan: plan,

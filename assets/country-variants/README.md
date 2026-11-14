@@ -1,6 +1,6 @@
 # 中美外形参考图标
 
-原306项国别筛选任务及新增10项型号／任务入口及1项通用概念图标由 `*-tasks.json` 定义，原通用656项图标的稳定key保持不变。新增入口见 `supplemental.json`，总库667项。中国专用型号的任务声明仅含cn，不强配美国对应型号；中美任务构型仍成对。中国外形默认红色，美国外形默认蓝色，用户仍可独立选择原色、红色、蓝色。
+原306项国别筛选任务及新增型号／任务入口由 `*-tasks.json` 定义，原通用656项图标的稳定key保持不变。34项新增入口见 `supplemental.json`，总库690项。具体型号按实际来源国标注，不强配另一国家外形；中美任务构型仍成对。中国外形默认红色，美国外形默认蓝色，其它国家型号在通用库默认原色，用户仍可独立选择原色、红色、蓝色。
 
 `batches/` 记录生成图册、格位、公开来源和限制；`masters/` 保留可复建的生成素材，`icons/` 是运行时 256×256 透明 WebP。原始生成 PNG 路径仅作追溯；路径不存在时构建器使用已入库的同名 master。带 `repair` 的批次覆盖同 key/country 的原批次，不改变原始记录。
 
@@ -20,4 +20,6 @@ python3 -m http.server 8766 --directory .
 
 `package_recon.cjs` 用已生成的国别资产注册补充型号／任务入口；无侦-7、攻击-11复用原先已核对的同型图，避免重复生成。独立型号和光电／雷达／被动电侦任务示意分列，扫雷无人艇不与布雷无人艇混用。
 
-水下预置武器由 `masters/underwater-weapon.webp` 提供通用概念外形，在 `supplemental.json` 以空countries声明无国家型号，`teamPaintOnly`仅控制阵营涂装。`node build/icons/atlas.cjs`生成包含全部667项的通用图册。
+水下预置武器由 `masters/underwater-weapon.webp` 提供通用概念外形，在 `supplemental.json` 以空countries声明无国家型号，`teamPaintOnly`仅控制阵营涂装。`node build/icons/atlas.cjs`生成包含全部690项的通用图册。
+
+新增无人僚机／协同参考平台保留公开展示与试验状态；LJ-1、ANKA III等的参考用途见各自记录。YFQ-48 Talon外形待人工复核。HHQ-9B/9C共享家族示意外形，未据公开资料虚构批次差别。舰载弹体和典型发射器均为图标级外形参考。Shahed-131/136及LUCAS单程无人机按实际来源国分列，Geran名称作为家族检索别名，不另造外形。

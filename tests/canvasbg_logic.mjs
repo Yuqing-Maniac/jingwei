@@ -175,3 +175,21 @@ assert.equal(round.pages.root.canvasBg.grad.stops[1].color, '#445566', 'second c
 assert.equal(round.pages.bare.canvasBg, undefined, 'pages without a background stay without one');
 
 console.log('canvasbg_logic ok');
+
+// Scoped region beats all caller sheet boxes; offsets remain local and clipped.
+const scoped = gridPage(65);
+scoped.canvasBg.region = {x:120,y:230,w:240,h:140};
+scoped.canvasBg.grid.offsetX = 37;
+scoped.canvasBg.grid.offsetY = -19;
+const scopedSvg = CanvasBg.markup(scoped,{x:-500,y:-500,w:2000,h:2000});
+assert.match(scopedSvg,/x="120" y="230" width="240" height="140"/);
+assert.match(scopedSvg,/clip-path=/);
+assert.ok(linesOf(scopedSvg).every(l=>l[0]>=120&&l[0]<=360&&l[2]>=120&&l[2]<=360&&l[1]>=230&&l[1]<=370&&l[3]>=230&&l[3]<=370),'perspective offset grid stays strictly in owner region');
+const scopedRound=CanvasBg.normalize(JSON.parse(JSON.stringify(scoped.canvasBg)));
+assert.equal(scopedRound.region.x,120);assert.equal(scopedRound.grid.offsetX,37);assert.equal(scopedRound.grid.offsetY,-19);
+assert.equal(CanvasBg.regionBox(linearPage),null,'old documents remain auto sheets');
+const scopedSolid=gridPage(0);scopedSolid.canvasBg.region={x:5,y:7,w:100,h:80};scopedSolid.canvasBg.grad.stops=[{at:0,color:'#112233',opacity:1},{at:1,color:'#112233',opacity:1}];
+assert.equal(CanvasBg.drawio(scopedSolid).background,null,'scoped solid region never changes global drawio page background');
+console.log('canvasbg scoped regions ok');
+const phased=gridPage(0);phased.canvasBg.region={x:100,y:350,w:480,h:180};phased.canvasBg.grid.offsetX=11;phased.canvasBg.grid.offsetY=17;
+const phasedLines=linesOf(CanvasBg.markup(phased));assert.ok(phasedLines.length>5,'flat nonzero offset renders without const reassignment');assert.ok(phasedLines.every(l=>l[0]>=100&&l[0]<=580&&l[2]>=100&&l[2]<=580&&l[1]>=350&&l[1]<=530&&l[3]>=350&&l[3]<=530),'phase grid strictly scoped');

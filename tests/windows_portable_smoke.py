@@ -391,7 +391,7 @@ def app_probe(native, dest, exe, version, extra_args=None):
         assert info["version"] == version, state
         assert info["platform"] == "win32" and info["arch"] == "x64", state
         assert info["windowVisible"] is True, state
-        assert state["generic"] == 667 and state["countries"] == 621, state
+        assert state["generic"] == 690 and state["countries"] == 638, state
         assert state["homeVisible"] and state["homeCards"] >= 6, state
         assert set(state["countryOptions"]) == {"generic", "cn", "us"}, state
         startup = dest / "startup.log"

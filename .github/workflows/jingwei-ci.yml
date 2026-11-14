@@ -52,6 +52,7 @@ jobs:
           python3 tests/defaults_test.py
           node tests/canvasbg_logic.mjs
           python3 tests/canvasbg_ui.py
+          python3 tests/canvasbg_region_ui.py
           python3 tests/scenario_tpl_test.py
           python3 tests/review_follow_test.py
           python3 tests/sector_fill_test.py
@@ -64,3 +65,6 @@ jobs:
           python3 tests/selectionbounds_test.py
           python3 tests/recon_icons_test.py
           python3 tests/underwater_icon_test.py
+          python3 tests/wingman_icons_test.py
+          python3 tests/expansion_icons_test.py
+          python3 tests/purefan_test.py

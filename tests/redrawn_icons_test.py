@@ -14,7 +14,7 @@ with sync_playwright() as pw:
       return {count:icons.length,unique:keys.size,all:ICONS.length,
         variants:icons.every(x=>['neutral','red','blue'].every(s=>x.variants[s].includes('data:image/webp;base64,')) && new Set(Object.values(x.variants)).size===3)};
     }''')
-    assert result['count']==667 and result['unique']==667 and result['variants'],result
+    assert result['count']==690 and result['unique']==690 and result['variants'],result
     page.fill('#pal-q','rag')
     page.wait_for_selector('#palette .pitem')
     assert '检索增强生成RAG' in page.locator('#palette').inner_text()
@@ -37,4 +37,4 @@ with sync_playwright() as pw:
     assert page.evaluate('projectJSON()')==saved
     assert not errors,errors
     browser.close()
-    print('redrawn_icons_test ok: 667 icons, 3 variants, selection, undo, serialization')
+    print('redrawn_icons_test ok: 690 icons, 3 variants, selection, undo, serialization')

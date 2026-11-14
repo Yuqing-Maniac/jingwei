@@ -1,0 +1,97 @@
+{
+  "id": "wingman-cn",
+  "columns": 3,
+  "rows": 1,
+  "path": "/workspace/jingwei/assets/country-variants/masters/wingman-cn.webp",
+  "sourcePNG": "/workspace/generated_images/exec-f8515f2c-be4a-4e8f-a227-9f79ad3fa73c.png",
+  "reviewDate": "2026-11-14",
+  "entries": [
+    {
+      "key": "wingman_fh97",
+      "country": "cn",
+      "model": "飞鸿FH-97（2021航展展示构型）",
+      "modelStatus": "reference-reviewed",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://tech.youth.cn/wzlb/202109/t20210929_13243656.htm",
+          "title": "中国青年报/中青网：新一代高速隐身多用途无人机首次亮相航展（2021品牌发布实拍）"
+        },
+        {
+          "url": "https://www.twz.com/news-features/is-this-chinas-truck-mounted-drone-launching-electromagnetic-catapult-system",
+          "title": "The War Zone：文中明确标注2021珠海航展FH-97展示模型的近景照片（仅该历史模型照片作外形核对）"
+        }
+      ],
+      "notes": "按2021公开展示模型重绘的高速隐身多用途无人机/有人无人协同概念参考，非已列装状态证明。与2022 FH-97A的侧进气展示模型分别建图，不混合不同展次外形。浅灰与蓝色面板为可重涂图标配色，非装备真实涂装。",
+      "geometryChecks": [
+        "修长尖鼻、梯形截面机身与中等后掠主翼",
+        "背部靠后单个显著进气口，与FH-97A侧进气区分",
+        "两片外倾V形尾翼，不画独立有人座舱",
+        "前机腹小型多面体光电窗口而非巨型球形吊舱",
+        "参考公开模型，取消展架和小型伴随无人机，机首朝左下三分之四俯视"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.1828,
+        "solidPixelsOnCellEdge": 0
+      }
+    },
+    {
+      "key": "wingman_fh97a",
+      "country": "cn",
+      "model": "飞鸿FH-97A（2022航展展示构型）",
+      "modelStatus": "reference-reviewed",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.thepaper.cn/newsDetail_forward_20657609",
+          "title": "中国科协官方科普中国澎湃号：大国利器，首次公开亮相！忠诚僚机现身珠海航展（2022-11-09，含首展模型两侧照片）"
+        },
+        {
+          "url": "https://dataclouds.cninfo.com.cn/shgonggao/2025/2025-09-11/5260578a8ee511f0a374fa163e39923a.pdf",
+          "title": "航天电子2025年半年度业绩说明会记录：飞鸿-97A仍在研发、样机开展试验验证（2025-09-11）"
+        }
+      ],
+      "notes": "公开定位为忠诚僚机；本图严格采用2022首展模型外形，不声称列装或完成实战验证，不把2024或后续网传构型混入。厂商2025-09-11公开记录仍称在研及样机试验验证。浅灰与蓝色面板为可重涂图标配色。",
+      "geometryChecks": [
+        "宽而扁的战斗机式棱角机身、长尖鼻和翼身融合后掠主翼",
+        "左右侧肩部进气和鼓起过渡，区别于2021 FH-97背部进气",
+        "后部两片外倾尾翼与双后部喷口",
+        "小型多面体光电玻璃窗为传感器，不画有人座舱或驾驶员",
+        "完整独立飞机，取消展架、国旗、外露弹药及展示背景，机首朝左下三分之四俯视"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.173,
+        "solidPixelsOnCellEdge": 0
+      }
+    },
+    {
+      "key": "wingman_lj1",
+      "country": "cn",
+      "model": "LJ-1隐身靶机（2019公开模型／协同概念参考）",
+      "modelStatus": "reference-reviewed",
+      "reviewDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://eng.chinamil.com.cn/CHINA_209163/TopStories_209189/9602237.html",
+          "title": "中国军网英文版：Chinese exhibitors to display laser weapon, stealth target drone at Russian exhibition（2019 MAKS西工大展台LJ-1名称与靶机定位）"
+        },
+        {
+          "url": "https://www.twz.com/h-6-bomber-launched-drones-could-be-in-chinas-air-combat-future",
+          "title": "The War Zone：LJ-1公开模型前上方与后方实拍照片及2019展示背景"
+        }
+      ],
+      "notes": "官方原始报道确认其为隐身靶机，并非列装忠诚僚机型号。本条放入无人协同/僚机参考主题时必须保留“靶机／协同概念参考”名称，不把概念用途写成已实现作战能力。仅按公开模型外形重绘，去掉展场发动机/助推器保护盖与支架，不画发射或战术效果；配色为图标用途。",
+      "geometryChecks": [
+        "细长近圆柱前机身与尖鼻，区别于FH-97A宽扁机身",
+        "机背后段高耸的独立单个进气隆起",
+        "中后部梯形后掠主翼、两片上方外倾V尾和独立小水平尾面",
+        "尾部单个中央喷口，不从展览模型保护盖推断多台发动机",
+        "无有人座舱、外露弹药或外挂助推器，机首朝左下三分之四俯视，完整独立不截断"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.2114,
+        "solidPixelsOnCellEdge": 0
+      }
+    }
+  ]
+}

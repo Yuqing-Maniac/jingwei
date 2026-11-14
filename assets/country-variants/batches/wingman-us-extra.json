@@ -1,0 +1,87 @@
+{
+  "id": "wingman-us-extra",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/generated_images/exec-24aa1c66-7b57-4f2d-8025-17a249fa25a6.png",
+  "master": "assets/country-variants/masters/wingman-us-extra.webp",
+  "entries": [
+    {
+      "key": "wingman_utap22",
+      "country": "us",
+      "model": "Kratos UTAP-22 Mako 无人僚机公开外形参考",
+      "modelStatus": "reference-reviewed",
+      "reviewedDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.kratosdefense.com/unmanned-systems/air/uncrewed-tactical-aircraft/mako",
+          "title": "Kratos官方：UTAP-22 Mako产品页与公开展示/飞行照片",
+          "reviewMethod": "web open，官方公开实拍下载HTTP200并view_image核对",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://www.kratosdefense.com/wp-content/uploads/2025/07/Mako.pdf",
+          "title": "Kratos官方：UTAP-22 Mako公开资料，含俯视与侧视轮廓",
+          "reviewMethod": "web open及curl HTTP200，PDF渲染并view_image查看正侧轮廓",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "细长圆柱机身，长锥形机鼻，无驾驶舱",
+        "小展弦比后掠梯形机翼，机身长度明显大于翼展",
+        "常规单垂尾加独立水平尾翼，区别V尾无人僚机",
+        "中后机身下方腹置发动机短舱及前向椭圆进气口；该结构为发动机非外挂武器",
+        "无起落架、发射架、助推器、弹药与武器效果",
+        "机头朝左下的三分之四俯视，浅灰主体与局部钴蓝面板"
+      ],
+      "notes": "基于Kratos官方产品照片和公开俯视/侧视轮廓制作的艺术微缩外形，非测绘复刻或任务载荷认证。厂家说明其源于BQM-167，支持与有人平台协同；不据此声称所有任务系统或特定配置已服役。腹置短舱代表其发动机，不是武器。蓝色为可重涂图标面板，非实机原始标识。"
+    },
+    {
+      "key": "wingman_yfq48",
+      "country": "us",
+      "model": "Northrop Grumman YFQ-48A Talon Blue 原型机公开外形艺术参考",
+      "modelStatus": "reference-reviewed",
+      "reviewedDate": "2026-11-14",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/who-we-are/the-facts/autonomy/yfq-48a-talon-blue",
+          "title": "Northrop Grumman官方：YFQ-48A Talon Blue；确认美国空军命名并公开2026年原型近照",
+          "reviewMethod": "由官方Project Talon页面链接跳转到此规范URL，curl HTTP200；web open及多幅官方实机近照核对",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://media.northropgrumman.com/52337d1a-f96e-4543-9ae5-b498015c7b3c/260507-Talon-Blue-Glamour-photo2_Original%20file.jpg?width=1920",
+          "title": "Northrop官方：260507 Talon Blue正面近照，背进气/V尾/翼面可见",
+          "reviewMethod": "下载HTTP200，view_image查看",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://media.northropgrumman.com/faec620b-8c62-464f-a0e7-b498015c82c2/260507-Talon-Blue-Glamour-photo3_Original%20file.jpg?width=1920",
+          "title": "Northrop官方：260507 Talon Blue侧面近照，标识YFQ-48A与EXPERIMENTAL",
+          "reviewMethod": "下载HTTP200，view_image查看",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "无座舱的棱面机身与前部试验空速探针",
+        "单个高出机背的梯形前向进气口",
+        "两片向外倾斜V尾，区别Mako单垂尾",
+        "中部后掠梯形机翼与封闭后机身",
+        "原型公开展示外形，无额外武器/内部结构/效果",
+        "机头朝左下的三分之四俯视，浅灰主体与局部钴蓝面板"
+      ],
+      "notes": "截至2026-11-14，Northrop官方当前页面明确标题YFQ-48A Talon Blue、说明获美国空军YFQ-48A命名，并展示2026年原型实机近照，因此并非仅概念图。本图仅为原型公开轮廓艺术参考，不声称量产、服役或未核实任务系统。重要视觉限制：生成前体更尖、更宽，机翼翼根/弦长比官方近照宽，趋近箭头形；保留背部梯形进气和V尾辨识点，但不能视为精确原型比例。后续参照实拍修正被image_gen内容审核拒绝，未以此初版认证真实结构。",
+      "qualityStatus": "awaiting-manual-review",
+      "qualityNotes": [
+        "前体与翼根比例偏宽偏尖，公开实机外形尚待复核。"
+      ]
+    }
+  ],
+  "qualityNotes": [
+    "两列一行，原PNG1774×887，每格887×887；已view_image自查，两机完整独立、不重叠、无文字旗帜与武器效果",
+    "真透明通道0~255、画布角点alpha0；已检查统一蓝色阈值，两格均有可重涂蓝色",
+    "蓝色占非透明机体面积约9.5%/10.0%，低于请求约20%；浅灰主体保持清晰，蓝色面板可用于后续三色处理",
+    "Talon轮廓存在前体/机翼偏宽偏尖的艺术化限制，建议质量复审时对照官方近照；不得当精确原型资产",
+    "Talon几何修正image_gen输出被内容审核拒绝，request ID 8cc7cfc8-2857-44cb-a445-ea209c73e093；此母图为先前成功生成的初版"
+  ],
+  "blocked": []
+}

@@ -5,7 +5,7 @@ const extraDir=path.join(root,'assets/country-variants');
 if(fs.existsSync(path.join(extraDir,'supplemental.json'))){
  const country=JSON.parse(fs.readFileSync(path.join(extraDir,'catalog.json')));
  for(const extra of JSON.parse(fs.readFileSync(path.join(extraDir,'supplemental.json')))){
-  const base=country.items.find(x=>x.key===extra.key&&x.country==='cn');
+  const base=country.items.find(x=>x.key===extra.key&&x.country===(extra.originCountry||'cn'));
   const files=extra.genericMaster?Object.fromEntries(['neutral','red','blue'].map(side=>[side,'icons/'+extra.key+'-'+side+'.webp'])):base.files;
   c.icons.push({...extra,images:Object.fromEntries(['neutral','red','blue'].map(side=>[side,'data:image/webp;base64,'+fs.readFileSync(path.join(extraDir,files[side])).toString('base64')]))});
  }

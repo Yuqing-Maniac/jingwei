@@ -1,0 +1,189 @@
+{
+  "id": "wingman-other",
+  "columns": 2,
+  "rows": 2,
+  "path": "/workspace/generated_images/exec-3aceca3c-0850-41aa-bf12-97b9a762d160.png",
+  "master": "assets/country-variants/masters/wingman-other.webp",
+  "sourcePngSha256": "611d7d5235cb7456f651c40bbb687764b8b91464bc2afb74d28fd99b8efcba7f",
+  "reviewedDate": "2026-11-14",
+  "usage": "Generic supplemental library only; originCountry is not cn/us affiliation. Do not generate fake US counterparts.",
+  "qualityNotes": [
+    "Four complete independent aircraft visually inspected; no text/flags/borders/background or cropped tips.",
+    "Cell padding is uneven: ANKA III right wingtip is close to its cell edge but remains wholly inside it.",
+    "Invisible very-low-alpha fringe may be removed by existing alpha-cleaning pipeline.",
+    "Initial image generation rejected oversized/mismatched reference format; reference images were format-normalized and one retry succeeded."
+  ],
+  "entries": [
+    {
+      "key": "wingman_mq28",
+      "originCountry": "au",
+      "modelLabel": "澳大利亚 MQ-28A Ghost Bat（公开协同试验构型）",
+      "roleLabel": "协同作战无人机 / 无人僚机",
+      "status": "public-test-configuration",
+      "sources": [
+        {
+          "url": "https://www.boeing.com/defense/autonomous-and-unmanned-systems/mq-28-ghost-bat",
+          "title": "Boeing: MQ-28 Ghost Bat, autonomous collaborative combat aircraft",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+          "imageUrl": "https://www.boeing.com/content/dam/boeing/v2/products/mq-28-ghost-bat/mq-28-ghost-bat-roadblock-2.jpg",
+          "secondImageUrl": "https://www.boeing.com/content/dam/boeing/v2/products/mq-28-ghost-bat/mq-28-roadblock.jpg"
+        }
+      ],
+      "roleEvidence": "厂商明确协同作战无人机、澳大利亚研制，面向与有人军机组队；未归入美国国别。",
+      "geometryChecks": [
+        "细长无座舱尖机鼻、机身侧进气",
+        "独立一组较短梯形主翼",
+        "两片外倾尾翼，非飞翼、无前鸭翼"
+      ],
+      "notes": "公开外形艺术近似，不区分全部Block批次；A后缀采用澳方型号习惯，Boeing产品页通称MQ-28。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+      "cellIndex": 0,
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 630,
+        "height": 623
+      },
+      "modelStatus": "reference-reviewed",
+      "visibleAlphaBounds": [
+        64,
+        121,
+        615,
+        566
+      ]
+    },
+    {
+      "key": "wingman_kizilelma",
+      "originCountry": "tr",
+      "modelLabel": "土耳其 KIZILELMA（公开协同试验原型构型）",
+      "roleLabel": "无人战斗机 / 有人无人协同试验",
+      "status": "public-test-configuration",
+      "sources": [
+        {
+          "url": "https://www.baykartech.com/en/press/leonardo-and-baykar-set-major-milestone-for-advanced-creweduncrewed-capability-development-with-successful-first-k-swarm-live-trials/",
+          "title": "Baykar/Leonardo: K-SWARM live CUC-T trials, 22 June 2026",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+          "imageUrl": "https://cdn.baykartech.com/media/upload/userFormUpload/T9vNb5yHxwf0wg1WUtNXhchSwKWcizdF.jpg"
+        },
+        {
+          "url": "https://www.baykartech.com/en/uav/bayraktar-kizilelma/",
+          "title": "Baykar: KIZILELMA unmanned fighter",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied."
+        }
+      ],
+      "roleEvidence": "厂商联合公告确认自主汇合M-346并由M-346接管控制的实飞协同试验，不仅普通编队照片。",
+      "geometryChecks": [
+        "尖长机身及小型前鸭翼",
+        "后掠三角主翼与双外倾尾翼",
+        "单发圆形尾喷口，无座舱"
+      ],
+      "notes": "参考公开试验机照片；不声称精确对应厂商多个后续版本或已形成作战编制。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+      "cellIndex": 1,
+      "rect": {
+        "left": 630,
+        "top": 0,
+        "width": 631,
+        "height": 623
+      },
+      "modelStatus": "reference-reviewed",
+      "visibleAlphaBounds": [
+        26,
+        95,
+        605,
+        581
+      ]
+    },
+    {
+      "key": "wingman_anka3",
+      "originCountry": "tr",
+      "modelLabel": "土耳其 ANKA III（公开试飞原型构型）",
+      "roleLabel": "无人作战机 / 有人机编队试验",
+      "status": "public-test-configuration",
+      "sources": [
+        {
+          "url": "https://www.tusas.com/en/products/uav/operative-strategic-uav-systems/anka-III",
+          "title": "Turkish Aerospace: ANKA III official product page",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+          "imageUrl": "https://www.tusas.com/content/images/uploads/originals/TAI09937,6479.jpg"
+        },
+        {
+          "url": "https://www.tusas.com/medya-merkezi/haberler/anka-iii-ve-hurjet-ten-kol-ucusu",
+          "title": "TUSAŞ: ANKA III and HÜRJET formation flight",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied."
+        }
+      ],
+      "roleEvidence": "官方产品页明确列Manned-Unmanned Teaming；新闻确认与HÜRJET的50分钟编队试飞。编队飞行本身不足证明自主僚机控制成熟，不夸称现役僚机。",
+      "geometryChecks": [
+        "宽大紧凑截尖三角飞翼、无垂尾/鸭翼",
+        "中央隆起发动机舱及背部进气",
+        "圆形中央后喷口、小型背部天线"
+      ],
+      "notes": "公开试飞原型艺术近似，未照搬照片外置试验武器；只核对外形，不验证装备配置。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+      "cellIndex": 2,
+      "rect": {
+        "left": 0,
+        "top": 623,
+        "width": 630,
+        "height": 624
+      },
+      "modelStatus": "reference-reviewed",
+      "visibleAlphaBounds": [
+        60,
+        126,
+        626,
+        486
+      ]
+    },
+    {
+      "key": "wingman_s70",
+      "originCountry": "ru",
+      "modelLabel": "俄罗斯 S-70 猎人（2021扁喷口公开展示原型构型）",
+      "roleLabel": "重型无人作战机 / 苏-57协同试验",
+      "status": "historical-public-prototype-configuration",
+      "sources": [
+        {
+          "url": "https://www.aviationpros.com/aircraft-maintenance-technology/aircraft-technology/unmanned/press-release/21251794/rostec-uac-rolls-out-the-okhotnik-uav-with-a-flat-jet-nozzle",
+          "title": "Rostec manufacturer press release syndicated by Aviation Pros, Jan 2022",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+          "imageUrl": "https://img.aviationpros.com/files/base/cygnus/cavc/image/2022/01/16x9/Okhotnik_UAV_2.61d3392f8da40.png?width=1200",
+          "sourceType": "manufacturer-press-release-republication",
+          "originalUrl": "https://rostec.ru/media/pressrelease/oak-vpervye-pokazala-bpla-okhotnik-s-ploskim-reaktivnym-soplom/",
+          "originalAccess": "Original Rostec page/PDF returned 502/503; full attributed manufacturer text and photo reviewed at named republication."
+        },
+        {
+          "url": "https://aviationweek.com/defense/aircraft-propulsion/debrief-russia-loses-okhotnik-ucav-ukraine",
+          "title": "Aviation Week: S-70 loss report, 7 October 2024",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened; exterior photo downloaded and visually inspected where imageUrl is supplied.",
+          "sourceType": "secondary-status-caveat"
+        }
+      ],
+      "roleEvidence": "Rostec原厂署名转载稿明确：2019原型曾与苏57联合飞行；扁喷口新样机为另一次公开展示，不能把联合飞行验证自动套给此特定样机。",
+      "geometryChecks": [
+        "大型无尾后掠飞翼、中央厚机体",
+        "中央背部进气与阶梯控制后缘的艺术近似",
+        "扁平矩形尾喷口，非早期外露圆喷口"
+      ],
+      "notes": "仅2021扁喷口展示原型的外形参考，不表示现役或已批产。2024年有S70原型被击落/损失的公开报道，未认定其与本图所据2021展示机为同一架；不绘制战损或作战效果。 reference-reviewed仅表示查阅公开来源及照片；本图为新生成微缩艺术近似，不是测绘复刻，灰蓝配色为重涂辅助而非真实涂装。",
+      "cellIndex": 3,
+      "rect": {
+        "left": 630,
+        "top": 623,
+        "width": 631,
+        "height": 624
+      },
+      "modelStatus": "reference-reviewed",
+      "visibleAlphaBounds": [
+        25,
+        71,
+        604,
+        495
+      ]
+    }
+  ]
+}
