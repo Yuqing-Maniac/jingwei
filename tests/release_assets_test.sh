@@ -132,4 +132,18 @@ if bash "$SCRIPT" "$TMP/mixed" "$TMP/mixed-out" >"$TMP/mixed.log" 2>&1; then
 fi
 grep -q '版本不一致' "$TMP/mixed.log"
 
+# 只放本次发布的两份包时也能通过。网页包、32 位、麒麟 x86_64、增量包不是必选项。
+mkdir -p "$TMP/two"
+printf 'x64' > "$TMP/two/经纬织图_v3.3.14_Windows_x64_绿色版.zip"
+printf 'karm' > "$TMP/two/经纬织图_v3.3.14_银河麒麟_arm64_免安装.zip"
+bash "$SCRIPT" "$TMP/two" "$TMP/two-out" > "$TMP/two.log"
+[ -f "$TMP/two-out/jingwei_v3.3.14_windows_x64_portable.zip" ]
+[ -f "$TMP/two-out/jingwei_v3.3.14_kylin_arm64_portable.zip" ]
+[ ! -f "$TMP/two-out/jingwei_v3.3.14_web_offline.zip" ]
+[ ! -f "$TMP/two-out/jingwei_v3.3.14_windows_x86_portable.zip" ]
+two_names=$(cd "$TMP/two-out" && sha256sum -c SHA256SUMS.txt >/dev/null && awk '{print $2}' SHA256SUMS.txt)
+printf '%s\n' "$two_names" | grep -qx 'jingwei_v3.3.14_windows_x64_portable.zip'
+printf '%s\n' "$two_names" | grep -qx 'jingwei_v3.3.14_kylin_arm64_portable.zip'
+[ "$(printf '%s\n' "$two_names" | wc -l)" -eq 2 ]
+
 echo "release_assets_test ok"

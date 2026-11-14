@@ -1,13 +1,16 @@
-"""经纬织图 桌面版打包：Windows x64/ia32（绿色 zip + 免管理员安装包）、银河麒麟 deb 与免安装 zip。
-用法：python3 build/desktop/build_all.py [win64 win32 deb-arm64 deb-amd64 kylin-amd64 kylin-arm64 ...]
-前置：npm ci；bash build/fetch_runtime.sh（Electron 运行时 → _work/runtime）；apt 装 nsis、dpkg-dev。
-产物：_work/dist/（可用环境变量 JW_WORK 改工作目录）"""
-import os, sys, shutil, subprocess, zipfile, glob, json, time
+"""经纬织图 桌面版打包。免安装 zip 的顶层是 JingWeiZhiTu 文件夹加一个入口文件。
+用法：python3 build/desktop/build_all.py [--portable-only] [--patch] [--installers] [win64 win32 kylin-amd64 kylin-arm64 deb-amd64 deb-arm64 ...]
+不写目标时，--portable-only 打四个免安装包；否则还打 deb。Windows 安装包只在 --installers 时打。
+--patch 另写增量 zip。前置：npm ci；bash build/fetch_runtime.sh。产物在 _work/dist/（JW_WORK 可改）。
+"""
+import os, sys, shutil, subprocess, zipfile, json, time
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORK = os.environ.get('JW_WORK', os.path.join(ROOT, '_work'))
 V = json.load(open(os.path.join(ROOT, 'desktop', 'package.json'), encoding='utf-8'))['version']
 RT = os.path.join(WORK, 'runtime'); OUT = os.path.join(WORK, 'dist'); TMP = os.path.join(WORK, 'build'); TOOLS = os.path.join(ROOT, 'build', 'desktop')
 sys.path.insert(0, os.path.join(ROOT, 'build')); import brand; BRAND = brand.load()   # 机构标识：brand.local.json（不入库）> brand.example.json
+sys.path.insert(0, os.path.join(ROOT, 'launcher'))
+import app_files, check_icons, package_portable
 EV = '22.3.27'; ICO = os.path.join(ROOT, 'desktop', 'icon.ico'); PNGS = os.path.join(ROOT, 'assets', 'brand', 'out')
 run = lambda *a, **k: subprocess.run(list(a), check=True, **k)
 portable_only = '--portable-only' in sys.argv
@@ -21,35 +24,36 @@ def stage_app():
     return asar
 
 def runtime(arch_zip, dest):
+    src = f'{RT}/electron-v{EV}-{arch_zip}.zip'
+    if not os.path.isfile(src):
+        raise SystemExit('缺少 Electron 运行时 ' + os.path.basename(src) + '，先运行 build/fetch_runtime.sh')
     shutil.rmtree(dest, ignore_errors=True); os.makedirs(dest)
-    with zipfile.ZipFile(f'{RT}/electron-v{EV}-{arch_zip}.zip') as z: z.extractall(dest)
-    for f in glob.glob(f'{dest}/locales/*.pak'):
-        if os.path.basename(f) not in ('zh-CN.pak', 'en-US.pak'): os.remove(f)
-    for f in ['resources/default_app.asar', 'version']:
-        p = f'{dest}/{f}'
-        if os.path.exists(p): os.remove(p)
-
-def zipdir(src, zpath, top):
-    if os.path.exists(zpath): os.remove(zpath)
-    with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-        for dp, _, fs in os.walk(src):
-            for f in sorted(fs):
-                full = os.path.join(dp, f); arc = os.path.join(top, os.path.relpath(full, src)).replace('\\', '/')
-                arc.encode('ascii')
-                zi = zipfile.ZipInfo.from_file(full, arc); zi.compress_type = zipfile.ZIP_DEFLATED
-                if os.path.exists(os.path.join(src, 'start.sh')):
-                    zi.create_system = 3
-                    zi.external_attr = (0o100755 if f in ('start.sh', 'jingwei-zhitu', 'chrome_crashpad_handler') else 0o100644) << 16
-                with open(full, 'rb') as fh: z.writestr(zi, fh.read(), compresslevel=9)
+    with zipfile.ZipFile(src) as z: z.extractall(dest)
+    for dirpath, _, files in os.walk(dest):
+        for name in files:
+            full = os.path.join(dirpath, name)
+            rel = os.path.relpath(full, dest).replace('\\', '/')
+            if not app_files.keep(rel):
+                os.remove(full)
 
 def build_win(arch):
     za = {'win64': 'win32-x64', 'win32': 'win32-ia32'}[arch]; tag = {'win64': 'x64', 'win32': 'x86'}[arch]
-    d = f'{TMP}/{arch}/JingWeiZhiTu'; runtime(za, d)
+    shutil.rmtree(f'{TMP}/{arch}', ignore_errors=True)
+    root = f'{TMP}/{arch}/root'; d = f'{root}/JingWeiZhiTu'; runtime(za, d)
     shutil.copy(ASAR, f'{d}/resources/app.asar')
     run('node', f'{TOOLS}/winexe.mjs', f'{d}/electron.exe', f'{d}/JingWeiZhiTu.exe', ICO, V); os.remove(f'{d}/electron.exe')
+    if not check_icons.exe_has_icon(f'{d}/JingWeiZhiTu.exe'):
+        raise SystemExit('JingWeiZhiTu.exe 没有图标资源')
     open(f'{d}/README.txt', 'w', encoding='utf-8-sig', newline='\r\n').write(README_WIN)
-    zipdir(d, f'{OUT}/经纬织图_v{V}_Windows_{tag}_绿色版.zip', 'JingWeiZhiTu')
-    if portable_only: return
+    app_files.require_folder(d, f'{RT}/electron-v{EV}-{za}.zip', 'win')
+    entry = f'{root}/JingWeiZhiTu.exe'
+    built = f'{TMP}/{arch}/launcher/JingWeiZhiTu.exe'
+    package_portable.compile_launcher(built, arch, V, ICO, BRAND)
+    shutil.copy(built, entry)
+    if not check_icons.exe_has_icon(entry):
+        raise SystemExit('启动器没有图标资源')
+    package_portable.zip_portable(root, f'{OUT}/经纬织图_v{V}_Windows_{tag}_绿色版.zip', 'JingWeiZhiTu.exe')
+    if portable_only or '--installers' not in sys.argv: return
     nsi = NSI.replace('@VER@', V).replace('@SRC@', d).replace('@ICO@', ICO).replace('@OUT@', f'{OUT}/经纬织图_v{V}_Windows_{tag}_安装包.exe').replace('@ARCH@', tag).replace('@ORG@', BRAND['org']).replace('@COPYRIGHT@', BRAND['copyright'])
     open(f'{TMP}/{arch}/setup.nsi', 'w', encoding='utf-8-sig').write(nsi)
     run('makensis', '-V2', '-INPUTCHARSET', 'UTF8', f'{TMP}/{arch}/setup.nsi')
@@ -57,15 +61,18 @@ def build_win(arch):
 def build_kylin_zip(arch):
     za = {'kylin-arm64': 'linux-arm64', 'kylin-amd64': 'linux-x64'}[arch]
     da = 'arm64' if arch.endswith('arm64') else 'x86_64'
-    d = f'{TMP}/{arch}/JingWeiZhiTu'; runtime(za, d)
+    shutil.rmtree(f'{TMP}/{arch}', ignore_errors=True)
+    root = f'{TMP}/{arch}/root'; d = f'{root}/JingWeiZhiTu'; runtime(za, d)
     shutil.copy(ASAR, f'{d}/resources/app.asar')
     os.rename(f'{d}/electron', f'{d}/jingwei-zhitu')
     if os.path.exists(f'{d}/chrome-sandbox'): os.remove(f'{d}/chrome-sandbox')
-    open(f'{d}/start.sh', 'w', newline='\n').write('#!/bin/sh\ncd "$(dirname "$0")"\nexec ./jingwei-zhitu --no-sandbox "$@"\n')
-    os.chmod(f'{d}/start.sh', 0o755); os.chmod(f'{d}/jingwei-zhitu', 0o755)
+    package_portable.copy_icons(d)
+    package_portable.mark_exec(d)
     open(f'{d}/README.txt', 'w', encoding='utf-8').write(
-        f'经纬织图 v{V} 银河麒麟免安装\n解压后在本目录执行：sh start.sh\n无需安装。整个文件夹可拷到任意位置。\n')
-    zipdir(d, f'{OUT}/经纬织图_v{V}_银河麒麟_{da}_免安装.zip', 'JingWeiZhiTu')
+        f'经纬织图 v{V} 银河麒麟免安装\n解压后运行上一级目录里的 JingWeiZhiTu.sh。\n不要只拷走脚本。首次运行会在桌面放一个图标。\n')
+    app_files.require_folder(d, f'{RT}/electron-v{EV}-{za}.zip', 'linux')
+    package_portable.write_linux_entry(f'{root}/JingWeiZhiTu.sh', V)
+    package_portable.zip_portable(root, f'{OUT}/经纬织图_v{V}_银河麒麟_{da}_免安装.zip', 'JingWeiZhiTu.sh')
 
 def write_patch():
     meta = json.dumps({'format': 'jingwei-patch', 'version': 1, 'from': '3.3.14', 'to': V, 'files': ['resources/app.asar']}, ensure_ascii=False, indent=2)
@@ -104,13 +111,12 @@ def build_deb(arch):
     run('dpkg-deb', '--root-owner-group', '-Zxz', '-z6', '--build', root, deb, stdout=subprocess.DEVNULL)
     shutil.copy(deb, f'{OUT}/经纬织图_v{V}_银河麒麟_{"飞腾arm64" if da == "arm64" else "x86_64"}.deb'); os.remove(deb)
 
-README_WIN = f'''经纬织图 v{V} 桌面版（Windows）
+README_WIN = f'''经纬织图 v{V} 桌面版（Windows 10／11，64 位）
 ==============================
-双击 JingWeiZhiTu.exe 即可运行。无需浏览器、无需联网、无需管理员权限。
-支持 Windows 7 SP1／8／10／11。
+解压后只运行上一级目录里的 JingWeiZhiTu.exe。不要只拷走这一个文件。
+无需浏览器、无需联网、无需管理员权限。首次运行会在桌面放一个快捷方式。
 
-· 本文件夹可放在任意位置（U 盘、桌面、D 盘均可），整个文件夹一起拷贝。
-· 建议右键 JingWeiZhiTu.exe → 发送到 → 桌面快捷方式。
+· 整个解压结果一起拷贝（入口文件和 JingWeiZhiTu 文件夹）。
 · 设置与最近文件保存在 %APPDATA%\\经纬织图。
 · 保存工程：Ctrl+S；另存为：Ctrl+Shift+S；全屏：F11。
 '''
@@ -259,11 +265,15 @@ Section "Uninstall"
 SectionEnd
 '''
 os.makedirs(OUT, exist_ok=True)
+check_icons.prove()
+if check_icons.ico_count(open(ICO, 'rb').read()) <= 0:
+    raise SystemExit('desktop/icon.ico 没有图像')
 ASAR = stage_app()
 for t in targets:
     t0 = time.time()
     fn = build_win if t.startswith('win') else build_kylin_zip if t.startswith('kylin') else build_deb
     fn(t)
     print('built', t, round(time.time() - t0), 's', flush=True)
-write_patch()
+if '--patch' in sys.argv:
+    write_patch()
 for f in sorted(os.listdir(OUT)): print(f'{os.path.getsize(os.path.join(OUT, f)) / 2**20:7.1f} MB  {f}')

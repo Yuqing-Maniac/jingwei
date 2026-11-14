@@ -5,7 +5,7 @@
 - **网页版**：`app/` 下的模块拼成一个离线单文件 html，在 Chromium 69+／Firefox 68+ 中运行。
 - **桌面版**：Electron 22.3.27 外壳（`desktop/`）加载同一界面（多注入 `app/desk/`）。不依赖系统浏览器，支持 Windows 7～11 与银河麒麟 V10（飞腾 arm64、x86_64）。
 
-当前版本 **3.5.1**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。
+当前版本 **3.5.2**（版本号以 `desktop/package.json` 为准，网页包与桌面包共用）。桌面版首页显示的版本来自这个文件。
 
 ## 2. 目录
 ```
@@ -93,6 +93,7 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 - **界面皮肤（3.3.16）**：`app/skins.js` 与 `skins.css` 提供经典蓝、青竹、暖纸、深空，`hongtu.uiSkin` 保存选择。默认经典蓝，不自动跟随系统；图面主题独立。所有面板颜色用 CSS 变量。桌面原生对话框保持浅色。
 - Linux 默认 `disableHardwareAcceleration()`，国产显卡兼容；加 `--gpu` 可开启。启动脚本 `/usr/bin/jingwei-zhitu` 带 `--no-sandbox`（deb 里删掉了 chrome-sandbox）。启动前先用 ldd 检查缺失的库，缺了就弹窗列出。
 - 拼写检查会去 redirector.gvt1.com 下载词典，必须关闭：`setSpellCheckerEnabled(false)`，并把词典下载地址指向本机无效地址。
+- 免安装 zip 的顶层是 `JingWeiZhiTu/` 文件夹和唯一入口（Windows 为 `JingWeiZhiTu.exe`，麒麟为 `JingWeiZhiTu.sh`）。入口在首次运行时写桌面快捷方式。打包按 Electron 压缩包推导文件清单，缺运行库或缺图标则失败。`build/desktop/build_all.py` 仍可打 win32、麒麟 x86_64、deb；`--patch` 打增量包；网页包用 `build/web/package_web.py`。
 - 所有保存都走 IPC `jw:save`，并记住上次目录。批量转换先选一次文件夹，靠 MutationObserver 监听 `#cv-msg` 出现“已完成”来收尾。
 - 测试模式：设置环境变量 `JW_TEST_DIR` 后，保存／选文件夹／打开／关闭确认都不弹系统对话框。另有 `JW_TEST_OPEN`（打开哪个文件）、`JW_TEST_CLOSE`（关闭时选 save/discard/cancel）。
 - Windows exe 的图标和版本信息用 resedit（纯 JS）改，不需要 wine。NSIS 安装包用 `RequestExecutionLevel user`。

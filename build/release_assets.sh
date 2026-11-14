@@ -91,13 +91,10 @@ done
 
 [ -n "$ver" ] || { echo "$DIST 下没有可上传的免安装包" >&2; exit 1; }
 
+# 本次发布必须有的两份。其余免安装包、网页包、增量包如果已经打出来，仍会上传。
 required=(
   "jingwei_${ver}_windows_x64_portable.zip"
-  "jingwei_${ver}_windows_x86_portable.zip"
-  "jingwei_${ver}_kylin_x86_64_portable.zip"
   "jingwei_${ver}_kylin_arm64_portable.zip"
-  "jingwei_${ver}_web_offline.zip"
-  "jingwei_${ver}_incremental.zip"
 )
 for en in "${required[@]}"; do
   [ -f "$OUT/$en" ] || { echo "缺少正式发布资产：$en" >&2; exit 1; }

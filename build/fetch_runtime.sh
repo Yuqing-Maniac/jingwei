@@ -9,7 +9,14 @@ declare -A SUM=(
   [win32-ia32]=1119ac7112590cb9c10a8c9b0bb5be65c0e11648a4f1311e6b7a5a00e497c2ce
   [win32-x64]=ad723ed7dad32f9459f7a9de1fd6d718cf713c4809c2431503bea62ce8f786e6
 )
-for a in linux-arm64 linux-x64 win32-ia32 win32-x64; do
+# 不带参数时下载四个架构。只打其中一部分时传入架构名，例如 linux-arm64 win32-x64。
+if [ "$#" -gt 0 ]; then
+  archs=("$@")
+else
+  archs=(linux-arm64 linux-x64 win32-ia32 win32-x64)
+fi
+for a in "${archs[@]}"; do
+  if [ -z "${SUM[$a]+x}" ]; then echo "未知运行时架构：$a" >&2; exit 1; fi
   f="$RT/electron-v$V-$a.zip"
   if [ ! -f "$f" ] || ! echo "${SUM[$a]}  $f" | sha256sum -c --quiet - 2>/dev/null; then
     echo "下载 $a …"; curl -fSL --retry 3 -o "$f" "https://github.com/electron/electron/releases/download/v$V/electron-v$V-$a.zip"

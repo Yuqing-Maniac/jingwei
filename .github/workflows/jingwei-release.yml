@@ -1,6 +1,7 @@
 # 经纬织图：在 Releases 页面发布标签为 jingwei-vX.Y.Z 的版本后，从零构建并挂上免安装包。
-# 正式版只上传免安装／网页离线／增量包和 SHA256SUMS.txt。资产名是唯一 ASCII，中文只作显示名。
-# 不上传 .deb 与 NSIS 安装包。手动运行默认只构建；填写 upload_tag 时上传到已有标签（不新建标签）。
+# 当前发布命令只打 Windows 10／11 x64 与麒麟 V10 ARM64。其他目标仍可由 build_all.py 指定。
+# 资产名是唯一 ASCII，中文只作显示名。不上传 .deb 与 NSIS 安装包。
+# 手动运行默认只构建；填写 upload_tag 时上传到已有标签（不新建标签）。
 name: jingwei-release
 on:
   release:
@@ -31,12 +32,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: 构建正式发布物（四个平台免安装包、网页离线包和增量包）
+      - name: 构建本次发布的免安装包（Windows x64 与麒麟 ARM64）
         run: |
           npm ci
-          bash build/fetch_runtime.sh
-          python build/desktop/build_all.py --portable-only
-          python build/web/package_web.py
+          bash build/fetch_runtime.sh linux-arm64 win32-x64
+          python build/desktop/build_all.py --portable-only win64 kylin-arm64
       - name: 挂到 Releases（ASCII 资产名，不含安装包）
         if: github.event_name == 'release' || github.event.inputs.upload_tag
         env:
