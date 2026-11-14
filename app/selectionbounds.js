@@ -9,7 +9,7 @@ var JwSelectionBounds = (function () {
   function eligible(n) {
     // Match nodeSVG's visible-card branch. A framed icon, or an equipment
     // status highlight, still has visible geometry all the way to the node box.
-    return !!(window.JwIconLabels && JwIconLabels.eligible(n) && n.noBox &&
+    return !!(n && !n.imageOnly && window.JwIconLabels && JwIconLabels.eligible(n) && n.noBox &&
       !(n.type === 'equip' && n.status !== 'base'));
   }
   function layout(n) {

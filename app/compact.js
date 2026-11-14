@@ -66,6 +66,7 @@
   /* ---------- 自然尺寸（avail = 可用宽度） ---------- */
   function natural(n, avail, p) {
     if (isCont(n)) return groupNatural(n, avail, p);
+    if(n.imageOnly)return {w:n.w,h:n.h};
     if (n.type === 'text' || n.type === 'note' || n.type === 'legend' || n.type === 'tblock') return { w: Math.min(n.w, avail), h: n.h };
     const size = n.size || BASE;
     if (n.type === 'equip') {
@@ -132,7 +133,7 @@
         x += g || 0;
         const nx = snapv(x), ny = snapv(y + (ln.h - s.h) / 2);
         if (isCont(n)) placeGroup(n, nx, snapv(y), s.w, ln.h, s.flow, p);
-        else { n.x = nx; n.y = ny; n.w = snapv(s.w); n.h = snapv(s.h); }
+        else { n.x = nx; n.y = ny; if(!n.imageOnly){n.w = snapv(s.w); n.h = snapv(s.h);} }
         x += s.w;
       }
       y += ln.h + fl.vgap;
@@ -230,6 +231,7 @@
   const moveAll = (n, dx, dy, p) => { for (const d of [n, ...descendants(n.id, p)]) { d.x += dx; d.y += dy; } };
   /* 文字类元素按宽度重算高度 */
   function refit(n, w) {
+    if(n.imageOnly){const scale=Math.min(1,w/n.w);n.w*=scale;n.h*=scale;return;}
     n.w = snapv(Math.max(40, w));
     if (n.type === 'note' || n.type === 'text') { const sz = n.size || 13, lines = wrap(n.text, n.w - (n.type === 'note' ? 20 : 8), sz, n.bold); n.h = snapv(Math.max(n.type === 'note' ? 32 : 20, lines.length * lineH(sz) + (n.type === 'note' ? 16 : 6))); }
   }
@@ -245,7 +247,7 @@
     let y = Math.max(bandsB, ...stay.map(n => n.y + n.h)) + 12, row = [], rw = 0, rh = 0;
     const flush = () => { let x = X + (W - rw) / 2; for (const n of row) { moveAll(n, snapv(x) - n.x, snapv(y) - n.y, p); x += n.w + 12; } y += rh + 10; row = []; rw = 0; rh = 0; };
     for (const n of below) {
-      if (n.w > W) { if (n.type === 'equip' || n.icon) { const k = W / n.w; n.w = snapv(W); n.h = snapv(n.h * k); } else refit(n, W); }
+      if (n.w > W) { if (n.type === 'equip' || n.icon) { const k = W / n.w; if(n.imageOnly){n.w=W;n.h*=k;}else{n.w = snapv(W); n.h = snapv(n.h * k);} } else refit(n, W); }
       if (n.type === 'note' && n.role === 'note') refit(n, W);
       if (row.length && rw + 12 + n.w > W) flush();
       rw += (row.length ? 12 : 0) + n.w; rh = Math.max(rh, n.h); row.push(n);

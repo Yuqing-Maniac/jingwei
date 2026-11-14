@@ -3,7 +3,7 @@ var JwIconLabels = (function () {
   var baseLayout = nodeLayout, baseBBox = contentBBox;
   var cache = new Map(), dragging = null, dragMode = false, repaint = false;
   function eligible(n) {
-    return !!(n && n.icon && /^(lib|ms|cu):/.test(n.icon) && !isCont(n) &&
+    return !!(n && !n.imageOnly && n.icon && /^(lib|ms|cu):/.test(n.icon) && !isCont(n) &&
       ['text', 'note', 'legend', 'tblock', 'stdArrow', 'dimArrow'].indexOf(n.type) < 0);
   }
   function finite(v) { return typeof v === 'number' && isFinite(v); }

@@ -152,11 +152,12 @@
   D.on('jw:open-path', p => openPath(p));
   const drop = h('<div id="jw-drop"><div>松开即可打开</div></div>'); document.body.appendChild(drop);
   const isFileDrag = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
-  window.addEventListener('dragover', e => { if (isFileDrag(e)) { e.preventDefault(); drop.classList.add('on'); } }, true);
+  window.addEventListener('dragover', e => { if (isFileDrag(e)) { e.preventDefault(); if(typeof isCanvasImageDrop==='function'&&isCanvasImageDrop(e)){drop.classList.remove('on');return;} drop.classList.add('on'); } }, true);
   window.addEventListener('dragleave', e => { if (!e.relatedTarget) drop.classList.remove('on'); }, true);
   window.addEventListener('drop', e => {
     drop.classList.remove('on');
     if (!isFileDrag(e)) return;
+    if(typeof isCanvasImageDrop==='function'&&isCanvasImageDrop(e)){e.preventDefault();e.stopPropagation();insertCanvasImages(Array.from(e.dataTransfer.files),clientToWorld(e.clientX,e.clientY));return;}
     const f = e.dataTransfer.files[0];
     if (f && f.path && /\.(json|png|jpe?g|pptx|vsdx|drawio|xml)$/i.test(f.name)) { e.preventDefault(); e.stopPropagation(); openPath(f.path); }
   }, true);

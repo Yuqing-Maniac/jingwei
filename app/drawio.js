@@ -102,7 +102,7 @@
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
+      const ht = { ht_type: n.type, ht_imageOnly: n.imageOnly ? 1 : '', ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_appearance: ['cn','us'].includes(n.appearance) ? n.appearance : '', ht_affiliation: ['neutral','red','blue'].includes(n.affiliation) ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
       const coverageData = {}; Object.keys(n).filter(k => /^coverage[A-Z]/.test(k)).forEach(k => { coverageData[k] = n[k]; });
       if (n.coverageKind) ht.ht_coverage = coverageData;
       if (!isCont(n) && !isLineArrow(n) && (n.icon || n.coverageKind)) { ht.ht_labelLayout = 1; ht.ht_text = n.text || ''; }
@@ -115,7 +115,7 @@
       const txt = (n.text || '');
       /* draw.io 渐变色标不能带透明度。末端不是完全不透明时，嵌画布同一段 SVG，ht_gradA 仍可回读 */
       const a2 = n.gradA == null ? 1 : +n.gradA;
-      const fade = n.type !== 'fan' && (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
+      const fade = !n.imageOnly && n.type !== 'fan' && (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
       if (fade) {
         const body = nodeSVG(Object.assign({}, n, {rot:0}), p, true);
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x} ${n.y} ${n.w} ${n.h}" width="${n.w}" height="${n.h}">${body}</svg>`;
@@ -161,6 +161,9 @@
             cell(cid(n.id) + 'b' + i, lb.text, `text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=${stroke};strokeColor=none;fillColor=none`, { x: lb.x - ox - tw / 2, y: lb.y - oy - 12, w: tw, h: 16 }, pid, { ht_part: 'ruler' });
           });
         }
+      } else if(n.imageOnly){
+        const icon=nodeLayout(n).icon;
+        if(icon)cell(cid(n.id),'',`shape=image;imageAspect=0;image=${styleImage(icon.uri)};flipH=${n.flipX?1:0};flipV=${n.flipY?1:0}`,geo,pid,ht);
       } else if (n.type === 'fan') {
         // Tight circle-sector geometry, with stroke padding only in its image;
         // preserve the original node bounds and independent caption on import.
@@ -366,6 +369,7 @@
         }
         const n = mkNode({ type, x: a.x, y: a.y, w: c.geo.w || 120, h: c.geo.h || 40, text, size: Math.max(8, Math.min(40, +(D.ht_size || st.fontSize) || 13)), bold: (+st.fontStyle & 1) === 1 });
         n._c = c; n._horiz = st.horizontal !== '0';
+        if(D.ht_imageOnly){n.imageOnly=true;n.noBox=true;n.text='';if(D.ht_flipX)n.flipX=true;if(D.ht_flipY)n.flipY=true;}
         if (D.ht_status) n.status = D.ht_status;
         if (D.ht_etype) n.etype = D.ht_etype; if (D.ht_code) n.code = D.ht_code;
         if (D.ht_attrs) try { n.attrs = JSON.parse(D.ht_attrs); } catch (_) { }

@@ -279,6 +279,7 @@ function iconAspect(key) { if (!key || !key.startsWith('cu:')) return 1; const c
 function nodeLayout(n) {
   const t = T(), size = n.size || 13, lh = Math.round(size * 1.38), family = fontCSS(n);
   const L = { icon: null, text: null };
+  if (n.imageOnly) {const uri=iconURI(n.icon);if(uri)L.icon={uri,x:n.x,y:n.y,w:n.w,h:n.h,s:Math.max(n.w,n.h),flipX:!!n.flipX,flipY:!!n.flipY};return L;}
   const color = n.color === 'muted' ? t.muted : (n.color || (n.type === 'text' ? t.text : t.box.text));
   if (n.type === 'text' || n.type === 'note') {
     const pad = n.type === 'note' ? 10 : 2;
@@ -811,7 +812,7 @@ function nodeSVG(n, p, exp) {
     }
   } else {
     if (isLineArrow(n)) s += arrowMarkup(n);
-    else if (n.type === 'note' || (n.type !== 'text' && !n.noBox) || (n.type === 'equip' && n.noBox && n.status !== 'base')) {
+    else if (!n.imageOnly && (n.type === 'note' || (n.type !== 'text' && !n.noBox) || (n.type === 'equip' && n.noBox && n.status !== 'base'))) {
       const paint = paintOf(n, t), fp = gradDef(n.id, paint.grad);
       const kind = n.type === 'note' ? 'rect' : (n.type === 'equip' && n.noBox ? 'equip' : n.type);
       const sw = (n.type === 'note' || (n.type === 'equip' && n.noBox)) ? (paint.noLine ? 0 : 1) : paint.sw;
@@ -2411,7 +2412,9 @@ $('#palette').addEventListener('click', e => {
 $('#palette').addEventListener('dragstart', e => { const it = e.target.closest('.pitem[data-add]'); if (it) { e.dataTransfer.setData('text/plain', it.dataset.add); e.dataTransfer.effectAllowed = 'copy'; } });
 stage.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
 stage.addEventListener('drop', e => {
-  e.preventDefault(); let spec; try { spec = JSON.parse(e.dataTransfer.getData('text/plain')); } catch (_) { return; }
+  e.preventDefault();
+  if (isCanvasImageDrop(e)) {insertCanvasImages(Array.from(e.dataTransfer.files),clientToWorld(e.clientX,e.clientY));return;}
+  let spec; try { spec = JSON.parse(e.dataTransfer.getData('text/plain')); } catch (_) { return; }
   const w = clientToWorld(e.clientX, e.clientY); addNode(spec, w.x, w.y);
 });
 function addNode(spec, wx, wy) {
@@ -2670,7 +2673,7 @@ svg.addEventListener('pointermove', e => {
     if (d.h.includes('e')) ww = o.w + dx; if (d.h.includes('s')) hh = o.h + dy;
     if (d.h.includes('w')) { ww = o.w - dx; x = o.x + dx; } if (d.h.includes('n')) { hh = o.h - dy; y = o.y + dy; }
     if (ww < 24) { if (d.h.includes('w')) x -= 24 - ww; ww = 24; } if (hh < 16) { if (d.h.includes('n')) y -= 16 - hh; hh = 16; }
-    if (n.type === 'fan') {
+    if (n.type === 'fan' || n.imageOnly) {
       const scale=Math.max(24/o.w,16/o.h,(ww*o.w+hh*o.h)/(o.w*o.w+o.h*o.h));
       ww=o.w*scale;hh=o.h*scale;x=d.h.includes('w')?o.x+o.w-ww:o.x;y=d.h.includes('n')?o.y+o.h-hh:o.y;
     }
@@ -2680,7 +2683,7 @@ svg.addEventListener('pointermove', e => {
       if (d.h.includes('n')) y = o.y + o.h - size;
     }
     ui.guides = null;
-    if (snapOn() && !e.altKey && !n.coverageKind && n.type !== 'fan' && !(canRotate(o) && rotOf(o))) {
+    if (snapOn() && !e.altKey && !n.coverageKind && n.type !== 'fan' && !n.imageOnly && !(canRotate(o) && rotOf(o))) {
       if (!d.sc) d.sc = snapContext(new Map([[n.id, n], ...descendants(n.id).map(q => [q.id, q])]));
       const T = 7 / view.k, G = [], near = (v, list) => { let b = null; for (const c of list) { const dd = Math.abs(c.v - v); if (dd <= T && (!b || dd < b.d)) b = { d: dd, c }; } return b; };
       const xl = d.sc.rects.flatMap(r => [{ v: r.x, r }, { v: r.x + r.w, r }, { v: r.x + r.w / 2, r }]), yl = d.sc.rects.flatMap(r => [{ v: r.y, r }, { v: r.y + r.h, r }, { v: r.y + r.h / 2, r }]);
@@ -3755,6 +3758,13 @@ function arrowExtraHTML(nodes) {
 function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
   const links = selectedLinks();
+  if(!links.length && sel.size===1 && selectedNodes()[0] && selectedNodes()[0].imageOnly){
+    const n=selectedNodes()[0];
+    h='<h3>图片</h3><div class="hint">图片随工程保存；缩放保持原图比例。</div>';
+    h+=fieldHTML([n],NODE_FIELDS.rot)+fieldHTML([n],NODE_FIELDS.flipX)+fieldHTML([n],NODE_FIELDS.flipY)+arrowExtraHTML([n])+layerOrderHTML([n]);
+    h+=`<div class="grid2" style="margin-top:6px">${['x','y','w','h'].map(k=>`<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div><hr><button id="p-del" style="color:var(--danger)">删除图片</button>`;
+    setMarkup(el,h);bindProps();return;
+  }
   if (linkSel.size && !links.length) { clearSel(); return renderProps(); }
   if (links.length > 1) {
     h += `<h3>已选 ${links.length} 条连线</h3>`;
@@ -3784,7 +3794,7 @@ function renderProps() {
     const nodes = selectedNodes();
     h += `<h3>已选 ${sel.size} 个元素</h3><div class="hint">对齐与分布</div>`;
     h += `<div class="grid3">${[['l', '左对齐'], ['c', '水平居中'], ['r', '右对齐'], ['t', '顶对齐'], ['m', '垂直居中'], ['b', '底对齐'], ['dh', '水平等距'], ['dv', '垂直等距'], ['size', '等宽等高']].map(([k, n]) => `<button data-al="${k}">${n}</button>`).join('')}</div>`;
-    h += fieldsHTML(nodes, NODE_FIELDS);
+    h += fieldsHTML(nodes, nodes.every(n=>n.imageOnly)?{rot:NODE_FIELDS.rot,flipX:NODE_FIELDS.flipX,flipY:NODE_FIELDS.flipY}:NODE_FIELDS);
     h += arrowExtraHTML(nodes);
     h += layerOrderHTML(nodes);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
@@ -3871,7 +3881,7 @@ function bindProps() {
   on('#p-text', 'input', e => { n.text = e.target.value; live(); });
   on('#p-type', 'change', e => { checkpoint(); n.type = e.target.value; fitFan(n); if (n.type === 'equip' && n.h < 72) { n.w = Math.max(n.w, 96); n.h = 96; } render(); });
   on('#p-tw', 'input', e => { const row = contRow(n), th = row && row.thick.mode === 'field' ? row.thick : { key: 'titleW', min: 40, max: 300, fallback: 96 }; n[th.key] = clamp(+e.target.value || th.fallback, th.min, th.max); live(); });
-  el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; if(n.type==='fan'&&(k==='w'||k==='h'))fitFan(n,k); live(); }));
+  el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; if(n.type==='fan'&&(k==='w'||k==='h'))fitFan(n,k);if(n.imageOnly&&(k==='w'||k==='h')){const a=iconAspect(n.icon);if(k==='w')n.h=n.w/a;else n.w=n.h*a;} if((n.imageOnly||n.type==='fan')&&(k==='w'||k==='h')){const other=el.querySelector('[data-geo="'+(k==='w'?'h':'w')+'"]');if(other)other.value=Math.round(n[other.dataset.geo]*10)/10;} live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
   on('#p-appearance', 'change', e => { checkpoint(); n.appearance = e.target.value; n.affiliation = iconSide(undefined, n.appearance); render(); });
@@ -3936,6 +3946,43 @@ $('#modal').addEventListener('click', e => {
   if (!['equip'].includes(iconTarget.type) && iconTarget.h >= 72) iconTarget.type = 'equip';
   $('#modal').style.display = 'none'; render();
 });
+/* Full pictures are embedded media, independent of the icon palette/OCR. */
+function isCanvasImageDrop(e) {
+  if(!e.dataTransfer)return false;
+  const r=stage.getBoundingClientRect();
+  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)return false;
+  const files=Array.from(e.dataTransfer.files||[]);
+  if(files.length)return files.every(f=>/^image\/(jpeg|png)$/i.test(f.type)||/\.(jpe?g|png)$/i.test(f.name));
+  const items=Array.from(e.dataTransfer.items||[]).filter(i=>i.kind==='file');
+  return !!items.length&&items.every(i=>/^image\/(jpeg|png)$/i.test(i.type));
+}
+async function insertCanvasImages(files, point) {
+  const owner=doc,page=P(),center=point||(()=>{const r=svg.getBoundingClientRect();return clientToWorld(r.left+r.width/2,r.top+r.height/2);})();
+  const pictures=[];
+  for(const file of files){
+    if(!(/^image\/(jpeg|png)$/i.test(file.type)||/\.(jpe?g|png)$/i.test(file.name)))continue;
+    try {
+      let uri=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('读取图片失败'));reader.readAsDataURL(file);});
+      const encoded=String(uri).split(',')[1]||'',mime=encoded.startsWith('/9j/')?'image/jpeg':encoded.startsWith('iVBORw0KGgo')?'image/png':'';
+      if(!mime)throw new Error('请选择 JPG 或 PNG 图片');
+      uri='data:'+mime+';base64,'+encoded;
+      const image=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('图片格式无效'));image.src=uri;});
+      if(!image.naturalWidth||!image.naturalHeight)throw new Error('图片尺寸无效');
+      pictures.push({file,uri,width:image.naturalWidth,height:image.naturalHeight});
+    }catch(err){toast('无法插入 '+file.name+'：'+err.message);}
+  }
+  if(!pictures.length||doc!==owner||P()!==page)return;
+  checkpoint();const ids=[];
+  pictures.forEach((picture,index)=>{
+    const id=uid(),aspect=picture.width/picture.height,scale=Math.min(1,360/Math.max(picture.width,picture.height));
+    doc.custom[id]={name:picture.file.name,uri:picture.uri,aspect,width:picture.width,height:picture.height};
+    const w=picture.width*scale,h=picture.height*scale,n=mkNode({type:'equip',imageOnly:true,noBox:true,text:'',icon:'cu:'+id,x:center.x-w/2+index*24,y:center.y-h/2+index*24,w,h});
+    page.nodes.push(n);ids.push(n.id);
+  });
+  selectNodes(ids);render();
+}
+$('#b-insert-image').onclick=()=>$('#f-insert-image').click();
+$('#f-insert-image').addEventListener('change',e=>{const files=Array.from(e.target.files||[]);e.target.value='';insertCanvasImages(files);});
 $('#f-icon').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   rd.onload = () => {
@@ -4200,9 +4247,11 @@ async function exportPPTX() {
         const shp = n.type === 'equip' ? pptx.ShapeType.roundRect : pie ? pptx.ShapeType.pie : (n.type === 'sector' ? pptx.ShapeType.ellipse : (SHP_DEF[n.type] ? (pptx.ShapeType[SHP_DEF[n.type].ppt] || SHP_DEF[n.type].ppt) : null));
         const paint = paintOf(n, t);
         const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : (pie ? { angleRange: [270, 270 + sweep] } : {});
-        const drawBox = n.type === 'note' || (shp && (!n.noBox || n.status !== 'base'));
+        const drawBox = !n.imageOnly && (n.type === 'note' || (shp && (!n.noBox || n.status !== 'base')));
         const boxStyle = { fill: { color: hex(paint.fill), transparency: Math.round((1 - paint.fillAlpha) * 100) }, line: paint.noLine ? { width: 0 } : { color: hex(paint.stroke), width: n.type === 'note' ? LW(1) : LW(paint.sw), ...(paint.dash ? { dashType: PPT_DASH[paint.dash] || 'dash' } : {}) }, ...(pptName(paint) ? { objectName: pptName(paint) } : {}) };
-        if (n.type === 'fan') {
+        if(n.imageOnly){
+          if(L.icon)slide.addImage({data:L.icon.uri,x:X(n.x),y:Y(n.y),w:S(n.w),h:S(n.h),flipH:!!n.flipX,flipV:!!n.flipY});
+        } else if (n.type === 'fan') {
           if (drawBox) slide.addShape(pptx.ShapeType.custGeom, {...base, ...boxStyle,
             points: shapeGeom('fan', n.w, n.h, sweep).fill[0].map(q => ({x: q[0] * f, y: q[1] * f})).concat([{close:true}])});
           if (L.icon) { const png = await getIcon(iconRasterKey(L.icon)); if (png) slide.addImage({data:png.replace(/^data:/, ''), x:X(L.icon.x), y:Y(L.icon.y), w:S(L.icon.w || L.icon.s), h:S(L.icon.h || L.icon.s)}); }
@@ -4374,20 +4423,20 @@ async function exportVSDX(pageList) {
         }
       } else {
         const L = nodeLayout(n), paint = paintOf(n, t);
-        const drawBox = n.type === 'note' || (n.type !== 'text' && (!n.noBox || n.status !== 'base'));
+        const drawBox = !n.imageOnly && (n.type === 'note' || (n.type !== 'text' && (!n.noBox || n.status !== 'base')));
         const bs = drawBox ? { fill: paint.fill, line: paint.noLine ? null : paint.stroke, lw: n.type === 'note' ? 1 : paint.sw, dash: paint.dash, fillAlpha: paint.fillAlpha, grad: paint.grad, sweep: (n.type === 'sector' || n.type === 'fan') ? sectorSweep(n) : 0, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type === 'note' ? 'rect' : n.type } : {};
         if (!L.icon && L.text) shapes.push(box(n.x, n.y, n.w, n.h, { ...bs, text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, align: L.text.anchor === 'start' ? 'left' : 'center', face: fontFace(n) }));
         else {
           if (drawBox) shapes.push(box(n.x, n.y, n.w, n.h, bs));
           if (L.icon) {
             const ik = iconRasterKey(L.icon);
-            let png = iconCache.get(ik); if (png === undefined) { png = await iconPNG(ik); iconCache.set(ik, png); }
+            let png = n.imageOnly ? L.icon.uri : iconCache.get(ik); if (png === undefined) { png = await iconPNG(ik); iconCache.set(ik, png); }
             if (png) {
-              imgN++; const fn = `image${imgN}.png`; zip.file('visio/media/' + fn, png.split(',')[1], { base64: true });
+              imgN++; const jpeg = /^data:image\/jpe?g[;,]/i.test(png), fn = `image${imgN}.${jpeg?'jpg':'png'}`; zip.file('visio/media/' + fn, png.split(',')[1], { base64: true });
               const rid = 'rId' + (rels.length + 1); rels.push(`<Relationship Id='${rid}' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/image' Target='../media/${fn}'/>`);
               const imageBox = rotatedBox(rotatingNode, { x: L.icon.x, y: L.icon.y, w: L.icon.w || L.icon.s, h: L.icon.h || L.icon.s });
               const W = imageBox.w * f, HH = imageBox.h * f;
-              shapes.push(`<Shape ID='${sid++}' Type='Foreign' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(imageBox.x) + W / 2))}${cell('PinY', num(Y(imageBox.y) - HH / 2))}${cell('Width', num(W))}${cell('Height', num(HH))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(HH / 2))}${cell('Angle', num(rotatingNode ? -rotOf(rotatingNode) * Math.PI / 180 : 0))}${cell('ImgOffsetX', 0)}${cell('ImgOffsetY', 0)}${cell('ImgWidth', num(W))}${cell('ImgHeight', num(HH))}${cell('LinePattern', 0)}${cell('FillPattern', 0)}<Section N='Geometry' IX='0'>${cell('NoFill', 1)}${cell('NoLine', 1)}${cell('NoShow', 1)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(W))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(W))}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section><ForeignData ForeignType='Bitmap' CompressionType='PNG'><Rel r:id='${rid}'/></ForeignData></Shape>`);
+              shapes.push(`<Shape ID='${sid++}' Type='Foreign' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(imageBox.x) + W / 2))}${cell('PinY', num(Y(imageBox.y) - HH / 2))}${cell('Width', num(W))}${cell('Height', num(HH))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(HH / 2))}${cell('Angle', num(rotatingNode ? -rotOf(rotatingNode) * Math.PI / 180 : 0))}${cell('ImgOffsetX', 0)}${cell('ImgOffsetY', 0)}${cell('ImgWidth', num(W))}${cell('ImgHeight', num(HH))}${cell('LinePattern', 0)}${cell('FillPattern', 0)}<Section N='Geometry' IX='0'>${cell('NoFill', 1)}${cell('NoLine', 1)}${cell('NoShow', 1)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(W))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(W))}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(HH))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section>${n.imageOnly ? cell('FlipX',n.flipX?1:0)+cell('FlipY',n.flipY?1:0) : ''}<ForeignData ForeignType='Bitmap' CompressionType='${jpeg?'JPEG':'PNG'}'><Rel r:id='${rid}'/></ForeignData></Shape>`);
             }
           }
           if (L.text) { const [bx, by, bw, bh] = L.text.box; shapes.push(box(bx, by, bw, Math.max(bh, 16), { text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, face: fontFace(n) })); }
@@ -4450,7 +4499,7 @@ async function exportVSDX(pageList) {
     pageRels.push(rels);
     cur = saved;
   }
-  zip.file('[Content_Types].xml', `<?xml version='1.0' encoding='utf-8' ?>\n<Types xmlns='http://schemas.openxmlformats.org/package/2006/content-types'><Default Extension='rels' ContentType='application/vnd.openxmlformats-package.relationships+xml'/><Default Extension='xml' ContentType='application/xml'/><Default Extension='png' ContentType='image/png'/><Override PartName='/visio/document.xml' ContentType='application/vnd.ms-visio.drawing.main+xml'/><Override PartName='/visio/pages/pages.xml' ContentType='application/vnd.ms-visio.pages+xml'/>${pageXml.map((_, i) => `<Override PartName='/visio/pages/page${i + 1}.xml' ContentType='application/vnd.ms-visio.page+xml'/>`).join('')}<Override PartName='/visio/windows.xml' ContentType='application/vnd.ms-visio.windows+xml'/><Override PartName='/docProps/core.xml' ContentType='application/vnd.openxmlformats-package.core-properties+xml'/><Override PartName='/docProps/app.xml' ContentType='application/vnd.openxmlformats-officedocument.extended-properties+xml'/></Types>`);
+  zip.file('[Content_Types].xml', `<?xml version='1.0' encoding='utf-8' ?>\n<Types xmlns='http://schemas.openxmlformats.org/package/2006/content-types'><Default Extension='rels' ContentType='application/vnd.openxmlformats-package.relationships+xml'/><Default Extension='xml' ContentType='application/xml'/><Default Extension='png' ContentType='image/png'/><Default Extension='jpg' ContentType='image/jpeg'/><Override PartName='/visio/document.xml' ContentType='application/vnd.ms-visio.drawing.main+xml'/><Override PartName='/visio/pages/pages.xml' ContentType='application/vnd.ms-visio.pages+xml'/>${pageXml.map((_, i) => `<Override PartName='/visio/pages/page${i + 1}.xml' ContentType='application/vnd.ms-visio.page+xml'/>`).join('')}<Override PartName='/visio/windows.xml' ContentType='application/vnd.ms-visio.windows+xml'/><Override PartName='/docProps/core.xml' ContentType='application/vnd.openxmlformats-package.core-properties+xml'/><Override PartName='/docProps/app.xml' ContentType='application/vnd.openxmlformats-officedocument.extended-properties+xml'/></Types>`);
   zip.file('_rels/.rels', `<?xml version='1.0' encoding='utf-8' ?>\n<Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'><Relationship Id='rId1' Type='http://schemas.microsoft.com/visio/2010/relationships/document' Target='visio/document.xml'/><Relationship Id='rId2' Type='http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties' Target='docProps/core.xml'/><Relationship Id='rId3' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties' Target='docProps/app.xml'/></Relationships>`);
   zip.file('docProps/core.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<cp:coreProperties xmlns:cp='http://schemas.openxmlformats.org/package/2006/metadata/core-properties' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:dcterms='http://purl.org/dc/terms/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><dc:title>${esc(doc.name || '体系图')}</dc:title><dc:creator>经纬织图</dc:creator></cp:coreProperties>`);
   zip.file('docProps/app.xml', `<?xml version='1.0' encoding='utf-8' ?>\n<Properties xmlns='http://schemas.openxmlformats.org/officeDocument/2006/extended-properties'><Application>Microsoft Visio</Application><AppVersion>15.0000</AppVersion></Properties>`);
