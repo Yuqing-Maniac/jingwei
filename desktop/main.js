@@ -9,7 +9,17 @@ const { applyPatch } = require('./patch');
 const isLinux = process.platform === 'linux', isWin = process.platform === 'win32';
 // 默认软件渲染：兼容 Windows／麒麟及虚拟显卡，避免 GPU 进程在窗口出现前崩溃。
 // 需要硬件加速时可显式使用 --gpu。
-if (!process.argv.includes('--gpu')) app.disableHardwareAcceleration();
+const softwareRendering = !process.argv.includes('--gpu');
+const windowsBuild = isWin ? Number(require('os').release().split('.')[2]) || 0 : 0;
+// Electron 22 的 GPU 辅助进程在新 Windows 内核上即使软件渲染仍可能崩溃。
+// 仅在软件绘图且内核 >= Windows 11 24H2 时采用 GPU 进程兼容配置；
+// 不使用全局 --no-sandbox，也不改变其他进程的隔离配置。
+const gpuCompatibility = isWin && softwareRendering && windowsBuild >= 26100;
+if (softwareRendering) app.disableHardwareAcceleration();
+if (gpuCompatibility) {
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-gpu-sandbox');
+}
 app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
 if (isWin) app.setAppUserModelId('cn.ycq.jingwei-zhitu');
 
@@ -26,6 +36,7 @@ function startupLog(event, detail) {
   } catch (_) { }
 }
 startupLog('main process started', process.platform + '/' + process.arch + ' v' + app.getVersion());
+startupLog('graphics mode', (softwareRendering ? 'software' : 'hardware requested') + ', Windows build ' + windowsBuild + ', GPU compatibility ' + gpuCompatibility);
 let store = { recent: [], lastDir: '', win: null };
 try { store = Object.assign(store, JSON.parse(fs.readFileSync(STORE, 'utf8'))); } catch (_) { }
 const saveStore = () => { try { fs.mkdirSync(DATA, { recursive: true }); fs.writeFileSync(STORE, JSON.stringify(store)); } catch (_) { } };
