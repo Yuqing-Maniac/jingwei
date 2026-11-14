@@ -37,7 +37,7 @@
 
 ## 下载
 
-当前源码版本是 3.6.0。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。桌面版首页的版本号读这个字段。
+当前源码版本是 3.6.1。版本号在 `desktop/package.json`，与根目录 `package.json` 相同。桌面版首页的版本号读这个字段。
 
 3.5.2 的草稿发布包含两份免安装包。解压后顶层是 `JingWeiZhiTu` 文件夹和唯一入口，只运行那个入口。
 

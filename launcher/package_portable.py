@@ -1,15 +1,93 @@
 """把已经装好的运行目录打成「一个文件夹 + 一个入口文件」。"""
 import os
+import re
 import shutil
 import stat
 import subprocess
 import zipfile
+import uuid
+import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 FOLDER = 'JingWeiZhiTu'
 WIN_ENTRY = 'JingWeiZhiTu.exe'
 LINUX_ENTRY = 'JingWeiZhiTu.sh'
+SUPPORTED_OS_IDS = frozenset({
+    '35138b9a-5d96-4fbd-8e2d-a2440225f93a',
+    '4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38',
+    '1f676c76-80e1-4239-95bb-83d0f6d0da78',
+    '8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a',
+})
+MANIFEST_ARCHES = {'win64': 'amd64', 'win32': 'x86'}
+
+
+def _version_parts(version, count):
+    if not isinstance(version, str) or not re.fullmatch(r'[0-9]+(?:\.[0-9]+){' + str(count - 1) + '}', version):
+        raise SystemExit('bad manifest version: ' + str(version))
+    parts = version.split('.')
+    if any(len(part) > 5 or int(part) > 65535 for part in parts):
+        raise SystemExit('manifest version component exceeds 65535: ' + version)
+    return parts
+
+
+def validate_manifest(text, version=None, arch=None):
+    """Validate rendered launcher XML, including text extracted from RT_MANIFEST."""
+    try:
+        root = ET.fromstring(text)
+    except (ET.ParseError, ValueError) as exc:
+        raise SystemExit('invalid launcher manifest XML: ' + str(exc)) from exc
+    ns = {'asm': 'urn:schemas-microsoft-com:asm.v1',
+          'v3': 'urn:schemas-microsoft-com:asm.v3',
+          'compat': 'urn:schemas-microsoft-com:compatibility.v1'}
+    if root.tag != '{' + ns['asm'] + '}assembly' or root.get('manifestVersion') != '1.0':
+        raise SystemExit('invalid launcher manifest assembly namespace/version')
+    identities = root.findall('asm:assemblyIdentity', ns)
+    if len(identities) != 1:
+        raise SystemExit('launcher manifest must have one assemblyIdentity')
+    identity = identities[0]
+    if identity.get('type') != 'win32' or identity.get('name') != 'JingWeiZhiTu':
+        raise SystemExit('invalid launcher manifest assemblyIdentity')
+    _version_parts(identity.get('version'), 4)
+    if version is not None:
+        _version_parts(version, 3)
+        if identity.get('version') != version + '.0':
+            raise SystemExit('launcher manifest version does not match ' + version)
+    architecture = identity.get('processorArchitecture')
+    if architecture not in MANIFEST_ARCHES.values():
+        raise SystemExit('invalid launcher manifest architecture: ' + str(architecture))
+    if arch is not None:
+        expected = MANIFEST_ARCHES.get(arch, arch)
+        if expected not in MANIFEST_ARCHES.values() or architecture != expected:
+            raise SystemExit('launcher manifest architecture does not match ' + str(arch))
+    levels = root.findall('v3:trustInfo/v3:security/v3:requestedPrivileges/v3:requestedExecutionLevel', ns)
+    if len(levels) != 1 or levels[0].get('level') != 'asInvoker' or levels[0].get('uiAccess') != 'false':
+        raise SystemExit('launcher manifest requires asInvoker and uiAccess=false')
+    applications = root.findall('compat:compatibility/compat:application', ns)
+    if len(applications) != 1:
+        raise SystemExit('launcher manifest must have one compatibility application')
+    ids = []
+    for supported in applications[0].findall('compat:supportedOS', ns):
+        value = supported.get('Id', '')
+        if not re.fullmatch(r'\{[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\}', value):
+            raise SystemExit('invalid supportedOS GUID: ' + value)
+        try:
+            ids.append(str(uuid.UUID(value)))
+        except ValueError as exc:
+            raise SystemExit('invalid supportedOS GUID: ' + value) from exc
+    if len(ids) != len(set(ids)) or set(ids) != SUPPORTED_OS_IDS:
+        raise SystemExit('launcher manifest supportedOS IDs must match Windows 7/8/8.1/10-11')
+    return root
+
+
+def render_manifest(version, arch):
+    _version_parts(version, 3)
+    if arch not in MANIFEST_ARCHES:
+        raise SystemExit('no launcher for ' + str(arch))
+    with open(os.path.join(HERE, 'app.manifest'), encoding='utf-8') as stream:
+        text = stream.read().replace('@VER@', version).replace('@ARCH@', MANIFEST_ARCHES[arch])
+    validate_manifest(text, version, arch)
+    return text
 
 
 def copy_icons(folder):
@@ -40,17 +118,15 @@ def _tools(arch):
 
 
 def compile_launcher(dest, arch, version, ico, brand):
+    text = render_manifest(version, arch)
     gcc, windres, objdump = _tools(arch)
     if not os.path.isfile(ico):
         raise SystemExit('missing icon: ' + ico)
     work = os.path.dirname(dest)
     os.makedirs(work, exist_ok=True)
-    parts = version.split('.')
-    if len(parts) != 3 or not all(p.isdigit() for p in parts):
-        raise SystemExit('bad version ' + version)
+    parts = _version_parts(version, 3)
     ver_comma = ','.join(parts) + ',0'
     manifest = os.path.join(work, 'app.manifest')
-    text = open(os.path.join(HERE, 'app.manifest'), encoding='utf-8').read().replace('@VER@', version)
     open(manifest, 'w', encoding='utf-8', newline='\n').write(text)
     rc = os.path.join(work, 'launcher.rc')
     org = brand['org'].replace('"', "'")

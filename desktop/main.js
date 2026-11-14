@@ -16,6 +16,15 @@ const T = process.env.JW_TEST_DIR || '';   // 自动化测试：跳过系统对�
 const OPENABLE = /\.(json|png|jpe?g|pptx|vsdx|drawio|xml)$/i;
 const DATA = app.getPath('userData');
 const STORE = path.join(DATA, 'desk.json');
+const STARTUP_LOG = process.env.JW_STARTUP_LOG || path.join(DATA, 'startup.log');
+function startupLog(event, detail) {
+  try {
+    fs.mkdirSync(path.dirname(STARTUP_LOG), { recursive: true });
+    const line = new Date().toISOString() + ' ' + event + (detail ? ' ' + String(detail.stack || detail) : '') + '\n';
+    fs.appendFileSync(STARTUP_LOG, line);
+  } catch (_) { }
+}
+startupLog('main process started', process.platform + '/' + process.arch + ' v' + app.getVersion());
 let store = { recent: [], lastDir: '', win: null };
 try { store = Object.assign(store, JSON.parse(fs.readFileSync(STORE, 'utf8'))); } catch (_) { }
 const saveStore = () => { try { fs.mkdirSync(DATA, { recursive: true }); fs.writeFileSync(STORE, JSON.stringify(store)); } catch (_) { } };
@@ -24,7 +33,7 @@ const ICON = path.join(__dirname, isWin ? 'icon.ico' : 'icon.png');
 let win = null, splash = null, pendingOpen = [], forceClose = false, splashShownAt = 0;
 const fileArgs = argv => argv.slice(1).filter(a => !a.startsWith('-') && OPENABLE.test(a) && fs.existsSync(a)).map(a => path.resolve(a));
 
-if (!app.requestSingleInstanceLock()) { app.quit(); }
+if (!app.requestSingleInstanceLock()) { startupLog('existing instance found'); app.quit(); }
 else app.on('second-instance', (_e, argv) => {
   if (!win) return;
   if (win.isMinimized()) win.restore(); win.show(); win.focus();
@@ -58,6 +67,7 @@ function createMain() {
   win.setMenu(null);
   win.loadFile(path.join(__dirname, 'app', 'index.html'));
   win.once('ready-to-show', () => {
+    startupLog('main window ready to show');
     setTimeout(() => {
       if (!win || win.isDestroyed()) return;
       if (st.max) win.maximize();
@@ -67,8 +77,11 @@ function createMain() {
       if (splash) { splash.destroy(); splash = null; }
     }, T ? 0 : Math.max(0, 1600 - (Date.now() - (splashShownAt || Date.now()))));
   });
+  win.webContents.on('did-finish-load', () => startupLog('main window loaded'));
+  win.webContents.on('preload-error', (_e, _path, error) => startupLog('preload failed', error));
   win.webContents.on('did-fail-load', (_e, code, message, _url, isMainFrame) => {
     if (!isMainFrame || code === -3) return;
+    startupLog('main window load failed', code + ' ' + message);
     if (splash) { splash.destroy(); splash = null; }
     dialog.showErrorBox('经纬织图启动失败', '界面未能加载：' + message + '。请重新解压完整程序包。');
     app.exit(1);
@@ -92,6 +105,7 @@ function createMain() {
     item.once('done', (_e2, state) => { if (state === 'completed') { store.lastDir = path.dirname(item.getSavePath()); saveStore(); } });
   });
   win.webContents.on('render-process-gone', (_e, d) => {
+    startupLog('renderer exited', d.reason);
     dialog.showMessageBox({ type: 'error', title: '经纬织图', message: '绘图窗口异常退出（' + d.reason + '），将重新加载。', buttons: ['确定'] }).then(() => win && win.reload());
   });
 }
@@ -162,7 +176,7 @@ ipcMain.handle('jw:rename', (_e, p, name) => {
   return r;
 });
 ipcMain.handle('jw:pending', () => { const a = pendingOpen; pendingOpen = []; return a; });
-ipcMain.handle('jw:info', () => ({ version: app.getVersion(), platform: process.platform, arch: process.arch, electron: process.versions.electron, chrome: process.versions.chrome }));
+ipcMain.handle('jw:info', () => ({ version: app.getVersion(), platform: process.platform, arch: process.arch, electron: process.versions.electron, chrome: process.versions.chrome, windowVisible: !!win && !win.isDestroyed() && win.isVisible() }));
 ipcMain.handle('jw:win-state', () => win ? { max: win.isMaximized(), full: win.isFullScreen() } : { max: false, full: false });
 ipcMain.handle('jw:patch', async () => {
   let p = process.env.JW_TEST_PATCH || '';
@@ -311,6 +325,7 @@ ipcMain.handle('jw:backup-drop', async (_e, arg) => {
 pendingOpen = fileArgs(process.argv);
 app.on('open-file', (e, p) => { e.preventDefault(); if (win) win.webContents.send('jw:open-path', p); else pendingOpen.push(p); });
 app.whenReady().then(() => {
+  startupLog('electron ready');
   if (process.env.JW_TEST_PATCH_AUTO) {
     const out = process.env.JW_TEST_PATCH_RESULT;
     try {
@@ -328,5 +343,9 @@ app.whenReady().then(() => {
   try { const ses = require('electron').session.defaultSession; ses.setSpellCheckerEnabled(false); ses.setSpellCheckerDictionaryDownloadURL('http://127.0.0.1:9/'); } catch (_) { }
   createSplash();
   createMain();
+}).catch(error => {
+  startupLog('startup failed', error);
+  dialog.showErrorBox('经纬织图启动失败', String(error.message || error) + '\n启动日志：' + STARTUP_LOG);
+  app.exit(1);
 });
 app.on('window-all-closed', () => app.quit());
