@@ -1366,7 +1366,7 @@ function overlaySVG() {
 function render(full = true) {
   ensureLegend(P());
   const pb = contentBBox(), pp = 28;
-  setMarkup(world, `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG());
+  setMarkup(world, `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + (window.CanvasBg ? CanvasBg.markup(P()) : '') + diagramSVG(P(), false, 'm') + overlaySVG());
   applyView(); applyHover();
   if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
   syncDistField();
@@ -2259,6 +2259,7 @@ stage.addEventListener('drop', e => {
 function addNode(spec, wx, wy) {
   checkpoint();
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
+  if (window.JwDefaults) JwDefaults.stampNode(n, spec);
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
   if (n.type === 'legend') P().noLegend = false;
@@ -2521,7 +2522,7 @@ function endDrag(e) {
   if (d.mode === 'link') {
     const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
-    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selectLinks([l.id]); }
+    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; if (window.JwDefaults) JwDefaults.stampLink(l); P().links.push(l); selectLinks([l.id]); }
   }
   if (d.mode === 'marquee') ui.marquee = null;
   render();
@@ -3563,6 +3564,7 @@ function renderProps() {
   if (links.length > 1) {
     h += `<h3>已选 ${links.length} 条连线</h3>`;
     h += fieldsHTML(links, LINK_FIELDS);
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" type="button" style="color:var(--danger)">删除连线</button>`;
   } else if (links.length === 1) {
     const l = links[0];
@@ -3581,6 +3583,7 @@ function renderProps() {
     h += `<div class="row"><label>走线</label>${seg('p-route', [['ortho', '直角'], ['straight', '直线']], l.route)}</div>`;
     if (window.Std) h += Std.propsHTML('link', l, p);
     h += sameButton();
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
   } else if (sel.size > 1) {
     const nodes = selectedNodes();
@@ -3589,6 +3592,7 @@ function renderProps() {
     h += fieldsHTML(nodes, NODE_FIELDS);
     h += arrowExtraHTML(nodes);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
   } else if (sel.size === 1) {
     const n = nodeById([...sel][0]); if (!n) { clearSel(); return renderProps(); }
@@ -3613,6 +3617,7 @@ function renderProps() {
     const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type);
     if (showSub) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
     const st = legendEntries(p);
@@ -3626,6 +3631,7 @@ function renderProps() {
     h += `<div class="row" title="拖动时对齐其他图形的边与中线、画布中轴，并提示等间距；按住 Alt 临时关闭"><label>拖动吸附</label>${seg('d-snapon', [['on', '对齐吸附'], ['off', '关闭']], snapOn() ? 'on' : 'off')}</div>`;
     if (window.Compact) h += Compact.panelHTML();
     h += `<div class="row" title="北约体制：友方蓝、敌方红；我军习惯：我方红、敌方蓝"><label>军标配色</label>${seg('d-ms', [['nato', '友蓝敌红'], ['cn', '我红敌蓝']], msMode())}</div>`;
+    if (window.JwDefaults) h += JwDefaults.panelHTML();
     if (window.Std) h += Std.propsHTML('page', null, p);
     h += `<hr><div class="hint" style="margin-bottom:4px">状态图例名称</div>`;
     h += ['base', 'new', 'key'].map(s => { const t = T(); const c = s === 'base' ? t.box : t.st[s]; return `<div class="row"><label><span class="swatch" style="width:18px;height:12px;background:${c.fill};border:1px solid ${c.stroke}"></span></label><input type="text" data-sl="${s}" value="${esc(doc.statusLabels[s])}"></div>`; }).join('');
@@ -3692,6 +3698,7 @@ function bindProps() {
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
   on('#d-snapon', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; try { localStorage.setItem('hongtu.snap', b.dataset.v); } catch (_) { } render(); });
   if (window.Compact && !l && !n && !links.length) Compact.bind($('#props'));
+  if (window.JwDefaults) JwDefaults.bind($('#props'));
   if (window.Std && links.length < 2) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
   on('#d-ms', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.msColor = b.dataset.v; renderPalette(); render(); if ($('#modal').style.display === 'flex') renderPicker(); });
 }
@@ -3771,7 +3778,8 @@ function exportSVGString(p, bg) {
   ensureLegend(p);
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
-  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${inner}</svg>`), w, h };
+  const sheet = window.CanvasBg ? CanvasBg.markup(p, { x, y, w, h }) : '';
+  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${sheet}${inner}</svg>`), w, h };
 }
 function rasterize(svgStr, w, h, scale) {
   return new Promise((res, rej) => {
@@ -3907,6 +3915,7 @@ async function exportPPTX() {
     const ox = (13.333 - (b.w + pad * 2) * f) / 2, oy = (7.5 - (b.h + pad * 2) * f) / 2;
     const X = v => ox + (v - b.x + pad) * f, Y = v => oy + (v - b.y + pad) * f, S = v => Math.max(0.001, v * f), PT = px => Math.max(5, +(px * f * 72).toFixed(1)), LW = px => Math.max(0.25, +(px * f * 72).toFixed(2));
     const txt = (lines, o) => lines.join('\n');
+    if (window.CanvasBg) await CanvasBg.paintPptx(slide, pptx, p, { X, Y, S, box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 } });
     for (const n of drawOrder(p)) {
       const base = { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h) };
       if (contRow(n)) {
@@ -4073,6 +4082,10 @@ async function exportVSDX(pageList) {
     const b = contentBBox(p), pad = 20, f = 1 / 96, PW = (b.w + pad * 2) * f, PH = (b.h + pad * 2) * f;
     const X = v => (v - b.x + pad) * f, Y = v => PH - (v - b.y + pad) * f;
     let sid = 1; const shapes = []; const rels = [];
+    if (window.CanvasBg) {
+      const sheetShapes = CanvasBg.vsdxShapes(p, { box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 }, f, X, Y, cell, num, id: () => sid++, zip, rels });
+      if (sheetShapes && sheetShapes.length) shapes.unshift(...sheetShapes);
+    }
     const charSec = (size, color, bold, face) => `<Section N='Character'><Row IX='0'>${cell('Font', face || fontFace(null))}${cell('Color', color)}${cell('Size', num(size * 0.75 / 72), 'PT')}${cell('Style', bold ? 1 : 0)}</Row></Section>`;
     const paraSec = al => `<Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', al === 'left' ? 0 : 1)}</Row></Section>`;
     const rectGeom = (w, h) => `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(w))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section>`;
@@ -4589,7 +4602,9 @@ function irConnectPair(a, b, msg) {
     return false;
   }
   const kid = 'k' + uid();
-  s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
+  const fresh = { id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' };
+  if (window.JwDefaults) JwDefaults.stampLink(fresh);
+  s.links.push(fresh);
   s.sel = { kind: 'link', id: kid };
   $('#ir-msg').textContent = msg;
   paintImageReview();
@@ -4603,6 +4618,7 @@ function irPreviewClick(e) {
     const p = irSvgPoint(e);
     const w = Math.max(80, s.w * 0.12), h = Math.max(36, s.h * 0.08);
     const n = mkNode({ id: 'n' + uid(), type: 'rect', text: '新框', parent: null, w: w, h: h, x: Math.max(0, Math.min(Math.max(0, s.w - w), p.x - w / 2)), y: Math.max(0, Math.min(Math.max(0, s.h - h), p.y - h / 2)) });
+    if (window.JwDefaults) JwDefaults.stampNode(n, { type: 'rect', text: '新框' });
     s.nodes.push(n);
     s.sel = { kind: 'node', id: n.id };
     s.mode = '';
@@ -4838,6 +4854,7 @@ function friendlyErr(err) {
 }
 function loadDoc(d) { for (const pg of Object.values(d.pages || {})) { if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } if (pg.nodes) for (let i = 0; i < pg.nodes.length; i++) migrateDimArrow(pg.nodes[i]); } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
   adoptPages(d);
+  if (window.CanvasBg) CanvasBg.lockPages(d);
   doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); view = fitView(d.pages.root); render(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
 
 const SHELF_KEY = 'hongtu.shelf';

@@ -54,6 +54,7 @@
   function rootCell(p) {
     const a = {};
     if (p.view) a.ht_view = p.view;
+    if (p.canvasBg) a.ht_canvasBg = JSON.stringify(window.CanvasBg ? CanvasBg.normalize(p.canvasBg) : p.canvasBg);
     if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind, measure: doc.measure || null });
     const at = Object.entries(a).map(([k, v]) => ` ${k}="${xa(v)}"`).join('');
     return at ? `<object label=""${at} id="0"><mxCell/></object>` : '<mxCell id="0"/>';
@@ -171,7 +172,10 @@
       out.push(`<UserObject label="${xa(label)}" id="e${l.id}"${meta(ht)}><mxCell style="${xa(style)}" edge="1" parent="1" source="${cid(l.from)}" target="${cid(l.to)}"><mxGeometry relative="1" as="geometry">${way}</mxGeometry></mxCell></UserObject>`);
     }
     const b = contentBBox(p);
-    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${t.bg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${out.join('')}</root></mxGraphModel>` };
+    const sheet = window.CanvasBg ? CanvasBg.drawio(p) : null;
+    const sheetBg = sheet && /^#[0-9A-Fa-f]{6}$/.test(sheet.background || '') ? sheet.background : t.bg;
+    const sheetCells = sheet && sheet.cells ? sheet.cells : '';
+    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.join('')}</root></mxGraphModel>` };
   }
   function exportString(pageList) {
     const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
@@ -295,6 +299,7 @@
       /* 绝对坐标：沿父链累加（图层不计） */
       const absOf = c => { let x = c.geo ? c.geo.x : 0, y = c.geo ? c.geo.y : 0, p = byId.get(c.parent), k = 0; while (p && !layers.has(p.id) && k++ < 30) { if (p.vertex && p.geo && !p.geo.rel) { x += p.geo.x; y += p.geo.y; } p = byId.get(p.parent); } return { x, y }; };
       const page = { id: idMap[d.id], name: d.name, nodes: [], links: [], view: (rc && rc.data.ht_view) || null };
+      if (rc && rc.data.ht_canvasBg) try { page.canvasBg = JSON.parse(rc.data.ht_canvasBg); } catch (_) { }
       if (rc && rc.data.ht_doc && !docSettings) try { docSettings = JSON.parse(rc.data.ht_doc); } catch (_) { }
       const nodeOf = new Map();
       const verts = cells.filter(c => c.vertex && c.geo && !c.geo.rel);
@@ -304,7 +309,7 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');
@@ -384,6 +389,7 @@
       const vById = new Map(page.nodes.map(n => [n._c.id, n]));
       const nearest = (pt) => { let best = null, bd = 40; for (const n of page.nodes) { if (['text', 'legend', 'tblock', 'note'].includes(n.type)) continue; const dx = Math.max(n.x - pt.x, 0, pt.x - n.x - n.w), dy = Math.max(n.y - pt.y, 0, pt.y - n.y - n.h); const dd = Math.hypot(dx, dy) + (['band', 'lane', 'group'].includes(n.type) ? 25 : 0); if (dd < bd) { bd = dd; best = n; } } return best; };
       for (const c of cells.filter(c => c.edge)) {
+        if (c.data.ht_part === 'canvasbg') continue;
         const st = parseStyle(c.style), D = c.data;
         if (D.ht_part === 'ruler') continue;
         let a = vById.get(c.source), b = vById.get(c.target);
