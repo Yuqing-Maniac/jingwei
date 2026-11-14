@@ -356,7 +356,10 @@ def app_probe(native, dest, exe, version):
     try:
         end = time.monotonic() + 120
         while time.monotonic() < end:
-            run.track()
+            table = run.track()
+            live = {p["pid"] for p in table}
+            if len(run.pids) > 1 and not run.pids.intersection(live):
+                raise RuntimeError("Electron child exited before showing a window; see startup.log")
             if run.process.poll() not in (None, 0):
                 raise RuntimeError("Electron launcher exited: " + str(run.process.returncode))
             try:
@@ -429,8 +432,8 @@ def missing_asar_probe(native, dest, outer):
                 save_json(dest / "dialog.json", {"hwnd": hwnd, "text": text})
                 if "程序资源不完整" in text and "重新解压" in text:
                     matched = text
-                    # WM_COMMAND / IDOK to the test launcher's own MessageBox.
-                    if not native.u.PostMessageW(hwnd, 0x0111, 1, 0):
+                    # WM_CLOSE dismisses the test launcher's own MB_OK dialog.
+                    if not native.u.PostMessageW(hwnd, 0x0010, 0, 0):
                         raise ctypes.WinError(ctypes.get_last_error())
                     break
             if matched:

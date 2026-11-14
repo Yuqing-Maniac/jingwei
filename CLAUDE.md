@@ -93,7 +93,7 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 - 选 Electron 22.3.27，因为这是最后一个支持 Windows 7 的版本，不要随手升级。
 - 窗口无边框（frame:false），header 作为拖动区，按钮设为 no-drag。对话框遮罩的 top 改为 46px，避免盖住窗口按钮。
 - **界面皮肤（3.3.16）**：`app/skins.js` 与 `skins.css` 提供经典蓝、青竹、暖纸、深空，`hongtu.uiSkin` 保存选择。默认经典蓝，不自动跟随系统；图面主题独立。所有面板颜色用 CSS 变量。桌面原生对话框保持浅色。
-- Linux 默认 `disableHardwareAcceleration()`，国产显卡兼容；加 `--gpu` 可开启。启动脚本 `/usr/bin/jingwei-zhitu` 带 `--no-sandbox`（deb 里删掉了 chrome-sandbox）。启动前先用 ldd 检查缺失的库，缺了就弹窗列出。
+- Windows／Linux 默认 `disableHardwareAcceleration()`，兼容国产与虚拟显卡；加 `--gpu` 可开启。启动脚本 `/usr/bin/jingwei-zhitu` 带 `--no-sandbox`（deb 里删掉了 chrome-sandbox）。启动前先用 ldd 检查缺失的库，缺了就弹窗列出。
 - 拼写检查会去 redirector.gvt1.com 下载词典，必须关闭：`setSpellCheckerEnabled(false)`，并把词典下载地址指向本机无效地址。
 - 免安装 zip 的顶层是 `JingWeiZhiTu/` 文件夹和唯一入口（Windows 为 `JingWeiZhiTu.exe`，麒麟为 `JingWeiZhiTu.sh`）。入口在首次运行时写桌面快捷方式。打包按 Electron 压缩包推导文件清单，缺运行库或缺图标则失败。`build/desktop/build_all.py` 仍可打 win32、麒麟 x86_64、deb；`--patch` 打增量包；网页包用 `build/web/package_web.py`。
 - 所有保存都走 IPC `jw:save`，并记住上次目录。批量转换先选一次文件夹，靠 MutationObserver 监听 `#cv-msg` 出现“已完成”来收尾。

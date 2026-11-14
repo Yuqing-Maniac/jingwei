@@ -7,8 +7,9 @@ const recentLib = require('./recent');
 const { applyPatch } = require('./patch');
 
 const isLinux = process.platform === 'linux', isWin = process.platform === 'win32';
-// 国产 GPU 驱动差异大：Linux 默认软件渲染，避免黑屏／花屏；可用 --gpu 强制开启
-if (isLinux && !process.argv.includes('--gpu')) app.disableHardwareAcceleration();
+// 默认软件渲染：兼容 Windows／麒麟及虚拟显卡，避免 GPU 进程在窗口出现前崩溃。
+// 需要硬件加速时可显式使用 --gpu。
+if (!process.argv.includes('--gpu')) app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
 if (isWin) app.setAppUserModelId('cn.ycq.jingwei-zhitu');
 
