@@ -348,7 +348,7 @@ const GEO = {
 };
 /* shape registry: name, palette group, native PowerPoint preset, keep = keep own size in 一键美化 */
 const SHP_DEF = {
-  rect: { name: '矩形', ppt: 'rect' }, round: { name: '圆角矩形', ppt: 'roundRect' }, ellipse: { name: '椭圆／圆', ppt: 'ellipse' }, diamond: { name: '菱形', ppt: 'diamond' },
+  rect: { name: '矩形', ppt: 'rect' }, round: { name: '圆角矩形', ppt: 'roundRect' }, ellipse: { name: '椭圆／圆', ppt: 'ellipse' }, sector: { name: '扇形', ppt: 'pie', keep: 1 }, diamond: { name: '菱形', ppt: 'diamond' },
   hexagon: { name: '六边形', ppt: 'hexagon' }, octagon: { name: '八边形', ppt: 'octagon', keep: 1 }, triangle: { name: '三角形', ppt: 'triangle', keep: 1 },
   parallelogram: { name: '平行四边形', ppt: 'parallelogram' }, trapezoid: { name: '梯形', ppt: 'trapezoid' }, pentagon: { name: '五边形', ppt: 'pentagon', keep: 1 },
   star: { name: '五角星', ppt: 'star5', keep: 1 }, cylinder: { name: '圆柱体', ppt: 'can', keep: 1 }, cloud: { name: '云', ppt: 'cloud', keep: 1 }, cube: { name: '立方体', ppt: 'cube', keep: 1 },
@@ -402,7 +402,7 @@ function dimTextPoint(n) {
   return { x: mid.x - ly * Math.sin(rad), y: mid.y + ly * Math.cos(rad) };
 }
 function arrowMarkup(n) {
-  const stroke = n.stroke || stStyle(n, T()).stroke;
+  const stroke = n.noLine ? 'none' : (n.stroke || stStyle(n, T()).stroke);
   const sw = n.sw > 0 ? n.sw : 2;
   const head = arrowHeadLen(n.w, n.h), mid = n.h / 2, x1 = Math.max(0, n.w - head), wing = Math.min(head * 0.42, n.h * 0.45);
   let s = `<line x1="0" y1="${mid}" x2="${n.w}" y2="${mid}" stroke="transparent" stroke-width="${Math.max(14, sw + 10)}"/>`;
@@ -437,14 +437,74 @@ function iconMirrorURI(uri, flipX, flipY) {
   const sx = flipX ? -1 : 1, sy = flipY ? -1 : 1;
   return svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g transform="translate(50 50) scale(${sx} ${sy}) translate(-50 -50)"><image href="${href}" width="100" height="100" preserveAspectRatio="xMidYMid meet"/></g></svg>`);
 }
-function shapeGeom(type, w, h) { const g = (GEO[type] || GEO.rect)(w, h); g.lines = g.lines || []; g.shade = g.shade || []; return g; }
+function sectorSweep(n) {
+  const a = n && +n.sweep;
+  if (!isFinite(a) || a <= 0) return 90;
+  return Math.max(10, Math.min(360, a));
+}
+function sectorGeom(w, h, sweep) {
+  const a = Math.max(10, Math.min(360, +sweep || 90));
+  if (a >= 359.5) return GEO.ellipse(w, h);
+  const arc = arcPts(w / 2, h / 2, Math.max(0.5, w / 2), Math.max(0.5, h / 2), -90, -90 + a, Math.max(8, Math.round(a / 7)));
+  const mid = (-90 + a / 2) * Math.PI / 180, tw = Math.max(16, w * 0.28), th = Math.max(16, h * 0.28);
+  const ix = w / 2 + Math.cos(mid) * w * 0.2 - tw / 2, iy = h / 2 + Math.sin(mid) * h * 0.2 - th / 2;
+  return { fill: [[[w / 2, h / 2]].concat(arc)], inner: [ix, iy, tw, th] };
+}
+function gradSpec(n, fallback) {
+  if (!n || (n.grad !== 'h' && n.grad !== 'v' && n.grad !== 'r')) return null;
+  const c1 = n.fill || fallback;
+  const c2 = /^#[0-9A-Fa-f]{6}$/.test(n.gradTo || '') ? n.gradTo : c1;
+  let a2 = n.gradA == null ? 1 : +n.gradA;
+  if (!isFinite(a2)) a2 = 1;
+  return { dir: n.grad, c1: c1, a1: 1, c2: c2, a2: Math.max(0, Math.min(1, a2)) };
+}
+function paintOf(n, t) {
+  const st = stStyle(n, t);
+  let fill = st.fill, stroke = st.stroke;
+  if ((n.type === 'note' || n.type === 'legend') && !n.fill) fill = t.note.fill;
+  if ((n.type === 'note' || n.type === 'legend') && !n.stroke) stroke = t.note.stroke;
+  const noLine = !!n.noLine;
+  return { fill: fill, stroke: noLine ? 'none' : stroke, sw: noLine ? 0 : 1.2, grad: gradSpec(n, fill), noLine: noLine };
+}
+function gradDef(id, g) {
+  if (!g) return { attr: '', def: '' };
+  const gid = 'gf' + String(id).replace(/[^A-Za-z0-9_-]/g, '');
+  const stops = `<stop offset="0" stop-color="${esc(g.c1)}" stop-opacity="${g.a1}"/><stop offset="1" stop-color="${esc(g.c2)}" stop-opacity="${g.a2}"/>`;
+  const def = g.dir === 'r'
+    ? `<radialGradient id="${gid}" cx="50%" cy="50%" r="70%">${stops}</radialGradient>`
+    : `<linearGradient id="${gid}" x1="0" y1="0" x2="${g.dir === 'h' ? 1 : 0}" y2="${g.dir === 'h' ? 0 : 1}">${stops}</linearGradient>`;
+  return { attr: 'url(#' + gid + ')', def: def };
+}
+function gradTag(g) {
+  if (!g) return '';
+  const hex6 = c => String(c || '').replace('#', '').slice(0, 6).toUpperCase();
+  return 'jwG' + g.dir + hex6(g.c1) + String(Math.round(g.a2 * 100)).padStart(3, '0') + hex6(g.c2);
+}
+/* PPT 形状名：渐变标记，末尾 N 表示无描边。pptxgenjs 会把线宽 0 写成 1，导出后再改 XML。 */
+function pptName(paint) {
+  if (!paint) return '';
+  const g = paint.grad ? gradTag(paint.grad) : '';
+  if (!g && !paint.noLine) return '';
+  return (g || 'jwC') + (paint.noLine ? 'N' : '');
+}
+function gradFillXml(g) {
+  const stop = (pos, c, a) => `<a:gs pos="${pos}"><a:srgbClr val="${String(c).replace('#', '').slice(0, 6).toUpperCase()}"><a:alpha val="${Math.round(a * 100000)}"/></a:srgbClr></a:gs>`;
+  const geom = g.dir === 'r'
+    ? '<a:path path="circle"><a:fillToRect l="50000" t="50000" r="50000" b="50000"/></a:path>'
+    : `<a:lin ang="${g.dir === 'h' ? 0 : 5400000}" scaled="1"/>`;
+  return `<a:gradFill rotWithShape="1"><a:gsLst>${stop(0, g.c1, 1)}${stop(100000, g.c2, g.a2)}</a:gsLst>${geom}</a:gradFill>`;
+}
+function shapeGeom(type, w, h, sweep) {
+  const g = type === 'sector' ? sectorGeom(w, h, sweep) : (GEO[type] || GEO.rect)(w, h);
+  g.lines = g.lines || []; g.shade = g.shade || []; return g;
+}
 const ptsD = (pts, x, y, close) => 'M' + pts.map(p => `${(x + p[0]).toFixed(1)},${(y + p[1]).toFixed(1)}`).join(' L') + (close ? 'Z' : '');
-function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2) {
+function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2, sweep) {
   const a = `fill="${fill}" stroke="${stroke}" stroke-width="${sw}"`;
   if (type === 'ellipse') return `<ellipse cx="${x + w / 2}" cy="${y + h / 2}" rx="${w / 2}" ry="${h / 2}" ${a}/>`;
   if (type === 'diamond') return `<polygon points="${x + w / 2},${y} ${x + w},${y + h / 2} ${x + w / 2},${y + h} ${x},${y + h / 2}" ${a}/>`;
-  if (GEO[type] && type !== 'rect') {
-    const g = shapeGeom(type, w, h);
+  if (type === 'sector' || (GEO[type] && type !== 'rect')) {
+    const g = shapeGeom(type, w, h, sweep);
     let s = `<path d="${g.fill.map(p => ptsD(p, x, y, true)).join(' ')}" fill-rule="evenodd" stroke-linejoin="round" ${a}/>`;
     for (const sh of g.shade) s += `<path d="${ptsD(sh.pts, x, y, true)}" fill="#000" fill-opacity="${sh.op}" stroke="none"/>`;
     for (const l of g.lines) s += `<path d="${ptsD(l, x, y)}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
@@ -455,8 +515,8 @@ function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2) {
 }
 /* text/icon box inside a shape (absolute coords) */
 function innerBox(n) {
-  if (!GEO[n.type] || n.type === 'rect' || n.noBox) return null;
-  const b = shapeGeom(n.type, n.w, n.h).inner; return { x: n.x + b[0], y: n.y + b[1], w: Math.max(12, b[2]), h: Math.max(12, b[3]) };
+  if ((!GEO[n.type] && n.type !== 'sector') || n.type === 'rect' || n.noBox) return null;
+  const b = shapeGeom(n.type, n.w, n.h, n.sweep).inner; return { x: n.x + b[0], y: n.y + b[1], w: Math.max(12, b[2]), h: Math.max(12, b[3]) };
 }
 const BAND_TW = 34, GROUP_TH = 26;
 const laneTW = n => n.titleW || 96;
@@ -528,7 +588,8 @@ function nodeSVG(n, p, exp) {
     if (window.Std) s += Std.tblockSVG(n, p);
   } else if (n.type === 'legend') {
     const items = legendLayout(n, p);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="4" fill="${t.note.fill}" stroke="${t.note.stroke}"/>`;
+    const lp = paintOf(n, t), lf = gradDef(n.id, lp.grad);
+    s += lf.def + `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="4" fill="${lf.attr || lp.fill}" stroke="${lp.stroke}" stroke-width="${lp.noLine ? 0 : 1}"/>`;
     for (const it of items) {
       if (it.kind === 'st') {
         const ss = it.s === 'base' ? { fill: t.box.fill, stroke: t.box.stroke } : t.st[it.s];
@@ -541,9 +602,12 @@ function nodeSVG(n, p, exp) {
     }
   } else {
     if (isLineArrow(n)) s += arrowMarkup(n);
-    else if (n.type === 'note') s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="3" fill="${t.note.fill}" stroke="${t.note.stroke}"/>`;
-    else if (n.type !== 'text' && !n.noBox) { const st = stStyle(n, t); s += shapeMarkup(n.type, n.x, n.y, n.w, n.h, st.fill, st.stroke); }
-    else if (n.type === 'equip' && n.noBox && n.status !== 'base') { const st = stStyle(n, t); s += shapeMarkup('equip', n.x, n.y, n.w, n.h, st.fill, st.stroke, 1); }
+    else if (n.type === 'note' || (n.type !== 'text' && !n.noBox) || (n.type === 'equip' && n.noBox && n.status !== 'base')) {
+      const paint = paintOf(n, t), fp = gradDef(n.id, paint.grad);
+      const kind = n.type === 'note' ? 'rect' : (n.type === 'equip' && n.noBox ? 'equip' : n.type);
+      const sw = (n.type === 'note' || (n.type === 'equip' && n.noBox)) ? (paint.noLine ? 0 : 1) : paint.sw;
+      s += fp.def + shapeMarkup(kind, n.x, n.y, n.w, n.h, fp.attr || paint.fill, paint.stroke, sw, n.sweep);
+    }
     const L = isLineArrow(n) ? { icon: null, text: null } : nodeLayout(n);
     if (L.icon) s += iconSVG(L.icon);
     if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
@@ -1708,7 +1772,7 @@ const shThumb = (type, w, h) => { const x = (42 - w) / 2, y = (30 - h) / 2; retu
 const SH = (k, w, h, tw, th, text, grp) => ({ k, name: SHP_DEF[k].name, grp, spec: { type: k, w, h, text: text ?? SHP_DEF[k].name.replace(/（.*）/, '') }, svg: shThumb(k, tw, th) });
 const SHAPES = SHAPES0.map(s => Object.assign(s, { grp: '基础形状' })).slice(0, 6).concat([
   SH('roundL', 120, 40, 32, 18, null, '基础形状'), SH('roundR', 120, 40, 32, 18, null, '基础形状'),
-  SH('hexagon', 120, 56, 32, 20, null, '基础形状'), SH('octagon', 72, 72, 22, 22, null, '基础形状'), SH('triangle', 88, 72, 26, 22, null, '基础形状'),
+  SH('hexagon', 120, 56, 32, 20, null, '基础形状'), SH('octagon', 72, 72, 22, 22, null, '基础形状'), SH('triangle', 88, 72, 26, 22, null, '基础形状'), SH('sector', 88, 72, 26, 22, '', '基础形状'),
   SH('parallelogram', 130, 48, 34, 18, null, '基础形状'), SH('trapezoid', 120, 52, 32, 18, null, '基础形状'), SH('pentagon', 80, 76, 24, 23, null, '基础形状'),
   SH('star', 80, 76, 24, 23, '', '基础形状'), SH('cylinder', 88, 84, 22, 24, '数据库', '基础形状'), SH('cloud', 130, 80, 34, 22, null, '基础形状'),
   SH('cube', 96, 80, 26, 22, null, '基础形状'), SH('plus', 64, 64, 22, 22, '', '基础形状'), SH('donut', 72, 72, 22, 22, '', '基础形状'), SH('frame', 140, 70, 32, 20, null, '基础形状'),
@@ -2861,7 +2925,7 @@ $('#crumb').addEventListener('click', e => {
 /* ---------- properties panel ---------- */
 const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏' });
 for (const row of CONTS) TYPE_NAME[row.spec.type] = row.name;
-const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
+const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'sector', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
   ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate', 'stdArrow', 'dimArrow']]];
 function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
 function selectedLinks() {
@@ -2873,7 +2937,7 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
-const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', affiliation: '阵营涂装', flipX: '左右镜像', flipY: '上下镜像', fill: '填充', stroke: '描边', rot: '角度', sw: '线宽', dist: '距离', dir: '箭头', kind: '链路类型', color: '颜色' };
+const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', affiliation: '阵营涂装', flipX: '左右镜像', flipY: '上下镜像', fill: '填充', grad: '渐变', gradTo: '渐变末端', gradA: '末端不透明度', stroke: '描边', noLine: '无描边', sweep: '开角', rot: '角度', sw: '线宽', dist: '距离', dir: '箭头', kind: '链路类型', color: '颜色' };
 const SHARED_REJECT = {};
 const NODE_FIELDS = {
   labelSide: {
@@ -2947,18 +3011,53 @@ const NODE_FIELDS = {
   },
   fill: {
     id: 'fill', kind: 'color', optional: true,
-    show: function (items) {
-      if (items.length > 1) return true;
-      return ['text', 'note', 'legend', 'tblock'].indexOf(items[0].type) < 0;
-    },
+    show: function (items) { return items.some(function (n) { return n.type !== 'text' && n.type !== 'tblock' && !isLineArrow(n); }); },
+    scope: function (n) { return n.type !== 'text' && n.type !== 'tblock' && !isLineArrow(n); },
     get: function (n) { return n.fill || null; },
-    set: function (n, v) { if (v) n.fill = v; else delete n.fill; }
+    set: function (n, v) { if (n.type === 'text' || n.type === 'tblock' || isLineArrow(n)) return; if (v) n.fill = v; else delete n.fill; }
+  },
+  grad: {
+    id: 'grad', kind: 'select',
+    show: function (items) { return NODE_FIELDS.fill.show(items); },
+    scope: function (n) { return NODE_FIELDS.fill.scope(n); },
+    get: function (n) { return n.grad || 'none'; },
+    set: function (n, v) { if (!NODE_FIELDS.fill.scope(n)) return; if (v === 'h' || v === 'v' || v === 'r') n.grad = v; else { delete n.grad; delete n.gradTo; delete n.gradA; } },
+    options: function () { return [['none', '纯色'], ['v', '向下渐变'], ['h', '向右渐变'], ['r', '径向渐变']]; }
+  },
+  gradTo: {
+    id: 'gradTo', kind: 'color', optional: true,
+    show: function (items) { return items.some(function (n) { return n.grad === 'h' || n.grad === 'v' || n.grad === 'r'; }); },
+    scope: function (n) { return n.grad === 'h' || n.grad === 'v' || n.grad === 'r'; },
+    get: function (n) { return n.gradTo || null; },
+    set: function (n, v) { if (n.grad !== 'h' && n.grad !== 'v' && n.grad !== 'r') return; if (v) n.gradTo = v; else delete n.gradTo; }
+  },
+  gradA: {
+    id: 'gradA', kind: 'num', optional: true, min: 0, max: 100,
+    show: function (items) { return NODE_FIELDS.gradTo.show(items); },
+    scope: function (n) { return NODE_FIELDS.gradTo.scope(n); },
+    get: function (n) { return n.gradA == null ? 100 : Math.round(n.gradA * 100); },
+    set: function (n, v) { if (n.grad !== 'h' && n.grad !== 'v' && n.grad !== 'r') return; if (v == null || +v === 100) delete n.gradA; else n.gradA = Math.max(0, Math.min(100, Math.round(+v))) / 100; }
   },
   stroke: {
     id: 'stroke', kind: 'color', optional: true,
-    show: function (items) { return NODE_FIELDS.fill.show(items); },
+    show: function (items) { return items.some(function (n) { return n.type !== 'text' && n.type !== 'tblock'; }); },
+    scope: function (n) { return n.type !== 'text' && n.type !== 'tblock'; },
     get: function (n) { return n.stroke || null; },
-    set: function (n, v) { if (v) n.stroke = v; else delete n.stroke; }
+    set: function (n, v) { if (n.type === 'text' || n.type === 'tblock') return; if (v) n.stroke = v; else delete n.stroke; }
+  },
+  noLine: {
+    id: 'noLine', kind: 'check',
+    show: function (items) { return NODE_FIELDS.stroke.show(items); },
+    scope: function (n) { return NODE_FIELDS.stroke.scope(n); },
+    get: function (n) { return !!n.noLine; },
+    set: function (n, v) { if (n.type === 'text' || n.type === 'tblock') return; if (v) n.noLine = true; else delete n.noLine; }
+  },
+  sweep: {
+    id: 'sweep', kind: 'num', min: 10, max: 360,
+    show: function (items) { return items.some(function (n) { return n.type === 'sector'; }); },
+    scope: function (n) { return n.type === 'sector'; },
+    get: function (n) { return sectorSweep(n); },
+    set: function (n, v) { if (n.type !== 'sector') return; const a = Math.max(10, Math.min(360, Math.round(+v || 90))); if (a === 90) delete n.sweep; else n.sweep = a; }
   },
   sw: {
     id: 'sw', kind: 'num', optional: true, min: 0.5, max: 12,
@@ -3566,11 +3665,12 @@ async function exportPPTX() {
       } else if (isLineArrow(n)) {
         const ends = arrowEnds(n), stroke = n.stroke || stStyle(n, t).stroke, sw = n.sw > 0 ? n.sw : 2;
         const a = ends.tail, z = ends.tip;
-        slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: Math.max(S(Math.abs(z.x - a.x)), 0.01), h: Math.max(S(Math.abs(z.y - a.y)), 0.01), flipH: z.x < a.x, flipV: z.y < a.y, line: { color: hex(stroke), width: LW(sw), endArrowType: 'triangle' } });
+        slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: Math.max(S(Math.abs(z.x - a.x)), 0.01), h: Math.max(S(Math.abs(z.y - a.y)), 0.01), flipH: z.x < a.x, flipV: z.y < a.y, line: n.noLine ? { width: 0 } : { color: hex(stroke), width: LW(sw), endArrowType: 'triangle' }, ...(n.noLine ? { objectName: 'jwCN' } : {}) });
         if (n.type === 'dimArrow') { const lab = dimLabel(n), anchor = dimTextPoint(n), tw = measure(lab, 12, false) + 8; addT(slide, lab, { x: X(anchor.x - tw / 2), y: Y(anchor.y - 8), w: S(tw), h: S(16), color: hex(stroke), fontFace: fontFace(n), fontSize: PT(12), align: 'center', valign: 'middle', margin: 0, wrap: false }); }
       } else if (n.type === 'legend') {
         const items = legendLayout(n, p);
-        slide.addShape(pptx.ShapeType.rect, { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h), fill: { color: hex(t.note.fill) }, line: { color: hex(t.note.stroke), width: LW(1) } });
+        const lp = paintOf(n, t);
+        slide.addShape(pptx.ShapeType.rect, { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h), fill: { color: hex(lp.fill) }, line: lp.noLine ? { width: 0 } : { color: hex(lp.stroke), width: LW(1) }, ...(pptName(lp) ? { objectName: pptName(lp) } : {}) });
         for (const it of items) {
           if (it.kind === 'st') { const ss = it.s === 'base' ? t.box : t.st[it.s]; slide.addShape(pptx.ShapeType.rect, { x: X(it.x), y: Y(it.y + 3), w: S(26), h: S(14), fill: { color: hex(ss.fill) }, line: { color: hex(ss.stroke), width: LW(1) } }); }
           else { const K = LINK_KINDS[it.k]; slide.addShape(pptx.ShapeType.line, { x: X(it.x), y: Y(it.y + 10), w: S(27), h: 0, line: { color: hex(t.link[it.k]), width: LW(K.w || 1.6), dashType: PPT_DASH[K.dash] || 'solid', endArrowType: 'triangle' } }); }
@@ -3579,11 +3679,13 @@ async function exportPPTX() {
       } else {
         const L = nodeLayout(n);
         const textOpt = L.text ? { color: hex(L.text.color), fontFace: fontFace(n), fontSize: PT(L.text.size), bold: !!L.text.bold, align: L.text.anchor === 'start' ? 'left' : 'center', valign: 'middle', margin: 1 } : null;
-        const shp = n.type === 'equip' ? pptx.ShapeType.roundRect : SHP_DEF[n.type] ? (pptx.ShapeType[SHP_DEF[n.type].ppt] || SHP_DEF[n.type].ppt) : null;
-        const st = stStyle(n, t);
-        const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : {};
+        const sweep = n.type === 'sector' ? sectorSweep(n) : 0;
+        const pie = n.type === 'sector' && sweep < 359.5;
+        const shp = n.type === 'equip' ? pptx.ShapeType.roundRect : pie ? pptx.ShapeType.pie : (n.type === 'sector' ? pptx.ShapeType.ellipse : (SHP_DEF[n.type] ? (pptx.ShapeType[SHP_DEF[n.type].ppt] || SHP_DEF[n.type].ppt) : null));
+        const paint = paintOf(n, t);
+        const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : (pie ? { angleRange: [270, 270 + sweep] } : {});
         const drawBox = n.type === 'note' || (shp && (!n.noBox || n.status !== 'base'));
-        const boxStyle = n.type === 'note' ? { fill: { color: hex(t.note.fill) }, line: { color: hex(t.note.stroke), width: LW(1) } } : { fill: { color: hex(st.fill) }, line: { color: hex(st.stroke), width: LW(1.2) } };
+        const boxStyle = { fill: { color: hex(paint.fill) }, line: paint.noLine ? { width: 0 } : { color: hex(paint.stroke), width: n.type === 'note' ? LW(1) : LW(1.2) }, ...(pptName(paint) ? { objectName: pptName(paint) } : {}) };
         if (!L.icon && L.text) {
           /* 无框文字（标题等）：画布上不折行，PPT 中按实测宽度放宽文本框，避免折行叠字 */
           let tb = base;
@@ -3630,8 +3732,36 @@ async function exportPPTX() {
     }
     cur = saved;
   }
-  const blob = await pptx.write({ outputType: 'blob' });
+  let blob = await pptx.write({ outputType: 'blob' });
+  blob = await paintPptGradients(blob);
   saveFile(docExportName('pptx'), blob);
+}
+async function paintPptGradients(blob) {
+  if (typeof JSZip === 'undefined') return blob;
+  const zip = await JSZip.loadAsync(blob);
+  const names = Object.keys(zip.files).filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k));
+  let changed = false;
+  for (const name of names) {
+    let xml = await zip.file(name).async('string');
+    const re = /name="(jwG[hvr][0-9A-F]{6}\d{3}[0-9A-F]{6}N?|jwCN)"/g;
+    let m, next = xml, from = 0;
+    while ((m = re.exec(xml))) {
+      const tag = m[1], bare = tag.charAt(tag.length - 1) === 'N' ? tag.slice(0, -1) : tag;
+      const g = bare.charAt(2) === 'G' ? { dir: bare.charAt(3), c1: '#' + bare.slice(4, 10), a2: +bare.slice(10, 13) / 100, c2: '#' + bare.slice(13, 19) } : null;
+      const at = next.indexOf('name="' + tag + '"', from);
+      if (at < 0) continue;
+      const sp = next.lastIndexOf('<p:sp', at), end = next.indexOf('</p:sp>', at);
+      if (sp < 0 || end < 0) continue;
+      let chunk = next.slice(sp, end);
+      if (g) chunk = chunk.replace(/<a:solidFill>[\s\S]*?<\/a:solidFill>/, gradFillXml(g));
+      if (tag.charAt(tag.length - 1) === 'N') chunk = chunk.replace(/<a:ln\b[^>]*>[\s\S]*?<\/a:ln>/, '<a:ln><a:noFill/></a:ln>');
+      next = next.slice(0, sp) + chunk + next.slice(end);
+      from = sp + chunk.length;
+      changed = true;
+    }
+    if (next !== xml) zip.file(name, next);
+  }
+  return changed ? zip.generateAsync({ type: 'blob' }) : blob;
 }
 
 /* Visio (.vsdx, Visio 2013+): shapes with geometry, text, fills; links as polylines with arrowheads; icons embedded as PNG */
@@ -3653,12 +3783,12 @@ async function exportVSDX(pageList) {
     const charSec = (size, color, bold, face) => `<Section N='Character'><Row IX='0'>${cell('Font', face || fontFace(null))}${cell('Color', color)}${cell('Size', num(size * 0.75 / 72), 'PT')}${cell('Style', bold ? 1 : 0)}</Row></Section>`;
     const paraSec = al => `<Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', al === 'left' ? 0 : 1)}</Row></Section>`;
     const rectGeom = (w, h) => `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(w))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section>`;
-    const geomFor = (type, w, h) => {
+    const geomFor = (type, w, h, sweep) => {
       if (type === 'ellipse') return `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='Ellipse' IX='1'>${cell('X', num(w / 2))}${cell('Y', num(h / 2))}${cell('A', num(w))}${cell('B', num(h / 2))}${cell('C', num(w / 2))}${cell('D', num(h))}</Row></Section>`;
       if (type === 'diamond') return `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', num(w / 2))}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', num(h / 2))}</Row><Row T='LineTo' IX='3'>${cell('X', num(w / 2))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h / 2))}</Row><Row T='LineTo' IX='5'>${cell('X', num(w / 2))}${cell('Y', 0)}</Row></Section>`;
-      if (GEO[type] && type !== 'rect') {
+      if (type === 'sector' || (GEO[type] && type !== 'rect')) {
         /* sampled outline from GEO (px) → Visio local inches, y up; fill subpaths share one section (even-odd holes), extra strokes in a NoFill section */
-        const g = shapeGeom(type, w / f, h / f), gx = v => num(v * f), gy = v => num(h - v * f);
+        const g = shapeGeom(type, w / f, h / f, sweep), gx = v => num(v * f), gy = v => num(h - v * f);
         let sec = `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}`, ix = 1;
         for (const pl of g.fill) { pl.concat([pl[0]]).forEach((q, i) => { sec += `<Row T='${i ? 'LineTo' : 'MoveTo'}' IX='${ix++}'>${cell('X', gx(q[0]))}${cell('Y', gy(q[1]))}</Row>`; }); }
         sec += '</Section>';
@@ -3671,16 +3801,22 @@ async function exportVSDX(pageList) {
       const W = w * f, H = h * f;
       let s = `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(x) + W / 2))}${cell('PinY', num(Y(y) - H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('Angle', 0)}`;
       if (o.fill) s += cell('FillForegnd', o.fill) + cell('FillPattern', 1); else s += cell('FillPattern', 0);
+      if (o.grad) {
+        /* 角度与 vsdxraw 的读法一致：0 向右，3π/2 向下；径向 dir 1 为圆形 */
+        const ang = o.grad.dir === 'h' ? 0 : Math.PI * 1.5;
+        s += cell('FillGradientEnabled', 1) + cell('FillGradientAngle', num(ang)) + (o.grad.dir === 'r' ? cell('FillGradientDir', 1) : '');
+        s += `<Section N='FillGradient'><Row IX='0'>${cell('GradientStopColor', o.grad.c1)}${cell('GradientStopColorTrans', 0)}${cell('GradientStopPosition', 0)}</Row><Row IX='1'>${cell('GradientStopColor', o.grad.c2)}${cell('GradientStopColorTrans', num(1 - o.grad.a2))}${cell('GradientStopPosition', 1)}</Row></Section>`;
+      }
       if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', o.dash ? (VSD_PAT[o.dash] || 1) : 1); else s += cell('LinePattern', 0);
       if (o.round) s += cell('Rounding', num(o.round * f));
       s += cell('VerticalAlign', o.valign ?? 1) + cell('LeftMargin', num(2 * f)) + cell('RightMargin', num(2 * f)) + cell('TopMargin', num(1 * f)) + cell('BottomMargin', num(1 * f));
-      if (o.text != null && o.type && GEO[o.type] && o.type !== 'rect') {
-        const ib = shapeGeom(o.type, w, h).inner, TW = Math.max(ib[2], 8) * f, TH = Math.max(ib[3], 8) * f;
+      if (o.text != null && o.type && o.type !== 'rect' && (GEO[o.type] || o.type === 'sector')) {
+        const ib = shapeGeom(o.type, w, h, o.sweep).inner, TW = Math.max(ib[2], 8) * f, TH = Math.max(ib[3], 8) * f;
         s += cell('TxtPinX', num((ib[0] + ib[2] / 2) * f)) + cell('TxtPinY', num(H - (ib[1] + ib[3] / 2) * f)) + cell('TxtWidth', num(TW)) + cell('TxtHeight', num(TH)) + cell('TxtLocPinX', num(TW / 2)) + cell('TxtLocPinY', num(TH / 2)) + cell('TxtAngle', 0);
       }
       if (o.vert) s += `<Section N='TextBlock'>${cell('TextDirection', 1)}</Section>`;
       if (o.text != null) s += charSec(o.size || 13, o.color || '#000000', o.bold, o.face) + paraSec(o.align);
-      s += geomFor(o.type || 'rect', W, H);
+      s += geomFor(o.type || 'rect', W, H, o.sweep);
       if (o.text != null) s += `<Text>${xs(o.text)}</Text>`;
       return s + '</Shape>';
     };
@@ -3697,16 +3833,17 @@ async function exportVSDX(pageList) {
       } else if (isLineArrow(n)) arrowJobs.push(n);
       else if (n.type === 'legend') {
         const items = legendLayout(n, p);
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: t.note.fill, line: t.note.stroke }));
+        const lp = paintOf(n, t);
+        shapes.push(box(n.x, n.y, n.w, n.h, { fill: lp.fill, line: lp.noLine ? null : lp.stroke, grad: lp.grad }));
         for (const it of items) {
           if (it.kind === 'st') { const ss = it.s === 'base' ? t.box : t.st[it.s]; shapes.push(box(it.x, it.y + 3, 26, 14, { fill: ss.fill, line: ss.stroke })); }
           else shapes.push(polyShape([{ x: it.x, y: it.y + 10 }, { x: it.x + 27, y: it.y + 10 }], t.link[it.k], LINK_KINDS[it.k], 'one'));
           shapes.push(box(it.x + 32, it.y, 112, 20, { text: it.label, size: 12, color: t.text, align: 'left', face: fontFace(n) }));
         }
       } else {
-        const L = nodeLayout(n), st = stStyle(n, t);
+        const L = nodeLayout(n), paint = paintOf(n, t);
         const drawBox = n.type === 'note' || (n.type !== 'text' && (!n.noBox || n.status !== 'base'));
-        const bs = n.type === 'note' ? { fill: t.note.fill, line: t.note.stroke } : drawBox ? { fill: st.fill, line: st.stroke, lw: 1.2, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type } : {};
+        const bs = drawBox ? { fill: paint.fill, line: paint.noLine ? null : paint.stroke, lw: n.type === 'note' ? 1 : 1.2, grad: paint.grad, sweep: n.type === 'sector' ? sectorSweep(n) : 0, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type === 'note' ? 'rect' : n.type } : {};
         if (!L.icon && L.text) shapes.push(box(n.x, n.y, n.w, n.h, { ...bs, text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, align: L.text.anchor === 'start' ? 'left' : 'center', face: fontFace(n) }));
         else {
           if (drawBox) shapes.push(box(n.x, n.y, n.w, n.h, bs));
@@ -3745,8 +3882,8 @@ async function exportVSDX(pageList) {
       return `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(x0 + W / 2))}${cell('PinY', num(y0 + H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('LineColor', color)}${cell('LineWeight', num((K.w || 1.6) * 0.75 / 72), 'PT')}${cell('LinePattern', VSD_PAT[K.dash] || 1)}${cell('FillPattern', 0)}${cell('EndArrow', dir !== 'none' ? 4 : 0)}${cell('BeginArrow', dir === 'both' ? 4 : 0)}${cell('EndArrowSize', 1)}${cell('BeginArrowSize', 1)}${g}</Shape>`;
     }
     for (const n of arrowJobs) {
-      const ends = arrowEnds(n), stroke = n.stroke || stStyle(n, t).stroke, sw = n.sw > 0 ? n.sw : 2;
-      shapes.push(polyShape([ends.tail, ends.tip], stroke, { w: sw }, 'one'));
+      const ends = arrowEnds(n), stroke = n.noLine ? null : (n.stroke || stStyle(n, t).stroke), sw = n.sw > 0 ? n.sw : 2;
+      if (stroke) shapes.push(polyShape([ends.tail, ends.tip], stroke, { w: sw }, 'one'));
       if (n.type === 'dimArrow') { const lab = dimLabel(n), anchor = dimTextPoint(n), tw = measure(lab, 12, false) + 8; shapes.push(box(anchor.x - tw / 2, anchor.y - 8, tw, 16, { text: lab, size: 12, color: stroke, face: fontFace(n) })); }
     }
     for (const l of p.links) {
