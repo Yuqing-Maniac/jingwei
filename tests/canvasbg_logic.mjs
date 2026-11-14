@@ -120,6 +120,7 @@ assert.equal(CanvasBg.plan({ grad: { kind: 'radial', angle: 0, stops: two.grad.s
 const nativeDio = CanvasBg.drawio({ canvasBg: two });
 assert.match(nativeDio.cells, /shape=line/, 'native grid uses shape=line');
 assert.match(nativeDio.cells, /locked=1/, 'native grid is locked');
+assert.match(nativeDio.cells, /ht_part="canvasbg"/, 'sheet cells are marked so import skips them');
 
 document.createElement = function (tag) {
   if (tag !== 'canvas') return tiny(tag);

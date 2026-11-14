@@ -106,6 +106,12 @@ def main():
           render();
           const dio = DrawIO.exportString([P()]);
           check(dio.indexOf('data:image/png;base64') >= 0, 'draw.io 3-stop sheet is a png');
+          check(dio.indexOf('ht_canvasBg') >= 0, 'draw.io stores the background model');
+          check(dio.indexOf('ht_part=&quot;canvasbg&quot;') >= 0 || dio.indexOf('ht_part="canvasbg"') >= 0, 'draw.io marks sheet cells');
+          const n0 = P().nodes.length;
+          const back = await DrawIO.importText(dio);
+          check(back.pages[0].canvasBg && back.pages[0].canvasBg.grad.stops.length === 3, 'import restores the gradient');
+          check(back.pages[0].nodes.length === n0, 'sheet cells do not become nodes');
           const cell = (n, v, u) => `<Cell N='${n}' V='${v}'${u ? ` U='${u}'` : ''}/>`;
           const num = v => (+v).toFixed(6);
           let seq = 1;

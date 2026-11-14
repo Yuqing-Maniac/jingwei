@@ -314,6 +314,9 @@ var CanvasBg = (function () {
   function lockStyle() {
     return 'locked=1;pointerEvents=0;movable=0;resizable=0;deletable=0;connectable=0';
   }
+  function dioCell(id, style, inner) {
+    return '<UserObject label="" id="' + id + '" ht_part="canvasbg"><mxCell style="' + escAttr(style) + '" vertex="1" parent="1">' + inner + '</mxCell></UserObject>';
+  }
   function drawio(page) {
     var model = asModel(page);
     if (!model) return null;
@@ -326,20 +329,20 @@ var CanvasBg = (function () {
       var url = raster(page, b);
       if (!url) return { background: background, cells: '' };
       var style = 'shape=image;imageAspect=0;aspect=fixed;' + lockStyle() + ';image=' + url;
-      cells = '<mxCell id="cbg-img" value="" style="' + escAttr(style) + '" vertex="1" parent="1"><mxGeometry x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" as="geometry"/></mxCell>';
+      cells = dioCell('cbg-img', style, '<mxGeometry x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" as="geometry"/>');
       return { background: background, cells: cells };
     }
     var dir = CARD_DIR[cardinal(model.grad.angle)];
     var c1 = model.grad.stops[0].color, c2 = model.grad.stops[1].color;
     var gst = 'rounded=0;fillColor=' + c1 + ';gradientColor=' + c2 + ';gradientDirection=' + dir + ';strokeColor=none;' + lockStyle();
-    cells = '<mxCell id="cbg-fill" value="" style="' + escAttr(gst) + '" vertex="1" parent="1"><mxGeometry x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" as="geometry"/></mxCell>';
+    cells = dioCell('cbg-fill', gst, '<mxGeometry x="' + fmt(b.x) + '" y="' + fmt(b.y) + '" width="' + fmt(b.w) + '" height="' + fmt(b.h) + '" as="geometry"/>');
     if (model.grid.show) {
       var segs = segments(b, model.grid);
       var op = Math.round(model.grid.opacity * 100);
       for (var i = 0; i < segs.length; i++) {
         var x1 = segs[i][0], y1 = segs[i][1], x2 = segs[i][2], y2 = segs[i][3];
         var st = 'shape=line;html=1;endArrow=none;startArrow=none;strokeColor=' + model.grid.color + ';strokeOpacity=' + op + ';' + lockStyle();
-        cells += '<mxCell id="cbg-l' + i + '" value="" style="' + escAttr(st) + '" vertex="1" parent="1"><mxGeometry x="' + fmt(Math.min(x1, x2)) + '" y="' + fmt(Math.min(y1, y2)) + '" width="' + fmt(Math.abs(x2 - x1)) + '" height="' + fmt(Math.abs(y2 - y1)) + '" as="geometry"><mxPoint x="' + fmt(x1) + '" y="' + fmt(y1) + '" as="sourcePoint"/><mxPoint x="' + fmt(x2) + '" y="' + fmt(y2) + '" as="targetPoint"/></mxGeometry></mxCell>';
+        cells += dioCell('cbg-l' + i, st, '<mxGeometry x="' + fmt(Math.min(x1, x2)) + '" y="' + fmt(Math.min(y1, y2)) + '" width="' + fmt(Math.abs(x2 - x1)) + '" height="' + fmt(Math.abs(y2 - y1)) + '" as="geometry"><mxPoint x="' + fmt(x1) + '" y="' + fmt(y1) + '" as="sourcePoint"/><mxPoint x="' + fmt(x2) + '" y="' + fmt(y2) + '" as="targetPoint"/></mxGeometry>');
       }
     }
     return { background: background, cells: cells };

@@ -54,6 +54,7 @@
   function rootCell(p) {
     const a = {};
     if (p.view) a.ht_view = p.view;
+    if (p.canvasBg) a.ht_canvasBg = JSON.stringify(window.CanvasBg ? CanvasBg.normalize(p.canvasBg) : p.canvasBg);
     if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind, measure: doc.measure || null });
     const at = Object.entries(a).map(([k, v]) => ` ${k}="${xa(v)}"`).join('');
     return at ? `<object label=""${at} id="0"><mxCell/></object>` : '<mxCell id="0"/>';
@@ -280,6 +281,7 @@
       /* 绝对坐标：沿父链累加（图层不计） */
       const absOf = c => { let x = c.geo ? c.geo.x : 0, y = c.geo ? c.geo.y : 0, p = byId.get(c.parent), k = 0; while (p && !layers.has(p.id) && k++ < 30) { if (p.vertex && p.geo && !p.geo.rel) { x += p.geo.x; y += p.geo.y; } p = byId.get(p.parent); } return { x, y }; };
       const page = { id: idMap[d.id], name: d.name, nodes: [], links: [], view: (rc && rc.data.ht_view) || null };
+      if (rc && rc.data.ht_canvasBg) try { page.canvasBg = JSON.parse(rc.data.ht_canvasBg); } catch (_) { }
       if (rc && rc.data.ht_doc && !docSettings) try { docSettings = JSON.parse(rc.data.ht_doc); } catch (_) { }
       const nodeOf = new Map();
       const verts = cells.filter(c => c.vertex && c.geo && !c.geo.rel);
@@ -289,7 +291,7 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'canvasbg') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');
