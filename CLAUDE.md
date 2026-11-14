@@ -99,6 +99,7 @@ _work/  dist/        （gitignore）运行时、构建中间件、发布包 / �
 - 所有保存都走 IPC `jw:save`，并记住上次目录。批量转换先选一次文件夹，靠 MutationObserver 监听 `#cv-msg` 出现“已完成”来收尾。
 - 测试模式：设置环境变量 `JW_TEST_DIR` 后，保存／选文件夹／打开／关闭确认都不弹系统对话框。另有 `JW_TEST_OPEN`（打开哪个文件）、`JW_TEST_CLOSE`（关闭时选 save/discard/cancel）。
 - Windows exe 的图标和版本信息用 resedit（纯 JS）改，不需要 wine。NSIS 安装包用 `RequestExecutionLevel user`。
+- **免安装包的固定交付要求**：解压后的顶层严格只有两项——一个启动入口和一个程序文件夹，用户只需双击入口。Windows 顶层启动 EXE 与文件夹内程序 EXE 必须使用同一份 `desktop/icon.ico`，包括各尺寸图标，确保启动入口、程序和快捷方式图标一致；运行库、说明等全部放入程序文件夹。
 - 麒麟上设置和最近文件保存在 `~/.config/经纬织图`，Windows 上是 `%APPDATA%\经纬织图`。
 - arm64 二进制只要求 GLIBC 2.17。依赖的系统库（GTK3、NSS、CUPS、GBM 等）没法内置，因为沙箱访问不到 arm64 软件源。deb 里只写 Recommends，不写 Depends，保证离线 dpkg 能装上。
 
