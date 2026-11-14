@@ -51,7 +51,8 @@
     return n;
   }
   function dimArrow(N, x, y, w, text, stroke) {
-    return N({ type: 'dimArrow', x: x, y: y, w: w, h: 48, text: '', stroke: stroke || INK, sw: 2, distMode: 'fixed', distText: text });
+    const num = parseFloat(text), unit = String(text || '').replace(/[0-9.\s]/g, '') || 'km';
+    return N({ type: 'dimArrow', x: x, y: y, w: w, h: 48, text: '', stroke: stroke || INK, sw: 2, rulerStart: 0, rulerStep: isFinite(num) ? num : 0, rulerGap: Math.max(16, w), rulerMinor: 0, rulerUnit: unit });
   }
   function finish(N, page, title, sub, note, bottom) {
     N({ type: 'text', role: 'title', text: title, size: 22, bold: true, x: 24, y: 8, w: 860, h: 32 });
