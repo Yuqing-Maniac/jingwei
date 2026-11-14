@@ -236,6 +236,11 @@ class Run:
         self.stdout.close()
         self.stderr.close()
         save_json(self.dest / "process.json", self.record)
+        for name in ("stderr.log", "startup.log"):
+            log = self.dest / name
+            if log.exists():
+                print("DIAGNOSTIC " + self.dest.name + "/" + name + ":", flush=True)
+                print(log.read_text(encoding="utf-8", errors="replace")[-16000:], flush=True)
 
 
 class CDP:
@@ -443,6 +448,9 @@ def missing_asar_probe(native, dest, outer):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", required=True, type=Path, help="Final portable ZIP, or directory containing exactly one ZIP")
     parser.add_argument("--version", default=None, help="Expected application version; defaults to desktop/package.json")

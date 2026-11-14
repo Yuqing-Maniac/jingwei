@@ -55,5 +55,7 @@ jobs:
         if: always()
         with:
           name: windows-startup-evidence
-          path: _work/windows-startup-smoke
+          path: |
+            _work/windows-startup-smoke
+            !_work/windows-startup-smoke/中文 解压 path*/**
           retention-days: 7
