@@ -1,0 +1,65 @@
+{
+  "id": "platform-extra-airframes",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/jingwei/assets/country-variants/masters/platform-extra-airframes.webp",
+  "sourcePNG": "/workspace/generated_images/exec-93cec9c0-78b5-40d9-b99b-86fc930430b1.png",
+  "entries": [
+    {
+      "key": "wz8",
+      "country": "cn",
+      "model": "无侦-8",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.news.cn/photo/2021-09/29/c_1127918244_3.htm",
+          "title": "新华社：无人装备集中亮相中国航展（无侦-8实机照片，2021-09-28摄）"
+        },
+        {
+          "url": "https://www.mod.gov.cn/gfbw/qwfb/4895831.html",
+          "title": "国防部：军事专家详解第十三届中国航展空军参展装备特点"
+        }
+      ],
+      "notes": "依公开实机照片重绘外形，浅灰与钴蓝面板用于图标可重涂，不表示真实装备涂装。仅公开外形参考，不推断未公开侦察设备，不增加光电球、雷达吊舱或常规进气口。",
+      "geometryChecks": [
+        "尖长机鼻与连续边条融入大后掠三角翼",
+        "平滑低矮中部隆起，不画有人座舱",
+        "后部两侧小外倾垂直翼面，无独立水平尾翼",
+        "无螺旋桨、常规喷气进气道、光电球与外挂武器",
+        "机首朝左下的三分之四俯视，完整机体不触格边"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.2156,
+        "solidPixelsOnCellEdge": 0
+      }
+    },
+    {
+      "key": "gj2",
+      "country": "cn",
+      "model": "攻击-2",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/tp_214132/jskj/4829011.html",
+          "title": "国防部：“无人”争锋（攻击-2实机图及首展说明，2018-11-09）"
+        },
+        {
+          "url": "https://www.mod.gov.cn/gfbw/gfjy_index/zyhd/16351109.html",
+          "title": "国防部：军事专家详解第十五届中国航展空军参展装备亮点"
+        }
+      ],
+      "notes": "依国防部公开实机照片重绘，取消展场挂载武器，仅保留机首下光电球。浅灰与钴蓝面板用于图标可重涂，不表示真实装备涂装；不将翼龙-2军贸展示载荷自动套用于攻击-2。",
+      "geometryChecks": [
+        "机头上方明显平滑鼓包，细长常规机身",
+        "大展弦比长直渐缩翼，与无侦-8三角翼明确区分",
+        "机尾推式螺旋桨与向上V形尾翼",
+        "机首下小型光电球，三点式起落架",
+        "无导弹、炸弹或发射效果，机首朝左下的三分之四俯视，完整翼梢不触格边"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.217,
+        "solidPixelsOnCellEdge": 0
+      }
+    }
+  ]
+}

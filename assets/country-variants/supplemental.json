@@ -1,0 +1,192 @@
+[
+  {
+    "key": "uav_recon_eo",
+    "name": "光电侦察无人机",
+    "cat": "无人",
+    "keywords": [
+      "无人侦察机",
+      "光电",
+      "EO",
+      "EO/IR",
+      "摄像",
+      "光电球",
+      "无人机"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "uav_recon_radar",
+    "name": "雷达侦察无人机",
+    "cat": "无人",
+    "keywords": [
+      "无人侦察机",
+      "雷达",
+      "SAR",
+      "海面监视",
+      "合成孔径",
+      "无人机"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "uav_recon_sigint",
+    "name": "电子侦察无人机",
+    "cat": "无人",
+    "keywords": [
+      "无人侦察机",
+      "电侦",
+      "电子侦察",
+      "SIGINT",
+      "ELINT",
+      "被动侦察",
+      "无人机"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "usv_minesweeper",
+    "name": "扫雷型无人艇",
+    "cat": "无人",
+    "keywords": [
+      "扫雷无人艇",
+      "无人扫雷艇",
+      "扫雷艇",
+      "反水雷",
+      "猎雷",
+      "MCM",
+      "UISS"
+    ],
+    "countries": [
+      "cn",
+      "us"
+    ]
+  },
+  {
+    "key": "wz7",
+    "name": "无侦-7",
+    "cat": "无人",
+    "keywords": [
+      "无侦7",
+      "无侦-7",
+      "WZ7",
+      "WZ-7",
+      "翔龙",
+      "无人侦察机",
+      "联翼",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "aliasOf": "hale_uav"
+  },
+  {
+    "key": "wz8",
+    "name": "无侦-8",
+    "cat": "无人",
+    "keywords": [
+      "无侦8",
+      "无侦-8",
+      "WZ8",
+      "WZ-8",
+      "高空高速",
+      "无人侦察机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "wz10",
+    "name": "无侦-10",
+    "cat": "无人",
+    "keywords": [
+      "无侦10",
+      "无侦-10",
+      "WZ10",
+      "WZ-10",
+      "电侦",
+      "电子侦察",
+      "无人侦察机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "gj2",
+    "name": "攻击-2",
+    "cat": "无人",
+    "keywords": [
+      "攻击2",
+      "攻击-2",
+      "GJ2",
+      "GJ-2",
+      "察打一体",
+      "光电",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  },
+  {
+    "key": "gj11",
+    "name": "攻击-11",
+    "cat": "无人",
+    "keywords": [
+      "攻击11",
+      "攻击-11",
+      "GJ11",
+      "GJ-11",
+      "飞翼",
+      "隐身无人机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red",
+    "aliasOf": "uav_ucav"
+  },
+  {
+    "key": "gj21",
+    "name": "攻击-21",
+    "cat": "无人",
+    "keywords": [
+      "攻击21",
+      "攻击-21",
+      "GJ21",
+      "GJ-21",
+      "舰载",
+      "飞翼",
+      "隐身无人机",
+      "无人机"
+    ],
+    "countries": [
+      "cn"
+    ],
+    "originCountry": "cn",
+    "defaultAffiliation": "red"
+  }
+]

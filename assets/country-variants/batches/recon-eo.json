@@ -1,0 +1,61 @@
+{
+  "id": "recon-eo",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/jingwei/assets/country-variants/masters/recon-eo.webp",
+  "sourcePath": "/workspace/generated_images/exec-5b027f2f-07b2-4160-8df7-bcf4f1ce6a6c.png",
+  "entries": [
+    {
+      "key": "uav_recon_eo",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "翼龙Ⅱ平台光电侦察示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/Videos/4895836.html",
+          "title": "中国国防部：翼龙-2亮相2021中国航展（公开飞行外观）"
+        },
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/Wing_Loong_II_Chinese_Medium-Altitude_Long_Endurance_%28MALE%29_Unmanned_Aerial_Vehicle_%28UAV%29",
+          "title": "US Army ODIN: Wing Loong II public exterior reference"
+        }
+      ],
+      "geometryChecks": [
+        "完整长翼/细长机身/后推螺旋桨轮廓，左下朝向三分之四俯视",
+        "机鼻下可辨识适中光电球与青色镜片",
+        "无武器、无挂弹、无文字国旗或角标",
+        "浅灰主色+钴蓝机背/内翼可重涂面板",
+        "左机普通翼尖、较宽前体与V形上尾；右机高展弦比翼和上翘翼尖、不同前体及Y形尾组件"
+      ],
+      "notes": "依据公开平台外形与可见光电载荷绘制的无武器任务示意，非任何现役单位或精确批次配置；未填写真实探测能力或作战参数。钴蓝面板为软件阵营可变色涂装，原图保留。",
+      "bluePixelRatio": 0.2103
+    },
+    {
+      "key": "uav_recon_eo",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "MQ-9B平台光电侦察示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ga-asi.com/remotely-piloted-aircraft/mq-9b",
+          "title": "GA-ASI MQ-9B SkyGuardian manufacturer exterior and EO/IR reference"
+        },
+        {
+          "url": "https://www.ga-asi.com/mq-9b-skyguardian-vs-seaguardian",
+          "title": "GA-ASI SkyGuardian vs SeaGuardian — clean ISR EO/IR sensor ball configuration"
+        }
+      ],
+      "geometryChecks": [
+        "完整长翼/细长机身/后推螺旋桨轮廓，左下朝向三分之四俯视",
+        "机鼻下可辨识适中光电球与青色镜片",
+        "无武器、无挂弹、无文字国旗或角标",
+        "浅灰主色+钴蓝机背/内翼可重涂面板",
+        "左机普通翼尖、较宽前体与V形上尾；右机高展弦比翼和上翘翼尖、不同前体及Y形尾组件"
+      ],
+      "notes": "依据公开平台外形与可见光电载荷绘制的无武器任务示意，非任何现役单位或精确批次配置；未填写真实探测能力或作战参数。钴蓝面板为软件阵营可变色涂装，原图保留。",
+      "bluePixelRatio": 0.2153
+    }
+  ]
+}

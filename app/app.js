@@ -2306,13 +2306,26 @@ function iconSections() {
 }
 const openSecs = new Set(['基础形状', '无人']);
 let paletteAppearance = 'generic';
+// Model codes are commonly typed with or without spaces/hyphens (WZ-7 / WZ7).
+function iconSearchMatch(i, query) {
+  const norm = s => String(s || '').toLocaleLowerCase().replace(/[\s_\-－—]/g, '');
+  const q = norm(query);
+  return !q || [i.key, i.name].concat(iconCats(i), i.keywords || [], Object.values(i.countries || {}).map(v => v.name)).some(s => norm(s).includes(q));
+}
+function iconOriginDefaults(lib, target) {
+  if (lib && lib.originCountry && lib.countries && lib.countries[lib.originCountry]) {
+    target.appearance = lib.originCountry;
+    target.affiliation = iconSide(lib.defaultAffiliation, lib.originCountry);
+  }
+  return target;
+}
 function iconPlaceSpec(icon, name, w, h) {
   const spec = { type: 'equip', w: w, h: h, text: name, icon: icon };
   const lib = icon.startsWith('lib:') && ICON_MAP[icon.slice(4)];
   if (lib && lib.countries && lib.countries[paletteAppearance]) {
     spec.appearance = paletteAppearance; spec.affiliation = iconSide(undefined, paletteAppearance);
   }
-  return spec;
+  return iconOriginDefaults(lib, spec);
 }
 function renderPalette() {
   const host = $('#palette');
@@ -2332,7 +2345,10 @@ function renderPalette() {
   const m = s => !q || String(s).toLocaleLowerCase().includes(q.toLocaleLowerCase());
   for (const g of ['基础形状', '流程与标注', '箭头']) h += sec(g, SHAPES.filter(s => s.grp === g && (m(s.name) || m(g))).map(s => pitem(s.name, s.spec, s.svg)));
   h += sec('容器与层级', CONTS.filter(s => m(s.name)).map(s => pitem(s.name, s.spec, s.svg)));
-  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => m(i.name) || m(c) || (i.keywords || []).some(m) || Object.values(i.countries || {}).some(v => m(v.name))).map(i => pitem(i.name, iconPlaceSpec('lib:' + i.key, i.name, 96, 96), iconURI('lib:' + i.key, undefined, i.countries && i.countries[paletteAppearance] ? paletteAppearance : 'generic'), true)));
+  for (const [c, list] of iconSections()) h += sec(c, list.filter(i => !(paletteAppearance === 'us' && i.originCountry === 'cn') && iconSearchMatch(i, q)).map(i => {
+    const spec = iconPlaceSpec('lib:' + i.key, i.name, 96, 96);
+    return pitem(i.name, spec, iconURI(spec.icon, spec.affiliation, spec.appearance), true);
+  }));
   if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
   h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
@@ -3850,7 +3866,7 @@ function renderPicker() {
   setMarkup($('#ic-tabs'), tabs.map(t => `<button data-tab="${t}" class="${!q && t === icTab ? 'on' : ''}">${t}</button>`).join(''));
   let items = [];
   const m = s => !q || String(s).toLocaleLowerCase().includes(q.toLocaleLowerCase());
-  if (q) { for (const i of ICONS) if (m(i.name) || iconCats(i).some(m) || (i.keywords || []).some(m)) items.push(['lib:' + i.key, i.name]); }
+  if (q) { for (const i of ICONS) if (iconSearchMatch(i, q)) items.push(['lib:' + i.key, i.name]); }
   else for (const i of (secs.find(x => x[0] === icTab) || [, []])[1]) items.push(['lib:' + i.key, i.name]);
   if (window.ms && (q || icTab === '军标')) for (const x of MS_LIST) if (!q || m(x[1]) || m('军标') || m(x[2])) items.push(['ms:' + x[0], x[1]]);
   if (q || icTab === '自定义') for (const [id, v] of Object.entries(doc.custom)) if (m(v.name)) items.push(['cu:' + id, v.name]);
@@ -3866,6 +3882,7 @@ $('#modal').addEventListener('click', e => {
   if (e.target.closest('#ic-up')) { $('#f-icon').click(); return; }
   const b = e.target.closest('[data-ic]'); if (!b || !iconTarget) return;
   checkpoint(); iconTarget.icon = b.dataset.ic;
+  iconOriginDefaults(b.dataset.ic.startsWith('lib:') && ICON_MAP[b.dataset.ic.slice(4)], iconTarget);
   if (!['equip'].includes(iconTarget.type) && iconTarget.h >= 72) iconTarget.type = 'equip';
   $('#modal').style.display = 'none'; render();
 });

@@ -1,0 +1,60 @@
+{
+  "id": "recon-minesweeper-usv",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/jingwei/assets/country-variants/masters/recon-minesweeper-usv.webp",
+  "sourcePath": "/workspace/generated_images/exec-073ba109-771b-4e6b-8a11-e3d27737b646.png",
+  "entries": [
+    {
+      "key": "usv_minesweeper",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "中国公开无人扫雷艇外形参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/wzll/yw_214068/16407652.html",
+          "title": "国防部／解放军报2025阅兵专号：海上无人作战方队（公开无人艇轮廓、反水雷职能描述）"
+        }
+      ],
+      "geometryChecks": [
+        "完整独立无人艇，首朝左下三分之四俯视",
+        "低矮封闭无人电子设备区，无驾驶席、无人像、无大型有人舰桥",
+        "尾部绞车/卷缆、短收放框架、扫雷拖具与短拖缆清晰",
+        "无艏炮/攻击武器/布雷架、无文字国旗角标",
+        "浅灰艇身与钴蓝可重涂舷侧面板",
+        "中方折线艇体/一体小传感器桅杆；美方CUSV长艇体/折叠剪叉传感器桅杆、橙色扫雷拖具"
+      ],
+      "notes": "公开外形艺术参考与扫雷任务示意；不表示真实单位、装备性能或精确工程配置。两艇均无人、无舰炮和攻击载荷，短拖缆与扫雷具强调扫雷任务。钴蓝面板为软件阵营可变色涂装。中方公开文章展示的阅兵无人艇原有艏炮，并未公开证明本图绞车与扫雷载荷配置；本图按用户要求移除武器、压低无人设备舱，加入概括的扫雷任务模块，因此仅标注公开外形参考，非阅兵实艇复原，型号未可靠核实。",
+      "bluePixelRatio": 0.3418
+    },
+    {
+      "key": "usv_minesweeper",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "Textron CUSV／UISS无人扫雷型参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron Systems CUSV manufacturer exterior and mine countermeasures configuration"
+        },
+        {
+          "url": "https://www.navsea.navy.mil/Media/News/Article-View/Article/3109399/initial-operating-capability-declared-for-unmanned-influence-sweep-system-uiss/",
+          "title": "NAVSEA (2022): Initial Operating Capability Declared for UISS"
+        }
+      ],
+      "geometryChecks": [
+        "完整独立无人艇，首朝左下三分之四俯视",
+        "低矮封闭无人电子设备区，无驾驶席、无人像、无大型有人舰桥",
+        "尾部绞车/卷缆、短收放框架、扫雷拖具与短拖缆清晰",
+        "无艏炮/攻击武器/布雷架、无文字国旗角标",
+        "浅灰艇身与钴蓝可重涂舷侧面板",
+        "中方折线艇体/一体小传感器桅杆；美方CUSV长艇体/折叠剪叉传感器桅杆、橙色扫雷拖具"
+      ],
+      "notes": "公开外形艺术参考与扫雷任务示意；不表示真实单位、装备性能或精确工程配置。两艇均无人、无舰炮和攻击载荷，短拖缆与扫雷具强调扫雷任务。钴蓝面板为软件阵营可变色涂装。",
+      "bluePixelRatio": 0.3179
+    }
+  ],
+  "previousSourcePath": "/workspace/generated_images/exec-a63d1387-d73d-4f0c-b4be-4a4fe2d1659c.png"
+}

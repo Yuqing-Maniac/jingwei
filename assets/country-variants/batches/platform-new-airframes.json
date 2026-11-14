@@ -1,0 +1,87 @@
+{
+  "id": "platform-new-airframes",
+  "columns": 2,
+  "rows": 1,
+  "path": "/workspace/generated_images/exec-ebc95c95-e9e8-471c-969a-8f079811bf83.png",
+  "qualityStatus": "reviewed-artistic-reference",
+  "qualityNotes": [
+    "Generated miniature exterior references, not measured replicas or verified internal sensor configurations.",
+    "Both objects visually inspected: complete aircraft, no cropped tips, no national markings or text.",
+    "Gray metal with cobalt-blue body panels is an artistic repainting aid, not an authentic paint scheme.",
+    "GJ-21 detailed dorsal/ventral features remain limited by publicly available photos; no claim of official 2026 carrier takeoff closeup.",
+    "PNG contains extremely faint alpha<8 speckles outside visible objects; visible alpha>=24 bounds are WZ10 [50,117,849,719], GJ21 local [43,156,840,705]. Existing alpha cleanup should remove the speckles before tight bounds."
+  ],
+  "entries": [
+    {
+      "key": "wz10",
+      "country": "cn",
+      "model": "无侦-10",
+      "modelStatus": "reference-reviewed",
+      "cellIndex": 0,
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 887,
+        "height": 887
+      },
+      "sources": [
+        {
+          "url": "https://www.xinhuanet.com/photo/20241113/1f6da297fd314c0fb775ebfdd3ce834e/c.html?page=8",
+          "title": "新华社：第十五届中国航展，无侦-10无人机（2024-11-13）",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened and publicly available photo downloaded and visually inspected; not a measured reproduction.",
+          "imageUrl": "https://www.xinhuanet.com/photo/20241113/1f6da297fd314c0fb775ebfdd3ce834e/202411131f6da297fd314c0fb775ebfdd3ce834e_20241113052bb757b9b448b8a6eaa2b91178eeae.jpg"
+        }
+      ],
+      "notes": "依据新华社航展实机侧照制作的艺术微缩外形；reference-reviewed仅表示查阅了公开外形来源。生成视角为俯视，照片未清楚显示的翼根/整流罩/背部细节为近似，非精确测绘；不把外部天线外形当作特定光电、雷达或电侦设备配置的验证。无侦-10常规单组翼，不沿用无侦-7联翼。",
+      "geometryChecks": [
+        "细长常规喷气机身，前段隆起整流罩及尖机鼻",
+        "单组长后掠主翼，无联翼/闭合菱形翼",
+        "机尾两片高耸外倾V尾",
+        "背部进气口和少量腹部天线整流罩的艺术近似",
+        "完整机鼻、左右翼尖及尾尖均位于本格透明边界内"
+      ]
+    },
+    {
+      "key": "gj21",
+      "country": "cn",
+      "model": "攻击-21",
+      "modelStatus": "reference-reviewed",
+      "cellIndex": 1,
+      "rect": {
+        "left": 887,
+        "top": 0,
+        "width": 887,
+        "height": 887
+      },
+      "sources": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:GJ-21_UCAV.jpg",
+          "title": "中国新闻社2025-09-03阅兵视频截图（Wikimedia Commons归档）",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened and publicly available photo downloaded and visually inspected; not a measured reproduction.",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a4/GJ-21_UCAV.jpg",
+          "originalSource": "https://www.youtube.com/watch?v=kwL8YkYxKrA",
+          "sourceAttribution": "中国新闻社；Commons页面标记CC BY 4.0；本图标为新生成艺术模型而非照片裁剪。"
+        },
+        {
+          "url": "https://theaviationist.com/2025/11/01/china-gj-21-naval-ucav/",
+          "title": "The Aviationist: China’s GJ-21 Naval UCAV Captured in Clearest Image Yet",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened and publicly available photo downloaded and visually inspected; not a measured reproduction.",
+          "imageUrl": "https://theaviationist.com/wp-content/uploads/2025/11/China-GJ21-UCAV-1.jpg",
+          "sourceAttribution": "非官方飞行照片，页面注明 Chinese internet via Andreas Rupprecht；仅辅助核对公开轮廓。"
+        }
+      ],
+      "notes": "依据中新社阅兵截图的上表面及非官方公开飞行照的下表面轮廓制作；reference-reviewed仅表示这些照片已查阅，不表示官方验证全部生成细节。两张照片视角、清晰度有限，机背进气/排气、折叠缝、控制面和舰载局部结构为艺术近似；不声称精确复刻或真实任务载荷。2026四川舰起降通报不作为实拍近照来源。未套用X-47B，不凭尾钩单一特征区分；本图收起起落架且不刻意展示尾钩。",
+      "geometryChecks": [
+        "无垂尾、无座舱盖的宽大融合飞翼",
+        "连续强后掠前缘与截短翼尖，避免X-47B式明显折线风筝前缘",
+        "后缘外段较直，中部后缘有阶梯/缺口轮廓",
+        "上表面隆起中央机体及深色进气开口的艺术近似",
+        "外翼折叠接缝仅示意，不声称机械结构精确",
+        "整机完整、无裁断、与无侦-10轮廓明显不同"
+      ]
+    }
+  ]
+}

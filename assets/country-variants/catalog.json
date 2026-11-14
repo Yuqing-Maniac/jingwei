@@ -25,9 +25,10 @@
       ]
     }
   ],
-  "targetRoles": 306,
-  "readyModels": 607,
-  "readyPairs": 303,
+  "targetRoles": 316,
+  "targetAppearances": 626,
+  "readyModels": 621,
+  "readyPairs": 307,
   "pending": [
     {
       "key": "cuas_raptor",
@@ -111,1532 +112,2840 @@
     {
       "key": "bomber",
       "name": "轰炸机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_fixed",
       "name": "固定翼无人机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_male",
       "name": "察打一体无人机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_quad",
       "name": "四旋翼无人机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_vtol",
       "name": "垂起固定翼无人机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "loitering",
       "name": "巡飞弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cruise_missile",
       "name": "巡航导弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ballistic_missile",
       "name": "弹道导弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "tanker",
       "name": "空中加油机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ew_aircraft",
       "name": "电子战飞机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "recon_aircraft",
       "name": "侦察机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "transport_heli",
       "name": "运输直升机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_heli",
       "name": "无人直升机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "hale_uav",
       "name": "高空长航时无人机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "swarm",
       "name": "无人机蜂群",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "target_drone",
       "name": "靶机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "airship",
       "name": "浮空器",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "hypersonic",
       "name": "高超声速飞行器",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "interceptor",
       "name": "拦截弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "asw_patrol",
       "name": "反潜巡逻机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "carrier_fighter",
       "name": "舰载战斗机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "attack_aircraft",
       "name": "强击机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "asw_heli",
       "name": "反潜直升机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "aew_heli",
       "name": "预警直升机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "elint_aircraft",
       "name": "电子侦察机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ashm",
       "name": "反舰导弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "aam",
       "name": "空空导弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "arm",
       "name": "反辐射导弹",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_jammer_gun",
       "name": "手持干扰枪",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_jammer_backpack",
       "name": "背负式干扰器",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_jammer_omni",
       "name": "全向干扰站",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_jammer_directional",
       "name": "定向干扰器",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_spoofer",
       "name": "导航诱骗设备",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_takeover",
       "name": "协议破解接管设备",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_laser_vehicle",
       "name": "激光拦截车",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_hpm_vehicle",
       "name": "高功率微波车",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_net_gun",
       "name": "捕网发射器",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_net_drone",
       "name": "网捕无人机",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_interceptor_drone",
       "name": "拦截无人机",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_gun",
       "name": "小口径近防炮",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_programmable_ammo",
       "name": "可编程空爆弹",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_manpads",
       "name": "便携式防空导弹",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_missile_launcher",
       "name": "小型拦截弹发射架",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_rws",
       "name": "遥控武器站",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_shield_net",
       "name": "防护网",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_raptor",
       "name": "猛禽驯化拦截",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_decoy",
       "name": "诱饵假目标",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sar_radar",
       "name": "合成孔径雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "carrier",
       "name": "航空母舰",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "destroyer",
       "name": "驱逐舰",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "frigate",
       "name": "护卫舰",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "patrol_boat",
       "name": "巡逻作战艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "missile_boat",
       "name": "导弹快艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv",
       "name": "无人艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "submarine",
       "name": "潜艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv",
       "name": "无人潜航器",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sonar_buoy",
       "name": "声呐浮标",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "tank",
       "name": "主战坦克",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ifv",
       "name": "步兵战车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sp_howitzer",
       "name": "自行火炮",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "towed_gun",
       "name": "牵引火炮",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "mlrs",
       "name": "远程火箭炮",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "tel",
       "name": "导弹发射车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sam",
       "name": "防空导弹车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "truck",
       "name": "运输保障车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv",
       "name": "无人车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "robodog",
       "name": "无人狗（四足）",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "soldier",
       "name": "单兵",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "amphibious",
       "name": "两栖攻击舰",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "supply_ship",
       "name": "综合补给舰",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "landing_craft",
       "name": "气垫登陆艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "minesweeper",
       "name": "扫雷舰艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "glider",
       "name": "水下滑翔机",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "torpedo",
       "name": "鱼雷",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "mine",
       "name": "水雷",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "research_vessel",
       "name": "科考船",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "recon_vehicle",
       "name": "装甲侦察车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "command_vehicle",
       "name": "指挥车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "comm_vehicle",
       "name": "通信车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "engineering",
       "name": "工程车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "fuel_truck",
       "name": "油料保障车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ambulance",
       "name": "救护车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas",
       "name": "反无人机系统",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "laser_weapon",
       "name": "激光武器",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "hpm",
       "name": "高能微波武器",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "mortar",
       "name": "迫击炮",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "spaa",
       "name": "弹炮结合防空车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "eod_robot",
       "name": "排爆机器人",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ssbn",
       "name": "战略导弹潜艇",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "elint_ship",
       "name": "电子侦察船",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "lsd",
       "name": "船坞登陆舰",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "depth_charge_rl",
       "name": "火箭深弹",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "vls",
       "name": "垂发装置",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "aaa_gun",
       "name": "高射炮",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "atgm_vehicle",
       "name": "反坦克导弹车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "coastal_battery",
       "name": "岸舰导弹",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "commander",
       "name": "指挥员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_officer",
       "name": "参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "pilot",
       "name": "飞行员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "drone_pilot",
       "name": "无人机飞手",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "squad",
       "name": "作战小组",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sailor",
       "name": "水兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "medic",
       "name": "卫生员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "inf_rifleman",
       "name": "步兵（步枪手）",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "inf_mg",
       "name": "机枪手",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "tank_crew",
       "name": "装甲兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "artillery_crew",
       "name": "炮兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ad_soldier",
       "name": "防空兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "recon_soldier",
       "name": "侦察兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sof_operator",
       "name": "特战队员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sniper",
       "name": "狙击手",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "engineer_soldier",
       "name": "工兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "signal_soldier",
       "name": "通信兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ew_soldier",
       "name": "电子对抗兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cbrn_soldier",
       "name": "防化兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "drone_operator_army",
       "name": "陆军无人机操作手",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "marine",
       "name": "海军陆战队员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "paratrooper",
       "name": "空降兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "af_ground_crew",
       "name": "空军地勤",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "rocket_force",
       "name": "火箭军操作号手",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "logistics_soldier",
       "name": "后勤保障兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "mp_soldier",
       "name": "警卫兵",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cyber_operator",
       "name": "网络空间作战员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cmd_army",
       "name": "陆军指挥员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cmd_navy",
       "name": "海军指挥员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cmd_air",
       "name": "空军指挥员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cmd_rocket",
       "name": "火箭军指挥员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cmd_joint",
       "name": "联合作战指挥员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_army",
       "name": "陆军参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_navy",
       "name": "海军参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_air",
       "name": "空军参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_rocket",
       "name": "火箭军参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_info",
       "name": "信息支援参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_logistics",
       "name": "联勤保障参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_intel",
       "name": "情报参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "staff_plan",
       "name": "作战计划参谋",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "op_navy_cic",
       "name": "舰艇作战情报中心操作员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "op_air_controller",
       "name": "空中引导员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "op_space",
       "name": "航天测控员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "op_satcom",
       "name": "卫通值守员",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "officer_female",
       "name": "女军官",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "liaison",
       "name": "联络官",
-      "category": "人员"
+      "category": "人员",
+      "countries": [
+        "cn",
+        "us"
+      ]
+    },
+    {
+      "key": "uav_recon_eo",
+      "name": "光电侦察无人机",
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
+    },
+    {
+      "key": "uav_recon_radar",
+      "name": "雷达侦察无人机",
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
+    },
+    {
+      "key": "uav_recon_sigint",
+      "name": "电子侦察无人机",
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
+    },
+    {
+      "key": "usv_minesweeper",
+      "name": "扫雷型无人艇",
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
+    },
+    {
+      "key": "wz7",
+      "name": "无侦-7",
+      "category": "无人",
+      "countries": [
+        "cn"
+      ]
+    },
+    {
+      "key": "wz8",
+      "name": "无侦-8",
+      "category": "无人",
+      "countries": [
+        "cn"
+      ]
+    },
+    {
+      "key": "wz10",
+      "name": "无侦-10",
+      "category": "无人",
+      "countries": [
+        "cn"
+      ]
+    },
+    {
+      "key": "gj2",
+      "name": "攻击-2",
+      "category": "无人",
+      "countries": [
+        "cn"
+      ]
+    },
+    {
+      "key": "gj11",
+      "name": "攻击-11",
+      "category": "无人",
+      "countries": [
+        "cn"
+      ]
+    },
+    {
+      "key": "gj21",
+      "name": "攻击-21",
+      "category": "无人",
+      "countries": [
+        "cn"
+      ]
     },
     {
       "key": "fighter",
       "name": "战斗机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "transport",
       "name": "运输机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "awacs",
       "name": "预警机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "helicopter",
       "name": "武装直升机",
-      "category": "空中"
+      "category": "空中",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "radar",
       "name": "雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "phased_radar",
       "name": "相控阵雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "eo_turret",
       "name": "光电转塔",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "satellite",
       "name": "卫星",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "comm_tower",
       "name": "通信基站",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "datalink",
       "name": "数据链电台",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sat_station",
       "name": "卫通站",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "mesh",
       "name": "自组网",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "jammer",
       "name": "干扰设备",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ir_sensor",
       "name": "红外探测器",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "acoustic",
       "name": "声学探测阵列",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "rf_detector",
       "name": "无线电侦测设备",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "laser_rangefinder",
       "name": "激光测距仪",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "antenna_array",
       "name": "天线阵",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "relay",
       "name": "中继站",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "router",
       "name": "路由器",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "firewall",
       "name": "防火墙",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "fiber",
       "name": "光纤／光端机",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "beidou",
       "name": "北斗终端",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "weather",
       "name": "气象站",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "camera",
       "name": "监控摄像机",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_radar_lowalt",
       "name": "低空监视雷达",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_radar_4face",
       "name": "四面阵相控阵雷达",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_radar_vehicle",
       "name": "车载探测雷达",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_passive",
       "name": "无源频谱侦测站",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_df",
       "name": "无线电测向站",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_eo",
       "name": "光电搜索跟踪转塔",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_irst",
       "name": "红外全景搜索系统",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_acoustic_array",
       "name": "声学阵列",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_remote_id",
       "name": "远程识别接收器",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_mast",
       "name": "一体化探测塔",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_detector_handheld",
       "name": "手持式无人机侦测仪",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_detector_portable",
       "name": "便携箱式侦测设备",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_shelter",
       "name": "方舱式反无人系统",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_c2",
       "name": "反无人指控终端",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_fence",
       "name": "电子围栏",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_lidar",
       "name": "激光雷达探测器",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_ads_b",
       "name": "ADS-B／航迹接收站",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_target",
       "name": "靶标无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_minelayer",
       "name": "布雷无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_strike",
       "name": "打击无人潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_ew",
       "name": "水声干扰潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_relay",
       "name": "水下中继潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_cargo",
       "name": "运输无人潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_decoy",
       "name": "声学诱饵潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_target",
       "name": "靶标潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_ew",
       "name": "干扰无人车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_relay",
       "name": "中继无人车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_decoy",
       "name": "诱饵无人车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_target",
       "name": "靶标无人车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_magnetic",
       "name": "磁探无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_ew_vtol",
       "name": "电子对抗无人机（复合翼）",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_01",
       "name": "运载火箭",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_02",
       "name": "可回收火箭助推器",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_03",
       "name": "航天发射塔架",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_04",
       "name": "空间站",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_05",
       "name": "载人飞船",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_06",
       "name": "货运飞船",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_07",
       "name": "轨道服务机器人",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_08",
       "name": "地球观测微卫星",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_09",
       "name": "立方星",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_10",
       "name": "卫星地面测控天线",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_11",
       "name": "光学测轨望远镜",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_12",
       "name": "空间目标监视雷达",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_13",
       "name": "卫星激光测距站",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_14",
       "name": "卫星数据接收机",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_15",
       "name": "星载计算载荷",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_05_16",
       "name": "深空测控站",
-      "category": "航天测控"
+      "category": "航天测控",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_16_01",
       "name": "高速列车",
-      "category": "民用交通"
+      "category": "民用交通",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_16_13",
       "name": "滚装运输船",
-      "category": "民用交通"
+      "category": "民用交通",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_16_15",
       "name": "救援运输飞机",
-      "category": "民用交通"
+      "category": "民用交通",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ext_16_16",
       "name": "通用航空小飞机",
-      "category": "民用交通"
+      "category": "民用交通",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "otH_radar",
       "name": "超视距雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ship_radar",
       "name": "舰载雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "aew_pod",
       "name": "机载预警雷达吊舱",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "weather_radar",
       "name": "气象雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "fire_control_radar",
       "name": "火控雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "hull_sonar",
       "name": "舰壳声呐",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "towed_array",
       "name": "拖曳阵声呐",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sonar_station",
       "name": "岸基声呐站",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugs",
       "name": "无人值守地面传感器",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "seismic_sensor",
       "name": "振动地磁传感器",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "satcom_otm",
       "name": "动中通卫星终端",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "troposcatter",
       "name": "散射通信设备",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "hf_radio",
       "name": "短波电台",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "vhf_radio",
       "name": "超短波电台",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "laser_comm",
       "name": "激光通信终端",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "microwave_relay",
       "name": "微波接力站",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "leo_constellation",
       "name": "低轨卫星星座",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "air_phased_radar",
       "name": "机载相控阵雷达",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ship_mesh_datalink",
       "name": "舰载自组网数据链",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "air_mesh_datalink",
       "name": "机载自组网数据链",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "cuas_detect_jam",
       "name": "侦测干扰一体反无人设备",
-      "category": "反无人"
+      "category": "反无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "eo_composite",
       "name": "复合光电系统",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "mad_sensor",
       "name": "磁探仪",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "dipping_sonar",
       "name": "吊放声呐",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "iff_transponder",
       "name": "敌我识别",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "rwr",
       "name": "雷达告警",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sat_recon",
       "name": "侦察卫星",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sat_relay",
       "name": "通信中继卫星",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sat_nav",
       "name": "导航卫星",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "sat_ewarn",
       "name": "导弹预警卫星",
-      "category": "感知通信"
+      "category": "感知通信",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_mother",
       "name": "无人艇母船",
-      "category": "海上"
+      "category": "海上",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_tracked",
       "name": "履带无人车",
-      "category": "陆地"
+      "category": "陆地",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_flying_wing",
       "name": "飞翼无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_ucav",
       "name": "无人作战飞机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_tiltrotor",
       "name": "倾转旋翼无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_hexa",
       "name": "六旋翼无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_fpv",
       "name": "FPV穿越机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_cargo",
       "name": "物流运输无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_tethered",
       "name": "系留无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_micro",
       "name": "微型扑翼无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_solar",
       "name": "太阳能长航时无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_catapult",
       "name": "弹射起飞无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_coaxial",
       "name": "共轴双旋翼无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_ducted",
       "name": "涵道风扇无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_seaplane",
       "name": "水上起降无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_ew",
       "name": "电子战无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_relay",
       "name": "通信中继无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_recon_small",
       "name": "手抛式侦察无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "drone_nest",
       "name": "无人机机巢",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "drone_launcher",
       "name": "无人机集群发射车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_armed",
       "name": "武装无人艇（遥控武器站）",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_interceptor",
       "name": "高速无人拦截艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_kamikaze",
       "name": "自杀式无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_large",
       "name": "大型无人水面舰（三体船）",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_survey",
       "name": "测量无人船（双体）",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_jetski",
       "name": "摩托艇式无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_xl",
       "name": "超大型无人潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "auv_portable",
       "name": "便携式自主潜航器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "rov",
       "name": "遥控潜水器ROV",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "wave_glider",
       "name": "波浪滑翔器",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uuv_seabed",
       "name": "海底驻留无人平台",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_armed",
       "name": "武装轮式无人车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_logistics",
       "name": "无人运输车（物资）",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_mineclear",
       "name": "无人扫雷车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_recon_small",
       "name": "小型侦察机器人（可抛投）",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "robodog_armed",
       "name": "武装四足机器人",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "humanoid",
       "name": "人形机器人",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "unmanned_tank",
       "name": "无人坦克",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ugv_firefight",
       "name": "消防救援无人车",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "loiter_ttc",
       "name": "巡飞弹测控站",
-      "category": "指控信息"
+      "category": "指控信息",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_decoy",
       "name": "诱饵无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "uav_asw",
       "name": "反潜无人机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_recon",
       "name": "侦察无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_strike",
       "name": "打击无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_ew",
       "name": "电子战无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_relay",
       "name": "中继无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_cargo",
       "name": "运输无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_decoy",
       "name": "诱饵无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "ruav_target",
       "name": "靶标无人直升机",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "loiter_recon",
       "name": "侦察巡飞弹",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "loiter_ew",
       "name": "干扰巡飞弹",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "loiter_relay",
       "name": "中继巡飞弹",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "loiter_decoy",
       "name": "诱饵巡飞弹",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_recon",
       "name": "侦察无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_ew",
       "name": "干扰无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_relay",
       "name": "中继无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_cargo",
       "name": "运输无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     },
     {
       "key": "usv_decoy",
       "name": "诱饵无人艇",
-      "category": "无人"
+      "category": "无人",
+      "countries": [
+        "cn",
+        "us"
+      ]
     }
   ],
   "issues": [],
@@ -10926,6 +12235,539 @@
       },
       "teamPaintRatio": 0.2637830752846727,
       "sourceMaster": "masters/personnel-repair-02.webp"
+    },
+    {
+      "key": "wz8",
+      "country": "cn",
+      "model": "无侦-8",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.news.cn/photo/2021-09/29/c_1127918244_3.htm",
+          "title": "新华社：无人装备集中亮相中国航展（无侦-8实机照片，2021-09-28摄）"
+        },
+        {
+          "url": "https://www.mod.gov.cn/gfbw/qwfb/4895831.html",
+          "title": "国防部：军事专家详解第十三届中国航展空军参展装备特点"
+        }
+      ],
+      "notes": "依公开实机照片重绘外形，浅灰与钴蓝面板用于图标可重涂，不表示真实装备涂装。仅公开外形参考，不推断未公开侦察设备，不增加光电球、雷达吊舱或常规进气口。",
+      "geometryChecks": [
+        "尖长机鼻与连续边条融入大后掠三角翼",
+        "平滑低矮中部隆起，不画有人座舱",
+        "后部两侧小外倾垂直翼面，无独立水平尾翼",
+        "无螺旋桨、常规喷气进气道、光电球与外挂武器",
+        "机首朝左下的三分之四俯视，完整机体不触格边"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.2156,
+        "solidPixelsOnCellEdge": 0
+      },
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "无侦-8",
+      "roleName": "无侦-8",
+      "category": "无人",
+      "files": {
+        "blue": "icons/wz8-cn-blue.webp",
+        "red": "icons/wz8-cn-red.webp",
+        "neutral": "icons/wz8-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.24659903158865576,
+      "sourceMaster": "masters/platform-extra-airframes.webp"
+    },
+    {
+      "key": "gj2",
+      "country": "cn",
+      "model": "攻击-2",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/tp_214132/jskj/4829011.html",
+          "title": "国防部：“无人”争锋（攻击-2实机图及首展说明，2018-11-09）"
+        },
+        {
+          "url": "https://www.mod.gov.cn/gfbw/gfjy_index/zyhd/16351109.html",
+          "title": "国防部：军事专家详解第十五届中国航展空军参展装备亮点"
+        }
+      ],
+      "notes": "依国防部公开实机照片重绘，取消展场挂载武器，仅保留机首下光电球。浅灰与钴蓝面板用于图标可重涂，不表示真实装备涂装；不将翼龙-2军贸展示载荷自动套用于攻击-2。",
+      "geometryChecks": [
+        "机头上方明显平滑鼓包，细长常规机身",
+        "大展弦比长直渐缩翼，与无侦-8三角翼明确区分",
+        "机尾推式螺旋桨与向上V形尾翼",
+        "机首下小型光电球，三点式起落架",
+        "无导弹、炸弹或发射效果，机首朝左下的三分之四俯视，完整翼梢不触格边"
+      ],
+      "qualityChecks": {
+        "blueMaskFraction": 0.217,
+        "solidPixelsOnCellEdge": 0
+      },
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "攻击-2",
+      "roleName": "攻击-2",
+      "category": "无人",
+      "files": {
+        "blue": "icons/gj2-cn-blue.webp",
+        "red": "icons/gj2-cn-red.webp",
+        "neutral": "icons/gj2-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.2431266846361186,
+      "sourceMaster": "masters/platform-extra-airframes.webp"
+    },
+    {
+      "key": "wz10",
+      "country": "cn",
+      "model": "无侦-10",
+      "modelStatus": "reference-reviewed",
+      "cellIndex": 0,
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 887,
+        "height": 887
+      },
+      "sources": [
+        {
+          "url": "https://www.xinhuanet.com/photo/20241113/1f6da297fd314c0fb775ebfdd3ce834e/c.html?page=8",
+          "title": "新华社：第十五届中国航展，无侦-10无人机（2024-11-13）",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened and publicly available photo downloaded and visually inspected; not a measured reproduction.",
+          "imageUrl": "https://www.xinhuanet.com/photo/20241113/1f6da297fd314c0fb775ebfdd3ce834e/202411131f6da297fd314c0fb775ebfdd3ce834e_20241113052bb757b9b448b8a6eaa2b91178eeae.jpg"
+        }
+      ],
+      "notes": "依据新华社航展实机侧照制作的艺术微缩外形；reference-reviewed仅表示查阅了公开外形来源。生成视角为俯视，照片未清楚显示的翼根/整流罩/背部细节为近似，非精确测绘；不把外部天线外形当作特定光电、雷达或电侦设备配置的验证。无侦-10常规单组翼，不沿用无侦-7联翼。",
+      "geometryChecks": [
+        "细长常规喷气机身，前段隆起整流罩及尖机鼻",
+        "单组长后掠主翼，无联翼/闭合菱形翼",
+        "机尾两片高耸外倾V尾",
+        "背部进气口和少量腹部天线整流罩的艺术近似",
+        "完整机鼻、左右翼尖及尾尖均位于本格透明边界内"
+      ],
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [
+        "Generated miniature exterior references, not measured replicas or verified internal sensor configurations.",
+        "Both objects visually inspected: complete aircraft, no cropped tips, no national markings or text.",
+        "Gray metal with cobalt-blue body panels is an artistic repainting aid, not an authentic paint scheme.",
+        "GJ-21 detailed dorsal/ventral features remain limited by publicly available photos; no claim of official 2026 carrier takeoff closeup.",
+        "PNG contains extremely faint alpha<8 speckles outside visible objects; visible alpha>=24 bounds are WZ10 [50,117,849,719], GJ21 local [43,156,840,705]. Existing alpha cleanup should remove the speckles before tight bounds."
+      ],
+      "name": "无侦-10",
+      "roleName": "无侦-10",
+      "category": "无人",
+      "files": {
+        "blue": "icons/wz10-cn-blue.webp",
+        "red": "icons/wz10-cn-red.webp",
+        "neutral": "icons/wz10-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.22364418336305467,
+      "sourceMaster": "masters/platform-new-airframes.webp"
+    },
+    {
+      "key": "gj21",
+      "country": "cn",
+      "model": "攻击-21",
+      "modelStatus": "reference-reviewed",
+      "cellIndex": 1,
+      "rect": {
+        "left": 887,
+        "top": 0,
+        "width": 887,
+        "height": 887
+      },
+      "sources": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:GJ-21_UCAV.jpg",
+          "title": "中国新闻社2025-09-03阅兵视频截图（Wikimedia Commons归档）",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened and publicly available photo downloaded and visually inspected; not a measured reproduction.",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a4/GJ-21_UCAV.jpg",
+          "originalSource": "https://www.youtube.com/watch?v=kwL8YkYxKrA",
+          "sourceAttribution": "中国新闻社；Commons页面标记CC BY 4.0；本图标为新生成艺术模型而非照片裁剪。"
+        },
+        {
+          "url": "https://theaviationist.com/2025/11/01/china-gj-21-naval-ucav/",
+          "title": "The Aviationist: China’s GJ-21 Naval UCAV Captured in Clearest Image Yet",
+          "reviewedDate": "2026-11-14",
+          "reviewMethod": "Web page opened and publicly available photo downloaded and visually inspected; not a measured reproduction.",
+          "imageUrl": "https://theaviationist.com/wp-content/uploads/2025/11/China-GJ21-UCAV-1.jpg",
+          "sourceAttribution": "非官方飞行照片，页面注明 Chinese internet via Andreas Rupprecht；仅辅助核对公开轮廓。"
+        }
+      ],
+      "notes": "依据中新社阅兵截图的上表面及非官方公开飞行照的下表面轮廓制作；reference-reviewed仅表示这些照片已查阅，不表示官方验证全部生成细节。两张照片视角、清晰度有限，机背进气/排气、折叠缝、控制面和舰载局部结构为艺术近似；不声称精确复刻或真实任务载荷。2026四川舰起降通报不作为实拍近照来源。未套用X-47B，不凭尾钩单一特征区分；本图收起起落架且不刻意展示尾钩。",
+      "geometryChecks": [
+        "无垂尾、无座舱盖的宽大融合飞翼",
+        "连续强后掠前缘与截短翼尖，避免X-47B式明显折线风筝前缘",
+        "后缘外段较直，中部后缘有阶梯/缺口轮廓",
+        "上表面隆起中央机体及深色进气开口的艺术近似",
+        "外翼折叠接缝仅示意，不声称机械结构精确",
+        "整机完整、无裁断、与无侦-10轮廓明显不同"
+      ],
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [
+        "Generated miniature exterior references, not measured replicas or verified internal sensor configurations.",
+        "Both objects visually inspected: complete aircraft, no cropped tips, no national markings or text.",
+        "Gray metal with cobalt-blue body panels is an artistic repainting aid, not an authentic paint scheme.",
+        "GJ-21 detailed dorsal/ventral features remain limited by publicly available photos; no claim of official 2026 carrier takeoff closeup.",
+        "PNG contains extremely faint alpha<8 speckles outside visible objects; visible alpha>=24 bounds are WZ10 [50,117,849,719], GJ21 local [43,156,840,705]. Existing alpha cleanup should remove the speckles before tight bounds."
+      ],
+      "name": "攻击-21",
+      "roleName": "攻击-21",
+      "category": "无人",
+      "files": {
+        "blue": "icons/gj21-cn-blue.webp",
+        "red": "icons/gj21-cn-red.webp",
+        "neutral": "icons/gj21-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.3599798471744059,
+      "sourceMaster": "masters/platform-new-airframes.webp"
+    },
+    {
+      "key": "uav_recon_eo",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "翼龙Ⅱ平台光电侦察示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://eng.mod.gov.cn/xb/News_213114/Videos/4895836.html",
+          "title": "中国国防部：翼龙-2亮相2021中国航展（公开飞行外观）"
+        },
+        {
+          "url": "https://odin.t2com.army.mil/WEG/Asset/Wing_Loong_II_Chinese_Medium-Altitude_Long_Endurance_%28MALE%29_Unmanned_Aerial_Vehicle_%28UAV%29",
+          "title": "US Army ODIN: Wing Loong II public exterior reference"
+        }
+      ],
+      "geometryChecks": [
+        "完整长翼/细长机身/后推螺旋桨轮廓，左下朝向三分之四俯视",
+        "机鼻下可辨识适中光电球与青色镜片",
+        "无武器、无挂弹、无文字国旗或角标",
+        "浅灰主色+钴蓝机背/内翼可重涂面板",
+        "左机普通翼尖、较宽前体与V形上尾；右机高展弦比翼和上翘翼尖、不同前体及Y形尾组件"
+      ],
+      "notes": "依据公开平台外形与可见光电载荷绘制的无武器任务示意，非任何现役单位或精确批次配置；未填写真实探测能力或作战参数。钴蓝面板为软件阵营可变色涂装，原图保留。",
+      "bluePixelRatio": 0.2103,
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "翼龙Ⅱ平台光电侦察示意",
+      "roleName": "光电侦察无人机",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_recon_eo-cn-blue.webp",
+        "red": "icons/uav_recon_eo-cn-red.webp",
+        "neutral": "icons/uav_recon_eo-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.24052436591621545,
+      "sourceMaster": "masters/recon-eo.webp"
+    },
+    {
+      "key": "uav_recon_eo",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "MQ-9B平台光电侦察示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.ga-asi.com/remotely-piloted-aircraft/mq-9b",
+          "title": "GA-ASI MQ-9B SkyGuardian manufacturer exterior and EO/IR reference"
+        },
+        {
+          "url": "https://www.ga-asi.com/mq-9b-skyguardian-vs-seaguardian",
+          "title": "GA-ASI SkyGuardian vs SeaGuardian — clean ISR EO/IR sensor ball configuration"
+        }
+      ],
+      "geometryChecks": [
+        "完整长翼/细长机身/后推螺旋桨轮廓，左下朝向三分之四俯视",
+        "机鼻下可辨识适中光电球与青色镜片",
+        "无武器、无挂弹、无文字国旗或角标",
+        "浅灰主色+钴蓝机背/内翼可重涂面板",
+        "左机普通翼尖、较宽前体与V形上尾；右机高展弦比翼和上翘翼尖、不同前体及Y形尾组件"
+      ],
+      "notes": "依据公开平台外形与可见光电载荷绘制的无武器任务示意，非任何现役单位或精确批次配置；未填写真实探测能力或作战参数。钴蓝面板为软件阵营可变色涂装，原图保留。",
+      "bluePixelRatio": 0.2153,
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "MQ-9B平台光电侦察示意",
+      "roleName": "光电侦察无人机",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_recon_eo-us-blue.webp",
+        "red": "icons/uav_recon_eo-us-red.webp",
+        "neutral": "icons/uav_recon_eo-us-neutral.webp"
+      },
+      "teamPaintRatio": 0.2487554904831625,
+      "sourceMaster": "masters/recon-eo.webp"
+    },
+    {
+      "key": "usv_minesweeper",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "中国公开无人扫雷艇外形参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/wzll/yw_214068/16407652.html",
+          "title": "国防部／解放军报2025阅兵专号：海上无人作战方队（公开无人艇轮廓、反水雷职能描述）"
+        }
+      ],
+      "geometryChecks": [
+        "完整独立无人艇，首朝左下三分之四俯视",
+        "低矮封闭无人电子设备区，无驾驶席、无人像、无大型有人舰桥",
+        "尾部绞车/卷缆、短收放框架、扫雷拖具与短拖缆清晰",
+        "无艏炮/攻击武器/布雷架、无文字国旗角标",
+        "浅灰艇身与钴蓝可重涂舷侧面板",
+        "中方折线艇体/一体小传感器桅杆；美方CUSV长艇体/折叠剪叉传感器桅杆、橙色扫雷拖具"
+      ],
+      "notes": "公开外形艺术参考与扫雷任务示意；不表示真实单位、装备性能或精确工程配置。两艇均无人、无舰炮和攻击载荷，短拖缆与扫雷具强调扫雷任务。钴蓝面板为软件阵营可变色涂装。中方公开文章展示的阅兵无人艇原有艏炮，并未公开证明本图绞车与扫雷载荷配置；本图按用户要求移除武器、压低无人设备舱，加入概括的扫雷任务模块，因此仅标注公开外形参考，非阅兵实艇复原，型号未可靠核实。",
+      "bluePixelRatio": 0.3418,
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "中国公开无人扫雷艇外形参考",
+      "roleName": "扫雷型无人艇",
+      "category": "无人",
+      "files": {
+        "blue": "icons/usv_minesweeper-cn-blue.webp",
+        "red": "icons/usv_minesweeper-cn-red.webp",
+        "neutral": "icons/usv_minesweeper-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.3989820297081126,
+      "sourceMaster": "masters/recon-minesweeper-usv.webp"
+    },
+    {
+      "key": "usv_minesweeper",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "Textron CUSV／UISS无人扫雷型参考",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.textronsystems.com/products/cusv",
+          "title": "Textron Systems CUSV manufacturer exterior and mine countermeasures configuration"
+        },
+        {
+          "url": "https://www.navsea.navy.mil/Media/News/Article-View/Article/3109399/initial-operating-capability-declared-for-unmanned-influence-sweep-system-uiss/",
+          "title": "NAVSEA (2022): Initial Operating Capability Declared for UISS"
+        }
+      ],
+      "geometryChecks": [
+        "完整独立无人艇，首朝左下三分之四俯视",
+        "低矮封闭无人电子设备区，无驾驶席、无人像、无大型有人舰桥",
+        "尾部绞车/卷缆、短收放框架、扫雷拖具与短拖缆清晰",
+        "无艏炮/攻击武器/布雷架、无文字国旗角标",
+        "浅灰艇身与钴蓝可重涂舷侧面板",
+        "中方折线艇体/一体小传感器桅杆；美方CUSV长艇体/折叠剪叉传感器桅杆、橙色扫雷拖具"
+      ],
+      "notes": "公开外形艺术参考与扫雷任务示意；不表示真实单位、装备性能或精确工程配置。两艇均无人、无舰炮和攻击载荷，短拖缆与扫雷具强调扫雷任务。钴蓝面板为软件阵营可变色涂装。",
+      "bluePixelRatio": 0.3179,
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "Textron CUSV／UISS无人扫雷型参考",
+      "roleName": "扫雷型无人艇",
+      "category": "无人",
+      "files": {
+        "blue": "icons/usv_minesweeper-us-blue.webp",
+        "red": "icons/usv_minesweeper-us-red.webp",
+        "neutral": "icons/usv_minesweeper-us-neutral.webp"
+      },
+      "teamPaintRatio": 0.3658322353974528,
+      "sourceMaster": "masters/recon-minesweeper-usv.webp"
+    },
+    {
+      "key": "uav_recon_radar",
+      "country": "cn",
+      "cellIndex": 0,
+      "model": "翼龙Ⅱ平台＋SAR侦察吊舱参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.mod.gov.cn/gfbw/wzll/kj/4895725.html",
+          "title": "翼龙-2无人机划过天际 大型无人机首次在国际航展飞行展示（国防部／新华社，2021-09-28）"
+        }
+      ],
+      "notes": "仅任务示意：公开报道核实翼龙-2携光电吊舱及合成孔径雷达；本图SAR罩位置、尺寸及无武器配置为概念表达，非确认的实装型号或精确工程图。蓝色面板为可重涂底色，默认中国红由集成阶段处理。",
+      "geometryChecks": [
+        "单台机尾推进螺旋桨，与美国喷气构型明显不同",
+        "细长机身、长直翼、上反V尾，鼻下小光电球",
+        "机腹适度小型闭合SAR吊舱，无大型圆盘天线",
+        "完整机翼/尾翼/起落架，无武器及国籍标识"
+      ],
+      "bluePixelRatio": 0.152,
+      "alphaBounds": [
+        48,
+        268,
+        859,
+        654
+      ],
+      "sourceAudit": {
+        "checkedAt": "2026-11-14",
+        "httpStatus": 200,
+        "method": "HTTP GET followed redirects; source content also reviewed through web search"
+      },
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "翼龙Ⅱ平台＋SAR侦察吊舱参考构型",
+      "roleName": "雷达侦察无人机",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_recon_radar-cn-blue.webp",
+        "red": "icons/uav_recon_radar-cn-red.webp",
+        "neutral": "icons/uav_recon_radar-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.16978862347482385,
+      "sourceMaster": "masters/recon-radar.webp"
+    },
+    {
+      "key": "uav_recon_radar",
+      "country": "us",
+      "cellIndex": 1,
+      "model": "MQ-4C Triton平台＋海面监视雷达整流罩参考构型",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.navair.navy.mil/product/MQ-4C",
+          "title": "MQ-4C Triton | NAVAIR"
+        },
+        {
+          "url": "https://www.navair.navy.mil/node/22166",
+          "title": "Triton UAS conducts first flight with search radar | NAVAIR"
+        },
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/triton",
+          "title": "MQ-4C Triton | Northrop Grumman"
+        }
+      ],
+      "notes": "仅任务示意：依据公开MQ-4C平台及MFAS海面监视雷达资料绘制，机腹整流罩及起落架细节为模型近似；非工程图，不表达性能、部署或中美装备对等关系。蓝色面板为可重涂底色。",
+      "geometryChecks": [
+        "高鼓起圆头、细长大展弦比机翼",
+        "背置单涡扇发动机及V尾，无螺旋桨",
+        "机腹适度扁椭圆闭合海面监视雷达罩，鼻下小光电球",
+        "完整独立机体，无武器、大盘天线、文字或旗帜"
+      ],
+      "bluePixelRatio": 0.1877,
+      "alphaBounds": [
+        15,
+        256,
+        870,
+        648
+      ],
+      "sourceAudit": {
+        "checkedAt": "2026-11-14",
+        "httpStatus": 200,
+        "method": "HTTP GET followed redirects; source content also reviewed through web search"
+      },
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "MQ-4C Triton平台＋海面监视雷达整流罩参考构型",
+      "roleName": "雷达侦察无人机",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_recon_radar-us-blue.webp",
+        "red": "icons/uav_recon_radar-us-red.webp",
+        "neutral": "icons/uav_recon_radar-us-neutral.webp"
+      },
+      "teamPaintRatio": 0.2153629316420014,
+      "sourceMaster": "masters/recon-radar.webp"
+    },
+    {
+      "key": "uav_recon_sigint",
+      "country": "cn",
+      "model": "无侦-10公开平台外形参考＋被动电子侦察任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://military.cctv.com/2025/08/22/ARTIrU4PTdqLRpKLT2QQXI1C250822.shtml",
+          "title": "央视：无人先锋！中国军用无人机家族新质战力快速提升（2025-08-22，无侦-10侦收定位雷达信号）",
+          "reviewMethod": "web open、curl HTTP 200，并下载查看文内无侦-10实拍",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://p3.img.cctvpic.com/photoworkspace/contentimg/2025/08/22/2025082209122439236.png",
+          "title": "央视文内无侦-10公开展示照片",
+          "reviewMethod": "HTTP 200，view_image查看；来源照片仅用于外形核对，不作为发布资产",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "折线后掠低翼，完整机翼可见",
+        "纤长棱面机身和略膨起的机鼻",
+        "双背部梯形进气口与并列后部喷口的艺术近似",
+        "外倾V尾，区别无侦-7联翼与武装直升机",
+        "仅少量小刀形天线、贴体整流罩；无武器、雷达盘、波束或干扰特效",
+        "机头朝左下，三分之四俯视；浅灰主体、钴蓝可重涂局部面板"
+      ],
+      "notes": "央视明确无侦-10遂行电子侦察并侦收定位雷达信号；本图只借用公开平台轮廓表达被动电子侦察。天线、侧面整流罩及局部进排气细节为非功能艺术化示意，不认证真实任务载荷、具体批次或精确结构，不表示主动干扰/攻击能力。国别蓝色为待统一重涂源色，非实物涂装。",
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [
+        "image_gen生成两列一行完整独立飞机；已view_image逐图检查",
+        "透明通道0~255，画布角点alpha=0；两机无重叠、无裁断、无文字/旗帜/武器/波束/雷达盘",
+        "原始PNG 1774×887；每格887×887",
+        "按统一蓝色阈值测得可重涂蓝色占非透明机体面积约27.7%/29.0%；视觉以浅灰主体为主",
+        "两图均为公开轮廓艺术近似，非测绘或任务实装真实性认证"
+      ],
+      "name": "无侦-10公开平台外形参考＋被动电子侦察任务示意",
+      "roleName": "电子侦察无人机",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_recon_sigint-cn-blue.webp",
+        "red": "icons/uav_recon_sigint-cn-red.webp",
+        "neutral": "icons/uav_recon_sigint-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.3250300120048019,
+      "sourceMaster": "masters/recon-sigint.webp"
+    },
+    {
+      "key": "uav_recon_sigint",
+      "country": "us",
+      "model": "RQ-4 Global Hawk公开平台外形参考＋被动SIGINT任务示意",
+      "modelStatus": "illustrative-configuration",
+      "sources": [
+        {
+          "url": "https://www.northropgrumman.com/what-we-do/aircraft/global-hawk",
+          "title": "Northrop Grumman：Global Hawk 官方平台介绍与实拍",
+          "reviewMethod": "web open、curl HTTP 200，并查看页面公开实拍",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://investor.northropgrumman.com/news-releases/news-release-details/northrop-grumman-successfully-demonstrates-flexible-solution",
+          "title": "Northrop Grumman：RQ-4载荷公开说明（2016-02-25，列出ASIP机载信号情报载荷）",
+          "reviewMethod": "web open与curl HTTP 200；仅作为平台曾支持SIGINT任务的公开依据",
+          "reviewedDate": "2026-11-14"
+        },
+        {
+          "url": "https://media.northropgrumman.com/68c1bdf5-c2b9-417e-9e4f-b385000a9b2e/global-hawk-proven-persistence_Original%20file.jpg",
+          "title": "Northrop Grumman：Global Hawk官方飞行实拍",
+          "reviewMethod": "HTTP 200，view_image查看；来源照片仅用于外形核对",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "geometryChecks": [
+        "显著鼓起的高额头机鼻，无座舱玻璃",
+        "高展弦比长直翼，比例区别于左侧后掠翼平台",
+        "单台背置发动机，单个朝前进气口",
+        "后部外倾V尾",
+        "少量小刀形天线与贴体整流罩代表被动信号接收，不画大型雷达盘或EO球",
+        "机头朝左下，三分之四俯视；浅灰主体、钴蓝可重涂局部面板"
+      ],
+      "notes": "厂家公开说明RQ-4现有型号能够携带ASIP，但本图未据此认证特定Block或精确ASIP外部安装布局。只使用RQ-4平台轮廓及少量泛化天线/整流罩表达被动SIGINT侦察；不将其称为电子干扰攻击机，不暗示与中方性能对等。蓝色是可重涂美术面板，不是原机涂装。",
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [
+        "image_gen生成两列一行完整独立飞机；已view_image逐图检查",
+        "透明通道0~255，画布角点alpha=0；两机无重叠、无裁断、无文字/旗帜/武器/波束/雷达盘",
+        "原始PNG 1774×887；每格887×887",
+        "按统一蓝色阈值测得可重涂蓝色占非透明机体面积约27.7%/29.0%；视觉以浅灰主体为主",
+        "两图均为公开轮廓艺术近似，非测绘或任务实装真实性认证"
+      ],
+      "name": "RQ-4 Global Hawk公开平台外形参考＋被动SIGINT任务示意",
+      "roleName": "电子侦察无人机",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_recon_sigint-us-blue.webp",
+        "red": "icons/uav_recon_sigint-us-red.webp",
+        "neutral": "icons/uav_recon_sigint-us-neutral.webp"
+      },
+      "teamPaintRatio": 0.3161529223378703,
+      "sourceMaster": "masters/recon-sigint.webp"
     },
     {
       "key": "fighter",
@@ -20345,6 +22187,72 @@
       },
       "teamPaintRatio": 0.18233349078885214,
       "sourceMaster": "masters/unmanned-08.webp"
+    },
+    {
+      "key": "wz7",
+      "country": "cn",
+      "model": "无侦-7",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.jetphotos.com/photo/10476528",
+          "title": "WZ7 public photo",
+          "reviewMethod": "web search result or web open reviewed; no claim of pixel-exact measured reproduction",
+          "reviewedDate": "2026-11-14"
+        }
+      ],
+      "notes": "复用已核对的同一公开机型外形，增加可直接按型号检索的独立入口。",
+      "geometryChecks": [
+        "distinct joined diamond wings",
+        "swept front main wing joins forward swept rear wing",
+        "upper rear jet",
+        "twin canted tail"
+      ],
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [
+        "已用image_gen修正RQ-4误生成联翼的问题；原图保留。",
+        "生成图为艺术外形近似，旋翼叶数及小细节仍可能偏差；geometryChecks记录目标辨识点，不代表逐像素验收。"
+      ],
+      "name": "无侦-7",
+      "roleName": "无侦-7",
+      "category": "无人",
+      "files": {
+        "blue": "icons/hale_uav-cn-blue.webp",
+        "red": "icons/hale_uav-cn-red.webp",
+        "neutral": "icons/hale_uav-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.9552845528455285,
+      "sourceMaster": "masters/aviation-02.webp",
+      "aliasOf": "hale_uav"
+    },
+    {
+      "key": "gj11",
+      "country": "cn",
+      "model": "攻击-11",
+      "modelStatus": "reference-reviewed",
+      "sources": [
+        {
+          "url": "https://www.twz.com/air/china-lifts-the-veil-on-the-gj-11-mysterious-dragon-stealth-ucav",
+          "title": "GJ-11公开外形"
+        }
+      ],
+      "notes": "复用已核对的同一公开机型外形，增加可直接按型号检索的独立入口。",
+      "geometryChecks": [
+        "CN GJ-11 triangular tailless flying wing smooth forward nose and dorsal intake"
+      ],
+      "qualityStatus": "artistic-first-pass",
+      "qualityNotes": [],
+      "name": "攻击-11",
+      "roleName": "攻击-11",
+      "category": "无人",
+      "files": {
+        "blue": "icons/uav_ucav-cn-blue.webp",
+        "red": "icons/uav_ucav-cn-red.webp",
+        "neutral": "icons/uav_ucav-cn-neutral.webp"
+      },
+      "teamPaintRatio": 0.1823316283034953,
+      "sourceMaster": "masters/unmanned-01.webp",
+      "aliasOf": "uav_ucav"
     }
   ]
 }
