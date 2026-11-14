@@ -85,7 +85,7 @@ def main():
             fade: dio.indexOf('ht_gradA="0.4"') >= 0,
             pie: dio.indexOf('endAngle=0.7500') >= 0,
             noDefaults: typeof readDefaults !== 'function' && typeof scenePack !== 'function',
-            ops: TEMPLATES.filter(t => t.group === '作战场景').map(t => t.id).sort().join(',')
+            noOps: !TEMPLATES.some(t => t.group === '作战场景')
           };
         }''')
         browser.close()
@@ -95,8 +95,7 @@ def main():
     assert result['differ'] and result['plainSame'] and result['show'] and result['svgHas']
     assert result['gradN'] >= 2 and result['lineGrad'] == 0 and result['noFill'] >= 1 and result['vsdOk']
     assert result['fade'] and result['fadeSeen'] and result['pie']
-    assert result['noDefaults']
-    assert result['ops'] == 'scn-assault,scn-contact,scn-patrol'
+    assert result['noDefaults'] and result['noOps']
     print('review_follow_test ok')
 
 

@@ -16,7 +16,7 @@ body = ('<script>try { var skin = localStorage.getItem("hongtu.uiSkin"); '
         '} catch (_) { document.documentElement.setAttribute("data-theme", "light"); }</script>\n'
         + body + '<style>\n' + rd('skins.css') + '\n</style>\n')
 parts = [rd('icons.js')] + [rd(os.path.basename(p)) for p in sorted(glob.glob(os.path.join(APP, 'icons_*.js')))]
-MODS = ['app.js', 'skins.js', 'glyphbook.js', 'imgimport.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'scenario_templates.js', 'std_templates.js', 'textgen.js',
+MODS = ['app.js', 'skins.js', 'glyphbook.js', 'imgimport.js', 'backup.js', 'compact.js', 'combo.js', 'standards.js', 'xlsxexport.js', 'templates.js', 'std_templates.js', 'textgen.js',
         'importers.js', 'vsdxraw.js', 'drawio.js', 'refgen.js', 'convert.js']
 if os.path.exists(os.path.join(APP, 'redrawn.js')):
     parts.append(rd('redrawn.js'))
