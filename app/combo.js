@@ -115,8 +115,6 @@
     const cn = mkNode({ type: 'equip', icon: 'cu:' + cid, text: label, size: 12, w: sz.w, h: sz.h, x: snapv((x0 + x1) / 2 - sz.w / 2), y: snapv((y0 + y1) / 2 - sz.h / 2), parent: ns[0].parent });
     const sides = [...new Set(ns.map(n => n.affiliation || ''))].filter(Boolean);
     if (sides.length === 1) cn.affiliation = sides[0];
-    const made = { size: 12 }; if (cn.affiliation) made.affiliation = cn.affiliation;
-    if (typeof applyCreateDefaults === 'function') applyCreateDefaults(cn, made);
     const ids = new Set(ns.map(n => n.id));
     p.links = p.links.filter(l => !(ids.has(l.from) && ids.has(l.to)));
     for (const l of p.links) { if (ids.has(l.from)) l.from = cn.id; if (ids.has(l.to)) l.to = cn.id; }
@@ -251,7 +249,6 @@
       const id = saveCombo(spec, name), sz = sizeFor(doc.custom[id].aspect);
       const r = svg.getBoundingClientRect(), c = clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
       const n = mkNode({ type: 'equip', icon: 'cu:' + id, text: name, size: 12, w: sz.w, h: sz.h, x: snapv(c.x - sz.w / 2), y: snapv(c.y - sz.h / 2) });
-      if (typeof applyCreateDefaults === 'function') applyCreateDefaults(n, { size: 12 });
       P().nodes.push(n); n.parent = findParent(n); selectNodes([n.id]);
     }
     close(); renderPalette(); render(); toast(editNode ? '编队已更新' : '已插入编队，可拖入任意层，也可连线');
