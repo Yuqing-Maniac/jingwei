@@ -162,6 +162,14 @@ const ICONS = (typeof ICON_LIB !== 'undefined' ? ICON_LIB : []);
 const ICON_MAP = Object.fromEntries(ICONS.map(i => [i.key, i]));
 const uriCache = new Map();
 const svgUri = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const tinting = new Set();
+function forgetIcon(key) { for (const k of [...uriCache.keys()]) if (k === key || k.indexOf(key + '|') === 0) uriCache.delete(k); }
+function canSide(n) {
+  if (!n || !n.icon) return false;
+  if (n.icon.startsWith('lib:')) return true;
+  if (n.icon.startsWith('cu:')) { const c = doc.custom[n.icon.slice(3)]; return !!(c && c.combo); }
+  return false;
+}
 function iconURI(key, affiliation) {
   if (!key) return null;
   const side = ['red', 'blue'].includes(affiliation) ? affiliation : 'neutral';
@@ -171,8 +179,17 @@ function iconURI(key, affiliation) {
   if (key.startsWith('lib:')) { const i = ICON_MAP[key.slice(4)]; if (i) u = svgUri(i.variants ? i.variants[side] : i.svg); }
   else if (key.startsWith('ms:')) {
     try { if (window.ms) u = svgUri(new ms.Symbol(key.slice(3), msOptions()).asSVG()); } catch (e) { }
-  } else if (key.startsWith('cu:')) { const c = doc.custom[key.slice(3)]; if (c) u = c.uri; }
-  if (u && !key.startsWith('cu:')) uriCache.set(ck, u);
+  } else if (key.startsWith('cu:')) {
+    const c = doc.custom[key.slice(3)];
+    if (c) {
+      if (side !== 'neutral' && c.combo && window.Combo && Combo.tinted && !tinting.has(key)) {
+        tinting.add(key);
+        try { u = Combo.tinted(c.combo, side); } finally { tinting.delete(key); }
+      }
+      if (!u) u = c.uri;
+    }
+  }
+  if (u) uriCache.set(ck, u);
   return u;
 }
 /* 军标配色：nato = 友蓝敌红（默认）；cn = 我红敌蓝 */
@@ -278,12 +295,12 @@ function nodeLayout(n) {
     else { const bw = Math.max(16, n.w - 10), bh = Math.max(16, n.h - th - 14); if (bw / bh > asp) { ih = bh; iw = bh * asp; } else { iw = bw; ih = bw / asp; } }
     const isz = ih;
     const iy = n.y + (n.h - isz - th - (th ? 4 : 0)) / 2;
-    L.icon = { uri, x: n.x + (n.w - iw) / 2, y: iy, s: Math.max(iw, ih), w: iw, h: ih };
+    L.icon = { uri, x: n.x + (n.w - iw) / 2, y: iy, s: Math.max(iw, ih), w: iw, h: ih, flipX: !!n.flipX, flipY: !!n.flipY };
     if (lines.length) L.text = { lines, x: n.x + n.w / 2, cy: iy + isz + 4 + th / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [n.x + 4, iy + isz + 4, n.w - 8, th] };
   } else if (uri) {
     const isz = clamp(n.h - 10, 14, 44);
     const ix = n.x + 8;
-    L.icon = { uri, x: ix, y: n.y + (n.h - isz) / 2, s: isz, w: isz, h: isz };
+    L.icon = { uri, x: ix, y: n.y + (n.h - isz) / 2, s: isz, w: isz, h: isz, flipX: !!n.flipX, flipY: !!n.flipY };
     const tx0 = ix + isz + 4, tw = n.x + n.w - 6 - tx0;
     const lines = wrap(n.text, Math.max(20, tw), size, n.bold, family);
     L.text = { lines, x: tx0 + tw / 2, cy: n.y + n.h / 2, size, bold: n.bold, color, anchor: 'middle', family, box: [tx0, n.y, tw, n.h] };
@@ -348,7 +365,7 @@ const GEO = {
 };
 /* shape registry: name, palette group, native PowerPoint preset, keep = keep own size in 一键美化 */
 const SHP_DEF = {
-  rect: { name: '矩形', ppt: 'rect' }, round: { name: '圆角矩形', ppt: 'roundRect' }, ellipse: { name: '椭圆／圆', ppt: 'ellipse' }, diamond: { name: '菱形', ppt: 'diamond' },
+  rect: { name: '矩形', ppt: 'rect' }, round: { name: '圆角矩形', ppt: 'roundRect' }, ellipse: { name: '椭圆／圆', ppt: 'ellipse' }, sector: { name: '扇形', ppt: 'pie', keep: 1 }, diamond: { name: '菱形', ppt: 'diamond' },
   hexagon: { name: '六边形', ppt: 'hexagon' }, octagon: { name: '八边形', ppt: 'octagon', keep: 1 }, triangle: { name: '三角形', ppt: 'triangle', keep: 1 },
   parallelogram: { name: '平行四边形', ppt: 'parallelogram' }, trapezoid: { name: '梯形', ppt: 'trapezoid' }, pentagon: { name: '五边形', ppt: 'pentagon', keep: 1 },
   star: { name: '五角星', ppt: 'star5', keep: 1 }, cylinder: { name: '圆柱体', ppt: 'can', keep: 1 }, cloud: { name: '云', ppt: 'cloud', keep: 1 }, cube: { name: '立方体', ppt: 'cube', keep: 1 },
@@ -359,6 +376,7 @@ const SHP_DEF = {
   chevron: { name: '流程箭头', ppt: 'chevron' }, homeplate: { name: '标签箭头', ppt: 'homePlate' },
   arrowR: { name: '右箭头', ppt: 'rightArrow' }, arrowL: { name: '左箭头', ppt: 'leftArrow' }, arrowU: { name: '上箭头', ppt: 'upArrow', keep: 1 }, arrowD: { name: '下箭头', ppt: 'downArrow', keep: 1 },
   arrowLR: { name: '双向箭头', ppt: 'leftRightArrow' }, arrowUD: { name: '上下箭头', ppt: 'upDownArrow', keep: 1 },
+  stdArrow: { name: '标准箭头', ppt: 'line', keep: 1 }, dimArrow: { name: '距离箭头', ppt: 'line', keep: 1 },
 };
 /* PowerPoint 自由曲线：单侧圆角矩形（英寸，三次贝塞尔圆角，可在 PPT 中编辑顶点） */
 function sideRoundPts(type, w, h, r) {
@@ -368,14 +386,278 @@ function sideRoundPts(type, w, h, r) {
     : [P(0, 0), P(w - r, 0), P(w, r, [w - r + k, 0, w, r - k]), P(w, h - r), P(w - r, h, [w, h - r + k, w - r + k, h]), P(0, h), { close: true }];
 }
 const keepsSize = n => n.type === 'equip' || !!(SHP_DEF[n.type] && SHP_DEF[n.type].keep);
-function shapeGeom(type, w, h) { const g = (GEO[type] || GEO.rect)(w, h); g.lines = g.lines || []; g.shade = g.shade || []; return g; }
+function isLineArrow(n) { return !!n && (n.type === 'stdArrow' || n.type === 'dimArrow'); }
+function rotOf(n) { const r = +n.rot || 0; return isFinite(r) ? r : 0; }
+function rotPoint(n, x, y) {
+  const rot = rotOf(n); if (!rot) return { x: x, y: y };
+  const cx = n.x + n.w / 2, cy = n.y + n.h / 2, a = rot * Math.PI / 180, dx = x - cx, dy = y - cy;
+  return { x: cx + dx * Math.cos(a) - dy * Math.sin(a), y: cy + dx * Math.sin(a) + dy * Math.cos(a) };
+}
+function unrotPoint(n, x, y) {
+  const rot = rotOf(n); if (!rot) return { x: x, y: y };
+  const cx = n.x + n.w / 2, cy = n.y + n.h / 2, a = -rot * Math.PI / 180, dx = x - cx, dy = y - cy;
+  return { x: cx + dx * Math.cos(a) - dy * Math.sin(a), y: cy + dx * Math.sin(a) + dy * Math.cos(a) };
+}
+function measureSpec() {
+  const m = doc && doc.measure;
+  return { unit: m && m.unit ? String(m.unit) : 'm', px: m && +m.px > 0 ? +m.px : 10 };
+}
+function rulerCount(len, gap) {
+  let count = Math.floor(Math.max(0, len) / gap + 1e-4) + 1;
+  if (count < 1) count = 1;
+  while (count > 1 && (count - 1) * gap > len + 0.05) count--;
+  return count;
+}
+function dimLabel(n) {
+  if (!n || n.type !== 'dimArrow') return '';
+  const spec = rulerSpec(n), len = Math.max(0, +n.w || 0);
+  if (rulerBits(n).length) {
+    const texts = rulerTexts(n, rulerCount(len, spec.gap), spec);
+    return withUnit(texts[texts.length - 1] || '0', spec.unit, true);
+  }
+  const v = spec.start + (len / spec.gap) * spec.step;
+  return spec.unit ? fmtNum(v) + ' ' + spec.unit : fmtNum(v);
+}
+function arrowColors(n) {
+  const shaft = n.noLine ? 'none' : (n.stroke || stStyle(n, T()).stroke);
+  const head = n.noLine ? 'none' : (n.headColor || shaft);
+  const split = head !== 'none' && String(head).toLowerCase() !== String(shaft).toLowerCase();
+  return { shaft: shaft, head: head, split: split };
+}
+function arrowHeadWorld(n) {
+  const head = arrowHeadLen(n.w, n.h), mid = n.h / 2, x1 = Math.max(0, n.w - head), wing = Math.min(head * 0.42, n.h * 0.45);
+  return [[n.w, mid], [x1, mid - wing], [x1, mid + wing]].map(function (p) { return rotPoint(n, n.x + p[0], n.y + p[1]); });
+}
+function arrowShaftEnd(n) {
+  const head = arrowHeadLen(n.w, n.h), x1 = Math.max(0, n.w - head);
+  return rotPoint(n, n.x + x1, n.y + n.h / 2);
+}
+function fmtNum(v) {
+  if (!isFinite(v)) return '';
+  const r = Math.round(v * 1000) / 1000;
+  if (Math.abs(r - Math.round(r)) < 1e-6) return String(Math.round(r));
+  return String(+r.toFixed(3));
+}
+function rulerAuto(unitPx) {
+  const px = unitPx > 0 ? unitPx : 10;
+  const seq = [1, 2, 5];
+  let pow = 1;
+  for (let n = 0; n < 8; n++) {
+    for (let i = 0; i < seq.length; i++) {
+      const step = seq[i] * pow;
+      if (step * px >= 36) return { step: step, gap: step * px };
+    }
+    pow *= 10;
+  }
+  return { step: pow, gap: pow * px };
+}
+function rulerSpec(n) {
+  const m = measureSpec(), unitPx = m.px > 0 ? m.px : 10, auto = rulerAuto(unitPx);
+  const gap = n.rulerGap > 0 ? Math.max(16, +n.rulerGap) : auto.gap;
+  let step = auto.step;
+  if (n.rulerStep != null && isFinite(+n.rulerStep)) step = +n.rulerStep;
+  else if (n.rulerGap > 0) step = gap / unitPx;
+  const start = n.rulerStart != null && isFinite(+n.rulerStart) ? +n.rulerStart : 0;
+  const unit = n.rulerUnit != null && String(n.rulerUnit) !== '' ? String(n.rulerUnit) : m.unit;
+  const minor = n.rulerMinor == null ? 4 : Math.max(0, Math.min(12, Math.round(+n.rulerMinor) || 0));
+  const side = n.rulerSide === 'below' ? 1 : -1;
+  return { gap: gap, step: step, start: start, unit: unit, minor: minor, side: side };
+}
+function rulerBits(n) {
+  const raw = n.rulerText != null ? String(n.rulerText).trim() : '';
+  if (!raw) return [];
+  const parts = /,|，|;|；/.test(raw) ? raw.split(/[,，;；]+/) : raw.split(/\s+/);
+  const out = [];
+  for (let i = 0; i < parts.length; i++) { const s = parts[i].trim(); if (s) out.push(s); }
+  return out;
+}
+function rulerTexts(n, count, spec) {
+  const bits = rulerBits(n), out = [];
+  let delta = spec.step;
+  for (let i = 0; i < count; i++) {
+    if (i < bits.length) {
+      out.push(bits[i]);
+      if (i > 0) {
+        const a = parseFloat(bits[i - 1]), b = parseFloat(bits[i]);
+        if (isFinite(a) && isFinite(b)) delta = b - a;
+      }
+    } else if (out.length) {
+      const prev = parseFloat(out[out.length - 1]);
+      out.push(isFinite(prev) ? fmtNum(prev + delta) : fmtNum(spec.start + i * spec.step));
+    } else out.push(fmtNum(spec.start + i * spec.step));
+  }
+  return out;
+}
+function withUnit(label, unit, last) {
+  if (!last || !unit) return label;
+  if (String(label).indexOf(unit) >= 0) return String(label);
+  return label + ' ' + unit;
+}
+function rulerGeom(n) {
+  const spec = rulerSpec(n), len = Math.max(0, +n.w || 0), gap = spec.gap;
+  const count = rulerCount(len, gap);
+  const texts = rulerTexts(n, count, spec), majors = [];
+  for (let i = 0; i < count; i++) majors.push({ x: i * gap, text: withUnit(texts[i], spec.unit, i === count - 1) });
+  const minors = [], sub = spec.minor > 0 ? gap / (spec.minor + 1) : 0;
+  if (sub > 0) {
+    for (let i = 0; i < count; i++) for (let j = 1; j <= spec.minor; j++) {
+      const x = i * gap + j * sub;
+      if (x < len - 0.4) minors.push(x);
+    }
+  }
+  const mid = n.h / 2, dir = spec.side;
+  const majL = Math.max(6, Math.min(11, n.h * 0.22)), minL = Math.max(3, majL * 0.5);
+  const base = dir < 0 ? mid - majL - 3 : mid + majL + 12;
+  const tip = dimLabel(n), last = majors.length ? majors[majors.length - 1].text : '';
+  const caption = tip && tip !== last ? { x: len, y: mid - dir * Math.min(18, n.h * 0.34), text: tip } : null;
+  return { spec: spec, majors: majors, minors: minors, mid: mid, dir: dir, majL: majL, minL: minL, base: base, caption: caption };
+}
+function rulerItems(n) {
+  const g = rulerGeom(n), ticks = [], labels = [];
+  const pt = (x, y) => rotPoint(n, n.x + x, n.y + y);
+  for (let i = 0; i < g.minors.length; i++) ticks.push([pt(g.minors[i], g.mid), pt(g.minors[i], g.mid + g.dir * g.minL)]);
+  for (let i = 0; i < g.majors.length; i++) {
+    const t = g.majors[i], a = pt(t.x, g.base);
+    ticks.push([pt(t.x, g.mid), pt(t.x, g.mid + g.dir * g.majL)]);
+    labels.push({ text: t.text, x: a.x, y: a.y, w: measure(t.text, 12, false) });
+  }
+  if (g.caption) {
+    const a = pt(g.caption.x, g.caption.y);
+    labels.push({ text: g.caption.text, x: a.x, y: a.y, w: measure(g.caption.text, 12, false) });
+  }
+  return { geom: g, ticks: ticks, labels: labels };
+}
+function migrateDimArrow(n) {
+  if (!n) return;
+  if (isLineArrow(n)) {
+    if (n.headColor && !/^#[0-9A-Fa-f]{6}$/.test(String(n.headColor))) delete n.headColor;
+    else if (n.headColor && n.stroke && String(n.headColor).toLowerCase() === String(n.stroke).toLowerCase()) delete n.headColor;
+  }
+  if (n.type !== 'dimArrow') return;
+  if (n.rulerMinor != null) {
+    const k = Math.round(+n.rulerMinor);
+    n.rulerMinor = isFinite(k) ? Math.max(0, Math.min(12, k)) : 0;
+  }
+  if (n.rulerGap != null && !(+n.rulerGap >= 16)) delete n.rulerGap;
+  if (n.rulerSide != null && n.rulerSide !== 'below') delete n.rulerSide;
+  delete n.distMode; delete n.distText;
+}
+function arrowHeadLen(w, h) { return Math.max(8, Math.min(18, h * 0.85, w * 0.28)); }
+function arrowEnds(n) {
+  const y = n.y + n.h / 2;
+  return { tail: rotPoint(n, n.x, y), tip: rotPoint(n, n.x + n.w, y) };
+}
+function arrowMarkup(n) {
+  const cols = arrowColors(n), stroke = cols.shaft;
+  const sw = n.sw > 0 ? n.sw : 2;
+  const head = arrowHeadLen(n.w, n.h), mid = n.h / 2, x1 = Math.max(0, n.w - head), wing = Math.min(head * 0.42, n.h * 0.45);
+  let s = `<line x1="0" y1="${mid}" x2="${n.w}" y2="${mid}" stroke="transparent" stroke-width="${Math.max(14, sw + 10)}"/>`;
+  s += `<line x1="0" y1="${mid}" x2="${x1}" y2="${mid}" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+  s += `<polygon points="${n.w},${mid} ${x1},${mid - wing} ${x1},${mid + wing}" fill="${cols.head}" stroke="none"/>`;
+  if (n.type === 'dimArrow') {
+    const g = rulerGeom(n), textRot = -rotOf(n), tw = Math.max(1, sw * 0.65);
+    const upright = (x, y, text) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="${esc(FONT)}" font-size="12" fill="${stroke}" transform="rotate(${textRot} ${x.toFixed(1)} ${y.toFixed(1)})">${esc(text)}</text>`;
+    for (let i = 0; i < g.minors.length; i++) s += `<line x1="${g.minors[i].toFixed(1)}" y1="${mid}" x2="${g.minors[i].toFixed(1)}" y2="${(mid + g.dir * g.minL).toFixed(1)}" stroke="${stroke}" stroke-width="${tw}"/>`;
+    for (let i = 0; i < g.majors.length; i++) {
+      const t = g.majors[i];
+      s += `<line x1="${t.x.toFixed(1)}" y1="${mid}" x2="${t.x.toFixed(1)}" y2="${(mid + g.dir * g.majL).toFixed(1)}" stroke="${stroke}" stroke-width="${Math.max(tw, 1.1)}"/>`;
+      s += upright(t.x, g.base, t.text);
+    }
+    if (g.caption) s += upright(g.caption.x, g.caption.y, g.caption.text);
+  }
+  const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+  return `<g transform="translate(${cx} ${cy}) rotate(${rotOf(n)}) translate(${-n.w / 2} ${-n.h / 2})">${s}</g>`;
+}
+function iconSVG(ic) {
+  const w = ic.w || ic.s, h = ic.h || ic.s;
+  let tf = '';
+  if (ic.flipX || ic.flipY) {
+    const cx = ic.x + w / 2, cy = ic.y + h / 2;
+    tf = ` transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${ic.flipX ? -1 : 1} ${ic.flipY ? -1 : 1}) translate(${(-cx).toFixed(1)} ${(-cy).toFixed(1)})"`;
+  }
+  return `<image href="${esc(ic.uri)}" x="${ic.x.toFixed(1)}" y="${ic.y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" preserveAspectRatio="xMidYMid meet"${tf}/>`;
+}
+function iconRasterKey(ic) {
+  const w = ic.w || ic.s, h = ic.h || ic.s, asp = h ? w / h : 1;
+  let k = ic.uri || '';
+  if (Math.abs(asp - 1) > 0.001) k += '#a' + asp.toFixed(3);
+  if (ic.flipX || ic.flipY) k += '#f' + (ic.flipX ? 'x' : '') + (ic.flipY ? 'y' : '');
+  return k;
+}
+function iconMirrorURI(uri, flipX, flipY) {
+  if (!uri || (!flipX && !flipY)) return uri;
+  const href = String(uri).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  const sx = flipX ? -1 : 1, sy = flipY ? -1 : 1;
+  return svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g transform="translate(50 50) scale(${sx} ${sy}) translate(-50 -50)"><image href="${href}" width="100" height="100" preserveAspectRatio="xMidYMid meet"/></g></svg>`);
+}
+function sectorSweep(n) {
+  const a = n && +n.sweep;
+  if (!isFinite(a) || a <= 0) return 90;
+  return Math.max(10, Math.min(360, a));
+}
+function sectorGeom(w, h, sweep) {
+  const a = Math.max(10, Math.min(360, +sweep || 90));
+  if (a >= 359.5) return GEO.ellipse(w, h);
+  const arc = arcPts(w / 2, h / 2, Math.max(0.5, w / 2), Math.max(0.5, h / 2), -90, -90 + a, Math.max(8, Math.round(a / 7)));
+  const mid = (-90 + a / 2) * Math.PI / 180, tw = Math.max(16, w * 0.28), th = Math.max(16, h * 0.28);
+  const ix = w / 2 + Math.cos(mid) * w * 0.2 - tw / 2, iy = h / 2 + Math.sin(mid) * h * 0.2 - th / 2;
+  return { fill: [[[w / 2, h / 2]].concat(arc)], inner: [ix, iy, tw, th] };
+}
+function gradSpec(n, fallback) {
+  if (!n || (n.grad !== 'h' && n.grad !== 'v' && n.grad !== 'r')) return null;
+  const c1 = n.fill || fallback;
+  const c2 = /^#[0-9A-Fa-f]{6}$/.test(n.gradTo || '') ? n.gradTo : c1;
+  let a2 = n.gradA == null ? 1 : +n.gradA;
+  if (!isFinite(a2)) a2 = 1;
+  return { dir: n.grad, c1: c1, a1: 1, c2: c2, a2: Math.max(0, Math.min(1, a2)) };
+}
+function paintOf(n, t) {
+  const st = stStyle(n, t);
+  let fill = st.fill, stroke = st.stroke;
+  if ((n.type === 'note' || n.type === 'legend') && !n.fill) fill = t.note.fill;
+  if ((n.type === 'note' || n.type === 'legend') && !n.stroke) stroke = t.note.stroke;
+  const noLine = !!n.noLine;
+  return { fill: fill, stroke: noLine ? 'none' : stroke, sw: noLine ? 0 : 1.2, grad: gradSpec(n, fill), noLine: noLine };
+}
+function gradDef(id, g) {
+  if (!g) return { attr: '', def: '' };
+  const gid = 'gf' + String(id).replace(/[^A-Za-z0-9_-]/g, '');
+  const stops = `<stop offset="0" stop-color="${esc(g.c1)}" stop-opacity="${g.a1}"/><stop offset="1" stop-color="${esc(g.c2)}" stop-opacity="${g.a2}"/>`;
+  const def = g.dir === 'r'
+    ? `<radialGradient id="${gid}" cx="50%" cy="50%" r="70%">${stops}</radialGradient>`
+    : `<linearGradient id="${gid}" x1="0" y1="0" x2="${g.dir === 'h' ? 1 : 0}" y2="${g.dir === 'h' ? 0 : 1}">${stops}</linearGradient>`;
+  return { attr: 'url(#' + gid + ')', def: def };
+}
+function gradTag(g) {
+  if (!g) return '';
+  const hex6 = c => String(c || '').replace('#', '').slice(0, 6).toUpperCase();
+  return 'jwG' + g.dir + hex6(g.c1) + String(Math.round(g.a2 * 100)).padStart(3, '0') + hex6(g.c2);
+}
+/* PPT 形状名：渐变标记，末尾 N 表示无描边。pptxgenjs 会把线宽 0 写成 1，导出后再改 XML。 */
+function pptName(paint) {
+  if (!paint) return '';
+  const g = paint.grad ? gradTag(paint.grad) : '';
+  if (!g && !paint.noLine) return '';
+  return (g || 'jwC') + (paint.noLine ? 'N' : '');
+}
+function gradFillXml(g) {
+  const stop = (pos, c, a) => `<a:gs pos="${pos}"><a:srgbClr val="${String(c).replace('#', '').slice(0, 6).toUpperCase()}"><a:alpha val="${Math.round(a * 100000)}"/></a:srgbClr></a:gs>`;
+  const geom = g.dir === 'r'
+    ? '<a:path path="circle"><a:fillToRect l="50000" t="50000" r="50000" b="50000"/></a:path>'
+    : `<a:lin ang="${g.dir === 'h' ? 0 : 5400000}" scaled="1"/>`;
+  return `<a:gradFill rotWithShape="1"><a:gsLst>${stop(0, g.c1, 1)}${stop(100000, g.c2, g.a2)}</a:gsLst>${geom}</a:gradFill>`;
+}
+function shapeGeom(type, w, h, sweep) {
+  const g = type === 'sector' ? sectorGeom(w, h, sweep) : (GEO[type] || GEO.rect)(w, h);
+  g.lines = g.lines || []; g.shade = g.shade || []; return g;
+}
 const ptsD = (pts, x, y, close) => 'M' + pts.map(p => `${(x + p[0]).toFixed(1)},${(y + p[1]).toFixed(1)}`).join(' L') + (close ? 'Z' : '');
-function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2) {
+function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2, sweep) {
   const a = `fill="${fill}" stroke="${stroke}" stroke-width="${sw}"`;
   if (type === 'ellipse') return `<ellipse cx="${x + w / 2}" cy="${y + h / 2}" rx="${w / 2}" ry="${h / 2}" ${a}/>`;
   if (type === 'diamond') return `<polygon points="${x + w / 2},${y} ${x + w},${y + h / 2} ${x + w / 2},${y + h} ${x},${y + h / 2}" ${a}/>`;
-  if (GEO[type] && type !== 'rect') {
-    const g = shapeGeom(type, w, h);
+  if (type === 'sector' || (GEO[type] && type !== 'rect')) {
+    const g = shapeGeom(type, w, h, sweep);
     let s = `<path d="${g.fill.map(p => ptsD(p, x, y, true)).join(' ')}" fill-rule="evenodd" stroke-linejoin="round" ${a}/>`;
     for (const sh of g.shade) s += `<path d="${ptsD(sh.pts, x, y, true)}" fill="#000" fill-opacity="${sh.op}" stroke="none"/>`;
     for (const l of g.lines) s += `<path d="${ptsD(l, x, y)}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
@@ -386,8 +668,8 @@ function shapeMarkup(type, x, y, w, h, fill, stroke, sw = 1.2) {
 }
 /* text/icon box inside a shape (absolute coords) */
 function innerBox(n) {
-  if (!GEO[n.type] || n.type === 'rect' || n.noBox) return null;
-  const b = shapeGeom(n.type, n.w, n.h).inner; return { x: n.x + b[0], y: n.y + b[1], w: Math.max(12, b[2]), h: Math.max(12, b[3]) };
+  if ((!GEO[n.type] && n.type !== 'sector') || n.type === 'rect' || n.noBox) return null;
+  const b = shapeGeom(n.type, n.w, n.h, n.sweep).inner; return { x: n.x + b[0], y: n.y + b[1], w: Math.max(12, b[2]), h: Math.max(12, b[3]) };
 }
 const BAND_TW = 34, GROUP_TH = 26;
 const laneTW = n => n.titleW || 96;
@@ -459,7 +741,8 @@ function nodeSVG(n, p, exp) {
     if (window.Std) s += Std.tblockSVG(n, p);
   } else if (n.type === 'legend') {
     const items = legendLayout(n, p);
-    s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="4" fill="${t.note.fill}" stroke="${t.note.stroke}"/>`;
+    const lp = paintOf(n, t), lf = gradDef(n.id, lp.grad);
+    s += lf.def + `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="4" fill="${lf.attr || lp.fill}" stroke="${lp.stroke}" stroke-width="${lp.noLine ? 0 : 1}"/>`;
     for (const it of items) {
       if (it.kind === 'st') {
         const ss = it.s === 'base' ? { fill: t.box.fill, stroke: t.box.stroke } : t.st[it.s];
@@ -471,11 +754,15 @@ function nodeSVG(n, p, exp) {
       s += textBlock([it.label], it.x + 34, it.y + 10, 12, false, t.text, 'start');
     }
   } else {
-    if (n.type === 'note') s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="3" fill="${t.note.fill}" stroke="${t.note.stroke}"/>`;
-    else if (n.type !== 'text' && !n.noBox) { const st = stStyle(n, t); s += shapeMarkup(n.type, n.x, n.y, n.w, n.h, st.fill, st.stroke); }
-    else if (n.type === 'equip' && n.noBox && n.status !== 'base') { const st = stStyle(n, t); s += shapeMarkup('equip', n.x, n.y, n.w, n.h, st.fill, st.stroke, 1); }
-    const L = nodeLayout(n);
-    if (L.icon) s += `<image href="${esc(L.icon.uri)}" x="${L.icon.x.toFixed(1)}" y="${L.icon.y.toFixed(1)}" width="${(L.icon.w || L.icon.s).toFixed(1)}" height="${(L.icon.h || L.icon.s).toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
+    if (isLineArrow(n)) s += arrowMarkup(n);
+    else if (n.type === 'note' || (n.type !== 'text' && !n.noBox) || (n.type === 'equip' && n.noBox && n.status !== 'base')) {
+      const paint = paintOf(n, t), fp = gradDef(n.id, paint.grad);
+      const kind = n.type === 'note' ? 'rect' : (n.type === 'equip' && n.noBox ? 'equip' : n.type);
+      const sw = (n.type === 'note' || (n.type === 'equip' && n.noBox)) ? (paint.noLine ? 0 : 1) : paint.sw;
+      s += fp.def + shapeMarkup(kind, n.x, n.y, n.w, n.h, fp.attr || paint.fill, paint.stroke, sw, n.sweep);
+    }
+    const L = isLineArrow(n) ? { icon: null, text: null } : nodeLayout(n);
+    if (L.icon) s += iconSVG(L.icon);
     if (L.text) s += textBlock(L.text.lines, L.text.x, L.text.cy, L.text.size, L.text.bold, L.text.color, L.text.anchor, L.text.family);
   }
   if (window.Std) s += Std.codeTagSVG(n, p);
@@ -638,7 +925,7 @@ function computeRoutes(p) {
   for (const it of info) {
     const q = it.pts; if (!q || q.length < 2) continue;
     for (const [n, i, j] of [[it.a, 0, 1], [it.b, q.length - 1, q.length - 2]]) {
-      if (!n || n.noBox || !GEO[n.type] || OUTLINE_RECT.has(n.type)) continue;
+      if (!n || n.noBox || OUTLINE_RECT.has(n.type) || (n.type !== 'sector' && !GEO[n.type])) continue;
       const e = q[i], f = q[j], v = Math.abs(e.x - f.x) < 0.5; /* 端段竖直 → 端点在上／下边 */
       const hit = outlineHit(n, v ? (e.y <= n.y + 0.6 ? 't' : 'b') : (e.x <= n.x + 0.6 ? 'l' : 'r'), e);
       if (hit) { e.x = hit.x; e.y = hit.y; }
@@ -665,17 +952,39 @@ function computeRoutes(p) {
 }
 const OUTLINE_RECT = new Set(['rect', 'round', 'roundL', 'roundR', 'equip', 'predef', 'frame', 'callout', 'note']);
 /* 外接框边上的点 e，沿垂直于该边的方向与图形轮廓求交（取最外侧交点）；无交点返回 null */
+function nearSeg(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+  if (l2 < 1e-6) return [ax, ay];
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+  return [ax + t * dx, ay + t * dy];
+}
 function outlineHit(n, side, e) {
   if (Math.abs(side === 'l' ? e.x - n.x : side === 'r' ? e.x - n.x - n.w : side === 't' ? e.y - n.y : e.y - n.y - n.h) > 0.8) return null;
-  const g = shapeGeom(n.type, n.w, n.h), hz = side === 'l' || side === 'r', c = hz ? e.y - n.y : e.x - n.x, hits = [];
-  for (const poly of g.fill.slice(0, 1)) for (let k = 0; k < poly.length; k++) {
+  const g = shapeGeom(n.type, n.w, n.h, n.sweep), hz = side === 'l' || side === 'r', c = hz ? e.y - n.y : e.x - n.x, hits = [];
+  const poly = (g.fill && g.fill[0]) || [];
+  for (let k = 0; k < poly.length; k++) {
     const A = poly[k], B = poly[(k + 1) % poly.length], a0 = hz ? A[1] : A[0], b0 = hz ? B[1] : B[0];
     if ((a0 - c) * (b0 - c) > 0 || a0 === b0) continue;
     const t = (c - a0) / (b0 - a0); hits.push(hz ? A[0] + (B[0] - A[0]) * t : A[1] + (B[1] - A[1]) * t);
   }
-  if (!hits.length) return null;
-  const d = side === 'l' || side === 't' ? Math.min(...hits) : Math.max(...hits);
-  return hz ? { x: n.x + d, y: e.y } : { x: e.x, y: n.y + d };
+  if (hits.length) {
+    const d = side === 'l' || side === 't' ? Math.min(...hits) : Math.max(...hits);
+    const pt = hz ? { x: n.x + d, y: e.y } : { x: e.x, y: n.y + d };
+    if (n.type !== 'sector') return pt;
+    const cx = n.x + n.w / 2, cy = n.y + n.h / 2, reach = Math.min(n.w, n.h) * 0.2;
+    if (Math.hypot(pt.x - cx, pt.y - cy) > reach) return pt;
+  }
+  /* 扇形的空角没有轮廓：端点改落到楔形边上，而不是停在外接框或扇心 */
+  if (n.type !== 'sector' || poly.length < 3) return null;
+  const px = hz ? (side === 'l' ? 0 : n.w) : e.x - n.x, py = hz ? e.y - n.y : (side === 't' ? 0 : n.h);
+  let best = null, bd = Infinity;
+  for (let k = 0; k < poly.length; k++) {
+    const A = poly[k], B = poly[(k + 1) % poly.length], q = nearSeg(px, py, A[0], A[1], B[0], B[1]);
+    const dd = (q[0] - px) * (q[0] - px) + (q[1] - py) * (q[1] - py);
+    if (dd < bd) { bd = dd; best = q; }
+  }
+  if (!best || bd < 1) return null;
+  return { x: n.x + best[0], y: n.y + best[1] };
 }
 /* ---------- 自动避障 ---------- */
 function isAncestor(o, n, byId) { let q = n.parent ? byId.get(n.parent) : null, g = 0; while (q && g++ < 30) { if (q === o) return true; q = q.parent ? byId.get(q.parent) : null; } return false; }
@@ -1022,13 +1331,26 @@ function overlaySVG() {
   });
   for (const id of sel) {
     const n = nodeById(id); if (!n) continue;
-    s += `<rect x="${n.x - 3}" y="${n.y - 3}" width="${n.w + 6}" height="${n.h + 6}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
+    if (isLineArrow(n) && rotOf(n)) {
+      const pts = [[n.x, n.y], [n.x + n.w, n.y], [n.x + n.w, n.y + n.h], [n.x, n.y + n.h]].map(([x, y]) => rotPoint(n, x, y));
+      s += `<polygon points="${pts.map(p => p.x + ',' + p.y).join(' ')}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
+    } else s += `<rect x="${n.x - 3}" y="${n.y - 3}" width="${n.w + 6}" height="${n.h + 6}" fill="none" stroke="${A}" stroke-width="${1.4 / view.k}" stroke-dasharray="${4 / view.k} ${3 / view.k}" pointer-events="none"/>`;
   }
   const hs = 8 / view.k;
   if (sel.size === 1) {
     const n = nodeById([...sel][0]);
-    if (n) for (const [h, x, y] of [['nw', n.x, n.y], ['ne', n.x + n.w, n.y], ['sw', n.x, n.y + n.h], ['se', n.x + n.w, n.y + n.h]])
-      s += `<rect data-h="${h}" x="${x - hs / 2}" y="${y - hs / 2}" width="${hs}" height="${hs}" fill="#fff" stroke="${A}" stroke-width="${1.4 / view.k}" style="cursor:${h === 'nw' || h === 'se' ? 'nwse' : 'nesw'}-resize"/>`;
+    if (n) {
+      const corners = [['nw', n.x, n.y], ['ne', n.x + n.w, n.y], ['sw', n.x, n.y + n.h], ['se', n.x + n.w, n.y + n.h]];
+      for (const [h, x, y] of corners) {
+        const p = isLineArrow(n) ? rotPoint(n, x, y) : { x: x, y: y };
+        s += `<rect data-h="${h}" x="${p.x - hs / 2}" y="${p.y - hs / 2}" width="${hs}" height="${hs}" fill="#fff" stroke="${A}" stroke-width="${1.4 / view.k}" style="cursor:${h === 'nw' || h === 'se' ? 'nwse' : 'nesw'}-resize"/>`;
+      }
+      if (isLineArrow(n)) {
+        const top = rotPoint(n, n.x + n.w / 2, n.y), grip = rotPoint(n, n.x + n.w / 2, n.y - 18 / view.k);
+        s += `<line x1="${top.x}" y1="${top.y}" x2="${grip.x}" y2="${grip.y}" stroke="${A}" stroke-width="${1.2 / view.k}" pointer-events="none"/>`;
+        s += `<circle data-h="rot" cx="${grip.x}" cy="${grip.y}" r="${5.5 / view.k}" fill="#fff" stroke="${A}" stroke-width="${1.4 / view.k}" style="cursor:grab"><title>拖动旋转</title></circle>`;
+      }
+    }
   }
   const portFor = hoverId && !ui.drag ? nodeById(hoverId) : (sel.size === 1 && !ui.drag ? nodeById([...sel][0]) : null);
   if (portFor && portFor.type !== 'legend' && portFor.type !== 'tblock') {
@@ -1044,10 +1366,21 @@ function overlaySVG() {
 function render(full = true) {
   ensureLegend(P());
   const pb = contentBBox(), pp = 28;
-  setMarkup(world, `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + diagramSVG(P(), false, 'm') + overlaySVG());
+  setMarkup(world, `<rect x="${pb.x - pp}" y="${pb.y - pp}" width="${pb.w + pp * 2}" height="${pb.h + pp * 2}" fill="${T().bg}" stroke="rgba(120,130,145,.35)" stroke-width="${1 / view.k}" pointer-events="none"/>` + (window.CanvasBg ? CanvasBg.markup(P()) : '') + diagramSVG(P(), false, 'm') + overlaySVG());
   applyView(); applyHover();
   if (full) { renderProps(); renderCrumb(); noteLinkSelection(); }
+  syncDistField();
   if (window.Backup) Backup.poke();
+}
+function syncDistField() {
+  const el = $('#p-dist');
+  if (!el) return;
+  const rows = selectedNodes().filter(n => n.type === 'dimArrow');
+  if (!rows.length) return;
+  const first = dimLabel(rows[0]);
+  const mixed = rows.some(n => dimLabel(n) !== first);
+  el.value = mixed ? '' : first;
+  if (mixed) el.placeholder = '多值';
 }
 let linkNoted;
 function noteLinkSelection() {
@@ -1105,7 +1438,27 @@ function clientToWorld(cx, cy) { const r = svg.getBoundingClientRect(); return {
 function contentBBox(p = P()) {
   if (!p.nodes.length) return { x: 0, y: 0, w: 400, h: 300 };
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-  for (const n of p.nodes) { if (n.type === 'legend') legendLayout(n, p); x0 = Math.min(x0, n.x); y0 = Math.min(y0, n.y); x1 = Math.max(x1, n.x + n.w); y1 = Math.max(y1, n.y + n.h); }
+  for (const n of p.nodes) {
+    if (n.type === 'legend') legendLayout(n, p);
+    let nx0 = n.x, ny0 = n.y, nx1 = n.x + n.w, ny1 = n.y + n.h;
+    if (isLineArrow(n) && rotOf(n)) {
+      const pts = [[n.x, n.y], [n.x + n.w, n.y], [n.x + n.w, n.y + n.h], [n.x, n.y + n.h]].map(([x, y]) => rotPoint(n, x, y));
+      nx0 = Math.min(...pts.map(q => q.x)); ny0 = Math.min(...pts.map(q => q.y)); nx1 = Math.max(...pts.map(q => q.x)); ny1 = Math.max(...pts.map(q => q.y));
+    }
+    if (n.type === 'dimArrow') {
+      const items = rulerItems(n);
+      for (let i = 0; i < items.labels.length; i++) {
+        const lb = items.labels[i];
+        nx0 = Math.min(nx0, lb.x - lb.w / 2 - 2); nx1 = Math.max(nx1, lb.x + lb.w / 2 + 2);
+        ny0 = Math.min(ny0, lb.y - 12); ny1 = Math.max(ny1, lb.y + 4);
+      }
+      for (let i = 0; i < items.ticks.length; i++) for (let k = 0; k < items.ticks[i].length; k++) {
+        nx0 = Math.min(nx0, items.ticks[i][k].x); ny0 = Math.min(ny0, items.ticks[i][k].y);
+        nx1 = Math.max(nx1, items.ticks[i][k].x); ny1 = Math.max(ny1, items.ticks[i][k].y);
+      }
+    }
+    x0 = Math.min(x0, nx0); y0 = Math.min(y0, ny0); x1 = Math.max(x1, nx1); y1 = Math.max(y1, ny1);
+  }
   /* 绕行到图外侧的连线及其标签也算在图面内 */
   try {
     for (const l of p.links) {
@@ -1155,7 +1508,7 @@ function findParent(n, p = P()) {
 /* 叶子框按文字所需高度（多行时自动加高，不再固定 36） */
 const SHAPED_K = new Set(['ellipse', 'diamond', 'hexagon', 'octagon', 'cylinder', 'cloud', 'document', 'parallelogram', 'trapezoid', 'cube', 'callout', 'display', 'predef', 'chevron', 'homeplate', 'pentagon', 'triangle', 'star', 'donut', 'plus', 'delay']);
 function leafH(it, w) {
-  if (it.type === 'equip') return it.h;
+  if (it.type === 'equip' || isLineArrow(it)) return it.h;
   const size = it.size || 13, k = SHAPED_K.has(it.type) ? (it.type === 'diamond' ? 1.7 : 1.35) : 1;
   const extra = it.icon ? 30 : 0;
   const lines = it.text ? wrap(it.text, Math.max(30, w / k - 10 - extra), size, it.bold).length : 1;
@@ -1183,14 +1536,16 @@ function layoutRow(items, x0, x1, y0, y1, opt = {}) {
     /* 叶子取自然宽度（同行统一），其余宽度按子元素数分给容器 */
     const gap = (opt.minGap ?? 28) >= 36 ? 44 : 12;
     const leaves = items.filter(i => !isCont(i)), conts = items.filter(isCont);
-    const lw = leaves.filter(i => i.type !== 'equip').length ? Math.max(...leaves.filter(i => i.type !== 'equip').map(leafNatW)) : 0;
-    const leafW = i => i.type === 'equip' ? i.w : lw;
+    const own = i => i.type === 'equip' || isLineArrow(i);
+    const plain = leaves.filter(i => !own(i));
+    const lw = plain.length ? Math.max(...plain.map(leafNatW)) : 0;
+    const leafW = i => own(i) ? i.w : lw;
     const rest = avail - gap * (n - 1) - leaves.reduce((a, i) => a + leafW(i), 0);
     const wt = conts.map(i => Math.max(2, kids(i.id).length)), sum = wt.reduce((a, b) => a + b, 0) || 1;
     let x = x0;
     items.forEach(it => {
       const w = isCont(it) ? Math.max(120, rest * wt[conts.indexOf(it)] / sum) : leafW(it);
-      if (it.type === 'equip') it.x = snapv(x); else { it.x = snapv(x); it.w = snapv(w); }
+      if (it.type === 'equip' || isLineArrow(it)) it.x = snapv(x); else { it.x = snapv(x); it.w = snapv(w); }
       x += w + gap;
     });
     const need = Math.max(...items.map(it => isCont(it) ? groupNeed(it) : leafH(it, it.w)));
@@ -1203,16 +1558,16 @@ function layoutRow(items, x0, x1, y0, y1, opt = {}) {
   for (const it of items) delete it._dy;
   /* 一行放不下（框宽会小于 72）：按网格折成多行，_dy 记录行内纵向偏移，由调用方定位 */
   if ((avail - minGap * (n - 1)) / n < 72) {
-    const gw = Math.min(cap, Math.max(72, ...items.filter(i => i.type !== 'equip').map(leafNatW).concat([72])), avail);
+    const gw = Math.min(cap, Math.max(72, ...items.filter(i => i.type !== 'equip' && !isLineArrow(i)).map(leafNatW).concat([72])), avail);
     const cols = Math.max(1, Math.floor((avail + minGap) / (gw + minGap))), rowsN = Math.ceil(n / cols), vg = 16;
     let dy = 0;
     for (let r = 0; r < rowsN; r++) {
       const row = items.slice(r * cols, r * cols + cols), tot = row.length * gw + (row.length - 1) * minGap;
-      const rh = Math.max(...row.map(i => i.type === 'equip' ? i.h : leafH(i, gw)));
+      const rh = Math.max(...row.map(i => i.type === 'equip' || isLineArrow(i) ? i.h : leafH(i, gw)));
       let x = x0 + (avail - tot) / 2;
       for (const it of row) {
-        const h = it.type === 'equip' ? it.h : leafH(it, gw);
-        if (it.type === 'equip') it.x = snapv(x + (gw - it.w) / 2); else { it.x = snapv(x); it.w = snapv(gw); }
+        const h = it.type === 'equip' || isLineArrow(it) ? it.h : leafH(it, gw);
+        if (it.type === 'equip' || isLineArrow(it)) it.x = snapv(x + (gw - it.w) / 2); else { it.x = snapv(x); it.w = snapv(gw); }
         it._dy = dy + (rh - h) / 2; x += gw + minGap;
       }
       dy += rh + vg;
@@ -1223,11 +1578,11 @@ function layoutRow(items, x0, x1, y0, y1, opt = {}) {
   const gap = n > 1 ? Math.min(Math.max(opt.maxGap ?? 72, minGap), (avail - n * w) / (n - 1)) : 0;
   const total = n * w + (n - 1) * gap; let x = x0 + (avail - total) / 2;
   for (const it of items) {
-    if (it.type === 'equip') { it.x = snapv(x + (w - it.w) / 2); }
+    if (it.type === 'equip' || isLineArrow(it)) { it.x = snapv(x + (w - it.w) / 2); }
     else { it.x = snapv(x); it.w = snapv(w); }
     x += w + gap;
   }
-  return Math.max(...items.map(i => leafH(i, i.type === 'equip' ? i.w : w)));
+  return Math.max(...items.map(i => leafH(i, i.type === 'equip' || isLineArrow(i) ? i.w : w)));
 }
 /* 子容器排布：按原图的行（纵向聚类）保留行结构，行内等宽、等距、居中；框按文字取自然尺寸，不再拉伸填满 */
 function rowsOf(ks) {
@@ -1241,7 +1596,7 @@ function rowsOf(ks) {
   return rows;
 }
 function leafNatW(k) {
-  if (k.type === 'equip') return k.w;
+  if (k.type === 'equip' || isLineArrow(k)) return k.w;
   const size = k.size || 13, tw = Math.max(0, ...String(k.text || '').split('\n').map(t => measure(t, size, k.bold)));
   const kk = SHAPED_K.has(k.type) ? (k.type === 'diamond' ? 1.7 : 1.35) : 1;
   return snapv(clamp(tw * kk + 28 + (k.icon ? 30 : 0), 96, 180));
@@ -1253,7 +1608,7 @@ function groupPlan(g, width) {
   const rows = rowsOf(ks);
   const leaves = ks.filter(k => !isCont(k) && k.type !== 'equip');
   const uw = leaves.length ? Math.max(...leaves.map(leafNatW)) : 0;
-  const widthOf = k => isCont(k) ? groupPlan(k).w : k.type === 'equip' ? k.w : uw;
+  const widthOf = k => isCont(k) ? groupPlan(k).w : (k.type === 'equip' || isLineArrow(k)) ? k.w : uw;
   let maxW = 0;
   for (const r of rows) { r.ws = r.items.map(widthOf); r.w = r.ws.reduce((a, b) => a + b, 0) + gap * (r.items.length - 1); maxW = Math.max(maxW, r.w); }
   const tg = codeTagOf(g, P()), titleW = measure(String(g.text || '').split('\n')[0], 12.5, true) + 24 + (tg ? tg.w + 8 : 0);
@@ -1275,8 +1630,8 @@ function groupPlan(g, width) {
   /* 宽度不够时等比收窄叶子 */
   const k = Math.min(1, (inner - 24) / (maxW || 1));
   for (const r of rows) {
-    r.ws = r.ws.map((x, i) => { const it = r.items[i]; return it.type === 'equip' || isCont(it) ? x : snapv(Math.max(72, x * k)); });
-    r.hs = r.items.map((it, i) => isCont(it) ? groupPlan(it, r.ws[i]).h : it.type === 'equip' ? it.h : leafH(it, r.ws[i]));
+    r.ws = r.ws.map((x, i) => { const it = r.items[i]; return it.type === 'equip' || isCont(it) || isLineArrow(it) ? x : snapv(Math.max(72, x * k)); });
+    r.hs = r.items.map((it, i) => isCont(it) ? groupPlan(it, r.ws[i]).h : (it.type === 'equip' || isLineArrow(it)) ? it.h : leafH(it, r.ws[i]));
     r.rh = Math.max(...r.hs); r.w = r.ws.reduce((a, b) => a + b, 0) + gap * (r.items.length - 1);
   }
   const h = eat.y + 12 + rows.reduce((a, r) => a + r.rh, 0) + vgap * (rows.length - 1) + 12;
@@ -1294,7 +1649,7 @@ function layoutGroup(g) {
       const w = r.ws[i], h = r.hs[i];
       const nx = snapv(x), ny = snapv(y + (r.rh - h) / 2);
       if (isCont(it)) { const dx = nx - it.x, dy = ny - it.y; for (const d of descendants(it.id)) { d.x += dx; d.y += dy; } it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); layoutCont(it); }
-      else if (it.type === 'equip') { it.x = snapv(x + (w - it.w) / 2); it.y = ny; }
+      else if (it.type === 'equip' || isLineArrow(it)) { it.x = snapv(x + (w - it.w) / 2); it.y = ny; }
       else { it.x = nx; it.y = ny; it.w = snapv(w); it.h = snapv(h); }
       x += w + pl.gap;
     });
@@ -1311,9 +1666,9 @@ function layoutLane(l) {
   l.h = snapv(Math.max(bar + (hasG ? need + 16 : need + 20), 56));
   const box = contFrame(l).content;
   for (const k of ks) {
-    if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(box.y + (box.h - need) / 2 + k._dy); delete k._dy; continue; }
+    if (k._dy != null) { if (k.type !== 'equip' && !isLineArrow(k)) k.h = snapv(leafH(k, k.w)); k.y = snapv(box.y + (box.h - need) / 2 + k._dy); delete k._dy; continue; }
     if (isCont(k)) { k.y = snapv(box.y + 8); k.h = snapv(box.h - 16); layoutCont(k); }
-    else if (k.type === 'equip') k.y = snapv(box.y + (box.h - k.h) / 2);
+    else if (k.type === 'equip' || isLineArrow(k)) k.y = snapv(box.y + (box.h - k.h) / 2);
     else { k.h = snapv(Math.min(leafH(k, k.w), box.h - 16)); k.y = snapv(box.y + (box.h - k.h) / 2); }
   }
 }
@@ -1390,9 +1745,9 @@ function layoutBand(b) {
       const need = layoutRow(rest, mainX + 16, mainX + mainW - 16, 0, 0, { cap: 180, maxGap: 160 });
       const rowH = Math.max(need, 40) + 20;
       for (const k of rest) {
-        if (k._dy != null) { if (k.type !== 'equip') k.h = snapv(leafH(k, k.w)); k.y = snapv(y + 10 + k._dy); delete k._dy; continue; }
+        if (k._dy != null) { if (k.type !== 'equip' && !isLineArrow(k)) k.h = snapv(leafH(k, k.w)); k.y = snapv(y + 10 + k._dy); delete k._dy; continue; }
         if (isCont(k)) { k.y = snapv(y + 4); k.h = snapv(rowH - 8); layoutCont(k); }
-        else if (k.type === 'equip') k.y = snapv(y + (rowH - k.h) / 2);
+        else if (k.type === 'equip' || isLineArrow(k)) k.y = snapv(y + (rowH - k.h) / 2);
         else { k.h = leafH(k, k.w); k.y = snapv(y + (rowH - k.h) / 2); }
       }
       y += rowH;
@@ -1424,7 +1779,7 @@ function bandNeedW(b, p) {
   const ks = kids(b.id, p);
   const lanes = ks.filter(k => { const r = contRow(k); return r && r.layout === 'row'; });
   const others = ks.filter(k => lanes.indexOf(k) < 0 && !(contRow(k) && (contRow(k).layout === 'margin' || contRow(k).layout === 'tile')));
-  const rowW = items => { if (!items.length) return 0; const lw = Math.max(0, ...items.filter(i => !isCont(i) && i.type !== 'equip').map(leafNatW)); return items.reduce((a, i) => a + (isCont(i) ? groupPlan(i).w : i.type === 'equip' ? i.w : lw), 0) + 56 * (items.length - 1); };
+  const rowW = items => { if (!items.length) return 0; const lw = Math.max(0, ...items.filter(i => !isCont(i) && i.type !== 'equip' && !isLineArrow(i)).map(leafNatW)); return items.reduce((a, i) => a + (isCont(i) ? groupPlan(i).w : (i.type === 'equip' || isLineArrow(i)) ? i.w : lw), 0) + 56 * (items.length - 1); };
   let w = others.length ? rowW(others) + 32 : 0;
   for (const l of lanes) {
     const side = sideOf(l), tw = (side === 'l' || side === 'r') ? thickness(l, contRow(l)) : 0;
@@ -1611,7 +1966,7 @@ const shThumb = (type, w, h) => { const x = (42 - w) / 2, y = (30 - h) / 2; retu
 const SH = (k, w, h, tw, th, text, grp) => ({ k, name: SHP_DEF[k].name, grp, spec: { type: k, w, h, text: text ?? SHP_DEF[k].name.replace(/（.*）/, '') }, svg: shThumb(k, tw, th) });
 const SHAPES = SHAPES0.map(s => Object.assign(s, { grp: '基础形状' })).slice(0, 6).concat([
   SH('roundL', 120, 40, 32, 18, null, '基础形状'), SH('roundR', 120, 40, 32, 18, null, '基础形状'),
-  SH('hexagon', 120, 56, 32, 20, null, '基础形状'), SH('octagon', 72, 72, 22, 22, null, '基础形状'), SH('triangle', 88, 72, 26, 22, null, '基础形状'),
+  SH('hexagon', 120, 56, 32, 20, null, '基础形状'), SH('octagon', 72, 72, 22, 22, null, '基础形状'), SH('triangle', 88, 72, 26, 22, null, '基础形状'), SH('sector', 88, 72, 26, 22, '', '基础形状'),
   SH('parallelogram', 130, 48, 34, 18, null, '基础形状'), SH('trapezoid', 120, 52, 32, 18, null, '基础形状'), SH('pentagon', 80, 76, 24, 23, null, '基础形状'),
   SH('star', 80, 76, 24, 23, '', '基础形状'), SH('cylinder', 88, 84, 22, 24, '数据库', '基础形状'), SH('cloud', 130, 80, 34, 22, null, '基础形状'),
   SH('cube', 96, 80, 26, 22, null, '基础形状'), SH('plus', 64, 64, 22, 22, '', '基础形状'), SH('donut', 72, 72, 22, 22, '', '基础形状'), SH('frame', 140, 70, 32, 20, null, '基础形状'),
@@ -1620,6 +1975,8 @@ const SHAPES = SHAPES0.map(s => Object.assign(s, { grp: '基础形状' })).slice
   SH('delay', 110, 52, 30, 18, null, '流程与标注'), SH('terminator', 120, 44, 34, 16, '开始', '流程与标注'), SH('callout', 140, 56, 32, 16, '标注说明', '流程与标注'),
   SH('arrowR', 120, 52, 34, 18, '', '箭头'), SH('arrowL', 120, 52, 34, 18, '', '箭头'), SH('arrowU', 56, 100, 16, 26, '', '箭头'), SH('arrowD', 56, 100, 16, 26, '', '箭头'),
   SH('arrowLR', 140, 52, 36, 18, '', '箭头'), SH('arrowUD', 56, 110, 16, 26, '', '箭头'), SH('chevron', 120, 48, 32, 18, '阶段', '箭头'), SH('homeplate', 120, 48, 32, 18, '阶段', '箭头'),
+  { k: 'stdArrow', name: '标准箭头', grp: '箭头', spec: { type: 'stdArrow', w: 160, h: 36, text: '' }, svg: '<line x1="4" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="1.6"/><polygon points="38,16 30,12 30,20" fill="currentColor"/>' },
+  { k: 'dimArrow', name: '距离箭头', grp: '箭头', spec: { type: 'dimArrow', w: 192, h: 64, text: '', rulerStep: 10, rulerGap: 48, rulerMinor: 4, rulerUnit: 'm' }, svg: '<text x="5" y="9" font-size="7" fill="currentColor">0</text><text x="17" y="9" text-anchor="middle" font-size="7" fill="currentColor">10</text><text x="29" y="9" text-anchor="middle" font-size="7" fill="currentColor">20</text><line x1="5" y1="11" x2="5" y2="16" stroke="currentColor" stroke-width="1.2"/><line x1="11" y1="13.5" x2="11" y2="16" stroke="currentColor" stroke-width="1"/><line x1="17" y1="11" x2="17" y2="16" stroke="currentColor" stroke-width="1.2"/><line x1="23" y1="13.5" x2="23" y2="16" stroke="currentColor" stroke-width="1"/><line x1="29" y1="11" x2="29" y2="16" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="16" x2="32" y2="16" stroke="currentColor" stroke-width="1.5"/><polygon points="40,16 32,12.5 32,19.5" fill="currentColor"/>' },
 ]);
 const CONTS = [
   { name: '分组带', spec: { type: 'band', w: 1000, h: 180, text: '分组' }, svg: '<rect x="3" y="5" width="36" height="22" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="5" width="7" height="22" fill="currentColor"/>', rank: 1, nest: false, defaultSide: 'l', layout: 'stack', stack: 'lanes', dialect: 'band', tone: 'band', slab: 'fill', thick: { mode: 'fixed', px: 34 }, script: 'chars', size: 15, bold: true, pad: 0, fill: 'node', stroke: 'node', titleFill: 'statusStroke', sw: 1.5, rx: 0, dash: '', rule: 0, block: false, dodge: false, badge: 'out', badgeAlign: 'start', badgePad: 4, badgeLift: true, edit: 'fixed', editW: 160, editH: 60, editExtra: 0, status: true, legend: false, sub: false, minChar: 17, minPad: 12 },
@@ -1862,8 +2219,16 @@ function iconPlaceSpec(icon, name, w, h) {
   return { type: 'equip', w: w, h: h, text: name, icon: icon };
 }
 function renderPalette() {
-  const q = ($('#pal-q')?.value || '').trim();
-  let h = `<input class="search" id="pal-q" type="text" placeholder="搜索元素：舰、雷达、无人机…" value="${esc(q)}">`;
+  const host = $('#palette');
+  let qi = $('#pal-q');
+  if (!qi) {
+    setMarkup(host, '<input class="search" id="pal-q" type="text" placeholder="搜索元素：舰、雷达、无人机…" autocomplete="off"><div id="pal-body"></div>');
+    qi = $('#pal-q');
+    qi.addEventListener('input', () => renderPalette());
+    qi.addEventListener('compositionend', () => renderPalette());
+  }
+  const q = (qi.value || '').trim();
+  let h = '';
   const sec = (title, items, extra = []) => {
     if (!items.length && !extra.length) return ''; const c = !openSecs.has(title) && !q;
     return `<div class="psec${c ? '' : ' open'}"><h4 data-sec="${esc(title)}"><span>${esc(title)}</span><span class="cnt">${items.length}<i>${c ? '▸' : '▾'}</i></span></h4>${c ? '' : `<div class="pgrid">${items.concat(extra).join('')}</div>`}</div>`;
@@ -1875,8 +2240,7 @@ function renderPalette() {
   if (window.ms) h += sec(MS_SEC, MS_LIST.filter(x => m(x[1]) || m('军标') || m(x[2] || '')).map(x => pitem(x[1], iconPlaceSpec('ms:' + x[0], x[1], 96, 92), iconURI('ms:' + x[0]), true)));
   const cu = Object.entries(doc.custom).filter(([, v]) => m(v.name));
   h += sec(CU_SEC, cu.map(([id, v]) => pitem(v.name, iconPlaceSpec('cu:' + id, v.name, 96, 96), v.uri, true)), q ? [] : [`<button class="pitem" id="pal-form" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 5l4 4h-8zM11 15l4 4H7zM31 15l4 4h-8zM21 21l4 4h-8z" fill="currentColor"/></svg><span>新建编队</span></button>`, `<button class="pitem" id="pal-up" draggable="false" style="cursor:pointer"><svg viewBox="0 0 42 30"><path d="M21 6v18M12 15h18" stroke="currentColor" stroke-width="2"/></svg><span>上传图标</span></button>`]);
-  setMarkup($('#palette'), h);
-  const qi = $('#pal-q'); qi.oninput = () => { const pos = qi.selectionStart; renderPalette(); const n = $('#pal-q'); n.focus(); n.setSelectionRange(pos, pos); };
+  setMarkup($('#pal-body'), h);
   const pf = $('#pal-form'); if (pf) pf.onclick = () => window.Combo ? Combo.open(null) : toast('复合图标模块未加载');
   const up = $('#pal-up'); if (up) up.onclick = () => { iconTarget = null; $('#f-icon').click(); };
 }
@@ -1895,6 +2259,7 @@ stage.addEventListener('drop', e => {
 function addNode(spec, wx, wy) {
   checkpoint();
   const n = mkNode({ ...spec, size: spec.size || (spec.type === 'equip' ? 12 : 13) });
+  if (window.JwDefaults) JwDefaults.stampNode(n, spec);
   n.x = snapv(wx - n.w / 2); n.y = snapv(wy - n.h / 2);
   P().nodes.push(n); n.parent = findParent(n);
   if (n.type === 'legend') P().noLegend = false;
@@ -2046,12 +2411,13 @@ svg.addEventListener('pointerdown', e => {
     if (hitKey && e.button === 0 && last && last.k === hitKey && nowT - last.t < 420 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 6) {
       window.__lastDown = null; ui_drag = null;
       if (hitKey[0] === 'L') { const id = hitKey.slice(1); noteLinkHit(id, e.clientX, e.clientY); selectLinks([id]); focusLinkCaption(P().links.find(x => x.id === id)); }
-      else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { selectNodes([n.id]); render(); setTimeout(() => startEdit(n), 0); } }
+      else { const n = nodeById(hitKey.slice(1)); if (n && n.type !== 'legend' && n.type !== 'tblock') { selectNodes([n.id]); render(); if (n.type === 'dimArrow') setTimeout(() => { const i = $('#p-dist'); if (i) { i.focus(); i.select(); } }, 0); else if (!isLineArrow(n)) setTimeout(() => startEdit(n), 0); } }
       return;
     }
   }
   if (e.button === 2) { const hit = hitTarget(t); if (hit) { openSameMenu(hit, e.clientX, e.clientY); return; } }
   if (e.button === 1 || spaceDown || e.button === 2) { ui_drag = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; return; }
+  if (t.dataset.h === 'rot') { const n = nodeById([...sel][0]); ui_drag = { mode: 'rotate', n, snap: snapshot(), moved: false }; return; }
   if (t.dataset.h) { const n = nodeById([...sel][0]); ui_drag = { mode: 'resize', h: t.dataset.h, n, o: { ...n }, w0: w, snap: snapshot(), moved: false, kidsO: descendants(n.id).map(d => ({ d, x: d.x, y: d.y })) }; return; }
   if (t.dataset.port) { const n = nodeById(t.dataset.port); ui_drag = { mode: 'link', from: n.id }; ui.temp = { x0: n.x + n.w / 2, y0: n.y + n.h / 2, x1: w.x, y1: w.y }; renderOverlay(); toast('拖到目标节点松开完成，Esc 取消'); return; }
   const lk = t.closest && t.closest('[data-link]');
@@ -2102,14 +2468,28 @@ svg.addEventListener('pointermove', e => {
     for (const it of d.items) { it.n.x = it.x + sx; it.n.y = it.y + sy; }
     render(false); return;
   }
+  if (d.mode === 'rotate') {
+    const n = d.n, cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+    let ang = Math.atan2(w.y - cy, w.x - cx) * 180 / Math.PI + 90;
+    if (!e.shiftKey) ang = Math.round(ang / 15) * 15;
+    ang = ((Math.round(ang) % 360) + 360) % 360;
+    if (ang) n.rot = ang; else delete n.rot;
+    d.moved = true; render(false); return;
+  }
   if (d.mode === 'resize') {
-    const n = d.n, o = d.o, dx = snapv(w.x - d.w0.x), dy = snapv(w.y - d.w0.y); d.moved = true;
+    const n = d.n, o = d.o;
+    let dx, dy;
+    if (isLineArrow(o) && rotOf(o)) {
+      const p0 = unrotPoint(o, d.w0.x, d.w0.y), p1 = unrotPoint(o, w.x, w.y);
+      dx = snapv(p1.x - p0.x); dy = snapv(p1.y - p0.y);
+    } else { dx = snapv(w.x - d.w0.x); dy = snapv(w.y - d.w0.y); }
+    d.moved = true;
     let x = o.x, y = o.y, ww = o.w, hh = o.h;
     if (d.h.includes('e')) ww = o.w + dx; if (d.h.includes('s')) hh = o.h + dy;
     if (d.h.includes('w')) { ww = o.w - dx; x = o.x + dx; } if (d.h.includes('n')) { hh = o.h - dy; y = o.y + dy; }
     if (ww < 24) { if (d.h.includes('w')) x -= 24 - ww; ww = 24; } if (hh < 16) { if (d.h.includes('n')) y -= 16 - hh; hh = 16; }
     ui.guides = null;
-    if (snapOn() && !e.altKey) {
+    if (snapOn() && !e.altKey && !(isLineArrow(o) && rotOf(o))) {
       if (!d.sc) d.sc = snapContext(new Map([[n.id, n], ...descendants(n.id).map(q => [q.id, q])]));
       const T = 7 / view.k, G = [], near = (v, list) => { let b = null; for (const c of list) { const dd = Math.abs(c.v - v); if (dd <= T && (!b || dd < b.d)) b = { d: dd, c }; } return b; };
       const xl = d.sc.rects.flatMap(r => [{ v: r.x, r }, { v: r.x + r.w, r }, { v: r.x + r.w / 2, r }]), yl = d.sc.rects.flatMap(r => [{ v: r.y, r }, { v: r.y + r.h, r }, { v: r.y + r.h / 2, r }]);
@@ -2138,11 +2518,11 @@ function endDrag(e) {
     const top = d.items.map(i => i.n).filter(n => !d.items.some(o => o.n.id === n.parent));
     for (const n of top) n.parent = findParent(n);
   }
-  if (d.mode === 'resize' && d.moved) { if (d.n && d.n.type === 'legend') d.n.legendLock = true; undoS.push(d.snap); redoS = []; }
+  if ((d.mode === 'resize' || d.mode === 'rotate') && d.moved) { if (d.n && d.n.type === 'legend') d.n.legendLock = true; undoS.push(d.snap); redoS = []; }
   if (d.mode === 'link') {
     const el = document.elementFromPoint(e.clientX, e.clientY); const g = el && el.closest && el.closest('[data-id]');
     ui.temp = null;
-    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; P().links.push(l); selectLinks([l.id]); }
+    if (g && g.dataset.id !== d.from && !['tblock', 'legend'].includes(nodeById(g.dataset.id)?.type)) { checkpoint(); const l = { id: uid(), from: d.from, to: g.dataset.id, dir: 'one', kind: doc.lastKind || 'data', route: 'ortho', label: '' }; if (window.JwDefaults) JwDefaults.stampLink(l); P().links.push(l); selectLinks([l.id]); }
   }
   if (d.mode === 'marquee') ui.marquee = null;
   render();
@@ -2161,7 +2541,7 @@ svg.addEventListener('dblclick', e => {
   e = { target: (hit && hit.closest) ? hit : e.target, clientX: e.clientX, clientY: e.clientY };
   const lk = e.target.closest('[data-link]'); if (lk) { const l = P().links.find(x => x.id === lk.dataset.link); if (!l) return; noteLinkHit(l.id, e.clientX, e.clientY); selectLinks([l.id]); focusLinkCaption(l); return; }
   const g = e.target.closest('[data-id]'); if (!g) return;
-  const n = nodeById(g.dataset.id); if (!n || n.type === 'legend' || n.type === 'tblock') return;
+  const n = nodeById(g.dataset.id); if (!n || n.type === 'legend' || n.type === 'tblock' || isLineArrow(n)) return;
   startEdit(n);
 });
 /* inline text editor */
@@ -2740,8 +3120,8 @@ $('#crumb').addEventListener('click', e => {
 /* ---------- properties panel ---------- */
 const TYPE_NAME = Object.assign(Object.fromEntries(Object.entries(SHP_DEF).map(([k, v]) => [k, v.name])), { equip: '装备／图标卡', text: '文字', note: '说明框', legend: '图例', tblock: '标题栏' });
 for (const row of CONTS) TYPE_NAME[row.spec.type] = row.name;
-const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
-  ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate']]];
+const SHAPE_GROUPS = [['基础形状', ['rect', 'round', 'roundL', 'roundR', 'ellipse', 'sector', 'diamond', 'hexagon', 'octagon', 'triangle', 'parallelogram', 'trapezoid', 'pentagon', 'star', 'cylinder', 'cloud', 'cube', 'plus', 'donut', 'frame', 'equip']],
+  ['流程与标注', ['document', 'predef', 'display', 'delay', 'terminator', 'callout']], ['箭头', ['arrowR', 'arrowL', 'arrowU', 'arrowD', 'arrowLR', 'arrowUD', 'chevron', 'homeplate', 'stdArrow', 'dimArrow']]];
 function seg(id, opts, val, tip) { const t = tip ? ` title="${esc(tip)}"` : ''; return `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${v === val ? 'on' : ''}"${t}>${l}</button>`).join('')}</div>`; }
 function selectedLinks() {
   const p = P(), out = [];
@@ -2752,7 +3132,7 @@ function sameButton() {
   if (sel.size === 1 || onlyLinkId()) return '<div class="row"><button id="p-same" type="button" style="border-color:var(--line);justify-content:center">选中同类</button></div>';
   return '';
 }
-const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', fill: '填充', stroke: '描边', dir: '箭头', kind: '链路类型', color: '颜色', sw: '线宽' };
+const FIELD_CAP = { labelSide: '标题位置', status: '状态', font: '字体', size: '字号', bold: '加粗', noBox: '不画外框（纯装备图）', affiliation: '阵营涂装', flipX: '左右镜像', flipY: '上下镜像', fill: '填充', grad: '渐变', gradTo: '渐变末端', gradA: '末端不透明度', stroke: '描边', headColor: '箭头', noLine: '无描边', sweep: '开角', rot: '角度', sw: '线宽', rulerStart: '起点', rulerGap: '间距', rulerStep: '每格', rulerMinor: '细分', rulerUnit: '单位', rulerSide: '位置', rulerText: '刻度', dist: '距离', dir: '箭头', kind: '链路类型', color: '颜色' };
 const SHARED_REJECT = {};
 const NODE_FIELDS = {
   labelSide: {
@@ -2802,20 +3182,178 @@ const NODE_FIELDS = {
     get: function (n) { return !!n.noBox; },
     set: function (n, v) { n.noBox = !!v; }
   },
+  affiliation: {
+    id: 'affiliation', kind: 'select',
+    show: function (items) { return items.some(canSide); },
+    scope: function (n) { return canSide(n); },
+    get: function (n) { return n.affiliation || 'neutral'; },
+    set: function (n, v) { if (!canSide(n)) return; if (!v || v === 'neutral') delete n.affiliation; else n.affiliation = v; forgetIcon(n.icon); },
+    options: function () { return [['neutral', '原色'], ['blue', '蓝方'], ['red', '红方']]; }
+  },
+  flipX: {
+    id: 'flipX', kind: 'check',
+    show: function (items) { return items.some(function (n) { return !!n.icon; }); },
+    scope: function (n) { return !!n.icon; },
+    get: function (n) { return !!n.flipX; },
+    set: function (n, v) { if (!n.icon) return; if (v) n.flipX = true; else delete n.flipX; }
+  },
+  flipY: {
+    id: 'flipY', kind: 'check',
+    show: function (items) { return items.some(function (n) { return !!n.icon; }); },
+    scope: function (n) { return !!n.icon; },
+    get: function (n) { return !!n.flipY; },
+    set: function (n, v) { if (!n.icon) return; if (v) n.flipY = true; else delete n.flipY; }
+  },
   fill: {
     id: 'fill', kind: 'color', optional: true,
-    show: function (items) {
-      if (items.length > 1) return true;
-      return ['text', 'note', 'legend', 'tblock'].indexOf(items[0].type) < 0;
-    },
+    show: function (items) { return items.some(function (n) { return n.type !== 'text' && n.type !== 'tblock' && !isLineArrow(n); }); },
+    scope: function (n) { return n.type !== 'text' && n.type !== 'tblock' && !isLineArrow(n); },
     get: function (n) { return n.fill || null; },
-    set: function (n, v) { if (v) n.fill = v; else delete n.fill; }
+    set: function (n, v) { if (n.type === 'text' || n.type === 'tblock' || isLineArrow(n)) return; if (v) n.fill = v; else delete n.fill; }
+  },
+  grad: {
+    id: 'grad', kind: 'select',
+    show: function (items) { return NODE_FIELDS.fill.show(items); },
+    scope: function (n) { return NODE_FIELDS.fill.scope(n); },
+    get: function (n) { return n.grad || 'none'; },
+    set: function (n, v) { if (!NODE_FIELDS.fill.scope(n)) return; if (v === 'h' || v === 'v' || v === 'r') n.grad = v; else { delete n.grad; delete n.gradTo; delete n.gradA; } },
+    options: function () { return [['none', '纯色'], ['v', '向下渐变'], ['h', '向右渐变'], ['r', '径向渐变']]; }
+  },
+  gradTo: {
+    id: 'gradTo', kind: 'color', optional: true,
+    show: function (items) { return items.some(function (n) { return n.grad === 'h' || n.grad === 'v' || n.grad === 'r'; }); },
+    scope: function (n) { return n.grad === 'h' || n.grad === 'v' || n.grad === 'r'; },
+    get: function (n) { return n.gradTo || null; },
+    set: function (n, v) { if (n.grad !== 'h' && n.grad !== 'v' && n.grad !== 'r') return; if (v) n.gradTo = v; else delete n.gradTo; }
+  },
+  gradA: {
+    id: 'gradA', kind: 'num', optional: true, min: 0, max: 100,
+    show: function (items) { return NODE_FIELDS.gradTo.show(items); },
+    scope: function (n) { return NODE_FIELDS.gradTo.scope(n); },
+    get: function (n) { return n.gradA == null ? 100 : Math.round(n.gradA * 100); },
+    set: function (n, v) { if (n.grad !== 'h' && n.grad !== 'v' && n.grad !== 'r') return; if (v == null || +v === 100) delete n.gradA; else n.gradA = Math.max(0, Math.min(100, Math.round(+v))) / 100; }
   },
   stroke: {
     id: 'stroke', kind: 'color', optional: true,
-    show: function (items) { return NODE_FIELDS.fill.show(items); },
+    show: function (items) { return items.some(function (n) { return n.type !== 'text' && n.type !== 'tblock'; }); },
+    scope: function (n) { return n.type !== 'text' && n.type !== 'tblock'; },
     get: function (n) { return n.stroke || null; },
-    set: function (n, v) { if (v) n.stroke = v; else delete n.stroke; }
+    set: function (n, v) { if (n.type === 'text' || n.type === 'tblock') return; if (v) n.stroke = v; else delete n.stroke; }
+  },
+  headColor: {
+    id: 'headColor', kind: 'color', optional: true,
+    show: function (items) { return items.some(isLineArrow); },
+    scope: isLineArrow,
+    get: function (n) { return n.headColor || null; },
+    set: function (n, v) {
+      if (!isLineArrow(n)) return;
+      if (!v) { delete n.headColor; return; }
+      const shaft = n.noLine ? 'none' : (n.stroke || stStyle(n, T()).stroke);
+      if (String(v).toLowerCase() === String(shaft).toLowerCase()) delete n.headColor;
+      else n.headColor = v;
+    },
+    swatch: function (items) {
+      const n = items.filter(isLineArrow)[0];
+      if (!n || n.noLine) return '#ffffff';
+      return n.headColor || n.stroke || stStyle(n, T()).stroke;
+    },
+    hint: '默认与描边相同'
+  },
+  noLine: {
+    id: 'noLine', kind: 'check',
+    show: function (items) { return NODE_FIELDS.stroke.show(items); },
+    scope: function (n) { return NODE_FIELDS.stroke.scope(n); },
+    get: function (n) { return !!n.noLine; },
+    set: function (n, v) { if (n.type === 'text' || n.type === 'tblock') return; if (v) n.noLine = true; else delete n.noLine; }
+  },
+  sweep: {
+    id: 'sweep', kind: 'num', min: 10, max: 360,
+    show: function (items) { return items.some(function (n) { return n.type === 'sector'; }); },
+    scope: function (n) { return n.type === 'sector'; },
+    get: function (n) { return sectorSweep(n); },
+    set: function (n, v) { if (n.type !== 'sector') return; const a = Math.max(10, Math.min(360, Math.round(+v || 90))); if (a === 90) delete n.sweep; else n.sweep = a; }
+  },
+  sw: {
+    id: 'sw', kind: 'num', optional: true, min: 0.5, max: 12,
+    show: function (items) { return items.some(isLineArrow); },
+    scope: isLineArrow,
+    get: function (n) { return n.sw || 2; },
+    set: function (n, v) { if (!isLineArrow(n)) return; if (v == null || v === 2) delete n.sw; else n.sw = v; }
+  },
+  rot: {
+    id: 'rot', kind: 'num', min: 0, max: 359,
+    show: function (items) { return items.some(isLineArrow); },
+    scope: isLineArrow,
+    get: function (n) { return rotOf(n); },
+    set: function (n, v) { if (!isLineArrow(n)) return; const r = ((Math.round(+v) % 360) + 360) % 360; if (!r) delete n.rot; else n.rot = r; }
+  },
+  rulerStart: {
+    id: 'rulerStart', kind: 'num', min: -1000000, max: 1000000,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerStart != null && isFinite(+n.rulerStart) ? +n.rulerStart : 0; },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v == null || +v === 0) delete n.rulerStart; else n.rulerStart = +v; }
+  },
+  rulerGap: {
+    id: 'rulerGap', kind: 'num', optional: true, min: 16, max: 400,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerGap > 0 ? +n.rulerGap : null; },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v == null) delete n.rulerGap; else n.rulerGap = Math.max(16, +v); },
+    blank: function (items) { const n = items.filter(function (it) { return it.type === 'dimArrow'; })[0]; return n ? String(Math.round(rulerSpec(n).gap)) : ''; },
+    hint: '像素，空则自动'
+  },
+  rulerStep: {
+    id: 'rulerStep', kind: 'num', optional: true, min: -1000000, max: 1000000,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerStep != null && isFinite(+n.rulerStep) ? +n.rulerStep : null; },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v == null) delete n.rulerStep; else n.rulerStep = +v; },
+    blank: function (items) { const n = items.filter(function (it) { return it.type === 'dimArrow'; })[0]; return n ? fmtNum(rulerSpec(n).step) : ''; },
+    hint: '空则按比例'
+  },
+  rulerMinor: {
+    id: 'rulerMinor', kind: 'num', min: 0, max: 12,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerMinor == null ? 4 : Math.max(0, Math.min(12, Math.round(+n.rulerMinor) || 0)); },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; const k = Math.max(0, Math.min(12, Math.round(+v) || 0)); if (k === 4) delete n.rulerMinor; else n.rulerMinor = k; }
+  },
+  rulerUnit: {
+    id: 'rulerUnit', kind: 'text', optional: true,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerUnit != null ? String(n.rulerUnit) : ''; },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v == null || String(v).trim() === '') delete n.rulerUnit; else n.rulerUnit = String(v).trim(); },
+    placeholder: function () { return 'm / km / nmi'; },
+    hint: '空则用图面单位。可填 m、km、nmi 或自定',
+    clear: '默认'
+  },
+  rulerSide: {
+    id: 'rulerSide', kind: 'seg',
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerSide === 'below' ? 'below' : 'above'; },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v === 'below') n.rulerSide = 'below'; else delete n.rulerSide; },
+    options: function () { return [['above', '上方'], ['below', '下方']]; }
+  },
+  rulerText: {
+    id: 'rulerText', kind: 'text', optional: true,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return n.rulerText || ''; },
+    set: function (n, v) { if (n.type !== 'dimArrow') return; if (v == null || String(v).trim() === '') delete n.rulerText; else n.rulerText = String(v); },
+    placeholder: function () { return '0,10,20'; },
+    hint: '逗号分隔。拉长后按最后的间隔继续编号',
+    clear: '默认'
+  },
+  dist: {
+    id: 'dist', kind: 'text', readOnly: true,
+    show: function (items) { return items.some(function (n) { return n.type === 'dimArrow'; }); },
+    scope: function (n) { return n.type === 'dimArrow'; },
+    get: function (n) { return dimLabel(n); },
+    set: function () {},
+    hint: '起点 + 杆长 ÷ 间距 × 每格；自定刻度则取最后一格'
   }
 };
 const LINK_FIELDS = {
@@ -2842,7 +3380,14 @@ const LINK_FIELDS = {
     set: function (l, v) { if (v) l.sw = v; else delete l.sw; }
   }
 };
+function fieldItems(items, field) {
+  if (!field.scope) return items;
+  const out = [];
+  for (let i = 0; i < items.length; i++) if (field.scope(items[i])) out.push(items[i]);
+  return out;
+}
 function fieldState(items, field) {
+  items = fieldItems(items, field);
   if (!items.length) return { mixed: false, value: null };
   const first = field.get(items[0]);
   for (let i = 1; i < items.length; i++) if (!Object.is(field.get(items[i]), first)) return { mixed: true, value: null };
@@ -2878,16 +3423,27 @@ function fieldHTML(items, field) {
   }
   if (field.kind === 'num') {
     const shown = state.mixed || state.value == null ? '' : state.value;
-    const ph = state.mixed ? ' placeholder="多值"' : '';
+    const ph = state.mixed ? ' placeholder="多值"' : (field.blank ? ` placeholder="${esc(field.blank(items))}"` : '');
     const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const tip = field.hint ? ` title="${esc(field.hint)}"` : '';
     const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
-    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="number" id="${id}" data-shared="${field.id}" min="${field.min}" max="${field.max}" value="${shown}"${ph}>${hint}${clr}</div>`;
+    return `<div class="row sh" data-shared="${field.id}"><label${tip}>${cap}</label><input type="number" id="${id}" data-shared="${field.id}" min="${field.min}" max="${field.max}" value="${shown}"${ph}>${hint}${clr}</div>`;
+  }
+  if (field.kind === 'text') {
+    const shown = state.mixed ? '' : (state.value || '');
+    const ph = state.mixed ? ' placeholder="多值"' : (field.placeholder ? ` placeholder="${esc(field.placeholder(items))}"` : '');
+    const hint = state.mixed ? '<span class="hint">多值</span>' : (field.note ? `<span class="hint" style="flex:1 0 100%">${esc(field.note)}</span>` : '');
+    const tip = field.hint ? ` title="${esc(field.hint)}"` : '';
+    const clr = field.optional && !field.readOnly ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">${esc(field.clear || '默认')}</button>` : '';
+    const ro = field.readOnly ? ' readonly' : '';
+    return `<div class="row sh" data-shared="${field.id}"><label${tip}>${cap}</label><input type="text" id="${id}" data-shared="${field.id}" value="${esc(shown)}"${ph}${ro}>${hint}${clr}</div>`;
   }
   if (field.kind === 'color') {
-    const hex = !state.mixed && state.value ? state.value : '#ffffff';
+    const hex = !state.mixed && state.value ? state.value : (!state.mixed && field.swatch ? field.swatch(items) : '#ffffff');
     const hint = state.mixed ? '<span class="hint">多值</span>' : '';
+    const tip = field.hint ? ` title="${esc(field.hint)}"` : '';
     const clr = field.optional ? `<button type="button" data-clear="1" data-shared="${field.id}" style="border-color:var(--line)">默认</button>` : '';
-    return `<div class="row sh" data-shared="${field.id}"><label>${cap}</label><input type="color" id="${id}" data-shared="${field.id}" value="${hex}">${hint}${clr}</div>`;
+    return `<div class="row sh" data-shared="${field.id}"><label${tip}>${cap}</label><input type="color" id="${id}" data-shared="${field.id}" value="${hex}">${hint}${clr}</div>`;
   }
   return '';
 }
@@ -2905,6 +3461,7 @@ function parseShared(field, raw) {
   if (field.id === 'labelSide' && raw !== 't' && raw !== 'b' && raw !== 'l' && raw !== 'r') return SHARED_REJECT;
   if (field.id === 'status' && ['base', 'new', 'key'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'dir' && ['one', 'both', 'none'].indexOf(raw) < 0) return SHARED_REJECT;
+  if (field.id === 'affiliation' && ['neutral', 'blue', 'red'].indexOf(raw) < 0) return SHARED_REJECT;
   if (field.id === 'kind' && !LINK_KINDS[raw]) return SHARED_REJECT;
   if (field.kind === 'color') {
     if (raw === '') return null;
@@ -2923,6 +3480,7 @@ function parseShared(field, raw) {
     return n;
   }
   if (field.kind === 'check') return !!raw;
+  if (field.kind === 'text') return raw == null ? '' : String(raw);
   return raw;
 }
 let sharedArm = false, sharedFocusBound = false;
@@ -2948,19 +3506,20 @@ function bindFields(items, fields) {
     const field = fields[id];
     const row = el.querySelector('.sh[data-shared="' + field.id + '"]');
     if (!row) return;
+    const targets = () => fieldItems(items, field);
     if (field.kind === 'check') {
       const box = row.querySelector('input');
       if (box) box.indeterminate = fieldState(items, field).mixed;
       if (box) box.addEventListener('change', () => {
         const v = parseShared(field, box.checked);
         if (v === SHARED_REJECT) return;
-        applyShared(items, it => field.set(it, v), false);
+        applyShared(targets(), it => field.set(it, v), false);
       });
     } else if (field.kind === 'seg') {
       row.querySelectorAll('button[data-v]').forEach(b => b.addEventListener('click', () => {
         const v = parseShared(field, b.dataset.v);
         if (v === SHARED_REJECT) return;
-        applyShared(items, it => field.set(it, v), false);
+        applyShared(targets(), it => field.set(it, v), false);
       }));
     } else if (field.kind === 'select') {
       const box = row.querySelector('select');
@@ -2969,25 +3528,34 @@ function bindFields(items, fields) {
         if (box.value === '__mixed__') return;
         const v = parseShared(field, box.value);
         if (v === SHARED_REJECT) return;
-        applyShared(items, it => field.set(it, v), false);
+        applyShared(targets(), it => field.set(it, v), false);
       });
-    } else if (field.kind === 'num' || field.kind === 'color' || field.kind === 'size') {
+    } else if (field.kind === 'num' || field.kind === 'color' || field.kind === 'size' || field.kind === 'text') {
       const input = row.querySelector('input');
-      if (!input) return;
+      if (!input || field.readOnly) return;
       input.addEventListener('input', () => {
         const v = parseShared(field, input.value);
         if (v === SHARED_REJECT) return;
-        applyShared(items, it => field.set(it, v), true);
+        applyShared(targets(), it => field.set(it, v), true);
       });
       if (field.optional) {
         input.addEventListener('blur', () => {
-          if (field.kind === 'num' && input.value === '') applyShared(items, it => field.set(it, null), false);
+          if ((field.kind === 'num' || field.kind === 'text') && input.value === '') applyShared(targets(), it => field.set(it, null), false);
         });
         const clr = row.querySelector('[data-clear]');
-        if (clr) clr.addEventListener('click', () => applyShared(items, it => field.set(it, null), false));
+        if (clr) clr.addEventListener('click', () => applyShared(targets(), it => field.set(it, null), false));
       }
     }
   });
+}
+function arrowExtraHTML(nodes) {
+  if (!nodes.some(isLineArrow)) return '';
+  let h = '<div class="row"><label>朝向</label><button type="button" id="p-rot90" style="border-color:var(--line)">旋转 90°</button></div>';
+  if (!nodes.some(n => n.type === 'dimArrow')) return h;
+  const m = measureSpec();
+  h += `<div class="row"><label style="width:72px">图面单位</label><input id="p-unit" type="text" value="${esc(m.unit)}" title="自动刻度用的单位"></div>`;
+  h += `<div class="row"><label style="width:72px">图面比例</label><input id="p-px" type="number" min="0.1" step="0.1" value="${m.px}" title="自动刻度：多少像素等于 1 个单位"></div>`;
+  return h;
 }
 function renderProps() {
   const el = $('#props'); const p = P(); let h = '';
@@ -2996,6 +3564,7 @@ function renderProps() {
   if (links.length > 1) {
     h += `<h3>已选 ${links.length} 条连线</h3>`;
     h += fieldsHTML(links, LINK_FIELDS);
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" type="button" style="color:var(--danger)">删除连线</button>`;
   } else if (links.length === 1) {
     const l = links[0];
@@ -3014,13 +3583,16 @@ function renderProps() {
     h += `<div class="row"><label>走线</label>${seg('p-route', [['ortho', '直角'], ['straight', '直线']], l.route)}</div>`;
     if (window.Std) h += Std.propsHTML('link', l, p);
     h += sameButton();
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除连线</button>`;
   } else if (sel.size > 1) {
     const nodes = selectedNodes();
     h += `<h3>已选 ${sel.size} 个元素</h3><div class="hint">对齐与分布</div>`;
     h += `<div class="grid3">${[['l', '左对齐'], ['c', '水平居中'], ['r', '右对齐'], ['t', '顶对齐'], ['m', '垂直居中'], ['b', '底对齐'], ['dh', '水平等距'], ['dv', '垂直等距'], ['size', '等宽等高']].map(([k, n]) => `<button data-al="${k}">${n}</button>`).join('')}</div>`;
     h += fieldsHTML(nodes, NODE_FIELDS);
+    h += arrowExtraHTML(nodes);
     h += `<hr><div class="hint">复合图标：把所选装备合成一个元素（作为输入／输出整体连线）</div><div class="row"><button id="p-group" class="primary" style="justify-content:center">⧉ 组合为复合图标（Ctrl+G）</button></div>`;
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除所选</button>`;
   } else if (sel.size === 1) {
     const n = nodeById([...sel][0]); if (!n) { clearSel(); return renderProps(); }
@@ -3031,8 +3603,8 @@ function renderProps() {
       const u = iconURI(n.icon, n.affiliation);
       h += `<div class="row"><label>图标</label><div class="iconprev">${u ? `<img src="${u}" alt="">` : '<span style="color:var(--muted)">无</span>'}</div><button id="p-icon" style="border-color:var(--line)">${u ? '更换' : '选择'}</button>${u ? '<button id="p-noicon" style="border-color:var(--line)">清除</button>' : ''}</div>`;
     }
-    if (n.icon && n.icon.startsWith('lib:')) h += `<div class="row"><label>阵营涂装</label><select id="p-affiliation">${[['neutral', '原色'], ['blue', '蓝方'], ['red', '红方']].map(([k,v]) => `<option value="${k}" ${(n.affiliation || 'neutral') === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`;
     h += fieldsHTML([n], NODE_FIELDS);
+    h += arrowExtraHTML([n]);
     const crow = contRow(n);
     if (crow && crow.thick.mode === 'field' && (sideOf(n) === 'l' || sideOf(n) === 'r')) h += `<div class="row"><label>标题栏宽</label><input type="number" id="p-tw" min="${crow.thick.min}" max="${crow.thick.max}" value="${thickness(n, crow)}"></div>`;
     h += `<div class="grid2" style="margin-top:6px">${['x', 'y', 'w', 'h'].map(k => `<div class="row" style="margin:0"><label style="width:16px">${k.toUpperCase()}</label><input type="number" data-geo="${k}" value="${Math.round(n[k])}"></div>`).join('')}</div>`;
@@ -3045,6 +3617,7 @@ function renderProps() {
     const showSub = crow ? !!crow.sub : !['text', 'note', 'legend', 'band', 'lane', 'tblock'].includes(n.type);
     if (showSub) h += `<hr><div class="hint">内部结构：点右上角 ⊕，或点「创建内部结构」。双击和 F2 只改文字。</div><div class="row"><button id="p-sub" class="primary" style="justify-content:center">${n.sub ? '进入内部结构 ›' : '＋ 创建内部结构'}</button></div>`;
     h += sameButton();
+    if (window.JwDefaults) h += JwDefaults.applySelectedHTML();
     h += `<hr><button id="p-del" style="color:var(--danger)">删除${isCont(n) ? '（含内部元素）' : ''}</button>`;
   } else {
     const st = legendEntries(p);
@@ -3058,6 +3631,7 @@ function renderProps() {
     h += `<div class="row" title="拖动时对齐其他图形的边与中线、画布中轴，并提示等间距；按住 Alt 临时关闭"><label>拖动吸附</label>${seg('d-snapon', [['on', '对齐吸附'], ['off', '关闭']], snapOn() ? 'on' : 'off')}</div>`;
     if (window.Compact) h += Compact.panelHTML();
     h += `<div class="row" title="北约体制：友方蓝、敌方红；我军习惯：我方红、敌方蓝"><label>军标配色</label>${seg('d-ms', [['nato', '友蓝敌红'], ['cn', '我红敌蓝']], msMode())}</div>`;
+    if (window.JwDefaults) h += JwDefaults.panelHTML();
     if (window.Std) h += Std.propsHTML('page', null, p);
     h += `<hr><div class="hint" style="margin-bottom:4px">状态图例名称</div>`;
     h += ['base', 'new', 'key'].map(s => { const t = T(); const c = s === 'base' ? t.box : t.st[s]; return `<div class="row"><label><span class="swatch" style="width:18px;height:12px;background:${c.fill};border:1px solid ${c.stroke}"></span></label><input type="text" data-sl="${s}" value="${esc(doc.statusLabels[s])}"></div>`; }).join('');
@@ -3100,7 +3674,9 @@ function bindProps() {
   el.querySelectorAll('[data-geo]').forEach(i => i.addEventListener('input', e => { const k = e.target.dataset.geo, v = +e.target.value; if (isNaN(v)) return; const d = v - n[k]; if (k === 'x' || k === 'y') descendants(n.id).forEach(c => c[k] += d); n[k] = (k === 'w' || k === 'h') ? Math.max(16, v) : v; live(); }));
   el.querySelectorAll('[data-sl]').forEach(i => i.addEventListener('input', e => { doc.statusLabels[e.target.dataset.sl] = e.target.value; live(); }));
   el.querySelectorAll('[data-al]').forEach(b => b.addEventListener('click', () => alignSel(b.dataset.al)));
-  on('#p-affiliation', 'change', e => { checkpoint(); n.affiliation = e.target.value; render(); });
+  on('#p-rot90', 'click', () => applyShared(selectedNodes().filter(isLineArrow), it => { const r = (rotOf(it) + 90) % 360; if (r) it.rot = r; else delete it.rot; }, false));
+  on('#p-unit', 'change', e => { checkpoint(); const m = measureSpec(); doc.measure = { unit: (e.target.value || '').trim() || 'm', px: m.px }; render(); });
+  on('#p-px', 'change', e => { const px = +e.target.value; if (!(px > 0)) return; checkpoint(); const m = measureSpec(); doc.measure = { unit: m.unit, px: px }; render(); });
   on('#p-icon', 'click', () => openIconPicker(n));
   on('#p-noicon', 'click', () => { checkpoint(); n.icon = null; if (n.type === 'equip') n.type = 'round'; render(); });
   on('#p-sub', 'click', () => enterSub(n.id));
@@ -3122,6 +3698,7 @@ function bindProps() {
   on('#d-avoid', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.avoid = b.dataset.v === 'on'; render(); });
   on('#d-snapon', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; try { localStorage.setItem('hongtu.snap', b.dataset.v); } catch (_) { } render(); });
   if (window.Compact && !l && !n && !links.length) Compact.bind($('#props'));
+  if (window.JwDefaults) JwDefaults.bind($('#props'));
   if (window.Std && links.length < 2) Std.bindProps(l ? 'link' : n ? 'node' : (!sel.size ? 'page' : 'multi'), l || n || null, P());
   on('#d-ms', 'click', e => { const b = e.target.closest('[data-v]'); if (!b) return; checkpoint(); doc.msColor = b.dataset.v; renderPalette(); render(); if ($('#modal').style.display === 'flex') renderPicker(); });
 }
@@ -3201,7 +3778,8 @@ function exportSVGString(p, bg) {
   ensureLegend(p);
   const b = contentBBox(p), pad = 24, x = b.x - pad, y = b.y - pad, w = b.w + pad * 2, h = b.h + pad * 2;
   const saved = cur; cur = p.id; const inner = diagramSVG(p, true, 'x'); cur = saved;
-  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${inner}</svg>`), w, h };
+  const sheet = window.CanvasBg ? CanvasBg.markup(p, { x, y, w, h }) : '';
+  return { str: safeMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}" font-family="${esc(FONT)}">${bg ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${T().bg}"/>` : ''}${sheet}${inner}</svg>`), w, h };
 }
 function rasterize(svgStr, w, h, scale) {
   return new Promise((res, rej) => {
@@ -3213,6 +3791,9 @@ function rasterize(svgStr, w, h, scale) {
 async function exportPNG(scale, bg) { const { str, w, h } = exportSVGString(P(), bg); saveFile(fname('png'), await rasterize(str, w, h, scale)); }
 const ICON_PNG_MS = 2500;
 function iconPNG(uri, px = 256) {
+  let flipX = false, flipY = false;
+  const fm = /#f([xy]*)$/.exec(uri);
+  if (fm) { flipX = fm[1].indexOf('x') >= 0; flipY = fm[1].indexOf('y') >= 0; uri = uri.slice(0, fm.index); }
   let asp = 1; const mm = /#a([\d.]+)$/.exec(uri); if (mm) { asp = +mm[1]; uri = uri.slice(0, mm.index); }
   if (!isFinite(asp) || asp <= 0) asp = 1;
   const pw = asp >= 1 ? Math.round(px * Math.min(asp, 4)) : px, ph = asp >= 1 ? px : Math.round(px / Math.max(asp, 0.25));
@@ -3234,7 +3815,7 @@ function iconPNG(uri, px = 256) {
         const c = document.createElement('canvas'); c.width = cw; c.height = ch;
         const g = c.getContext('2d'); if (!g) { finish(null); return; }
         const iw = img.width || cw, ih = img.height || ch, r = Math.min(cw / iw, ch / ih), w = iw * r, h = ih * r;
-        g.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+        g.save(); g.translate(cw / 2, ch / 2); g.scale(flipX ? -1 : 1, flipY ? -1 : 1); g.drawImage(img, -w / 2, -h / 2, w, h); g.restore();
         finish(c.toDataURL('image/png'));
       } catch (e) { finish(null); }
     };
@@ -3334,6 +3915,7 @@ async function exportPPTX() {
     const ox = (13.333 - (b.w + pad * 2) * f) / 2, oy = (7.5 - (b.h + pad * 2) * f) / 2;
     const X = v => ox + (v - b.x + pad) * f, Y = v => oy + (v - b.y + pad) * f, S = v => Math.max(0.001, v * f), PT = px => Math.max(5, +(px * f * 72).toFixed(1)), LW = px => Math.max(0.25, +(px * f * 72).toFixed(2));
     const txt = (lines, o) => lines.join('\n');
+    if (window.CanvasBg) await CanvasBg.paintPptx(slide, pptx, p, { X, Y, S, box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 } });
     for (const n of drawOrder(p)) {
       const base = { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h) };
       if (contRow(n)) {
@@ -3360,9 +3942,33 @@ async function exportPPTX() {
           if (c.text) addT(slide, c.text, { ...o, shape: pptx.ShapeType.rect, color: hex(c.color), fontFace: fontFace(n), fontSize: PT(c.size), bold: c.bold, align: c.align === 'left' ? 'left' : 'center', valign: 'middle', margin: 0, wrap: false });
           else slide.addShape(pptx.ShapeType.rect, o);
         }
+      } else if (isLineArrow(n)) {
+        const cols = arrowColors(n), stroke = cols.shaft, sw = n.sw > 0 ? n.sw : 2;
+        const ends = arrowEnds(n), a = ends.tail, z = cols.split ? arrowShaftEnd(n) : ends.tip;
+        const line = n.noLine ? { width: 0 } : { color: hex(stroke), width: LW(sw), ...(cols.split ? {} : { endArrowType: 'triangle' }) };
+        slide.addShape(pptx.ShapeType.line, { x: X(Math.min(a.x, z.x)), y: Y(Math.min(a.y, z.y)), w: Math.max(S(Math.abs(z.x - a.x)), 0.01), h: Math.max(S(Math.abs(z.y - a.y)), 0.01), flipH: z.x < a.x, flipV: z.y < a.y, line: line, ...(n.noLine ? { objectName: 'jwCN' } : {}) });
+        if (cols.split) {
+          const pts = arrowHeadWorld(n), xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+          let x0 = Math.min.apply(null, xs), y0 = Math.min.apply(null, ys), x1 = Math.max.apply(null, xs), y1 = Math.max.apply(null, ys);
+          if (x1 - x0 < 0.5) { x0 -= 0.5; x1 += 0.5; }
+          if (y1 - y0 < 0.5) { y0 -= 0.5; y1 += 0.5; }
+          slide.addShape(pptx.ShapeType.custGeom, { x: X(x0), y: Y(y0), w: S(x1 - x0), h: S(y1 - y0), points: pts.map(p => ({ x: +((p.x - x0) * f).toFixed(4), y: +((p.y - y0) * f).toFixed(4) })), fill: { color: hex(cols.head) }, line: { color: hex(cols.head), width: 0 } });
+        }
+        if (n.type === 'dimArrow' && !n.noLine) {
+          const items = rulerItems(n);
+          for (let i = 0; i < items.ticks.length; i++) {
+            const p0 = items.ticks[i][0], p1 = items.ticks[i][1];
+            slide.addShape(pptx.ShapeType.line, { x: X(Math.min(p0.x, p1.x)), y: Y(Math.min(p0.y, p1.y)), w: Math.max(S(Math.abs(p1.x - p0.x)), 0.01), h: Math.max(S(Math.abs(p1.y - p0.y)), 0.01), flipH: p1.x < p0.x, flipV: p1.y < p0.y, line: { color: hex(stroke), width: LW(1) } });
+          }
+          for (let i = 0; i < items.labels.length; i++) {
+            const lb = items.labels[i], tw = Math.max(lb.w, 8);
+            addT(slide, lb.text, { x: X(lb.x - tw / 2), y: Y(lb.y - 12), w: S(tw), h: S(16), color: hex(stroke), fontFace: fontFace(n), fontSize: PT(12), align: 'center', valign: 'middle', margin: 0, wrap: false });
+          }
+        }
       } else if (n.type === 'legend') {
         const items = legendLayout(n, p);
-        slide.addShape(pptx.ShapeType.rect, { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h), fill: { color: hex(t.note.fill) }, line: { color: hex(t.note.stroke), width: LW(1) } });
+        const lp = paintOf(n, t);
+        slide.addShape(pptx.ShapeType.rect, { x: X(n.x), y: Y(n.y), w: S(n.w), h: S(n.h), fill: { color: hex(lp.fill) }, line: lp.noLine ? { width: 0 } : { color: hex(lp.stroke), width: LW(1) }, ...(pptName(lp) ? { objectName: pptName(lp) } : {}) });
         for (const it of items) {
           if (it.kind === 'st') { const ss = it.s === 'base' ? t.box : t.st[it.s]; slide.addShape(pptx.ShapeType.rect, { x: X(it.x), y: Y(it.y + 3), w: S(26), h: S(14), fill: { color: hex(ss.fill) }, line: { color: hex(ss.stroke), width: LW(1) } }); }
           else { const K = LINK_KINDS[it.k]; slide.addShape(pptx.ShapeType.line, { x: X(it.x), y: Y(it.y + 10), w: S(27), h: 0, line: { color: hex(t.link[it.k]), width: LW(K.w || 1.6), dashType: PPT_DASH[K.dash] || 'solid', endArrowType: 'triangle' } }); }
@@ -3371,11 +3977,13 @@ async function exportPPTX() {
       } else {
         const L = nodeLayout(n);
         const textOpt = L.text ? { color: hex(L.text.color), fontFace: fontFace(n), fontSize: PT(L.text.size), bold: !!L.text.bold, align: L.text.anchor === 'start' ? 'left' : 'center', valign: 'middle', margin: 1 } : null;
-        const shp = n.type === 'equip' ? pptx.ShapeType.roundRect : SHP_DEF[n.type] ? (pptx.ShapeType[SHP_DEF[n.type].ppt] || SHP_DEF[n.type].ppt) : null;
-        const st = stStyle(n, t);
-        const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : {};
+        const sweep = n.type === 'sector' ? sectorSweep(n) : 0;
+        const pie = n.type === 'sector' && sweep < 359.5;
+        const shp = n.type === 'equip' ? pptx.ShapeType.roundRect : pie ? pptx.ShapeType.pie : (n.type === 'sector' ? pptx.ShapeType.ellipse : (SHP_DEF[n.type] ? (pptx.ShapeType[SHP_DEF[n.type].ppt] || SHP_DEF[n.type].ppt) : null));
+        const paint = paintOf(n, t);
+        const cg = n.type === 'roundL' || n.type === 'roundR' ? { points: sideRoundPts(n.type, S(n.w), S(n.h), S(sideR(n.w, n.h))) } : (pie ? { angleRange: [270, 270 + sweep] } : {});
         const drawBox = n.type === 'note' || (shp && (!n.noBox || n.status !== 'base'));
-        const boxStyle = n.type === 'note' ? { fill: { color: hex(t.note.fill) }, line: { color: hex(t.note.stroke), width: LW(1) } } : { fill: { color: hex(st.fill) }, line: { color: hex(st.stroke), width: LW(1.2) } };
+        const boxStyle = { fill: { color: hex(paint.fill) }, line: paint.noLine ? { width: 0 } : { color: hex(paint.stroke), width: n.type === 'note' ? LW(1) : LW(1.2) }, ...(pptName(paint) ? { objectName: pptName(paint) } : {}) };
         if (!L.icon && L.text) {
           /* 无框文字（标题等）：画布上不折行，PPT 中按实测宽度放宽文本框，避免折行叠字 */
           let tb = base;
@@ -3383,7 +3991,7 @@ async function exportPPTX() {
           addT(slide, txt(L.text.lines), { ...tb, ...(drawBox ? {} : { wrap: false }), ...textOpt, ...(drawBox ? { shape: n.type === 'note' ? pptx.ShapeType.rect : shp, ...cg, ...boxStyle, ...(n.type === 'round' || n.type === 'equip' ? { rectRadius: S(Math.min(10, n.h / 3)) } : {}) } : {}), ...(n.type === 'note' ? { margin: 6 } : {}) });
         } else {
           if (drawBox) slide.addShape(shp, { ...base, ...cg, ...boxStyle, ...(n.type === 'round' || n.type === 'equip' ? { rectRadius: S(Math.min(10, n.h / 3)) } : {}) });
-          if (L.icon) { const asp = (L.icon.w || L.icon.s) / (L.icon.h || L.icon.s); const png = await getIcon(L.icon.uri + (asp !== 1 ? '#a' + asp.toFixed(3) : '')); if (png) slide.addImage({ data: png.replace(/^data:/, ''), x: X(L.icon.x), y: Y(L.icon.y), w: S(L.icon.w || L.icon.s), h: S(L.icon.h || L.icon.s) }); }
+          if (L.icon) { const png = await getIcon(iconRasterKey(L.icon)); if (png) slide.addImage({ data: png.replace(/^data:/, ''), x: X(L.icon.x), y: Y(L.icon.y), w: S(L.icon.w || L.icon.s), h: S(L.icon.h || L.icon.s) }); }
           if (L.text) { const [bx, by, bw, bh] = L.text.box; addT(slide, txt(L.text.lines), { x: X(bx), y: Y(by), w: S(bw), h: S(Math.max(bh, L.text.lines.length * L.text.size * 1.38)), ...textOpt, margin: 0 }); }
         }
       }
@@ -3422,8 +4030,40 @@ async function exportPPTX() {
     }
     cur = saved;
   }
-  const blob = await pptx.write({ outputType: 'blob' });
+  let blob = await pptx.write({ outputType: 'blob' });
+  blob = await paintPptGradients(blob);
   saveFile(docExportName('pptx'), blob);
+}
+async function paintPptGradients(blob) {
+  if (typeof JSZip === 'undefined') return blob;
+  const zip = await JSZip.loadAsync(blob);
+  const names = Object.keys(zip.files).filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k));
+  let changed = false;
+  const re = /name="(jwG[hvr][0-9A-F]{6}\d{3}[0-9A-F]{6}N?|jwCN)"/;
+  for (const name of names) {
+    let xml = await zip.file(name).async('string'), guard = 0;
+    while (guard++ < 400) {
+      const m = re.exec(xml); if (!m) break;
+      const tag = m[1], bare = tag.charAt(tag.length - 1) === 'N' ? tag.slice(0, -1) : tag, noLine = tag.charAt(tag.length - 1) === 'N';
+      const g = bare.charAt(2) === 'G' ? { dir: bare.charAt(3), c1: '#' + bare.slice(4, 10), a2: +bare.slice(10, 13) / 100, c2: '#' + bare.slice(13, 19) } : null;
+      const at = m.index, sp = xml.lastIndexOf('<p:sp', at), end = xml.indexOf('</p:sp>', at);
+      if (sp < 0 || end < 0) { xml = xml.slice(0, at) + 'name="jwDone"' + xml.slice(at + m[0].length); changed = true; continue; }
+      let chunk = xml.slice(sp, end).replace('name="' + tag + '"', 'name="jwDone"');
+      const a = chunk.indexOf('<p:spPr'), b = chunk.indexOf('</p:spPr>');
+      if (a >= 0 && b > a) {
+        let mid = chunk.slice(a, b); const lns = [];
+        mid = mid.replace(/<a:ln\b[^>]*\/>|<a:ln\b[^>]*>[\s\S]*?<\/a:ln>/g, s => { lns.push(s); return '%%LN' + (lns.length - 1) + '%%'; });
+        if (g) mid = mid.replace(/<a:solidFill>[\s\S]*?<\/a:solidFill>/, gradFillXml(g));
+        mid = mid.replace(/%%LN(\d+)%%/g, (_, i) => noLine ? '<a:ln><a:noFill/></a:ln>' : lns[+i]);
+        if (noLine && !lns.length) mid += '<a:ln><a:noFill/></a:ln>';
+        chunk = chunk.slice(0, a) + mid + chunk.slice(b);
+      }
+      xml = xml.slice(0, sp) + chunk + xml.slice(end);
+      changed = true;
+    }
+    if (changed) zip.file(name, xml);
+  }
+  return changed ? zip.generateAsync({ type: 'blob' }) : blob;
 }
 
 /* Visio (.vsdx, Visio 2013+): shapes with geometry, text, fills; links as polylines with arrowheads; icons embedded as PNG */
@@ -3442,15 +4082,19 @@ async function exportVSDX(pageList) {
     const b = contentBBox(p), pad = 20, f = 1 / 96, PW = (b.w + pad * 2) * f, PH = (b.h + pad * 2) * f;
     const X = v => (v - b.x + pad) * f, Y = v => PH - (v - b.y + pad) * f;
     let sid = 1; const shapes = []; const rels = [];
+    if (window.CanvasBg) {
+      const sheetShapes = CanvasBg.vsdxShapes(p, { box: { x: b.x - pad, y: b.y - pad, w: b.w + pad * 2, h: b.h + pad * 2 }, f, X, Y, cell, num, id: () => sid++, zip, rels });
+      if (sheetShapes && sheetShapes.length) shapes.unshift(...sheetShapes);
+    }
     const charSec = (size, color, bold, face) => `<Section N='Character'><Row IX='0'>${cell('Font', face || fontFace(null))}${cell('Color', color)}${cell('Size', num(size * 0.75 / 72), 'PT')}${cell('Style', bold ? 1 : 0)}</Row></Section>`;
     const paraSec = al => `<Section N='Paragraph'><Row IX='0'>${cell('HorzAlign', al === 'left' ? 0 : 1)}</Row></Section>`;
     const rectGeom = (w, h) => `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', 0)}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', 0)}</Row><Row T='LineTo' IX='3'>${cell('X', num(w))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h))}</Row><Row T='LineTo' IX='5'>${cell('X', 0)}${cell('Y', 0)}</Row></Section>`;
-    const geomFor = (type, w, h) => {
+    const geomFor = (type, w, h, sweep) => {
       if (type === 'ellipse') return `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='Ellipse' IX='1'>${cell('X', num(w / 2))}${cell('Y', num(h / 2))}${cell('A', num(w))}${cell('B', num(h / 2))}${cell('C', num(w / 2))}${cell('D', num(h))}</Row></Section>`;
       if (type === 'diamond') return `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}<Row T='MoveTo' IX='1'>${cell('X', num(w / 2))}${cell('Y', 0)}</Row><Row T='LineTo' IX='2'>${cell('X', num(w))}${cell('Y', num(h / 2))}</Row><Row T='LineTo' IX='3'>${cell('X', num(w / 2))}${cell('Y', num(h))}</Row><Row T='LineTo' IX='4'>${cell('X', 0)}${cell('Y', num(h / 2))}</Row><Row T='LineTo' IX='5'>${cell('X', num(w / 2))}${cell('Y', 0)}</Row></Section>`;
-      if (GEO[type] && type !== 'rect') {
+      if (type === 'sector' || (GEO[type] && type !== 'rect')) {
         /* sampled outline from GEO (px) → Visio local inches, y up; fill subpaths share one section (even-odd holes), extra strokes in a NoFill section */
-        const g = shapeGeom(type, w / f, h / f), gx = v => num(v * f), gy = v => num(h - v * f);
+        const g = shapeGeom(type, w / f, h / f, sweep), gx = v => num(v * f), gy = v => num(h - v * f);
         let sec = `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 0)}`, ix = 1;
         for (const pl of g.fill) { pl.concat([pl[0]]).forEach((q, i) => { sec += `<Row T='${i ? 'LineTo' : 'MoveTo'}' IX='${ix++}'>${cell('X', gx(q[0]))}${cell('Y', gy(q[1]))}</Row>`; }); }
         sec += '</Section>';
@@ -3463,19 +4107,26 @@ async function exportVSDX(pageList) {
       const W = w * f, H = h * f;
       let s = `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(X(x) + W / 2))}${cell('PinY', num(Y(y) - H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('Angle', 0)}`;
       if (o.fill) s += cell('FillForegnd', o.fill) + cell('FillPattern', 1); else s += cell('FillPattern', 0);
+      if (o.grad) {
+        /* 角度与 vsdxraw 的读法一致：0 向右，3π/2 向下；径向 dir 1 为圆形 */
+        const ang = o.grad.dir === 'h' ? 0 : Math.PI * 1.5;
+        s += cell('FillGradientEnabled', 1) + cell('FillGradientAngle', num(ang)) + (o.grad.dir === 'r' ? cell('FillGradientDir', 1) : '');
+        s += `<Section N='FillGradient'><Row IX='0'>${cell('GradientStopColor', o.grad.c1)}${cell('GradientStopColorTrans', 0)}${cell('GradientStopPosition', 0)}</Row><Row IX='1'>${cell('GradientStopColor', o.grad.c2)}${cell('GradientStopColorTrans', num(1 - o.grad.a2))}${cell('GradientStopPosition', 1)}</Row></Section>`;
+      }
       if (o.line) s += cell('LineColor', o.line) + cell('LineWeight', num((o.lw || 1) * 0.75 / 72), 'PT') + cell('LinePattern', o.dash ? (VSD_PAT[o.dash] || 1) : 1); else s += cell('LinePattern', 0);
       if (o.round) s += cell('Rounding', num(o.round * f));
       s += cell('VerticalAlign', o.valign ?? 1) + cell('LeftMargin', num(2 * f)) + cell('RightMargin', num(2 * f)) + cell('TopMargin', num(1 * f)) + cell('BottomMargin', num(1 * f));
-      if (o.text != null && o.type && GEO[o.type] && o.type !== 'rect') {
-        const ib = shapeGeom(o.type, w, h).inner, TW = Math.max(ib[2], 8) * f, TH = Math.max(ib[3], 8) * f;
+      if (o.text != null && o.type && o.type !== 'rect' && (GEO[o.type] || o.type === 'sector')) {
+        const ib = shapeGeom(o.type, w, h, o.sweep).inner, TW = Math.max(ib[2], 8) * f, TH = Math.max(ib[3], 8) * f;
         s += cell('TxtPinX', num((ib[0] + ib[2] / 2) * f)) + cell('TxtPinY', num(H - (ib[1] + ib[3] / 2) * f)) + cell('TxtWidth', num(TW)) + cell('TxtHeight', num(TH)) + cell('TxtLocPinX', num(TW / 2)) + cell('TxtLocPinY', num(TH / 2)) + cell('TxtAngle', 0);
       }
       if (o.vert) s += `<Section N='TextBlock'>${cell('TextDirection', 1)}</Section>`;
       if (o.text != null) s += charSec(o.size || 13, o.color || '#000000', o.bold, o.face) + paraSec(o.align);
-      s += geomFor(o.type || 'rect', W, H);
+      s += geomFor(o.type || 'rect', W, H, o.sweep);
       if (o.text != null) s += `<Text>${xs(o.text)}</Text>`;
       return s + '</Shape>';
     };
+    const arrowJobs = [];
     for (const n of drawOrder(p)) {
       if (contRow(n)) {
         exportCont(n, p, {
@@ -3485,23 +4136,25 @@ async function exportVSDX(pageList) {
         });
       } else if (n.type === 'tblock') {
         if (window.Std) for (const c of Std.tblockCells(n, p)) shapes.push(box(c.x, c.y, c.w, c.h, { fill: c.fill || null, line: c.stroke, lw: c.lw, ...(c.text ? { text: c.text, size: c.size, bold: c.bold, color: c.color, align: c.align, face: fontFace(n) } : {}) }));
-      } else if (n.type === 'legend') {
+      } else if (isLineArrow(n)) arrowJobs.push(n);
+      else if (n.type === 'legend') {
         const items = legendLayout(n, p);
-        shapes.push(box(n.x, n.y, n.w, n.h, { fill: t.note.fill, line: t.note.stroke }));
+        const lp = paintOf(n, t);
+        shapes.push(box(n.x, n.y, n.w, n.h, { fill: lp.fill, line: lp.noLine ? null : lp.stroke, grad: lp.grad }));
         for (const it of items) {
           if (it.kind === 'st') { const ss = it.s === 'base' ? t.box : t.st[it.s]; shapes.push(box(it.x, it.y + 3, 26, 14, { fill: ss.fill, line: ss.stroke })); }
           else shapes.push(polyShape([{ x: it.x, y: it.y + 10 }, { x: it.x + 27, y: it.y + 10 }], t.link[it.k], LINK_KINDS[it.k], 'one'));
           shapes.push(box(it.x + 32, it.y, 112, 20, { text: it.label, size: 12, color: t.text, align: 'left', face: fontFace(n) }));
         }
       } else {
-        const L = nodeLayout(n), st = stStyle(n, t);
+        const L = nodeLayout(n), paint = paintOf(n, t);
         const drawBox = n.type === 'note' || (n.type !== 'text' && (!n.noBox || n.status !== 'base'));
-        const bs = n.type === 'note' ? { fill: t.note.fill, line: t.note.stroke } : drawBox ? { fill: st.fill, line: st.stroke, lw: 1.2, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type } : {};
+        const bs = drawBox ? { fill: paint.fill, line: paint.noLine ? null : paint.stroke, lw: n.type === 'note' ? 1 : 1.2, grad: paint.grad, sweep: n.type === 'sector' ? sectorSweep(n) : 0, round: (n.type === 'round' || n.type === 'equip') ? Math.min(10, n.h / 3) : 0, type: n.type === 'note' ? 'rect' : n.type } : {};
         if (!L.icon && L.text) shapes.push(box(n.x, n.y, n.w, n.h, { ...bs, text: L.text.lines.join('\n'), size: L.text.size, bold: L.text.bold, color: L.text.color, align: L.text.anchor === 'start' ? 'left' : 'center', face: fontFace(n) }));
         else {
           if (drawBox) shapes.push(box(n.x, n.y, n.w, n.h, bs));
           if (L.icon) {
-            const asp = (L.icon.w || L.icon.s) / (L.icon.h || L.icon.s), ik = L.icon.uri + (asp !== 1 ? '#a' + asp.toFixed(3) : '');
+            const ik = iconRasterKey(L.icon);
             let png = iconCache.get(ik); if (png === undefined) { png = await iconPNG(ik); iconCache.set(ik, png); }
             if (png) {
               imgN++; const fn = `image${imgN}.png`; zip.file('visio/media/' + fn, png.split(',')[1], { base64: true });
@@ -3533,6 +4186,30 @@ async function exportVSDX(pageList) {
       }
       g += '</Section>';
       return `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(x0 + W / 2))}${cell('PinY', num(y0 + H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('LineColor', color)}${cell('LineWeight', num((K.w || 1.6) * 0.75 / 72), 'PT')}${cell('LinePattern', VSD_PAT[K.dash] || 1)}${cell('FillPattern', 0)}${cell('EndArrow', dir !== 'none' ? 4 : 0)}${cell('BeginArrow', dir === 'both' ? 4 : 0)}${cell('EndArrowSize', 1)}${cell('BeginArrowSize', 1)}${g}</Shape>`;
+    }
+    function fillShape(pts, color) {
+      const xsP = pts.map(q => X(q.x)), ysP = pts.map(q => Y(q.y));
+      const x0 = Math.min.apply(null, xsP), x1 = Math.max.apply(null, xsP), y0 = Math.min.apply(null, ysP), y1 = Math.max.apply(null, ysP);
+      const W = Math.max(x1 - x0, 0.0001), H = Math.max(y1 - y0, 0.0001);
+      const gx = v => num(X(v) - x0), gy = v => num(Y(v) - y0);
+      let g = `<Section N='Geometry' IX='0'>${cell('NoFill', 0)}${cell('NoLine', 1)}`, ix = 1;
+      pts.forEach((p, i) => { g += `<Row T='${i ? 'LineTo' : 'MoveTo'}' IX='${ix++}'>${cell('X', gx(p.x))}${cell('Y', gy(p.y))}</Row>`; });
+      g += `<Row T='LineTo' IX='${ix}'>${cell('X', gx(pts[0].x))}${cell('Y', gy(pts[0].y))}</Row></Section>`;
+      return `<Shape ID='${sid++}' Type='Shape' LineStyle='0' FillStyle='0' TextStyle='0'>${cell('PinX', num(x0 + W / 2))}${cell('PinY', num(y0 + H / 2))}${cell('Width', num(W))}${cell('Height', num(H))}${cell('LocPinX', num(W / 2))}${cell('LocPinY', num(H / 2))}${cell('FillForegnd', color)}${cell('FillPattern', 1)}${cell('LinePattern', 0)}${g}</Shape>`;
+    }
+    for (const n of arrowJobs) {
+      const cols = arrowColors(n), stroke = cols.shaft === 'none' ? null : cols.shaft, sw = n.sw > 0 ? n.sw : 2;
+      const ends = arrowEnds(n), tip = cols.split ? arrowShaftEnd(n) : ends.tip;
+      if (stroke) shapes.push(polyShape([ends.tail, tip], stroke, { w: sw }, cols.split ? 'none' : 'one'));
+      if (cols.split) shapes.push(fillShape(arrowHeadWorld(n), cols.head));
+      if (n.type === 'dimArrow' && stroke) {
+        const items = rulerItems(n);
+        for (let i = 0; i < items.ticks.length; i++) shapes.push(polyShape(items.ticks[i], stroke, { w: 1 }, 'none'));
+        for (let i = 0; i < items.labels.length; i++) {
+          const lb = items.labels[i], tw = Math.max(lb.w, 8);
+          shapes.push(box(lb.x - tw / 2, lb.y - 12, tw, 16, { text: lb.text, size: 12, color: stroke, face: fontFace(n) }));
+        }
+      }
     }
     for (const l of p.links) {
       const pts = linkPoints(l, p); if (!pts) continue;
@@ -3925,7 +4602,9 @@ function irConnectPair(a, b, msg) {
     return false;
   }
   const kid = 'k' + uid();
-  s.links.push({ id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' });
+  const fresh = { id: kid, from: a, to: b, dir: 'one', route: 'ortho', label: '' };
+  if (window.JwDefaults) JwDefaults.stampLink(fresh);
+  s.links.push(fresh);
   s.sel = { kind: 'link', id: kid };
   $('#ir-msg').textContent = msg;
   paintImageReview();
@@ -3939,6 +4618,7 @@ function irPreviewClick(e) {
     const p = irSvgPoint(e);
     const w = Math.max(80, s.w * 0.12), h = Math.max(36, s.h * 0.08);
     const n = mkNode({ id: 'n' + uid(), type: 'rect', text: '新框', parent: null, w: w, h: h, x: Math.max(0, Math.min(Math.max(0, s.w - w), p.x - w / 2)), y: Math.max(0, Math.min(Math.max(0, s.h - h), p.y - h / 2)) });
+    if (window.JwDefaults) JwDefaults.stampNode(n, { type: 'rect', text: '新框' });
     s.nodes.push(n);
     s.sel = { kind: 'node', id: n.id };
     s.mode = '';
@@ -4172,8 +4852,9 @@ function friendlyErr(err) {
   if (/is not a valid|not well-formed|parsererror|XML/i.test(m)) return '文件内容格式有误，无法解析';
   return m;
 }
-function loadDoc(d) { for (const pg of Object.values(d.pages || {})) if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
+function loadDoc(d) { for (const pg of Object.values(d.pages || {})) { if (pg.view && typeof pg.view === 'object') { pg.cam = pg.view; delete pg.view; } if (pg.nodes) for (let i = 0; i < pg.nodes.length; i++) migrateDimArrow(pg.nodes[i]); } /* page.view = 规范视图类型（字符串）；视口缓存在 page.cam */
   adoptPages(d);
+  if (window.CanvasBg) CanvasBg.lockPages(d);
   doc = d; doc.custom = doc.custom || {}; doc.statusLabels = doc.statusLabels || { base: '延续', new: '本步新增／重构', key: '重点关注' }; cur = 'root'; stack = ['root']; clearSel(); $('#b-theme').value = doc.theme; renderPalette(); view = fitView(d.pages.root); render(); refreshDocTitle(); if (window.Backup) Backup.observeLoad(); }
 
 const SHELF_KEY = 'hongtu.shelf';

@@ -33,6 +33,20 @@
     donut: 'ellipse;shape=doubleEllipse', plus: 'shape=cross', terminator: 'rounded=1;arcSize=50', arrowR: 'shape=singleArrow;direction=east', arrowL: 'shape=singleArrow;direction=west',
     arrowU: 'shape=singleArrow;direction=north', arrowD: 'shape=singleArrow;direction=south', arrowLR: 'shape=doubleArrow', arrowUD: 'shape=doubleArrow;direction=north',
   };
+  /* draw.io 饼图：0 在正上方，顺时针增大，角度限制在 0–1；超过 1 会被裁成整圆的一小段 */
+  const sectorDio = n => {
+    const a = sectorSweep(n);
+    if (a >= 359.5) return 'ellipse';
+    const end = Math.max(0.001, Math.min(0.999, a / 360));
+    return `shape=mxgraph.basic.pie;startAngle=0;endAngle=${end.toFixed(4)}`;
+  };
+  const dioColors = (n, fill, stroke) => {
+    const g = gradSpec(n, fill);
+    const line = n.noLine ? 'strokeColor=none' : `strokeColor=${stroke}`;
+    if (!g) return `fillColor=${fill};${line}`;
+    const dir = g.dir === 'h' ? 'east' : g.dir === 'r' ? 'radial' : 'south';
+    return `fillColor=${g.c1};gradientColor=${g.a2 <= 0.001 ? 'none' : g.c2};gradientDirection=${dir};${line}`;
+  };
   const DASH = { '6 4': 'dashed=1;dashPattern=6 4', '2 4': 'dashed=1;dashPattern=2 4', '10 4 2 4': 'dashed=1;dashPattern=10 4 2 4', '4 2': 'dashed=1;dashPattern=4 2', '12 4': 'dashed=1;dashPattern=12 4' };
 
   /* ================= 导出 ================= */
@@ -40,7 +54,8 @@
   function rootCell(p) {
     const a = {};
     if (p.view) a.ht_view = p.view;
-    if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind });
+    if (p.canvasBg) a.ht_canvasBg = JSON.stringify(window.CanvasBg ? CanvasBg.normalize(p.canvasBg) : p.canvasBg);
+    if (p.id === 'root') a.ht_doc = JSON.stringify({ name: doc.name, theme: doc.theme, statusLabels: doc.statusLabels, meta: doc.meta, showCodes: !!doc.showCodes, msColor: doc.msColor, jumpStyle: doc.jumpStyle, lastKind: doc.lastKind, measure: doc.measure || null });
     const at = Object.entries(a).map(([k, v]) => ` ${k}="${xa(v)}"`).join('');
     return at ? `<object label=""${at} id="0"><mxCell/></object>` : '<mxCell id="0"/>';
   }
@@ -69,11 +84,20 @@
       const pa = parentOf(n), pid = pa ? cid(pa.id) : '1';
       const a = abs(n), pg = pa ? abs(pa) : { x: 0, y: 0 };
       const geo = { x: a.x - pg.x, y: a.y - pg.y, w: n.w, h: n.h };
-      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '' };
+      const ht = { ht_type: n.type, ht_icon: n.icon, ht_status: n.status !== 'base' ? n.status : '', ht_etype: n.etype, ht_code: n.code, ht_attrs: n.attrs && Object.keys(n.attrs).length ? n.attrs : '', ht_role: n.role, ht_size: n.size !== 13 ? n.size : '', ht_noBox: n.noBox ? 1 : '', ht_affiliation: n.affiliation && n.affiliation !== 'neutral' ? n.affiliation : '', ht_flipX: n.flipX ? 1 : '', ht_flipY: n.flipY ? 1 : '', ht_rot: rotOf(n) || '', ht_sw: n.sw || '', ht_head: n.headColor || '', ht_rStart: n.rulerStart != null ? n.rulerStart : '', ht_rStep: n.rulerStep != null ? n.rulerStep : '', ht_rGap: n.rulerGap > 0 ? n.rulerGap : '', ht_rMinor: n.rulerMinor != null ? n.rulerMinor : '', ht_rUnit: n.rulerUnit || '', ht_rSide: n.rulerSide === 'below' ? 'below' : '', ht_rText: n.rulerText || '', ht_sweep: n.type === 'sector' ? sectorSweep(n) : '', ht_grad: n.grad || '', ht_gradTo: n.gradTo || '', ht_gradA: n.gradA == null ? '' : n.gradA, ht_noLine: n.noLine ? 1 : '', ht_fill: n.fill || '', ht_stroke: n.stroke || '' };
       if (n.sub && pageIds[n.sub]) ht.link = 'data:page/id,' + pageIds[n.sub];
       const st = stStyle(n, t), fs = n.size || 13, bold = n.bold ? ';fontStyle=1' : '';
       const font = `fontSize=${fs};fontFamily=Microsoft YaHei;html=1;whiteSpace=wrap`;
       const txt = (n.text || '');
+      /* draw.io 渐变色标不能带透明度。末端不是完全不透明时，嵌画布同一段 SVG，ht_gradA 仍可回读 */
+      const a2 = n.gradA == null ? 1 : +n.gradA;
+      const fade = (n.grad === 'h' || n.grad === 'v' || n.grad === 'r') && isFinite(a2) && a2 < 0.999 && n.type !== 'band' && n.type !== 'lane' && n.type !== 'group' && n.type !== 'text' && n.type !== 'legend' && n.type !== 'tblock' && !isLineArrow(n);
+      if (fade) {
+        const body = nodeSVG(n, p, true);
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${n.x} ${n.y} ${n.w} ${n.h}" width="${n.w}" height="${n.h}">${body}</svg>`;
+        cell(cid(n.id), '', 'shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,' + b64(svg), geo, pid, Object.assign(ht, { ht_paint: 1, ht_text: txt }));
+        continue;
+      }
       if (n.type === 'band') {
         /* 分组带 = 容器框 + 左侧标题条（中文竖排逐字，与画布一致）；标题条带 ht_part=title，再导入时并回分组带名称 */
         const head = n.status === 'base' || !n.status ? t.band.titleFill : st.stroke;
@@ -90,23 +114,45 @@
         const color = n.color === 'muted' ? t.muted : (n.color || t.text);
         cell(cid(n.id), txt, `text;${font};align=${n.align === 'left' ? 'left' : 'center'};verticalAlign=middle;fontColor=${color}${bold}`, geo, pid, ht);
       } else if (n.type === 'note') {
-        cell(cid(n.id), txt, `rounded=1;arcSize=4;${font};align=left;spacingLeft=8;fillColor=${t.note.fill};strokeColor=${t.note.stroke};fontColor=${t.text}`, geo, pid, ht);
+        const np = paintOf(n, t);
+        cell(cid(n.id), txt, `rounded=1;arcSize=4;${font};align=left;spacingLeft=8;${dioColors(n, np.fill, np.stroke)};fontColor=${t.text}`, geo, pid, ht);
+      } else if (n.type === 'stdArrow' || n.type === 'dimArrow') {
+        const cols = arrowColors(n), stroke = cols.shaft, head = cols.head, sw = n.sw > 0 ? n.sw : 2;
+        const end = cols.split ? 'endArrow=none' : 'endArrow=classic;endFill=1';
+        cell(cid(n.id), '', `shape=line;html=1;strokeColor=${stroke};strokeWidth=${sw};${end};startArrow=none;fontSize=12;fontColor=${stroke};labelBackgroundColor=${t.bg};rotation=${rotOf(n)}`, geo, pid, ht);
+        if (cols.split) {
+          const pts = arrowHeadWorld(n), xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+          const x0 = Math.min.apply(null, xs), y0 = Math.min.apply(null, ys), bw = Math.max(1, Math.max.apply(null, xs) - x0), bh = Math.max(1, Math.max.apply(null, ys) - y0);
+          const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0} ${y0} ${bw} ${bh}"><polygon points="${pts.map(p => p.x + ',' + p.y).join(' ')}" fill="${head}"/></svg>`;
+          cell(cid(n.id) + 'h', '', 'shape=image;aspect=fixed;imageAspect=0;image=data:image/svg+xml,' + b64(svg), { x: x0 - (pa ? pa.x : 0), y: y0 - (pa ? pa.y : 0), w: bw, h: bh }, pid, { ht_part: 'ruler' });
+        }
+        if (n.type === 'dimArrow' && !n.noLine && typeof rulerItems === 'function') {
+          const items = rulerItems(n), ox = pa ? pa.x : 0, oy = pa ? pa.y : 0;
+          items.ticks.forEach((seg, i) => {
+            const a = seg[0], b = seg[1];
+            out.push(`<UserObject id="${cid(n.id)}k${i}" ht_part="ruler"><mxCell style="${xa('endArrow=none;html=1;strokeColor=' + stroke + ';strokeWidth=1')}" edge="1" parent="${pid}"><mxGeometry relative="1" as="geometry"><mxPoint x="${r1(a.x - ox)}" y="${r1(a.y - oy)}" as="sourcePoint"/><mxPoint x="${r1(b.x - ox)}" y="${r1(b.y - oy)}" as="targetPoint"/></mxGeometry></mxCell></UserObject>`);
+          });
+          items.labels.forEach((lb, i) => {
+            const tw = Math.max(16, lb.w + 4);
+            cell(cid(n.id) + 'b' + i, lb.text, `text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=${stroke};strokeColor=none;fillColor=none`, { x: lb.x - ox - tw / 2, y: lb.y - oy - 12, w: tw, h: 16 }, pid, { ht_part: 'ruler' });
+          });
+        }
       } else if (n.type === 'legend' || n.type === 'tblock') {
         if (n.type === 'legend' && typeof legendLayout === 'function') legendLayout(n, p);
         const im = 'data:image/svg+xml,' + b64(imgSVG(n));
         cell(cid(n.id), '', `shape=image;aspect=fixed;imageAspect=0;image=${im}`, { x: geo.x - 2, y: geo.y - 2, w: n.w + 4, h: n.h + 4 }, pid, ht);
       } else {
-        const L = nodeLayout(n), im = L.icon ? styleImage(L.icon.uri) : null;
+        const L = nodeLayout(n), im = L.icon ? styleImage(iconMirrorURI(L.icon.uri, L.icon.flipX, L.icon.flipY)) : null;
         const fill = n.fill || st.fill, stroke = n.stroke || st.stroke, color = t.box.text;
         if (n.type === 'equip' || (im && L.icon && L.text && L.text.cy > L.icon.y + L.icon.h)) {
           /* 图标在上、文字在下：容器框（noBox 时透明）+ 图片样式标签 */
           const boxed = !n.noBox || (n.status && n.status !== 'base');
           const sty = im ? `shape=label;image=${im};imageWidth=${r1(L.icon.w)};imageHeight=${r1(L.icon.h)};imageAlign=center;imageVerticalAlign=top;spacingTop=${r1(L.icon.y - n.y)};verticalAlign=bottom;spacingBottom=4;` : '';
-          cell(cid(n.id), code(n) + txt, `${sty}rounded=1;arcSize=8;${font};fillColor=${boxed ? fill : 'none'};strokeColor=${boxed ? stroke : 'none'};fontColor=${color}${bold}`, geo, pid, ht);
+          cell(cid(n.id), code(n) + txt, `${sty}rounded=1;arcSize=8;${font};${boxed ? dioColors(n, fill, stroke) : 'fillColor=none;strokeColor=none'};fontColor=${color}${bold}`, geo, pid, ht);
         } else {
-          const shp = SHAPE_OUT[n.type] || SHAPE_OUT.rect;
+          const shp = n.type === 'sector' ? sectorDio(n) : (SHAPE_OUT[n.type] || SHAPE_OUT.rect);
           const sty = im ? `shape=label;image=${im};imageWidth=${r1(L.icon.w)};imageHeight=${r1(L.icon.h)};imageAlign=left;spacingLeft=${r1(L.icon.w + 4)};` : '';
-          cell(cid(n.id), code(n) + txt, `${im ? sty + 'rounded=0' : shp};${font};fillColor=${fill};strokeColor=${stroke};fontColor=${color};strokeWidth=1.2${bold}${n.align === 'left' ? ';align=left' : ''}`, geo, pid, ht);
+          cell(cid(n.id), code(n) + txt, `${im ? sty + 'rounded=0' : shp};${font};${dioColors(n, fill, stroke)};fontColor=${color};strokeWidth=1.2${bold}${n.align === 'left' ? ';align=left' : ''}`, geo, pid, ht);
         }
       }
     }
@@ -126,7 +172,10 @@
       out.push(`<UserObject label="${xa(label)}" id="e${l.id}"${meta(ht)}><mxCell style="${xa(style)}" edge="1" parent="1" source="${cid(l.from)}" target="${cid(l.to)}"><mxGeometry relative="1" as="geometry">${way}</mxGeometry></mxCell></UserObject>`);
     }
     const b = contentBBox(p);
-    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${t.bg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${out.join('')}</root></mxGraphModel>` };
+    const sheet = window.CanvasBg ? CanvasBg.drawio(p) : null;
+    const sheetBg = sheet && /^#[0-9A-Fa-f]{6}$/.test(sheet.background || '') ? sheet.background : t.bg;
+    const sheetCells = sheet && sheet.cells ? sheet.cells : '';
+    return { xml: `<mxGraphModel dx="${Math.round(b.w)}" dy="${Math.round(b.h)}" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="${Math.round(b.w + 80)}" pageHeight="${Math.round(b.h + 80)}" background="${sheetBg}" math="0" shadow="0"><root>${rootCell(p)}<mxCell id="1" parent="0"/>${sheetCells}${out.join('')}</root></mxGraphModel>` };
   }
   function exportString(pageList) {
     const pages = pageList && pageList.length ? pageList : pagesInOrder(), pageIds = {}, saved = cur;
@@ -250,6 +299,7 @@
       /* 绝对坐标：沿父链累加（图层不计） */
       const absOf = c => { let x = c.geo ? c.geo.x : 0, y = c.geo ? c.geo.y : 0, p = byId.get(c.parent), k = 0; while (p && !layers.has(p.id) && k++ < 30) { if (p.vertex && p.geo && !p.geo.rel) { x += p.geo.x; y += p.geo.y; } p = byId.get(p.parent); } return { x, y }; };
       const page = { id: idMap[d.id], name: d.name, nodes: [], links: [], view: (rc && rc.data.ht_view) || null };
+      if (rc && rc.data.ht_canvasBg) try { page.canvasBg = JSON.parse(rc.data.ht_canvasBg); } catch (_) { }
       if (rc && rc.data.ht_doc && !docSettings) try { docSettings = JSON.parse(rc.data.ht_doc); } catch (_) { }
       const nodeOf = new Map();
       const verts = cells.filter(c => c.vertex && c.geo && !c.geo.rel);
@@ -259,10 +309,11 @@
       const transparentGroup = c => /^group(;|$)/.test(c.style) || (/(^|;)group=1/.test(c.style));
       for (const c of verts) {
         if (byId.get(c.parent)?.edge) continue;
-        if (c.data.ht_part === 'title') continue;
+        if (c.data.ht_part === 'title' || c.data.ht_part === 'ruler' || c.data.ht_part === 'canvasbg') continue;
         const st = parseStyle(c.style), a = absOf(c), D = c.data;
         if (transparentGroup(c) && !D.ht_type) continue;
         let text = htmlText(c.label, st.html === '1');
+        if (D.ht_paint) text = D.ht_text || '';
         if (D.ht_type === 'band') { const strip = cells.find(x => x.parent === c.id && x.data.ht_part === 'title'); const sv = strip ? htmlText(strip.label, true).replace(/\s/g, '') : null, ns = x => String(x || '').replace(/\s/g, ''); text = sv == null ? (D.ht_text || text) : (D.ht_text != null && (sv === ns(D.ht_text) || sv === ns((D.ht_code || '') + D.ht_text)) ? D.ht_text : sv); }
         let type = D.ht_type || null;
         const first = Object.keys(st).find(k => st[k] === '__first') || '';
@@ -282,12 +333,30 @@
         if (D.ht_etype) n.etype = D.ht_etype; if (D.ht_code) n.code = D.ht_code;
         if (D.ht_attrs) try { n.attrs = JSON.parse(D.ht_attrs); } catch (_) { }
         if (D.ht_role) n.role = D.ht_role; if (D.ht_noBox) n.noBox = true; if (D.ht_titleW) n.titleW = +D.ht_titleW;
+        if (D.ht_affiliation === 'red' || D.ht_affiliation === 'blue') n.affiliation = D.ht_affiliation;
+        if (D.ht_rot) n.rot = +D.ht_rot || 0; if (D.ht_sw) n.sw = +D.ht_sw;
+        if (D.ht_sweep) n.sweep = +D.ht_sweep; if (D.ht_noLine) n.noLine = true;
+        if (D.ht_grad === 'h' || D.ht_grad === 'v' || D.ht_grad === 'r') n.grad = D.ht_grad;
+        if (D.ht_gradTo) n.gradTo = D.ht_gradTo; if (D.ht_gradA !== '' && D.ht_gradA != null) n.gradA = +D.ht_gradA;
+        if (D.ht_fill && /^#[0-9A-Fa-f]{6}$/.test(D.ht_fill)) n.fill = D.ht_fill;
+        if (D.ht_stroke && /^#[0-9A-Fa-f]{6}$/.test(D.ht_stroke)) n.stroke = D.ht_stroke;
+        if (D.ht_head && /^#[0-9A-Fa-f]{6}$/.test(D.ht_head)) n.headColor = D.ht_head;
+        if (D.ht_rStart != null && D.ht_rStart !== '') n.rulerStart = +D.ht_rStart;
+        if (D.ht_rStep != null && D.ht_rStep !== '') n.rulerStep = +D.ht_rStep;
+        if (D.ht_rGap != null && D.ht_rGap !== '') n.rulerGap = +D.ht_rGap;
+        if (D.ht_rMinor != null && D.ht_rMinor !== '') n.rulerMinor = +D.ht_rMinor;
+        if (D.ht_rUnit) n.rulerUnit = D.ht_rUnit;
+        if (D.ht_rSide === 'below') n.rulerSide = 'below';
+        if (D.ht_rText) n.rulerText = D.ht_rText;
         if (D.link && /^data:page\/id,/.test(D.link)) n._sub = D.link.slice(13);
         /* 导出时若显示编号，标签为“编号 + 空格 + 文字”；导回时去掉前缀（与当前文档是否显示编号无关） */
         if (D.ht_code && new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+').test(n.text)) n.text = n.text.replace(new RegExp('^' + D.ht_code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s　]+'), '');
         /* 图标 */
-        if (D.ht_icon && /^(lib|ms):/.test(D.ht_icon)) n.icon = D.ht_icon;
-        else { const im = fixImg(st.image); if (im) { n.icon = addImg(im, text || '导入图片'); try { const asp = c.geo.w && c.geo.h ? c.geo.w / c.geo.h : 1; if (st.shape === 'image' && Math.abs(asp - 1) > 0.15) custom[n.icon.slice(3)].aspect = +asp.toFixed(3); } catch (_) { } } }
+        if (D.ht_paint) { /* 渐变到透明的整形状快照，不是图标 */ }
+        else if (D.ht_icon && /^(lib|ms):/.test(D.ht_icon)) {
+          n.icon = D.ht_icon;
+          if (D.ht_flipX) n.flipX = true; if (D.ht_flipY) n.flipY = true;
+        } else { const im = fixImg(st.image); if (im) { n.icon = addImg(im, text || '导入图片'); try { const asp = c.geo.w && c.geo.h ? c.geo.w / c.geo.h : 1; if (st.shape === 'image' && Math.abs(asp - 1) > 0.15) custom[n.icon.slice(3)].aspect = +asp.toFixed(3); } catch (_) { } } }
         if (type === 'equip') { n.noBox = n.noBox || st.fillColor === 'none' || st.shape === 'image'; if (st.shape === 'image' && st.verticalLabelPosition === 'bottom') n.h += 20; n.size = Math.min(n.size, 12); }
         if (type === 'legend' || type === 'tblock') { n.icon = null; }
         if (opts.keepColors !== false && !D.ht_type && !['__cont', 'text'].includes(type)) {
@@ -320,7 +389,9 @@
       const vById = new Map(page.nodes.map(n => [n._c.id, n]));
       const nearest = (pt) => { let best = null, bd = 40; for (const n of page.nodes) { if (['text', 'legend', 'tblock', 'note'].includes(n.type)) continue; const dx = Math.max(n.x - pt.x, 0, pt.x - n.x - n.w), dy = Math.max(n.y - pt.y, 0, pt.y - n.y - n.h); const dd = Math.hypot(dx, dy) + (['band', 'lane', 'group'].includes(n.type) ? 25 : 0); if (dd < bd) { bd = dd; best = n; } } return best; };
       for (const c of cells.filter(c => c.edge)) {
+        if (c.data.ht_part === 'canvasbg') continue;
         const st = parseStyle(c.style), D = c.data;
+        if (D.ht_part === 'ruler') continue;
         let a = vById.get(c.source), b = vById.get(c.target);
         const sp = c.pts.find(p => p.as === 'sourcePoint'), tp = c.pts.find(p => p.as === 'targetPoint');
         const pa = byId.get(c.parent), off = pa && pa.vertex ? absOf(pa) : { x: 0, y: 0 };
